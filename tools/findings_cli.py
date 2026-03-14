@@ -192,6 +192,7 @@ def add(
     status: str = "open",
     date_str: Optional[str] = None,
     oracle_sr: str = "",
+    affects_matrix: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Add a new finding programmatically. Returns the new entry dict."""
     data = load_tracker(tracker_path)
@@ -213,7 +214,7 @@ def add(
         "status": status,
         "resolved_date": None,
         "resolution": None,
-        "affects_matrix": None,
+        "affects_matrix": affects_matrix,
         "tags": tags or [],
     }
 
@@ -306,6 +307,7 @@ def cmd_add(args: argparse.Namespace) -> None:
             tags=tags_list,
             date_str=args.date,
             oracle_sr=args.oracle_sr or "",
+            affects_matrix=args.affects_matrix or None,
         )
     else:
         # Interactive mode
@@ -323,6 +325,7 @@ def cmd_add(args: argparse.Namespace) -> None:
             workaround=input("Workaround: ").strip(),
             tags=[t.strip() for t in input("Tags (comma-separated): ").strip().split(",") if t.strip()],
             oracle_sr=input("Oracle SR#: ").strip(),
+            affects_matrix=input("Affects matrix entry (feature name, or blank): ").strip() or None,
         )
 
     print(f"\nAdded: {entry['id']}  [{entry['severity']}]  {entry['summary']}")
@@ -433,6 +436,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_add.add_argument("--workaround", help="Known workaround.")
     p_add.add_argument("--tags", help="Comma-separated tags.")
     p_add.add_argument("--oracle-sr", help="Oracle SR number.")
+    p_add.add_argument("--affects-matrix", help="Feature matrix entry this relates to.")
 
     # --- update ---
     p_update = subparsers.add_parser("update", help="Update an existing finding.")
