@@ -17,7 +17,7 @@ output_selection:
   formats:
     deck:
       extension: ".pptx"
-      generator: "tools/oci_slide_gen.py"
+      generator: "tools/oci_deck_gen.py"
       description: "10-12 slide architecture proposal"
 
     drawio:

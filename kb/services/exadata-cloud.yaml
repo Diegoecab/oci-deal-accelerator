@@ -1,0 +1,96 @@
+# OCI Service: Exadata Cloud Service (ExaCS)
+# Last verified: 2026-03
+
+service:
+  name: "Exadata Cloud Service (ExaCS)"
+  id: exacs
+  category: database
+  color: "#AA643B"
+
+description: "Dedicated Exadata infrastructure running in OCI, providing the full performance and isolation of Exadata hardware with cloud elasticity. Supports Oracle RAC, Data Guard, and direct OS/CDB-level access for maximum DBA control."
+
+when_to_use:
+  - "Oracle RAC workloads requiring multi-node clustering"
+  - "Regulatory or compliance scenarios demanding dedicated infrastructure isolation"
+  - "High IOPS / low-latency database workloads (OLTP or mixed)"
+  - "Sustained compute needs exceeding 128 OCPUs"
+  - "Need direct OS-level or CDB-level access for custom patching, tuning, or agents"
+
+when_not_to_use:
+  - "Small workloads under 16 OCPUs — use Autonomous Database Serverless (ADB-S) or Base Database Service"
+  - "No dedicated DBA team to manage patching, RAC, and infrastructure"
+  - "Simple OLTP with no RAC or isolation requirements — use ADB-S instead"
+  - "Dev/test environments where cost efficiency matters more than performance"
+
+variants:
+  - id: exacs_x9m
+    name: "ExaCS X9M"
+    description: "Exadata X9M shape — current-generation infrastructure with RDMA over Converged Ethernet and persistent memory acceleration."
+  - id: exacs_x10m
+    name: "ExaCS X10M"
+    description: "Exadata X10M shape — next-generation infrastructure with improved compute, storage density, and throughput."
+
+sizing:
+  rack_configurations:
+    quarter_rack:
+      ocpus: "100 (scalable)"
+      memory: "1.44 TB"
+      storage: "Up to 76.8 TB usable (Exadata Storage)"
+      db_nodes: 2
+      storage_servers: 3
+    half_rack:
+      ocpus: "200 (scalable)"
+      memory: "2.88 TB"
+      storage: "Up to 153.6 TB usable"
+      db_nodes: 4
+      storage_servers: 6
+    full_rack:
+      ocpus: "400 (scalable)"
+      memory: "5.76 TB"
+      storage: "Up to 307.2 TB usable"
+      db_nodes: 8
+      storage_servers: 12
+  ocpu_scaling: "OCPUs can be scaled online in increments without downtime. You pay for enabled OCPUs, not the total available in the rack."
+  sizing_guidance: "Start with a quarter rack for most production workloads. Scale OCPUs on demand. Choose half/full rack only when storage capacity or aggregate memory requirements exceed quarter rack limits."
+
+gotchas:
+  - id: exacs_minimum_cost
+    severity: HIGH
+    description: "Minimum infrastructure cost is approximately $6,000+/month for a quarter rack, regardless of OCPU usage. Ensure sustained workload justifies the commitment."
+
+  - id: exacs_provisioning_time
+    severity: MEDIUM
+    description: "Exadata infrastructure provisioning takes 4-8 hours. Plan deployments accordingly — this is not an instant resource like a Compute VM."
+
+  - id: exacs_patching_window
+    severity: MEDIUM
+    description: "Patching requires a scheduled maintenance window. Database nodes are patched in a rolling fashion but plan for reduced capacity during the process."
+
+  - id: exacs_gi_db_patch_separate
+    severity: MEDIUM
+    description: "Grid Infrastructure (GI) and Database Home patches are applied separately and may have different schedules. Coordinate both to avoid version skew."
+
+  - id: exacs_overprovisioning_risk
+    severity: HIGH
+    description: "Customers frequently over-provision by choosing half or full racks when a quarter rack with OCPU scaling would suffice. Always validate actual IOPS and CPU requirements before sizing up."
+
+  - id: exacs_network_placement
+    severity: LOW
+    description: "ExaCS requires placement in a private subnet with sufficient IP addresses. Each DB node and each virtual IP consumes an IP; plan your subnet CIDR accordingly."
+
+implied_dependencies:
+  - service: vcn
+    reason: "ExaCS infrastructure must be deployed in a VCN"
+  - service: private_subnet
+    reason: "DB nodes and SCAN listeners require private subnet placement"
+  - service: service_gateway
+    reason: "Access to OCI object storage for backups and patching from private subnets"
+  - service: oci_vault
+    reason: "TDE wallet management and encryption key storage"
+
+competitive_notes:
+  vs_aws: "AWS has no equivalent dedicated Oracle Exadata infrastructure offering. RDS Oracle and RDS Custom lack RAC support and Exadata storage acceleration. Customers needing true Exadata performance have no AWS-native path."
+
+references:
+  documentation: "https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/exaoverview.htm"
+  pricing: "https://www.oracle.com/cloud/price-list/#exadata"

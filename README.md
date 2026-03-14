@@ -41,7 +41,7 @@ The skill will produce the full architecture package.
 
 ```bash
 # Generate a proposal deck from YAML spec
-python tools/oci_slide_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
+python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
 ```
 
 ### Diagram Generator
@@ -72,24 +72,23 @@ deal-accelerator/
 │
 ├── kb/                         # Knowledge Base — the skill's brain
 │   ├── services/               # One YAML per OCI service
-│   │   ├── autonomous-database.yaml
+│   │   ├── adb-serverless.yaml
+│   │   ├── exadata-cloud.yaml
 │   │   ├── oke.yaml
+│   │   ├── oci-networking-core.yaml
 │   │   └── ...
 │   ├── patterns/               # Composable architecture blocks
-│   │   ├── database-ha/
-│   │   ├── database-dr/
-│   │   ├── compute-scaling/
-│   │   ├── networking-hub-spoke/
-│   │   ├── security-baseline/
-│   │   ├── compliance-pci/
+│   │   ├── database-ha-adb-s.yaml
+│   │   ├── database-dr-cross-region.yaml
+│   │   ├── networking-basic.yaml
 │   │   └── ...
 │   ├── sizing/                 # Conversion ratios, benchmarks, scaling rules
-│   │   ├── cpu-conversion.yaml
+│   │   ├── cpu-conversion-ratios.yaml
 │   │   └── storage-iops.yaml
 │   ├── pricing/                # Simplified pricing for estimation
-│   │   └── simplified-pricing.yaml
+│   │   └── database.yaml
 │   ├── competitive/            # Service mapping vs other clouds
-│   │   └── aws-to-oci.yaml
+│   │   └── aws-mapping.yaml
 │   ├── well-architected/       # Oracle WA Framework checklists
 │   │   ├── security-compliance.yaml
 │   │   ├── reliability-resilience.yaml
@@ -105,25 +104,33 @@ deal-accelerator/
 │       └── gotchas.yaml
 │
 ├── tools/                      # Python tooling
-│   ├── oci_slide_gen.py        # .pptx slide deck generator (default output)
-│   └── oci_diagram_gen.py      # .drawio diagram generator
+│   ├── oci_deck_gen.py         # .pptx slide deck generator (default output)
+│   ├── oci_diagram_gen.py      # .drawio diagram generator
+│   └── oci_output.py           # Output orchestrator
 │
 ├── scripts/                    # Additional scripts
-│   ├── oci_diagram_gen.py      # Diagram generator (also in tools/)
 │   └── validate-architecture.py # WA validation engine
 │
 ├── config/                     # Configuration
 │   ├── service-categories.yaml # Service → color/category mapping
-│   └── output-formats.yaml    # Output format specs and design standards
+│   ├── output-formats.yaml    # Output format specs and design standards
+│   └── workload-profile-schema.yaml # Field definitions
 │
 ├── templates/                  # Output templates
 │   ├── workload-profile.yaml
 │   ├── scorecard.yaml
 │   └── adr-template.md
 │
+├── codex/                      # Codex skill packaging
+│   ├── skill.json
+│   ├── SKILL.md
+│   └── README.md
+│
 └── examples/                   # Example specs and outputs
     ├── diagram-spec.yaml
     ├── proposal-spec.yaml          # Slide deck spec (YAML → .pptx)
+    ├── migration-adb-ha-dr.yaml    # ADB HA/DR diagram spec
+    ├── sample-discovery-notes.md   # Realistic messy notes
     ├── sample-architecture.yaml
     ├── sample-workload-profile.yaml
     ├── ecommerce-architecture.drawio
@@ -138,7 +145,7 @@ The KB is consumed by both the LLM (via SKILL.md references) and the Python tool
 
 Example service entry:
 ```yaml
-# kb/services/autonomous-database.yaml
+# kb/services/adb-serverless.yaml
 service:
   name: "Autonomous Database"
   category: database

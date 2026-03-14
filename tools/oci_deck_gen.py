@@ -6,11 +6,11 @@ Produces a 10-12 slide architecture proposal deck using OCI brand colors
 and clean technical styling. No generic corporate templates.
 
 Usage:
-    python oci_slide_gen.py --spec proposal-data.yaml --output proposal.pptx
+    python oci_deck_gen.py --spec proposal-data.yaml --output proposal.pptx
 
 Or import and use programmatically:
-    from oci_slide_gen import OCISlideGenerator
-    gen = OCISlideGenerator(customer="Acme Corp", project="DB Migration")
+    from oci_deck_gen import OCIDeckGenerator
+    gen = OCIDeckGenerator(customer="Acme Corp", project="DB Migration")
     gen.add_summary_slide(...)
     gen.save("proposal.pptx")
 """
@@ -57,7 +57,7 @@ class Colors:
 # Slide Generator
 # ============================================================
 
-class OCISlideGenerator:
+class OCIDeckGenerator:
     """Generate OCI-branded architecture proposal slide decks."""
 
     SLIDE_WIDTH = Inches(13.333)   # Widescreen 16:9
@@ -793,7 +793,7 @@ class OCISlideGenerator:
     # ---- Build from YAML spec ----
 
     @classmethod
-    def from_spec(cls, spec: dict) -> "OCISlideGenerator":
+    def from_spec(cls, spec: dict) -> "OCIDeckGenerator":
         """Build a complete deck from a YAML specification."""
         meta = spec.get("metadata", {})
         gen = cls(
@@ -916,7 +916,7 @@ def main():
     with open(args.spec, 'r') as f:
         spec = yaml.safe_load(f)
 
-    gen = OCISlideGenerator.from_spec(spec)
+    gen = OCIDeckGenerator.from_spec(spec)
     gen.save(args.output)
 
     print(f"Generated: {args.output}")

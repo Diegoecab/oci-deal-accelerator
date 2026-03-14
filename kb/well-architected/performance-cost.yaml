@@ -4,6 +4,7 @@
 pillar:
   name: "Performance and Cost Optimization"
   id: performance_cost
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
   reference: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
 
 categories:

@@ -4,6 +4,7 @@
 pillar:
   name: "Security and Compliance"
   id: security_compliance
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html"
   reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html"
 
 categories:

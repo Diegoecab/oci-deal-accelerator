@@ -78,7 +78,7 @@ The deck follows a standard 12-slide structure:
 11. **Well-Architected Scorecard** — 5-pillar traffic-light indicators
 12. **Next Steps** — concrete actions with dates
 
-Use `tools/oci_slide_gen.py` to generate from YAML spec. Colors match OCI brand (teal #2D5967, copper #AA643B, purple #804998). Font: Segoe UI. No generic corporate templates.
+Use `tools/oci_deck_gen.py` to generate from YAML spec. Colors match OCI brand (teal #2D5967, copper #AA643B, purple #804998). Font: Segoe UI. No generic corporate templates.
 
 #### Additional Outputs (when requested)
 

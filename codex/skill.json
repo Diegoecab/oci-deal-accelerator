@@ -1,0 +1,25 @@
+{
+  "name": "oci-deal-accelerator",
+  "version": "1.0.0",
+  "description": "Compresses the OCI Solutions Architect's cycle from discovery to architecture proposal",
+  "instructions": "SKILL.md",
+  "tools": [
+    {
+      "name": "generate_diagram",
+      "description": "Generate OCI architecture diagram (.drawio)",
+      "command": "python tools/oci_diagram_gen.py --spec ${spec_file} --output ${output_file}"
+    },
+    {
+      "name": "generate_deck",
+      "description": "Generate architecture proposal slide deck (.pptx)",
+      "command": "python tools/oci_deck_gen.py --spec ${spec_file} --output ${output_file}"
+    },
+    {
+      "name": "validate_architecture",
+      "description": "Validate architecture against Well-Architected Framework",
+      "command": "python scripts/validate-architecture.py --profile ${profile_file} --architecture ${arch_file} --output ${output_file}"
+    }
+  ],
+  "knowledge_base": "kb/",
+  "examples": "examples/"
+}

@@ -8,25 +8,43 @@ AI skill that compresses the OCI Solutions Architect's cycle from customer disco
 ├── SKILL.md                    # LLM system prompt (the skill itself)
 ├── README.md                   # Project overview and quick start
 ├── CLAUDE.md                   # This file (dev guide)
+├── Makefile                    # Build automation (make help for commands)
 ├── kb/                         # Knowledge Base
 │   ├── services/               # One YAML per OCI service (what, when, gotchas)
+│   │   ├── adb-serverless.yaml
+│   │   ├── exadata-cloud.yaml
+│   │   ├── oke.yaml
+│   │   └── oci-networking-core.yaml
 │   ├── patterns/               # Composable architecture blocks
+│   │   ├── database-ha-adb-s.yaml
+│   │   ├── database-dr-cross-region.yaml
+│   │   ├── networking-basic.yaml
+│   │   └── (legacy dirs: database-ha/, database-dr/, etc.)
 │   ├── sizing/                 # CPU conversion ratios, IOPS, scaling rules
+│   │   ├── cpu-conversion-ratios.yaml
+│   │   └── storage-iops.yaml
 │   ├── pricing/                # Simplified pricing for estimation
+│   │   └── database.yaml
 │   ├── competitive/            # AWS/Azure/GCP service mapping
+│   │   └── aws-mapping.yaml
 │   ├── well-architected/       # 5-pillar WA Framework checklists
 │   ├── diagram/                # Diagram styles (OCI Toolkit v24.2)
 │   └── field-knowledge/        # Real-world gotchas and lessons learned
 ├── tools/                      # Python tooling
-│   ├── oci_slide_gen.py        # .pptx slide deck generator (DEFAULT output)
-│   └── oci_diagram_gen.py      # .drawio diagram generator
+│   ├── oci_deck_gen.py         # .pptx slide deck generator (DEFAULT output)
+│   ├── oci_diagram_gen.py      # .drawio diagram generator
+│   └── oci_output.py           # Output orchestrator
 ├── scripts/                    # Validation and utilities
-│   ├── oci_diagram_gen.py      # Diagram generator (also in tools/)
 │   └── validate-architecture.py # WA validation engine
 ├── config/
 │   ├── service-categories.yaml # Service → color/category mapping
-│   └── output-formats.yaml    # Output format specs and design standards
+│   ├── output-formats.yaml     # Output format specs and design standards
+│   └── workload-profile-schema.yaml # Workload profile field definitions
 ├── templates/                  # Output templates (workload profile, scorecard, ADR)
+├── codex/                      # Codex skill packaging
+│   ├── skill.json
+│   ├── SKILL.md
+│   └── README.md
 └── examples/                   # Example specs and generated outputs
 ```
 
@@ -58,7 +76,7 @@ doc only          ← technical doc without slides
 
 ```bash
 # Generate slide deck (default output)
-python tools/oci_slide_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
+python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
 
 # Generate diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
@@ -68,6 +86,15 @@ python scripts/validate-architecture.py \
   --profile examples/sample-workload-profile.yaml \
   --architecture examples/sample-architecture.yaml \
   --output scorecard.yaml
+
+# Output orchestrator (multiple formats at once)
+python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
+
+# Build automation
+make help           # show all commands
+make full           # generate all outputs
+make validate       # run WA validation
+make lint           # check YAML syntax
 ```
 
 ## Key Principles

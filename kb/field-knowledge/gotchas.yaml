@@ -108,3 +108,80 @@ gotchas:
       unplanned (potential data loss with async). Ensure runbooks distinguish
       between the two and teams practice both.
     recommendation: "Document and practice both switchover (planned) and failover (unplanned)"
+
+  - id: FK-013
+    area: "TAC Replay Limitations"
+    severity: MEDIUM
+    description: |
+      Transparent Application Continuity (TAC) cannot replay operations that
+      have external side effects: UTL_HTTP calls, DBMS_PIPE, NOCACHE sequences,
+      and certain PL/SQL constructs. These cause replay to abort and the
+      application sees the error. Audit application code before relying on TAC.
+    recommendation: "Audit application for non-replayable operations before enabling TAC"
+
+  - id: FK-014
+    area: "ADB-S Auto Indexing"
+    severity: LOW
+    description: |
+      ADB-S Auto Indexing creates indexes with VISIBILITY=INVISIBLE (HIDDEN).
+      They exist and are used by the optimizer but don't appear in standard
+      DBA_INDEXES views unless you filter for invisible. This confuses DBAs
+      who think no indexes were created.
+    recommendation: "Query DBA_INDEXES with VISIBILITY='INVISIBLE' to see auto-created indexes"
+
+  - id: FK-015
+    area: "Database Enterprise Patching (DEP)"
+    severity: MEDIUM
+    description: |
+      DEP provisioning can take 30-60 minutes for DBCS/ExaCS. Plan maintenance
+      windows accordingly. DEP also requires Fleet Management setup which has
+      its own prerequisites (OS Management Hub agent, etc.).
+    recommendation: "Set up DEP and Fleet Management early; plan for 60-minute patching windows"
+
+  - id: FK-016
+    area: "ExaCS Minimum Cost"
+    severity: HIGH
+    description: |
+      ExaCS requires dedicated Exadata infrastructure. Minimum configuration
+      (quarter rack) starts at ~$6,000/month before database licensing.
+      Don't recommend for workloads under 16 OCPUs sustained.
+    recommendation: "Use ADB-S or DBCS for workloads < 16 OCPUs; ExaCS only for isolation/RAC/high IOPS"
+
+  - id: FK-017
+    area: "Cross-Region ADG is Async Only"
+    severity: HIGH
+    description: |
+      Cross-region Autonomous Data Guard uses asynchronous replication only.
+      RPO is always > 0 (typically seconds). For zero RPO you need same-region
+      standby or ADB-D with local synchronous Data Guard.
+    recommendation: "Set customer expectations: cross-region DR = RPO > 0 (seconds, not zero)"
+
+  - id: FK-018
+    area: "OKE VCN-Native Pod Networking"
+    severity: MEDIUM
+    description: |
+      VCN-Native Pod Networking (OCI CNI) assigns VCN IPs directly to pods.
+      This enables NSG attachment to pods but consumes subnet IP addresses
+      rapidly. A /24 subnet supports ~250 pods. Size subnets for pod count,
+      not node count.
+    recommendation: "Use /21 or larger subnets for pod networking; calculate IPs from max pod count"
+
+  - id: FK-019
+    area: "Object Storage Eventual Consistency"
+    severity: MEDIUM
+    description: |
+      OCI Object Storage provides strong read-after-write consistency for PUTs
+      of new objects, but LIST operations may show eventual consistency.
+      If your application lists then reads immediately after upload, the new
+      object may not appear in the list yet.
+    recommendation: "Don't rely on LIST immediately after PUT; use specific GET for confirmation"
+
+  - id: FK-020
+    area: "Flex Shape Memory Ratio"
+    severity: LOW
+    description: |
+      VM.Standard.E4.Flex allows 1-64 GB per OCPU (default 16 GB). For
+      memory-intensive workloads, you can increase memory without adding OCPUs.
+      But memory is billed separately — verify it's cheaper than adding OCPUs
+      with default memory.
+    recommendation: "Compare cost of extra memory vs extra OCPUs for memory-intensive workloads"

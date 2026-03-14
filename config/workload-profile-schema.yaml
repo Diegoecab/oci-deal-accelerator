@@ -1,0 +1,233 @@
+# Workload Profile Schema
+# Defines all fields, types, defaults, and descriptions for the workload profile
+
+schema:
+  version: "1.0"
+  description: "Schema for OCI Deal Accelerator Workload Profile"
+
+fields:
+  business_context:
+    customer_name:
+      type: string
+      required: true
+      description: "Customer organization name"
+    industry:
+      type: enum
+      values: [financial_services, healthcare, retail, manufacturing, public_sector, technology, telecommunications, energy, education, other]
+      required: true
+      description: "Customer industry vertical"
+    engagement_type:
+      type: enum
+      values: [migration, greenfield, expansion, modernization, disaster_recovery]
+      required: true
+      description: "Type of engagement"
+    timeline:
+      type: string
+      required: true
+      description: "Target completion timeline (e.g., '6 months', 'Q3 2026')"
+    budget_range:
+      type: string
+      required: false
+      description: "Monthly budget range (e.g., '$30K-50K/month')"
+    competitive_situation:
+      type: enum
+      values: [aws_incumbent, azure_incumbent, gcp_incumbent, on_prem_only, multi_cloud, no_competitor]
+      required: false
+      default: "on_prem_only"
+      description: "Current cloud/competitive landscape"
+    oracle_relationship:
+      type: enum
+      values: [existing_ula, existing_licenses, new_customer, oracle_database_at_azure]
+      required: false
+      default: "new_customer"
+      description: "Customer's existing Oracle licensing relationship"
+
+  compliance:
+    regulatory_frameworks:
+      type: list
+      item_type: enum
+      values: [PCI-DSS, HIPAA, SOC2, GDPR, FedRAMP, ITAR, SOX, ISO27001]
+      required: false
+      default: []
+      description: "Applicable regulatory frameworks"
+    data_residency_required:
+      type: boolean
+      required: false
+      default: false
+      description: "Whether data must stay in specific regions"
+    data_residency_regions:
+      type: list
+      item_type: string
+      required: false
+      default: []
+      description: "OCI regions where data must reside"
+    sovereign_requirements:
+      type: boolean
+      required: false
+      default: false
+      description: "Whether sovereign cloud is needed"
+
+  applications:
+    type: list
+    item_schema:
+      name:
+        type: string
+        required: true
+      type:
+        type: enum
+        values: [database, web_app, api, batch, streaming, analytics, ai_ml, integration]
+        required: true
+      current_platform:
+        type: enum
+        values: [on_prem, aws, azure, gcp, other_cloud]
+        required: true
+      technology_stack:
+        type: list
+        item_type: string
+        required: false
+        default: []
+      criticality:
+        type: enum
+        values: [mission_critical, business_critical, standard, dev_test]
+        required: true
+        default: "standard"
+      users:
+        type: string
+        required: false
+        description: "User count or concurrency (e.g., '5000 concurrent')"
+      data_volume:
+        type: string
+        required: false
+        description: "Data size and growth (e.g., '2TB, growing 15%/year')"
+
+  performance:
+    storage_iops:
+      type: string
+      required: false
+      description: "Required IOPS (e.g., '25K IOPS sustained')"
+    network_throughput:
+      type: string
+      required: false
+      description: "Required throughput (e.g., '10 Gbps')"
+    latency_requirements:
+      type: string
+      required: false
+      description: "P95 latency targets"
+    peak_patterns:
+      type: enum
+      values: [steady, daily_peaks, seasonal, unpredictable]
+      required: false
+      default: "steady"
+      description: "Workload peak behavior pattern"
+    peak_multiplier:
+      type: float
+      required: false
+      default: 1.5
+      description: "Peak load as multiplier of baseline (e.g., 3.0 for Black Friday)"
+
+  resilience:
+    rto:
+      type: string
+      required: true
+      description: "Recovery Time Objective"
+    rpo:
+      type: string
+      required: true
+      description: "Recovery Point Objective"
+    availability_target:
+      type: string
+      required: true
+      default: "99.95%"
+      description: "Target SLA percentage"
+    dr_required:
+      type: boolean
+      required: false
+      default: false
+    dr_type:
+      type: enum
+      values: [active_active, active_passive, pilot_light, backup_restore]
+      required: false
+      description: "DR topology type"
+    backup_retention:
+      type: string
+      required: false
+      default: "30 days"
+
+  connectivity:
+    type:
+      type: enum
+      values: [fastconnect, vpn, internet, hybrid]
+      required: false
+      default: "internet"
+    bandwidth:
+      type: string
+      required: false
+    on_prem_integration:
+      type: boolean
+      required: false
+      default: false
+    multi_cloud_integration:
+      type: boolean
+      required: false
+      default: false
+
+  operations:
+    iac_experience:
+      type: enum
+      values: [none, basic, advanced]
+      required: false
+      default: "none"
+    cloud_experience:
+      type: enum
+      values: [none, basic_aws, basic_azure, basic_gcp, advanced_multi_cloud]
+      required: false
+      default: "none"
+    team_size:
+      type: string
+      required: false
+    managed_services_preference:
+      type: enum
+      values: [self_managed, managed, fully_managed]
+      required: false
+      default: "managed"
+
+  decision_drivers:
+    technical:
+      type: list
+      item_type: string
+      required: false
+      default: []
+    commercial:
+      type: list
+      item_type: string
+      required: false
+      default: []
+
+# Derived flags — auto-computed from the profile, not user-entered
+derived_flags:
+  description: "Boolean flags computed from the workload profile for use by the WA validation engine"
+  flags:
+    - name: has_databases
+      computed_from: "any application with type='database' or technology_stack containing 'oracle_db'"
+    - name: has_autonomous_database
+      computed_from: "architecture includes ADB-S or ADB-D"
+    - name: has_production_databases
+      computed_from: "has_databases AND criticality in [mission_critical, business_critical]"
+    - name: has_compute_instances
+      computed_from: "architecture includes VM, BM, or OKE"
+    - name: has_production_workloads
+      computed_from: "any application with criticality in [mission_critical, business_critical]"
+    - name: has_internet_facing_services
+      computed_from: "architecture includes public subnet with LB or WAF"
+    - name: has_fastconnect
+      computed_from: "connectivity.type in [fastconnect, hybrid]"
+    - name: has_variable_workloads
+      computed_from: "performance.peak_patterns != 'steady'"
+    - name: requires_dr
+      computed_from: "resilience.dr_required == true"
+    - name: enterprise_customer
+      computed_from: "compliance.regulatory_frameworks is not empty OR team_size > 3"
+    - name: has_oracle_licensed_services
+      computed_from: "oracle_relationship in [existing_ula, existing_licenses]"
+    - name: distributed_cloud_applicable
+      computed_from: "compliance.data_residency_required OR compliance.sovereign_requirements OR multi_region"

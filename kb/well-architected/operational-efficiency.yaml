@@ -4,6 +4,7 @@
 pillar:
   name: "Operational Efficiency"
   id: operational_efficiency
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html"
   reference: "https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html"
 
 categories:

@@ -4,6 +4,7 @@
 pillar:
   name: "Reliability and Resilience"
   id: reliability_resilience
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html"
   reference: "https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html"
 
 categories:

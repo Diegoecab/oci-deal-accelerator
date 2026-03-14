@@ -1,0 +1,71 @@
+# Pattern: ADB-S High Availability
+# Composable architecture block for Autonomous Database Serverless HA
+
+pattern:
+  name: "ADB-S High Availability"
+  id: database_ha_adb_s
+  category: database-ha
+
+description: |
+  Autonomous Database Serverless (ADB-S) provides built-in high availability through
+  Transparent Application Continuity (TAC) and automated failover. TAC replays in-flight
+  transactions transparently after infrastructure failures, masking outages from applications.
+  For additional protection, Autonomous Data Guard provides a same-region standby with
+  synchronous replication for zero data loss.
+
+variants:
+  - id: local_ha
+    name: "Built-in Local HA (TAC)"
+    topology: "Same-region, ADB-S infrastructure-managed failover"
+    rpo: "0"
+    rto: "~0 perceived (transparent replay via TAC)"
+    use_when:
+      - "Standard HA for ADB-S workloads"
+      - "Application can tolerate brief transparent replay"
+      - "No separate standby database required"
+
+  - id: local_standby
+    name: "Same-Region Autonomous Data Guard Standby"
+    topology: "Primary + Standby in same region via Autonomous Data Guard"
+    rpo: "0 (synchronous replication)"
+    rto: "< 30 seconds (automatic switchover)"
+    use_when:
+      - "Zero RPO mandatory"
+      - "Protection against full AD or FD failure"
+      - "Read-only offload to standby needed"
+
+preconditions:
+  - "ADB-S instance provisioned (Shared infrastructure)"
+  - "Private endpoint recommended for production workloads"
+  - "VCN with Service Gateway for secure OCI service access"
+  - "Wallet or mTLS connectivity configured for clients"
+
+implied_services:
+  - service: service_gateway
+    reason: "Secure access to OCI services without internet traversal"
+  - service: oci_vault
+    reason: "Customer-managed encryption keys for TDE"
+  - service: data_safe
+    reason: "Database security posture management, auditing, and masking"
+
+gotchas:
+  - "TAC replay does not cover all operations — UTL_HTTP calls, DBMS_PIPE, NOCACHE sequences, and external interactions are not replayed"
+  - "Auto-scaling takes 2-3 minutes to add OCPUs; plan base capacity for burst tolerance"
+  - "Autonomous Data Guard standby is read-only; cannot run DML on standby"
+  - "Switchover requires brief downtime; failover is automatic on primary failure"
+  - "TAC requires JDBC Thin driver 18c+ or ODP.NET with TAC enabled in connection string"
+
+cost_impact:
+  - "Built-in local HA (TAC): no additional cost, included in ADB-S"
+  - "Autonomous Data Guard standby: billed at same compute (OCPU/ECPU) rate as primary"
+  - "Standby storage is additional and billed at standard ADB-S storage rates"
+  - "Auto-scaling can increase OCPU cost up to 3x base during peaks"
+
+sizing_rules:
+  - "Standby must be same shape and OCPU/ECPU count as primary for seamless failover"
+  - "Storage on standby mirrors primary automatically"
+  - "Base OCPU count should handle normal workload without relying on auto-scaling for HA events"
+
+references:
+  - "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-data-guard.html"
+  - "https://docs.oracle.com/en/cloud/paas/autonomous-database/serverless/adbsb/application-continuity-autonomous.html"

@@ -4,6 +4,7 @@
 pillar:
   name: "Distributed Cloud"
   id: distributed_cloud
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html"
   reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html"
   conditional: true
   applies_when: "multi_region OR hybrid_cloud OR multicloud OR data_residency_requirements OR sovereign_requirements"

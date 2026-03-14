@@ -1,0 +1,181 @@
+title: "ADB-S HA/DR Architecture"
+description: "Autonomous Database Serverless with Active Data Guard for HA and cross-region DR"
+
+external_actors:
+  - name: Users
+    icon: users
+  - name: On-Prem DC
+    icon: datacenter
+
+tenancy:
+  name: "Customer Tenancy"
+
+  regions:
+    - name: us-ashburn-1
+      label: "Ashburn (Primary)"
+      is_primary: true
+
+      vcns:
+        - name: prod-vcn
+          cidr: "10.0.0.0/16"
+
+          subnets:
+            - name: public-subnet
+              cidr: "10.0.1.0/24"
+              type: public
+              components:
+                - name: Load Balancer
+                  type: lb
+                  shape: flexible
+                  bandwidth_mbps: 400
+                - name: WAF
+                  type: waf
+                  mode: detection_and_prevention
+                - name: Bastion
+                  type: bastion
+                  session_ttl: 3h
+
+            - name: app-subnet
+              cidr: "10.0.10.0/24"
+              type: private
+              components:
+                - name: OKE Cluster
+                  type: oke
+                  version: "1.28"
+                  node_pool:
+                    shape: VM.Standard.E4.Flex
+                    ocpus: 8
+                    memory_gb: 64
+                    nodes: 3
+                    autoscaling:
+                      min: 3
+                      max: 9
+
+            - name: data-subnet
+              cidr: "10.0.20.0/24"
+              type: private
+              components:
+                - name: ADB-S Primary
+                  type: adb-s
+                  workload: OLTP
+                  ocpus: 8
+                  storage_tb: 4
+                  auto_scaling: true
+                  license: byol
+                  private_endpoint: true
+
+                - name: ADB-S Standby
+                  type: adb-s
+                  workload: OLTP
+                  role: standby
+                  ocpus: 8
+                  storage_tb: 4
+                  license: byol
+                  private_endpoint: true
+                  data_guard:
+                    type: active_data_guard
+                    protection_mode: MAX_AVAILABILITY
+                    failover: automatic
+
+      networking:
+        - name: DRG
+          type: drg
+
+      observability:
+        - name: Observability & Management
+          type: observability_bar
+          services:
+            - monitoring
+            - logging
+            - logging-analytics
+            - apm
+            - notifications
+            - events
+
+    - name: us-phoenix-1
+      label: "Phoenix (DR)"
+      is_primary: false
+
+      vcns:
+        - name: dr-vcn
+          cidr: "10.1.0.0/16"
+
+          subnets:
+            - name: data-subnet
+              cidr: "10.1.20.0/24"
+              type: private
+              components:
+                - name: ADB-S DR
+                  type: adb-s
+                  workload: OLTP
+                  role: disaster_recovery
+                  ocpus: 4
+                  storage_tb: 4
+                  license: byol
+                  private_endpoint: true
+                  data_guard:
+                    type: active_data_guard
+                    protection_mode: MAX_PERFORMANCE
+                    cross_region: true
+                    source_region: us-ashburn-1
+
+      networking:
+        - name: DRG
+          type: drg
+
+onprem:
+  name: On-Prem DC
+  components:
+    - name: Exadata X8M
+      type: exadata
+      databases:
+        - name: PRODDB
+          version: "19c"
+          size_tb: 4
+    - name: GoldenGate
+      type: goldengate
+      version: "21c"
+      purpose: migration
+
+connections:
+  - from: Users
+    to: Load Balancer
+    type: https
+    label: "HTTPS traffic"
+
+  - from: Load Balancer
+    to: OKE Cluster
+    type: internal
+    label: "App routing"
+
+  - from: OKE Cluster
+    to: ADB-S Primary
+    type: db
+    protocol: TCPS
+    port: 1522
+    label: "Database connections"
+
+  - from: ADB-S Primary
+    to: ADB-S Standby
+    type: adg
+    label: "Local Active Data Guard"
+    sync: synchronous
+
+  - from: ADB-S Primary
+    to: ADB-S DR
+    type: adg
+    label: "Cross-Region Active Data Guard"
+    sync: asynchronous
+
+  - from: On-Prem DC
+    to: DRG
+    type: fastconnect
+    bandwidth_gbps: 10
+    redundancy: dual
+    label: "FastConnect 10Gbps"
+
+  - from: GoldenGate
+    to: ADB-S Primary
+    type: migration
+    label: "Zero-downtime migration via GoldenGate"
+    protocol: TCPS

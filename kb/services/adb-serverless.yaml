@@ -1,11 +1,34 @@
-# OCI Service: Autonomous Database (ADB)
+# OCI Service: Autonomous Database Serverless (ADB-S)
 # Last verified: 2026-03
 
 service:
-  name: "Autonomous Database"
-  id: autonomous_database
+  name: "Autonomous Database Serverless (ADB-S)"
+  id: adb_serverless
   category: database
   color: "#AA643B"
+
+features:
+  auto_scaling: true
+  auto_indexing: true
+  auto_tuning: true
+  auto_patching: true
+  transparent_application_continuity: true
+  autonomous_data_guard: true
+  private_endpoints: true
+  byol_eligible: true
+
+ha_dr_options:
+  local_ha: "Built-in TAC (Transparent Application Continuity) — ~0 perceived RTO"
+  same_region_adg: "Autonomous Data Guard standby — synchronous, RPO 0"
+  cross_region_adg: "Cross-region ADG — asynchronous only, RPO seconds, RTO < 15 min"
+
+limits:
+  max_ocpu: 128
+  max_storage_tb: 383
+  max_auto_scale: "3x base OCPUs"
+  auto_scale_activation: "2-3 minutes"
+  min_ocpu: 1
+  min_storage_tb: 1
 
 variants:
   - id: adb_s
