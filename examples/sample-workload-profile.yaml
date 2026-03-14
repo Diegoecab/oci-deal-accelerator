@@ -1,119 +1,160 @@
-# Example: E-Commerce Platform Workload Profile
-# Generated from Discovery phase
+# Example: Acme Corp Workload Profile
+# Generated from discovery notes (see sample-discovery-notes.md)
 
 workload_profile:
-  business_context:
-    customer_name: "Acme Retail Inc."
-    industry: "retail"
-    engagement_type: "migration"
-    timeline: "Q3 2026"
-    budget_range: "$30K-50K/month"
-    competitive_situation: "aws_incumbent"
-    oracle_relationship: "existing_licenses"
+  engagement:
+    customer_name: "Acme Corp"
+    industry: "financial_services"
+    decision_timeline: "6 months — target go-live September 2026"
+    competitive_situation: "on_prem_only"
 
-  compliance:
-    regulatory_frameworks: ["PCI-DSS", "SOC2"]
-    data_residency_required: false
-    data_residency_regions: []
-    sovereign_requirements: false
-    audit_requirements: "annual SOC2 Type II audit"
+  current_state:
+    databases:
+      - name: "Main OLTP"
+        engine: oracle
+        version: "19c"
+        size_gb: 4096
+        type: OLTP
+        current_platform: on_prem
+        ha_current: "RAC 2-node on Exadata X8M"
+        replication: "Data Guard to DR site"
+        connections_peak: 500
+        cpu_metrics:
+          avg_pct: 70
+          p95_pct: 88
+          vcpus: 32
+        storage_metrics:
+          iops_avg: 15000
+          iops_peak: 45000
+          throughput_mbps: 400
+        notable_features:
+          - partitioning
+          - TDE
+          - advanced_compression
+          - APEX
+          - DBMS_SCHEDULER
+          - db_links
+          - UTL_HTTP
 
-  applications:
-    - name: "E-Commerce Web Application"
-      type: "web_app"
-      current_platform: "aws"
-      technology_stack: ["java", "spring_boot", "react", "oracle_db_19c"]
-      criticality: "mission_critical"
-      users: "10000 concurrent peak"
-      data_volume: "2TB, growing 15%/year"
+      - name: "Reporting DB"
+        engine: oracle
+        version: "19c"
+        size_gb: 2048
+        type: OLAP
+        current_platform: on_prem
+        ha_current: "none"
+        replication: "GoldenGate from Main OLTP"
+        connections_peak: 50
+        cpu_metrics:
+          avg_pct: 35
+          p95_pct: 60
+          vcpus: 16
+        notable_features:
+          - partitioning
+          - advanced_compression
 
-    - name: "Order Processing API"
-      type: "api"
-      current_platform: "aws"
-      technology_stack: ["java", "spring_boot", "oracle_db_19c"]
-      criticality: "mission_critical"
-      users: "5000 TPS peak"
-      data_volume: "shared with web app DB"
+      - name: "APEX App DB"
+        engine: oracle
+        version: "19c"
+        size_gb: 200
+        type: mixed
+        current_platform: on_prem
+        ha_current: "none"
+        replication: "none"
+        connections_peak: 30
+        cpu_metrics:
+          avg_pct: 15
+          p95_pct: 30
+          vcpus: 4
+        notable_features:
+          - APEX
 
-  performance:
-    compute_iops: ""
-    storage_iops: "20K IOPS sustained"
-    network_throughput: "1 Gbps"
-    latency_requirements: "< 100ms page load, < 10ms DB query"
-    peak_patterns: "daily_peaks with seasonal Black Friday surge"
+    compute:
+      - name: "WebLogic App Servers"
+        purpose: "Java enterprise applications"
+        os: "Oracle Linux 7"
+        vcpus: 48
+        memory_gb: 192
+        current_platform: on_prem
+        scaling_pattern: daily_peaks
 
-  resilience:
-    rto: "1 hour"
-    rpo: "5 minutes"
-    availability_target: "99.95%"
-    dr_required: true
-    dr_type: "active_passive"
-    backup_retention: "30 days, 1 year for compliance data"
+    middleware:
+      - name: "WebLogic 14c Cluster"
+        type: WebLogic
+        clustering: "Active-Active 6 nodes on bare metal"
 
-  connectivity:
-    type: "fastconnect"
-    bandwidth: "1 Gbps"
-    on_prem_integration: true
-    multi_cloud_integration: false
-    existing_network: "AWS Direct Connect to on-prem DC"
+    messaging_and_eventing:
+      - name: "IBM MQ Series"
+        type: MQ_Series
+        throughput_msgs_sec: 200
+        pattern: point_to_point
 
-  operations:
-    iac_experience: "advanced"
-    cloud_experience: "advanced_aws"
-    team_size: "5 cloud engineers"
-    existing_tools: ["terraform", "jenkins", "datadog", "pagerduty"]
-    managed_services_preference: "managed"
+    storage:
+      - name: "Backup NFS"
+        type: NFS
+        size_tb: 10
+        access_pattern: infrequent
+      - name: "Application logs"
+        type: NFS
+        size_tb: 2
+        access_pattern: frequent
+
+    networking:
+      connectivity: dedicated
+      bandwidth_gbps: 1
+      latency_requirement_ms: 5
+      regions_needed: ["us-ashburn-1"]
+      on_prem_integration: true
+
+    identity_and_security:
+      idp: AD
+      compliance: ["PCI-DSS"]
+      encryption_requirements: "TDE with customer-managed keys"
+      vpd_rls: false
+      data_masking: false
+      audit_requirements: "PCI QSA quarterly, annual penetration testing"
+
+    integration:
+      - name: "MQ to DB bridge"
+        type: ESB
+        tool: "WebLogic JMS bridge"
+
+  requirements:
+    availability:
+      rto_hours: 0.5
+      rpo_hours: 0.0
+      sla_target: "99.95%"
+    performance:
+      response_time_p95_ms: 100
+      throughput_tps: 5000
+      concurrent_users: 10000
+    scalability:
+      growth_annual_pct: 20
+      peak_multiplier: 3.0
+      scaling_speed: minutes
+    migration:
+      downtime_tolerance: "4 hours"
+      migration_timeline: "6 months"
+      parallel_run_needed: true
 
   decision_drivers:
-    technical:
-      - "Need Oracle Database compatibility (RAC features)"
-      - "Lower DB licensing cost vs AWS RDS"
-      - "Better price/performance for compute"
-    commercial:
-      - "Existing Oracle DB licenses (BYOL opportunity)"
-      - "AWS contract ending Q2 2026"
-    political:
-      primary_audience: "cloud_architect"
-      decision_maker: "VP Engineering"
-      influencers: ["DBA Team Lead", "Security Director"]
-      concerns: ["migration risk", "team retraining", "vendor lock-in"]
+    primary: hardware_eol
+    budget_sensitivity: medium
+    licensing: BYOL
+    team_skills: ["oracle_dba", "weblogic", "linux"]
+    political_constraints: "Board wants results fast. No Kubernetes experience on team."
 
-  # Derived flags
+  # Derived flags (auto-computed)
   flags:
     has_databases: true
     has_autonomous_database: true
     has_production_databases: true
     has_compute_instances: true
-    has_production_compute: true
-    has_block_volumes: true
-    has_object_storage: true
-    has_critical_data_in_object_storage: false
-    has_critical_object_storage: false
-    has_large_object_storage: false
-    has_load_balancers: true
+    has_production_workloads: true
     has_internet_facing_services: true
     has_fastconnect: true
-    has_drg: true
     has_variable_workloads: true
-    has_critical_workloads: true
-    has_critical_data: true
-    has_application_workloads: true
-    has_production_applications: true
-    has_production_workloads: true
-    has_auto_scaling: true
-    has_oracle_licensed_services: true
-    has_stable_production_workloads: true
-    has_dev_test_environments: true
-    has_multiple_environments: true
-    has_sensitive_workloads: true
-    multi_tenant: false
-    multi_environment: true
-    enterprise_customer: true
-    hub_spoke_topology: true
     requires_dr: true
-    multi_region: false
-    hybrid_cloud: false
-    multicloud: false
-    has_data_residency_requirements: false
-    has_sovereign_requirements: false
+    enterprise_customer: true
+    has_oracle_licensed_services: true
     distributed_cloud_applicable: false

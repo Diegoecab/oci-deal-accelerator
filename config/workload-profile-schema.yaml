@@ -2,11 +2,11 @@
 # Defines all fields, types, defaults, and descriptions for the workload profile
 
 schema:
-  version: "1.0"
+  version: "1.1"
   description: "Schema for OCI Deal Accelerator Workload Profile"
 
 fields:
-  business_context:
+  engagement:
     customer_name:
       type: string
       required: true
@@ -16,199 +16,379 @@ fields:
       values: [financial_services, healthcare, retail, manufacturing, public_sector, technology, telecommunications, energy, education, other]
       required: true
       description: "Customer industry vertical"
-    engagement_type:
-      type: enum
-      values: [migration, greenfield, expansion, modernization, disaster_recovery]
-      required: true
-      description: "Type of engagement"
-    timeline:
-      type: string
-      required: true
-      description: "Target completion timeline (e.g., '6 months', 'Q3 2026')"
-    budget_range:
+    decision_timeline:
       type: string
       required: false
-      description: "Monthly budget range (e.g., '$30K-50K/month')"
+      description: "Target decision date or timeline (e.g., 'Q3 2026', '6 months')"
     competitive_situation:
       type: enum
       values: [aws_incumbent, azure_incumbent, gcp_incumbent, on_prem_only, multi_cloud, no_competitor]
       required: false
       default: "on_prem_only"
       description: "Current cloud/competitive landscape"
-    oracle_relationship:
-      type: enum
-      values: [existing_ula, existing_licenses, new_customer, oracle_database_at_azure]
-      required: false
-      default: "new_customer"
-      description: "Customer's existing Oracle licensing relationship"
 
-  compliance:
-    regulatory_frameworks:
+  current_state:
+    databases:
       type: list
-      item_type: enum
-      values: [PCI-DSS, HIPAA, SOC2, GDPR, FedRAMP, ITAR, SOX, ISO27001]
       required: false
       default: []
-      description: "Applicable regulatory frameworks"
-    data_residency_required:
-      type: boolean
-      required: false
-      default: false
-      description: "Whether data must stay in specific regions"
-    data_residency_regions:
+      item_schema:
+        name:
+          type: string
+          required: true
+          description: "Database identifier or application name"
+        engine:
+          type: enum
+          values: [oracle, mysql, postgresql, sql_server, mongodb, dynamodb, cassandra, redis, elasticsearch, other]
+          required: true
+        version:
+          type: string
+          required: false
+          description: "Database version (e.g., '19c', '21c', '8.0')"
+        size_gb:
+          type: integer
+          required: true
+          description: "Current data size in GB"
+        type:
+          type: enum
+          values: [OLTP, OLAP, mixed]
+          required: true
+          default: "OLTP"
+        current_platform:
+          type: enum
+          values: [on_prem, aws, azure, gcp, other_cloud]
+          required: true
+        ha_current:
+          type: string
+          required: false
+          description: "Current HA setup (e.g., 'RAC 2-node', 'Always On AG', 'none')"
+        replication:
+          type: string
+          required: false
+          description: "Current replication (e.g., 'Data Guard', 'GoldenGate', 'none')"
+        connections_peak:
+          type: integer
+          required: false
+          description: "Peak concurrent database connections"
+        cpu_metrics:
+          type: object
+          required: false
+          fields:
+            avg_pct:
+              type: float
+              description: "Average CPU utilization percentage"
+            p95_pct:
+              type: float
+              description: "P95 CPU utilization percentage"
+            vcpus:
+              type: integer
+              description: "Number of vCPUs on current platform"
+        storage_metrics:
+          type: object
+          required: false
+          fields:
+            iops_avg:
+              type: integer
+              description: "Average IOPS"
+            iops_peak:
+              type: integer
+              description: "Peak IOPS"
+            throughput_mbps:
+              type: float
+              description: "Storage throughput in MB/s"
+        notable_features:
+          type: list
+          item_type: enum
+          values: [partitioning, TDE, VPD, advanced_security, label_security, spatial, graph, text, APEX, DBMS_SCHEDULER, db_links, UTL_FILE, UTL_HTTP, external_tables, directory_objects, edition_based_redefinition, flashback, blockchain_tables, RAC, advanced_compression, in_memory]
+          required: false
+          default: []
+          description: "Oracle features in active use — affects service selection and compatibility"
+
+    compute:
       type: list
-      item_type: string
       required: false
       default: []
-      description: "OCI regions where data must reside"
-    sovereign_requirements:
-      type: boolean
-      required: false
-      default: false
-      description: "Whether sovereign cloud is needed"
+      item_schema:
+        name:
+          type: string
+          required: true
+        purpose:
+          type: string
+          required: false
+          description: "What this compute serves (e.g., 'WebLogic app servers')"
+        os:
+          type: string
+          required: false
+          description: "Operating system (e.g., 'Oracle Linux 8', 'RHEL 9')"
+        vcpus:
+          type: integer
+          required: false
+        memory_gb:
+          type: float
+          required: false
+        current_platform:
+          type: enum
+          values: [on_prem, aws, azure, gcp, other_cloud]
+          required: true
+        scaling_pattern:
+          type: enum
+          values: [steady, daily_peaks, seasonal, unpredictable]
+          required: false
+          default: "steady"
 
-  applications:
-    type: list
-    item_schema:
-      name:
+    middleware:
+      type: list
+      required: false
+      default: []
+      item_schema:
+        name:
+          type: string
+          required: true
+        type:
+          type: enum
+          values: [WebLogic, Tomcat, WildFly, IIS, Node.js, other]
+          required: true
+        clustering:
+          type: string
+          required: false
+          description: "Clustering configuration (e.g., 'Active-Active 4 nodes')"
+
+    messaging_and_eventing:
+      type: list
+      required: false
+      default: []
+      item_schema:
+        name:
+          type: string
+          required: true
+        type:
+          type: enum
+          values: [Kafka, RabbitMQ, SQS, MQ_Series, Oracle_AQ, other]
+          required: true
+        throughput_msgs_sec:
+          type: integer
+          required: false
+          description: "Peak message throughput in messages/second"
+        pattern:
+          type: enum
+          values: [pub_sub, point_to_point, streaming, event_driven]
+          required: false
+          default: "pub_sub"
+
+    storage:
+      type: list
+      required: false
+      default: []
+      item_schema:
+        name:
+          type: string
+          required: true
+        type:
+          type: enum
+          values: [NFS, block, object, archive]
+          required: true
+        size_tb:
+          type: float
+          required: false
+        access_pattern:
+          type: enum
+          values: [frequent, infrequent, archive]
+          required: false
+          default: "frequent"
+
+    networking:
+      type: object
+      required: false
+      fields:
+        connectivity:
+          type: enum
+          values: [internet, VPN, dedicated, hybrid]
+          required: false
+          default: "internet"
+        bandwidth_gbps:
+          type: float
+          required: false
+        latency_requirement_ms:
+          type: float
+          required: false
+          description: "Max acceptable latency in milliseconds"
+        regions_needed:
+          type: list
+          item_type: string
+          required: false
+          default: []
+        on_prem_integration:
+          type: boolean
+          required: false
+          default: false
+
+    identity_and_security:
+      type: object
+      required: false
+      fields:
+        idp:
+          type: enum
+          values: [AD, Okta, SAML, OCI_IAM, other]
+          required: false
+          default: "OCI_IAM"
+        compliance:
+          type: list
+          item_type: enum
+          values: [PCI-DSS, HIPAA, SOC2, GDPR, FedRAMP, ISO27001]
+          required: false
+          default: []
+        encryption_requirements:
+          type: string
+          required: false
+          description: "Encryption requirements beyond default TDE (e.g., 'customer-managed keys via Vault')"
+        vpd_rls:
+          type: boolean
+          required: false
+          default: false
+          description: "Virtual Private Database or Row-Level Security in use"
+        data_masking:
+          type: boolean
+          required: false
+          default: false
+        audit_requirements:
+          type: string
+          required: false
+          description: "Audit requirements (e.g., 'SOC2 Type II annual', 'PCI QSA quarterly')"
+
+    nosql_and_other_data:
+      type: list
+      required: false
+      default: []
+      item_schema:
+        name:
+          type: string
+          required: true
+        type:
+          type: enum
+          values: [MongoDB, DynamoDB, Cassandra, Redis, Elasticsearch, other]
+          required: true
+        size_gb:
+          type: integer
+          required: false
+        access_pattern:
+          type: enum
+          values: [high_throughput, low_latency_cache, search, analytics]
+          required: false
+
+    integration:
+      type: list
+      required: false
+      default: []
+      item_schema:
+        name:
+          type: string
+          required: true
+        type:
+          type: enum
+          values: [API_Gateway, ESB, ETL, CDC, file_transfer, iPaaS]
+          required: true
+        tool:
+          type: string
+          required: false
+          description: "Specific tool (e.g., 'MuleSoft', 'Informatica', 'GoldenGate')"
+
+  requirements:
+    availability:
+      rto_hours:
+        type: float
+        required: true
+        default: 1.0
+        description: "Recovery Time Objective in hours"
+      rpo_hours:
+        type: float
+        required: true
+        default: 0.25
+        description: "Recovery Point Objective in hours"
+      sla_target:
         type: string
         required: true
-      type:
-        type: enum
-        values: [database, web_app, api, batch, streaming, analytics, ai_ml, integration]
-        required: true
-      current_platform:
-        type: enum
-        values: [on_prem, aws, azure, gcp, other_cloud]
-        required: true
-      technology_stack:
-        type: list
-        item_type: string
+        default: "99.95%"
+        description: "Target availability SLA"
+    performance:
+      response_time_p95_ms:
+        type: integer
         required: false
-        default: []
-      criticality:
+        description: "P95 response time target in milliseconds"
+      throughput_tps:
+        type: integer
+        required: false
+        description: "Target transactions per second"
+      concurrent_users:
+        type: integer
+        required: false
+        description: "Peak concurrent users"
+    scalability:
+      growth_annual_pct:
+        type: float
+        required: false
+        default: 15
+        description: "Expected annual growth percentage"
+      peak_multiplier:
+        type: float
+        required: false
+        default: 1.5
+        description: "Peak load as multiplier of baseline (e.g., 3.0 for Black Friday)"
+      scaling_speed:
         type: enum
-        values: [mission_critical, business_critical, standard, dev_test]
-        required: true
-        default: "standard"
-      users:
+        values: [immediate, minutes, hours]
+        required: false
+        default: "minutes"
+        description: "How fast scaling needs to respond"
+    migration:
+      downtime_tolerance:
         type: string
         required: false
-        description: "User count or concurrency (e.g., '5000 concurrent')"
-      data_volume:
+        default: "4 hours"
+        description: "Acceptable migration downtime window"
+      migration_timeline:
         type: string
         required: false
-        description: "Data size and growth (e.g., '2TB, growing 15%/year')"
-
-  performance:
-    storage_iops:
-      type: string
-      required: false
-      description: "Required IOPS (e.g., '25K IOPS sustained')"
-    network_throughput:
-      type: string
-      required: false
-      description: "Required throughput (e.g., '10 Gbps')"
-    latency_requirements:
-      type: string
-      required: false
-      description: "P95 latency targets"
-    peak_patterns:
-      type: enum
-      values: [steady, daily_peaks, seasonal, unpredictable]
-      required: false
-      default: "steady"
-      description: "Workload peak behavior pattern"
-    peak_multiplier:
-      type: float
-      required: false
-      default: 1.5
-      description: "Peak load as multiplier of baseline (e.g., 3.0 for Black Friday)"
-
-  resilience:
-    rto:
-      type: string
-      required: true
-      description: "Recovery Time Objective"
-    rpo:
-      type: string
-      required: true
-      description: "Recovery Point Objective"
-    availability_target:
-      type: string
-      required: true
-      default: "99.95%"
-      description: "Target SLA percentage"
-    dr_required:
-      type: boolean
-      required: false
-      default: false
-    dr_type:
-      type: enum
-      values: [active_active, active_passive, pilot_light, backup_restore]
-      required: false
-      description: "DR topology type"
-    backup_retention:
-      type: string
-      required: false
-      default: "30 days"
-
-  connectivity:
-    type:
-      type: enum
-      values: [fastconnect, vpn, internet, hybrid]
-      required: false
-      default: "internet"
-    bandwidth:
-      type: string
-      required: false
-    on_prem_integration:
-      type: boolean
-      required: false
-      default: false
-    multi_cloud_integration:
-      type: boolean
-      required: false
-      default: false
-
-  operations:
-    iac_experience:
-      type: enum
-      values: [none, basic, advanced]
-      required: false
-      default: "none"
-    cloud_experience:
-      type: enum
-      values: [none, basic_aws, basic_azure, basic_gcp, advanced_multi_cloud]
-      required: false
-      default: "none"
-    team_size:
-      type: string
-      required: false
-    managed_services_preference:
-      type: enum
-      values: [self_managed, managed, fully_managed]
-      required: false
-      default: "managed"
+        description: "Target migration timeline (e.g., '6 months')"
+      parallel_run_needed:
+        type: boolean
+        required: false
+        default: false
+        description: "Whether old and new systems must run in parallel during cutover"
 
   decision_drivers:
-    technical:
+    primary:
+      type: enum
+      values: [cost_reduction, modernization, performance, compliance, hardware_eol, contract_expiry, consolidation]
+      required: false
+      description: "Primary motivation for the engagement"
+    budget_sensitivity:
+      type: enum
+      values: [low, medium, high]
+      required: false
+      default: "medium"
+    licensing:
+      type: enum
+      values: [BYOL, new_licenses, ULA, reduce_oracle_footprint]
+      required: false
+      default: "new_licenses"
+      description: "Oracle licensing strategy"
+    team_skills:
       type: list
       item_type: string
       required: false
       default: []
-    commercial:
-      type: list
-      item_type: string
+      description: "Team's existing skills (e.g., ['terraform', 'kubernetes', 'oracle_dba'])"
+    political_constraints:
+      type: string
       required: false
-      default: []
+      description: "Non-technical constraints (e.g., 'board wants results by Q3', 'CTO prefers AWS')"
 
 # Derived flags — auto-computed from the profile, not user-entered
 derived_flags:
   description: "Boolean flags computed from the workload profile for use by the WA validation engine"
   flags:
     - name: has_databases
-      computed_from: "any application with type='database' or technology_stack containing 'oracle_db'"
+      computed_from: "any entry in current_state.databases[]"
     - name: has_autonomous_database
       computed_from: "architecture includes ADB-S or ADB-D"
     - name: has_production_databases
@@ -220,14 +400,14 @@ derived_flags:
     - name: has_internet_facing_services
       computed_from: "architecture includes public subnet with LB or WAF"
     - name: has_fastconnect
-      computed_from: "connectivity.type in [fastconnect, hybrid]"
+      computed_from: "connectivity in [dedicated, hybrid]"
     - name: has_variable_workloads
-      computed_from: "performance.peak_patterns != 'steady'"
+      computed_from: "any compute with scaling_pattern != 'steady'"
     - name: requires_dr
-      computed_from: "resilience.dr_required == true"
+      computed_from: "requirements.availability.rto_hours < 4 or explicit DR requirement"
     - name: enterprise_customer
-      computed_from: "compliance.regulatory_frameworks is not empty OR team_size > 3"
+      computed_from: "compliance list is not empty OR team has > 3 members"
     - name: has_oracle_licensed_services
-      computed_from: "oracle_relationship in [existing_ula, existing_licenses]"
+      computed_from: "licensing in [BYOL, ULA]"
     - name: distributed_cloud_applicable
-      computed_from: "compliance.data_residency_required OR compliance.sovereign_requirements OR multi_region"
+      computed_from: "identity_and_security.compliance includes data residency or sovereign requirements"

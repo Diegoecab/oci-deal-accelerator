@@ -546,6 +546,63 @@ class OCIDeckGenerator:
                     color=Colors.SECONDARY_TEXT,
                 )
 
+    def add_cost_comparison_slide(self, rows: list, title: str = "Cost Comparison",
+                                  col_headers: list = None):
+        """Slide 8: Cost Comparison (optional).
+
+        rows: list of {"item": str, "current": str, "oci": str, "savings": str}
+        col_headers: custom column headers (default: ["Component", "Current", "OCI", "Savings"])
+        """
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title)
+
+        headers = col_headers or ["Component", "Current", "OCI", "Savings"]
+        num_rows = len(rows) + 1
+        table = self._add_table(
+            slide, num_rows, len(headers),
+            self.MARGIN, Inches(1.2),
+            Inches(12), Inches(0.45 * num_rows),
+        )
+
+        col_widths = [Inches(4), Inches(2.5), Inches(2.5), Inches(3)]
+        for j, w in enumerate(col_widths[:len(headers)]):
+            table.columns[j].width = w
+
+        for j, h in enumerate(headers):
+            self._style_table_cell(
+                table.cell(0, j), h, font_size=11, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER if j > 0 else PP_ALIGN.LEFT,
+            )
+
+        for i, row in enumerate(rows):
+            row_idx = i + 1
+            is_total = "total" in row.get("item", "").lower()
+            bg = Colors.TEAL if is_total else (Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None)
+            txt_color = Colors.WHITE if is_total else None
+
+            self._style_table_cell(
+                table.cell(row_idx, 0), row.get("item", ""),
+                font_size=10, bold=is_total, color=txt_color, bg_color=bg,
+            )
+            self._style_table_cell(
+                table.cell(row_idx, 1), row.get("current", ""),
+                font_size=10, bold=is_total, color=txt_color, bg_color=bg,
+                alignment=PP_ALIGN.RIGHT,
+            )
+            self._style_table_cell(
+                table.cell(row_idx, 2), row.get("oci", ""),
+                font_size=10, bold=is_total, color=txt_color, bg_color=bg,
+                alignment=PP_ALIGN.RIGHT,
+            )
+            if len(headers) > 3:
+                savings_color = Colors.SUCCESS if not is_total else txt_color
+                self._style_table_cell(
+                    table.cell(row_idx, 3), row.get("savings", ""),
+                    font_size=10, bold=True, color=savings_color, bg_color=bg,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
     def add_migration_slide(self, phases: list, tools: list = None,
                             downtime: str = ""):
         """Slide 9: Migration Approach.
@@ -851,6 +908,15 @@ class OCIDeckGenerator:
                 line_items=c.get("line_items", []),
                 assumptions=c.get("assumptions", []),
                 show_byol=c.get("show_byol", True),
+            )
+
+        # Slide 8: Cost Comparison (optional)
+        if "cost_comparison" in spec:
+            cc = spec["cost_comparison"]
+            gen.add_cost_comparison_slide(
+                rows=cc.get("rows", []),
+                title=cc.get("title", "Cost Comparison"),
+                col_headers=cc.get("col_headers"),
             )
 
         # Slide 9: Migration
