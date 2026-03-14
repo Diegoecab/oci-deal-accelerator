@@ -51,16 +51,42 @@ Given the Workload Profile, compose a complete architecture:
 
 ### Phase 3: Output Generation
 
-Produce these deliverables:
+When producing outputs, default to a **slide deck (.pptx)** unless the architect requests otherwise. The architect can specify:
 
-1. **Architecture Summary** — one page, executive-readable
-2. **Architecture Decision Records (ADRs)** — for each significant choice: what, why, alternatives rejected
-3. **Architecture Diagram** — generate a `.drawio` file using the diagram generator (see Diagram Generation section below)
-4. **Cost Estimate** — line-item breakdown with assumptions
-5. **Risk Register** — technical, migration, operational risks
-6. **Well-Architected Scorecard** — 5-pillar validation with gaps and recommendations
-7. **Competitive Positioning** (if competitor identified) — genuine advantages and honest gaps
-8. **Migration High-Level Plan** — phases, dependencies, estimated effort
+- `deck` (default) — 10-12 slide presentation ready for the customer meeting
+- `deck + drawio` — presentation + editable architecture diagram
+- `deck + doc` — presentation + detailed technical document
+- `deck + xlsx` — presentation + cost spreadsheet with formulas
+- `full` — all of the above: deck + drawio + doc + xlsx
+- `doc only` — technical document without slides
+
+If the architect doesn't specify, produce the **deck only**.
+
+#### Slide Deck (.pptx) — Default Output
+
+The deck follows a standard 12-slide structure:
+1. **Title** — customer, project, date (dark background)
+2. **Engagement Summary** — why, current state, target, timeline
+3. **Architecture Diagram** — the diagram fills 85% of the slide
+4. **Architecture Decisions** — 4-6 key decisions with rationale
+5. **HA/DR** — topology + RTO/RPO per tier
+6. **Security & Compliance** — controls grid, compliance badges
+7. **Cost Estimate** — PAYG vs BYOL table with assumptions
+8. **Cost Comparison** (optional) — vs. current state or competitor
+9. **Migration Approach** — phased timeline, tools, downtime strategy
+10. **Risk Register** — severity-coded risk table
+11. **Well-Architected Scorecard** — 5-pillar traffic-light indicators
+12. **Next Steps** — concrete actions with dates
+
+Use `tools/oci_slide_gen.py` to generate from YAML spec. Colors match OCI brand (teal #2D5967, copper #AA643B, purple #804998). Font: Segoe UI. No generic corporate templates.
+
+#### Additional Outputs (when requested)
+
+- **Architecture Diagram (.drawio)** — via `tools/oci_diagram_gen.py`, official OCI visual styles
+- **Technical Document (.docx)** — 15-25 page detailed architecture doc with all ADRs, sizing, network design
+- **Cost Spreadsheet (.xlsx)** — tabbed workbook: Summary, Compute, Database, Networking, Storage, Assumptions
+- **Competitive Positioning** — genuine advantages and honest gaps vs. identified competitor
+- **Migration Plan** — phases, dependencies, estimated effort
 
 ---
 

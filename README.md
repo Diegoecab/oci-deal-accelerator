@@ -37,28 +37,30 @@ Here are my notes from the discovery call with Acme Corp:
 
 The skill will produce the full architecture package.
 
-### Diagram Generator (Python)
+### Slide Deck Generator (default output)
 
 ```bash
-# From YAML spec
-python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output architecture.drawio
-
-# Open in draw.io — no library import needed
-# Optionally load OCI Library.xml for official service icons
+# Generate a proposal deck from YAML spec
+python tools/oci_slide_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
 ```
 
-```python
-# Programmatic
-from tools.oci_diagram_gen import OCIDiagramGenerator
+### Diagram Generator
 
-gen = OCIDiagramGenerator()
-gen.add_tenancy("tenancy", "Oracle Cloud Infrastructure")
-gen.add_region("r1", "Region — US East (Ashburn)", "tenancy")
-gen.add_vcn("vcn1", "VCN prod-vcn 10.0.0.0/16", "r1")
-gen.add_subnet("sub-db", "Private Subnet — Data Tier", "vcn1", 665, 30, 425, 450)
-gen.add_service("adb1", "ADB-S OLTP\n8 OCPU / 2 TB", "adb", "sub-db", 25, 35, 375, 85)
-gen.add_connection("c1", "Data Guard", "adg", "sub-db", "sub-dr-db")
-gen.save("architecture.drawio")
+```bash
+# Generate architecture diagram
+python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output architecture.drawio
+```
+
+### Output Selection
+
+The architect can choose which outputs to generate:
+```
+deck              ← default, 10-12 slide .pptx
+deck + drawio     ← deck + editable .drawio diagram
+deck + doc        ← deck + detailed .docx technical document
+deck + xlsx       ← deck + cost spreadsheet
+full              ← everything
+doc only          ← technical document without slides
 ```
 
 ## Project Structure
@@ -103,6 +105,7 @@ deal-accelerator/
 │       └── gotchas.yaml
 │
 ├── tools/                      # Python tooling
+│   ├── oci_slide_gen.py        # .pptx slide deck generator (default output)
 │   └── oci_diagram_gen.py      # .drawio diagram generator
 │
 ├── scripts/                    # Additional scripts
@@ -110,7 +113,8 @@ deal-accelerator/
 │   └── validate-architecture.py # WA validation engine
 │
 ├── config/                     # Configuration
-│   └── service-categories.yaml # Service → color/category mapping
+│   ├── service-categories.yaml # Service → color/category mapping
+│   └── output-formats.yaml    # Output format specs and design standards
 │
 ├── templates/                  # Output templates
 │   ├── workload-profile.yaml
@@ -119,10 +123,13 @@ deal-accelerator/
 │
 └── examples/                   # Example specs and outputs
     ├── diagram-spec.yaml
+    ├── proposal-spec.yaml          # Slide deck spec (YAML → .pptx)
     ├── sample-architecture.yaml
     ├── sample-workload-profile.yaml
     ├── ecommerce-architecture.drawio
-    └── scorecard-output.yaml
+    ├── scorecard-output.yaml
+    └── sample-output/
+        └── architecture-proposal.pptx  # Generated slide deck
 ```
 
 ## How the Knowledge Base Works
@@ -223,8 +230,11 @@ python tools/oci_diagram_gen.py \
 
 ## Requirements
 
-- Python 3.8+ (for diagram generator)
+- Python 3.8+ (for generators)
 - PyYAML (`pip install pyyaml`)
+- python-pptx (`pip install python-pptx`) — for slide deck generation
+- python-docx (`pip install python-docx`) — for document generation (optional)
+- openpyxl (`pip install openpyxl`) — for spreadsheet generation (optional)
 - No OCI CLI or SDK needed (the skill designs, it doesn't deploy)
 
 ## License

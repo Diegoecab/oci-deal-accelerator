@@ -1,0 +1,211 @@
+# Example: Slide Deck Spec — Acme Retail E-Commerce Migration
+# Feed to: python tools/oci_slide_gen.py --spec examples/proposal-spec.yaml
+
+metadata:
+  customer: "Acme Retail Inc."
+  project: "E-Commerce Platform Migration to OCI"
+  architect: "Diego E."
+  firm: "Oracle Consulting"
+  subtitle: "Architecture Proposal — March 2026"
+
+summary:
+  why: "Reduce Oracle Database licensing costs by 60% and modernize to cloud-native architecture"
+  current_state:
+    - "3 Oracle 19c databases on Exadata X8M on-prem (largest 4 TB OLTP)"
+    - "WebLogic 14c application servers (6x bare metal)"
+    - "GoldenGate replication to reporting database"
+    - "MQ Series for async messaging"
+    - "Current Oracle licensing: $2M/year"
+  target_state: "Migrate to OCI Autonomous Database (ADB-S) with OKE for application tier, full HA/DR"
+  timeline: "6-month migration, Q3 2026 go-live"
+
+architecture:
+  description: |
+    [Insert diagram — export from examples/ecommerce-architecture.drawio]
+
+    Tenancy → Region (Ashburn) → VCN with 3 subnets:
+    • Public: Flexible LB + WAF + Bastion
+    • App Tier: OKE Cluster (3 workers, auto-scaling)
+    • Data Tier: ADB-S OLTP (4 OCPU, BYOL) + ADB-S DW + NoSQL + Redis
+
+    DR Region (Phoenix): ADB-S Standby via Autonomous Data Guard
+    Connectivity: FastConnect 1 Gbps (redundant) + VPN backup
+
+decisions:
+  - decision: "ADB-S over ExaCS for primary database"
+    rationale: "Variable workload pattern, no dedicated DBA team, auto-scaling covers seasonal peaks. ExaCS oversized for this workload."
+
+  - decision: "OKE over VM-based app tier"
+    rationale: "Team moving to containers. OKE provides auto-scaling per microservice, free control plane, blue/green deployments."
+
+  - decision: "Cross-region ADG for DR"
+    rationale: "PCI compliance requires geo-redundant disaster recovery. ADG provides seconds RPO, minutes RTO."
+
+  - decision: "FastConnect over VPN for hybrid connectivity"
+    rationale: "Low-latency requirement during migration coexistence. VPN as backup path only."
+
+  - decision: "BYOL licensing for ADB-S"
+    rationale: "Customer has 8 existing processor licenses. BYOL saves ~75% on OCPU cost vs License Included."
+
+  - decision: "OCI Streaming over dedicated MQ migration"
+    rationale: "Kafka-compatible API allows gradual migration from MQ Series. No new middleware licensing."
+
+ha_dr:
+  description: "Active-passive DR with Autonomous Data Guard. Application tier provisioned on-demand in DR region via Terraform."
+  tiers:
+    - tier: "Database (Primary)"
+      technology: "ADB-S + TAC (Transparent Application Continuity)"
+      rto: "~0 perceived"
+      rpo: "0 (local)"
+    - tier: "Database (DR)"
+      technology: "Cross-Region Autonomous Data Guard (async)"
+      rto: "< 15 minutes"
+      rpo: "< 30 seconds"
+    - tier: "Application"
+      technology: "OKE Auto-scaling + Health Checks"
+      rto: "Seconds"
+      rpo: "N/A (stateless)"
+    - tier: "Application (DR)"
+      technology: "Terraform on-demand provisioning"
+      rto: "15-30 minutes"
+      rpo: "N/A (stateless)"
+
+security:
+  compliance: ["PCI-DSS", "SOC2"]
+  controls:
+    identity:
+      - "IAM least-privilege per compartment"
+      - "MFA for all human users"
+      - "Federation with Okta (SAML)"
+      - "Instance principals for service auth"
+    network:
+      - "Private subnets for app and data tiers"
+      - "NSGs (not security lists)"
+      - "WAF on all internet-facing endpoints"
+      - "Service Gateway (no internet traversal to OCI)"
+    database:
+      - "TDE with customer-managed keys (Vault)"
+      - "Data Safe (audit, masking, VPD)"
+      - "Private endpoints only"
+      - "Key rotation < 90 days"
+    monitoring:
+      - "Cloud Guard with detector recipes"
+      - "OCI Audit (365-day retention)"
+      - "VCN Flow Logs"
+      - "Vulnerability Scanning on OKE nodes"
+
+cost:
+  show_byol: true
+  line_items:
+    - component: "ADB-S Primary (4 OCPU, auto-scale to 12)"
+      monthly_payg: "$5,376"
+      monthly_byol: "$1,344"
+      notes: "Auto-scale billed per OCPU-second"
+    - component: "ADB-S Standby (ADG, same region)"
+      monthly_payg: "$5,376"
+      monthly_byol: "$1,344"
+      notes: "Same shape as primary"
+    - component: "ADB-S DR (Cross-region, Phoenix)"
+      monthly_payg: "$5,376"
+      monthly_byol: "$1,344"
+      notes: "Async replication"
+    - component: "ADB-S Storage (2 TB x3)"
+      monthly_payg: "$710"
+      monthly_byol: "$710"
+      notes: "6 TB total across 3 instances"
+    - component: "OKE Cluster (3x E4.Flex, 4 OCPU / 64 GB)"
+      monthly_payg: "$657"
+      monthly_byol: "—"
+      notes: "Control plane free"
+    - component: "Networking (FastConnect 1 Gbps)"
+      monthly_payg: "$300"
+      monthly_byol: "$300"
+      notes: "Redundant circuits"
+    - component: "Storage & Other"
+      monthly_payg: "$450"
+      monthly_byol: "$450"
+      notes: "Object Storage, Block, Vault"
+    - component: "Total Monthly"
+      monthly_payg: "$18,245"
+      monthly_byol: "$5,492"
+      notes: ""
+    - component: "Total Annual"
+      monthly_payg: "$218,940"
+      monthly_byol: "$65,904"
+      notes: "BYOL saves $153K/year"
+  assumptions:
+    - "Pricing based on US East (Ashburn) region, March 2026 list prices"
+    - "Auto-scaling costs estimated at 15% of base OCPU cost (seasonal peaks)"
+    - "Data transfer costs excluded (minimal with FastConnect)"
+    - "Oracle Support costs not included (existing contract assumed)"
+
+migration:
+  phases:
+    - name: "Phase 1: Assessment"
+      weeks: "Weeks 1-4"
+      tasks: ["Run ADB assessment tool", "Inventory all DB objects", "Identify incompatibilities"]
+    - name: "Phase 2: Infrastructure"
+      weeks: "Weeks 3-6"
+      tasks: ["Provision OCI tenancy", "Deploy landing zone", "Configure FastConnect"]
+    - name: "Phase 3: Migration"
+      weeks: "Weeks 5-10"
+      tasks: ["ZDM for database migration", "Deploy OKE workloads", "Data validation"]
+    - name: "Phase 4: Cutover"
+      weeks: "Weeks 9-12"
+      tasks: ["Final sync", "DNS cutover", "Post-migration validation", "Decommission on-prem"]
+  tools: ["OCI Zero Downtime Migration (ZDM)", "OCI Database Migration Service", "Data Pump"]
+  downtime: "Zero downtime via ZDM with GoldenGate-based replication"
+
+risks:
+  - risk: "Application compatibility with ADB-S restrictions"
+    severity: "MEDIUM"
+    mitigation: "Run ADB assessment tool pre-migration. Pilot with non-prod database first."
+  - risk: "TAC replay failures for non-replayable operations"
+    severity: "LOW"
+    mitigation: "Audit application code for UTL_HTTP, DBMS_PIPE, NOCACHE sequences. Wrap in replayable transactions."
+  - risk: "FastConnect provisioning lead time"
+    severity: "MEDIUM"
+    mitigation: "Order FastConnect in Phase 1. Use VPN as temporary connectivity until FC ready."
+  - risk: "Team cloud skills gap"
+    severity: "MEDIUM"
+    mitigation: "Schedule OCI Foundations training. Engage Oracle Support for first 90 days."
+  - risk: "Seasonal peak during migration window"
+    severity: "HIGH"
+    mitigation: "Complete migration before Black Friday. Maintain rollback capability for 30 days."
+
+scorecard:
+  pillars:
+    - name: "Security & Compliance"
+      status: "PASS"
+      passed: 20
+      total: 22
+    - name: "Reliability & Resilience"
+      status: "PASS_WITH_RECOMMENDATIONS"
+      passed: 15
+      total: 18
+    - name: "Performance & Cost"
+      status: "PASS"
+      passed: 12
+      total: 12
+    - name: "Operational Efficiency"
+      status: "PASS_WITH_RECOMMENDATIONS"
+      passed: 9
+      total: 13
+    - name: "Distributed Cloud"
+      status: "NOT_APPLICABLE"
+      passed: 0
+      total: 0
+  recommendations:
+    - "Define quarterly DR drill schedule with automated validation"
+    - "Implement OS Management Hub for OKE node patching"
+    - "Configure Ops Insights for capacity planning"
+    - "Document operational runbooks before go-live"
+
+next_steps:
+  steps:
+    - "Review and approve architecture design — March 28, 2026"
+    - "Provision OCI tenancy and order FastConnect — April 1, 2026"
+    - "Run ADB assessment tool on production database — April 7, 2026"
+    - "Begin Phase 1: Infrastructure setup — April 14, 2026"
+    - "Schedule weekly architecture review cadence"
+  contact_info: "Diego E. — diego@example.com | Oracle Consulting"

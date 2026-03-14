@@ -1,0 +1,130 @@
+# Output Format Configuration
+# Defines the available output types and their default settings
+
+output_selection:
+  description: |
+    The architect can specify output format when requesting deliverables:
+      deck              ← default, just the slide deck
+      deck + drawio     ← deck + editable diagram
+      deck + doc        ← deck + detailed technical document
+      deck + xlsx       ← deck + detailed cost spreadsheet
+      full              ← everything: deck + drawio + doc + xlsx
+      doc only          ← technical document without deck
+    If not specified, produce "deck" only.
+
+  default: "deck"
+
+  formats:
+    deck:
+      extension: ".pptx"
+      generator: "tools/oci_slide_gen.py"
+      description: "10-12 slide architecture proposal"
+
+    drawio:
+      extension: ".drawio"
+      generator: "tools/oci_diagram_gen.py"
+      description: "Editable architecture diagram (draw.io)"
+
+    doc:
+      extension: ".docx"
+      generator: "tools/oci_doc_gen.py"
+      description: "Detailed technical document (15-25 pages)"
+
+    xlsx:
+      extension: ".xlsx"
+      generator: "tools/oci_cost_gen.py"
+      description: "Detailed cost spreadsheet with tabs"
+
+# Slide Deck Structure (10-12 slides)
+deck_structure:
+  slides:
+    - number: 1
+      type: title
+      content: "Customer name, project, date, architect"
+      style: "Dark background (#312D2A), white text"
+
+    - number: 2
+      type: summary
+      content: "Why, current state, target state, timeline"
+      style: "Light background, left-aligned"
+
+    - number: 3
+      type: architecture_diagram
+      content: "Full architecture diagram (85% of slide)"
+      style: "White background, diagram fills slide"
+
+    - number: 4
+      type: decisions
+      content: "4-6 key decisions in two-column table"
+      style: "Clean table, alternating row shading"
+
+    - number: 5
+      type: ha_dr
+      content: "HA/DR topology + RTO/RPO table"
+      style: "Split layout: diagram left, table right"
+
+    - number: 6
+      type: security
+      content: "Compliance checkmarks, security controls grid"
+      style: "Icon grid, green checkmarks"
+
+    - number: 7
+      type: cost
+      content: "Summary table: PAYG vs BYOL, monthly/annual"
+      style: "Clean table, bold totals, assumptions below"
+
+    - number: 8
+      type: cost_comparison
+      optional: true
+      content: "Side-by-side: current vs OCI, or OCI vs AWS"
+      style: "Chart or comparison table"
+
+    - number: 9
+      type: migration
+      content: "Phased timeline, tools, downtime approach"
+      style: "Timeline visual, colored phases"
+
+    - number: 10
+      type: risks
+      content: "Top 5-6 risks with severity and mitigation"
+      style: "Table with color-coded severity"
+
+    - number: 11
+      type: scorecard
+      content: "5-pillar WA scorecard + recommendations"
+      style: "Horizontal bars, traffic-light colors"
+
+    - number: 12
+      type: next_steps
+      content: "3-5 concrete next steps with dates"
+      style: "Numbered list, forward-looking"
+
+# Design Standards
+design_standards:
+  colors:
+    background: "#FFFFFF"
+    dark_background: "#312D2A"
+    primary_accent: "#2D5967"
+    secondary_accent: "#AA643B"
+    tertiary_accent: "#804998"
+    text: "#312D2A"
+    success: "#5E9624"
+    warning: "#AE562C"
+    error: "#C74634"
+    table_alt_row: "#F5F4F2"
+
+  typography:
+    font: "Segoe UI"
+    titles: "24-28pt, bold, #312D2A"
+    subtitles: "16-18pt, regular, #70665E"
+    body: "12-14pt, regular, #312D2A"
+    table_headers: "11pt, bold, white on #2D5967"
+    table_body: "10-11pt, regular, #312D2A"
+    footnotes: "8-9pt, italic, #70665E"
+
+  layout:
+    margins: "0.5 inches all sides"
+    title_position: "top-left, consistent"
+    content_area: "below title bar, 85% of slide height"
+    footer: "slide number bottom-right"
+    rule: "No gradients, clip art, or stock photos"
