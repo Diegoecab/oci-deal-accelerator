@@ -49,6 +49,22 @@ Given the Workload Profile, compose a complete architecture:
 
 5. **Validate against the Well-Architected Framework** — run the architecture through the 5 pillars (Security, Reliability, Performance/Cost, Operational Efficiency, Distributed Cloud) using checklists from `kb/well-architected/`. Flag gaps automatically. Do NOT ask the architect 50 questions — infer answers from the composed architecture.
 
+#### Feature Compatibility Check
+
+Before recommending a specific ADB deployment type + version, check the
+feature matrix at `kb/compatibility/adb-feature-matrix.yaml`. If the
+customer's workload requires features marked LIMITED, BROKEN, or NOT_AVAIL
+for the recommended deployment, flag this in the ADRs and suggest alternatives.
+
+Use `tools/feature_matrix_cli.py gaps <deployment> <version>` to quickly
+identify deal-breakers.
+
+#### Field Findings Reference
+
+Before making architecture recommendations, check `kb/field-findings/tracker.yaml`
+for known issues with the services you're recommending. Reference relevant
+findings in the Risk Register output with their finding ID (e.g., "See FF-202603-002").
+
 ### Phase 3: Output Generation
 
 When producing outputs, default to a **slide deck (.pptx)** unless the architect requests otherwise. The architect can specify:

@@ -1,0 +1,259 @@
+# =============================================================================
+# ADB FEATURE COMPATIBILITY MATRIX
+# =============================================================================
+#
+# INTERNAL — DO NOT SHARE EXTERNALLY
+#
+# This matrix tracks feature availability across ADB versions and deployment
+# types. It is maintained by the field team based on real testing and customer
+# engagements, NOT copied from Oracle documentation.
+#
+# Status values:
+#   GA        — Generally Available, tested, works as expected
+#   GA_CAVEAT — Available but with significant caveats (see notes)
+#   PREVIEW   — Available as preview/beta, not production-ready
+#   LIMITED   — Available with restrictions not obvious from docs
+#   NOT_AVAIL — Not available in this combination
+#   BROKEN    — Documented as available but does not work (see field_finding ref)
+#   UNTESTED  — Not yet verified by the team
+#
+# To edit: add/modify entries and update last_verified. Keep notes concise.
+# =============================================================================
+
+---
+last_verified: "2026-03-14"
+maintained_by: "Field Architecture Team"
+
+versions:
+  - id: "23ai"
+    full_name: "Oracle Database 23ai"
+    release_year: 2024
+    notes: "First AI-branded release. Major feature additions."
+  - id: "26ai"
+    full_name: "Oracle Database 26ai"
+    release_year: 2026
+    notes: "Latest. Check feature availability — not everything from 23ai carried forward identically."
+
+deployment_types:
+  - id: "adb_s"
+    name: "ADB-S Serverless"
+  - id: "adb_s_ep"
+    name: "ADB-S Elastic Pool"
+  - id: "adb_d_dep"
+    name: "ADB Dedicated Elastic Pool (DEP)"
+  - id: "adb_d"
+    name: "ADB on Dedicated Exadata"
+  - id: "exacs"
+    name: "Exadata Cloud Service"
+  - id: "dbcs_ee"
+    name: "Base DB Service (EE)"
+
+# =============================================================================
+# FEATURE MATRIX
+# =============================================================================
+
+features:
+
+  # --- Auto Management ---
+  - name: "Auto Scaling (OCPU)"
+    category: "auto_management"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Activation takes 2-3 min. Size base for P75. Billing per-second when active." }
+        "26ai": { status: "GA_CAVEAT", notes: "Same 2-3 min activation delay persists in 26ai." }
+      adb_s_ep:
+        "23ai": { status: "GA_CAVEAT", notes: "Scales within pool allocation. Pool itself doesn't auto-scale." }
+        "26ai": { status: "GA_CAVEAT", notes: "Same as 23ai." }
+      adb_d_dep:
+        "23ai": { status: "LIMITED", notes: "Scales within DEP allocation. DEP itself is fixed capacity." }
+        "26ai": { status: "UNTESTED" }
+      adb_d:
+        "23ai": { status: "NOT_AVAIL", notes: "Dedicated infra — manual scaling only." }
+      exacs:
+        "23ai": { status: "NOT_AVAIL", notes: "Manual OCPU enable/disable." }
+
+  - name: "Auto Indexing"
+    category: "auto_management"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Creates indexes HIDDEN by default. Instantly reversible. DML costing prevents over-indexing. Deduplication with manually created indexes." }
+        "26ai": { status: "GA", notes: "Improved in 26ai — better cost model, fewer false positives." }
+      adb_s_ep:
+        "23ai": { status: "GA_CAVEAT", notes: "Same as ADB-S Serverless." }
+      adb_d_dep:
+        "23ai": { status: "GA_CAVEAT", notes: "Available but less tested in DEP." }
+      adb_d:
+        "23ai": { status: "GA", notes: "Fully supported." }
+      exacs:
+        "23ai": { status: "NOT_AVAIL", notes: "Not an ADB feature. Use manual indexing." }
+      dbcs_ee:
+        "23ai": { status: "NOT_AVAIL" }
+
+  - name: "Auto Patching"
+    category: "auto_management"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Automatic quarterly. No opt-out. Maintenance window configurable but change requires SR." }
+        "26ai": { status: "GA", notes: "Same policy." }
+      adb_d_dep:
+        "23ai": { status: "GA_CAVEAT", notes: "Maintenance window immutable post-DEP creation. Change via SR only. Saturday/Sunday default, other days via SR." }
+      exacs:
+        "23ai": { status: "GA_CAVEAT", notes: "Customer-managed patching schedule. Must apply within 90 days." }
+
+  # --- High Availability ---
+  - name: "Transparent Application Continuity (TAC)"
+    category: "ha_dr"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Zero perceived RTO for app. DB itself ~2 min unavailable during failover. Replay NOT guaranteed with UTL_HTTP, DBMS_PIPE, NOCACHE sequences. Requires JDBC thin driver with TAC config." }
+        "26ai": { status: "GA_CAVEAT", notes: "Same limitations persist." }
+      adb_s_ep:
+        "23ai": { status: "GA_CAVEAT", notes: "Same as Serverless." }
+      adb_d:
+        "23ai": { status: "GA_CAVEAT", notes: "Same limitations." }
+      exacs:
+        "23ai": { status: "GA_CAVEAT", notes: "Available with RAC. Same replay limitations." }
+      dbcs_ee:
+        "23ai": { status: "NOT_AVAIL", notes: "Requires RAC — only in EE-HP or EE-EP." }
+
+  - name: "Autonomous Data Guard (Local)"
+    category: "ha_dr"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Synchronous. Same region. Auto-failover ~2 min." }
+        "26ai": { status: "GA" }
+      adb_d:
+        "23ai": { status: "GA" }
+      exacs:
+        "23ai": { status: "GA", notes: "Standard Data Guard, not 'Autonomous' — manual setup." }
+
+  - name: "Autonomous Data Guard (Cross-Region)"
+    category: "ha_dr"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Asynchronous only. RPO ≈ seconds. Manual switchover or auto-failover (configurable)." }
+        "26ai": { status: "GA_CAVEAT", notes: "Same." }
+      adb_d_dep:
+        "23ai": { status: "GA_CAVEAT", notes: "ADG must be disabled before joining DEP. Known issue." }
+      exacs:
+        "23ai": { status: "GA", notes: "Standard cross-region DG. Manual setup." }
+
+  - name: "Refreshable Clone"
+    category: "ha_dr"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Read-only. Auto-refresh frequency configurable. Failed refresh leaves clone AVAILABLE (not DISCONNECTED) — leader monitors lifecycle state, not refresh success. Detection delay = ADG RTO for unplanned." }
+        "26ai": { status: "GA_CAVEAT", notes: "Same detection delay issue." }
+      adb_d:
+        "23ai": { status: "GA" }
+
+  # --- Security ---
+  - name: "Virtual Private Database (VPD)"
+    category: "security"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Full VPD support including OLS." }
+        "26ai": { status: "GA" }
+      exacs:
+        "23ai": { status: "GA" }
+      dbcs_ee:
+        "23ai": { status: "GA", notes: "Requires Advanced Security option license." }
+
+  - name: "Private Endpoints"
+    category: "security"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Recommended for production. Required for some compliance." }
+        "26ai": { status: "GA" }
+      adb_d:
+        "23ai": { status: "GA", notes: "Default — all ADB-D is private." }
+      exacs:
+        "23ai": { status: "GA", notes: "Always private subnet." }
+
+  - name: "Data Safe Integration"
+    category: "security"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Audit, masking, assessment, SQL Firewall." }
+        "26ai": { status: "GA", notes: "Enhanced SQL Firewall in 26ai." }
+      exacs:
+        "23ai": { status: "GA" }
+      dbcs_ee:
+        "23ai": { status: "GA_CAVEAT", notes: "Must register DB manually in Data Safe." }
+
+  # --- Developer Features ---
+  - name: "Select AI"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Natural language → SQL via LLM. Requires AI profile configuration." }
+        "26ai": { status: "GA", notes: "Improved accuracy in 26ai." }
+      adb_d:
+        "23ai": { status: "GA" }
+      exacs:
+        "23ai": { status: "NOT_AVAIL", notes: "ADB-only feature." }
+
+  - name: "Property Graph / SQL/PGQ"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "Node tables + edge tables. Only FK indexes essential. Additional indexes require filter evidence. See Graph DBA Advisor philosophy." }
+        "26ai": { status: "GA", notes: "Improved PGQ optimizer in 26ai." }
+      exacs:
+        "23ai": { status: "GA", notes: "Full graph support with PGQL and SQL/PGQ." }
+
+  - name: "APEX"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Built-in. No additional cost." }
+        "26ai": { status: "GA" }
+      adb_d:
+        "23ai": { status: "GA" }
+      exacs:
+        "23ai": { status: "GA_CAVEAT", notes: "Must install APEX manually." }
+      dbcs_ee:
+        "23ai": { status: "GA_CAVEAT", notes: "Must install and manage manually." }
+
+  - name: "JSON Relational Duality Views"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA", notes: "Major 23ai feature." }
+        "26ai": { status: "GA" }
+      exacs:
+        "23ai": { status: "GA" }
+      dbcs_ee:
+        "23ai": { status: "GA", notes: "Requires 23ai version." }
+
+  # --- Deployment / Operations ---
+  - name: "Elastic Pool Membership"
+    category: "operations"
+    matrix:
+      adb_s_ep:
+        "23ai": { status: "GA_CAVEAT", notes: "Billing starts at AVAILABLE. Co-location at next maintenance window. Pool can't auto-scale." }
+      adb_d_dep:
+        "23ai": { status: "GA_CAVEAT", notes: "Provisioning days-weeks. ADG must be disabled before joining. Maintenance window immutable. Saturday/Sunday default." }
+
+  - name: "Cross-Region Read Offload (ProxySQL/Refreshable Clone)"
+    category: "operations"
+    matrix:
+      adb_s:
+        "23ai": { status: "LIMITED", notes: "Architecturally impossible without pre-provisioned Elastic Pool in Region B post-switchover. Mitigation for planned: DBMS_PROXY_SQL.DISABLE_READ_ONLY_OFFLOAD. For unplanned: OCI Events + Functions." }
+        "26ai": { status: "UNTESTED", notes: "Same architectural constraint expected to persist." }
+
+  - name: "OCI CLI Management"
+    category: "operations"
+    matrix:
+      adb_s:
+        "23ai": { status: "GA_CAVEAT", notes: "--resource-pool-summary works on CLI 3.73+. --autonomous-database-maintenance-window has JSON serialization bug on CLI 3.73.1 AND 3.75.0. Must use Console for maintenance window." }
+
+# =============================================================================
+# HOW TO ADD A NEW FEATURE
+# =============================================================================
+# 1. Add entry under "features:" following the template above
+# 2. Fill matrix for every deployment_type + version you've tested
+# 3. Mark untested combinations as UNTESTED
+# 4. Add field_finding_ref if the entry comes from a specific incident
+# 5. Update last_verified date
+# 6. Commit with a message: "feat-matrix: added [feature_name]"
