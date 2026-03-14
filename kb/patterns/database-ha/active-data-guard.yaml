@@ -1,0 +1,76 @@
+# Pattern: Active Data Guard HA/DR
+# Composable architecture block for Oracle Database high availability
+
+pattern:
+  name: "Active Data Guard"
+  id: active_data_guard
+  category: database-ha
+  applies_to: [adb_s, adb_d, dbcs, exacs]
+
+description: |
+  Oracle Active Data Guard provides real-time data protection with a standby database
+  that can be used for read-only queries, reporting, and backups while maintaining
+  synchronous or asynchronous replication from the primary.
+
+variants:
+  - id: adg_same_region
+    name: "Same-Region ADG (HA)"
+    topology: "Primary + Standby in same region, different ADs or FDs"
+    rpo: "0 (synchronous)"
+    rto: "< 30 seconds (automatic failover with FSFO)"
+    use_when:
+      - "99.99% SLA requirement"
+      - "Zero RPO mandatory"
+      - "Read-only offload needed"
+
+  - id: adg_cross_region
+    name: "Cross-Region ADG (DR)"
+    topology: "Primary in Region A, Standby in Region B"
+    rpo: "> 0 (asynchronous, typically seconds to minutes)"
+    rto: "Minutes to 1 hour depending on automation"
+    use_when:
+      - "Regional disaster recovery required"
+      - "RPO of seconds acceptable"
+      - "Regulatory requirement for geo-separation"
+
+  - id: adg_hybrid
+    name: "Same-Region HA + Cross-Region DR"
+    topology: "Primary + Local Standby (sync) + Remote Standby (async)"
+    rpo: "0 local, seconds remote"
+    rto: "< 30s local, minutes remote"
+    use_when:
+      - "Maximum protection: HA + DR"
+      - "Mission-critical workloads"
+
+preconditions:
+  - "Oracle Database Enterprise Edition with Active Data Guard option"
+  - "BYOL: customer must have ADG license or ULA"
+  - "License Included: ADG included with ADB-S, ExaCS EE-HP/EE-EP"
+  - "For ADB-S: Autonomous Data Guard (managed, no manual config)"
+
+implied_services:
+  - service: data_guard
+  - service: dns_traffic_management
+    reason: "DNS failover for application connection string update"
+    when: "cross_region"
+  - service: oci_notifications
+    reason: "Alert on failover events"
+
+conflicts:
+  - pattern: "backup_restore_only"
+    reason: "ADG provides real-time replication; backup-restore is a subset"
+
+cost_impact:
+  - "Standby database incurs full compute + storage cost"
+  - "For ADB-S: standby OCPUs billed at same rate"
+  - "Cross-region: additional network egress for redo transport"
+  - "BYOL: ADG license required (included in EE-EP)"
+
+sizing_rules:
+  - "Standby must be same shape/OCPU as primary for failover"
+  - "For read-only offload: standby can handle ~80% of primary read capacity"
+  - "Network bandwidth for redo: estimate 10-50 Mbps per 10K TPS (varies by workload)"
+
+references:
+  - "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-data-guard.html"
+  - "https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/"

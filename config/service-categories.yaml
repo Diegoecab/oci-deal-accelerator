@@ -1,0 +1,115 @@
+# Service → Category/Color Mapping
+# Used by diagram generator and for consistent grouping across outputs
+
+categories:
+  infrastructure:
+    color: "#2D5967"
+    label: "Infrastructure"
+    services:
+      # Compute
+      - compute
+      - vm
+      - bare_metal
+      - oke
+      - functions
+      # Load Balancing
+      - load_balancer
+      - flexible_lb
+      - network_lb
+      # Gateways
+      - igw
+      - internet_gateway
+      - nat_gateway
+      - natgw
+      - service_gateway
+      - sgw
+      # Security
+      - waf
+      - bastion
+      - network_firewall
+      - cloud_guard
+      - data_safe
+      - vault
+      - security_zone
+      - vulnerability_scanning
+      - certificates
+      # API
+      - api_gateway
+      - apigw
+      # Storage
+      - object_storage
+      - block_storage
+      - file_storage
+      # Observability
+      - monitoring
+      - logging
+      - logging_analytics
+      - apm
+      - db_management
+      - ops_insights
+      - notifications
+      - events
+      # Operations
+      - os_management
+      - resource_manager
+      - devops
+      # DNS
+      - dns
+      - traffic_management
+
+  database:
+    color: "#AA643B"
+    label: "Database"
+    services:
+      - adb
+      - adb_s
+      - adb_d
+      - autonomous_db
+      - atp
+      - adw
+      - dbcs
+      - db_system
+      - exadata
+      - exacs
+      - nosql
+      - mysql
+      - mysql_heatwave
+      - postgresql
+      - opensearch
+      - cache
+      - redis
+      - goldengate
+      - data_catalog
+
+  integration:
+    color: "#804998"
+    label: "Integration"
+    services:
+      - drg
+      - dynamic_routing_gateway
+      - streaming
+      - kafka
+      - queue
+      - oci_queue
+      - oic
+      - integration_cloud
+      - fastconnect
+      - vpn
+      - service_connector_hub
+
+  dormant:
+    color: "#DFDCD8"
+    label: "Dormant/Standby"
+    border_color: "#9E9892"
+    text_color: "#70665E"
+    font_style: "italic"
+    services:
+      - dormant
+      - standby
+
+  legacy:
+    color: "#70665E"
+    label: "Legacy/External"
+    services:
+      - legacy
+      - external

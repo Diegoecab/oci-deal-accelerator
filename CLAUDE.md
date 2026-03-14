@@ -1,84 +1,67 @@
 # OCI Deal Accelerator
 
-AI-powered tool for Oracle Solutions Architects to rapidly compose, validate, and document OCI architectures.
+AI skill that compresses the OCI Solutions Architect's cycle from customer discovery to architecture proposal — from days to hours.
 
 ## Project Structure
 
 ```
-oci-deal-accelerator/
-├── CLAUDE.md                           # This file
-├── prompts/
-│   └── deal-accelerator.md             # Main system prompt for the Deal Accelerator
-├── kb/
-│   └── well-architected/
-│       ├── security-compliance.yaml    # Pillar 1: Security & Compliance checks
-│       ├── reliability-resilience.yaml # Pillar 2: Reliability & Resilience checks
-│       ├── performance-cost.yaml       # Pillar 3: Performance & Cost checks
-│       ├── operational-efficiency.yaml # Pillar 4: Operational Efficiency checks
-│       ├── distributed-cloud.yaml      # Pillar 5: Distributed Cloud checks
-│       ├── landing-zones.yaml          # OCI Landing Zone patterns
-│       └── personas.yaml              # Role-to-pillar output targeting
-├── templates/
-│   ├── workload-profile.yaml          # Discovery output template
-│   ├── scorecard.yaml                 # WA Scorecard output template
-│   └── adr-template.md               # Architecture Decision Record template
-├── scripts/
-│   ├── validate-architecture.py       # WA validation engine
-│   └── oci_diagram_gen.py             # .drawio diagram generator (OCI official styles)
-└── examples/
-    ├── sample-architecture.yaml       # Example architecture (e-commerce)
-    ├── sample-workload-profile.yaml   # Example workload profile
-    ├── diagram-spec.yaml              # Example diagram spec (YAML → .drawio)
-    └── ecommerce-architecture.drawio  # Generated diagram (open in draw.io)
+├── SKILL.md                    # LLM system prompt (the skill itself)
+├── README.md                   # Project overview and quick start
+├── CLAUDE.md                   # This file (dev guide)
+├── kb/                         # Knowledge Base
+│   ├── services/               # One YAML per OCI service (what, when, gotchas)
+│   ├── patterns/               # Composable architecture blocks
+│   │   ├── database-ha/        # HA patterns (Active Data Guard, etc.)
+│   │   ├── database-dr/        # DR patterns
+│   │   ├── compute-scaling/    # Auto-scaling, OKE patterns
+│   │   ├── networking-hub-spoke/ # Hub-spoke via DRG
+│   │   ├── security-baseline/  # CIS baseline, security controls
+│   │   └── compliance-pci/     # PCI-DSS overlay
+│   ├── sizing/                 # CPU conversion ratios, IOPS, scaling rules
+│   ├── pricing/                # Simplified pricing for estimation
+│   ├── competitive/            # AWS/Azure/GCP service mapping
+│   ├── well-architected/       # 5-pillar WA Framework checklists
+│   ├── diagram/                # Diagram styles (OCI Toolkit v24.2)
+│   └── field-knowledge/        # Real-world gotchas and lessons learned
+├── tools/                      # Python tooling
+│   └── oci_diagram_gen.py      # .drawio diagram generator
+├── scripts/                    # Validation and utilities
+│   ├── oci_diagram_gen.py      # Diagram generator (also in tools/)
+│   └── validate-architecture.py # WA validation engine
+├── config/
+│   └── service-categories.yaml # Service → color/category mapping
+├── templates/                  # Output templates (workload profile, scorecard, ADR)
+└── examples/                   # Example specs and generated outputs
 ```
 
-## Flow
+## Workflow
 
 ```
-Discovery → Workload Profile → Architecture Composition → WA Validation → Outputs
+Discovery Notes → Workload Profile → Architecture Composition → WA Validation → Outputs
 ```
 
-1. **Discovery**: Gather customer requirements using structured questions
-2. **Workload Profile**: Capture findings in `templates/workload-profile.yaml` format
-3. **Architecture Composition**: Design OCI architecture based on workload profile
-4. **WA Validation**: Auto-validate against 5 Well-Architected pillars (kb/well-architected/)
-5. **Outputs**: ADRs, cost estimates, diagrams, scorecard, roadmap
+1. **Discovery**: Unstructured notes parsed into structured Workload Profile (YAML)
+2. **Composition**: Services selected from `kb/services/`, composed from `kb/patterns/`, sized from `kb/sizing/`
+3. **Validation**: Auto-validated against 5 WA pillars (`kb/well-architected/`)
+4. **Outputs**: ADRs, cost estimate, .drawio diagram, scorecard, risk register
 
-## Well-Architected Framework
-
-Reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
-
-The 5 pillars are defined as YAML checklists in `kb/well-architected/`. Each check has:
-- `auto_detect` rules (pass_if / gap_if)
-- `severity` (HIGH / MEDIUM / LOW)
-- `applies_when` conditions based on workload profile flags
-
-## Running Validation
+## Running Tools
 
 ```bash
+# Generate diagram
+python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
+
+# Run WA validation
 python scripts/validate-architecture.py \
   --profile examples/sample-workload-profile.yaml \
   --architecture examples/sample-architecture.yaml \
-  --output scorecard-output.yaml
+  --output scorecard.yaml
 ```
 
-## Generating Diagrams
+## Key Principles
 
-```bash
-python scripts/oci_diagram_gen.py \
-  --spec examples/diagram-spec.yaml \
-  --output architecture.drawio
-```
-
-The generator produces `.drawio` files matching Oracle's OCI Style Guide v24.2:
-- Dashed burnt orange VCN/Subnet borders (#AE562C)
-- Teal service blocks (#2D5967), copper for databases (#AA643B), purple for integration (#804998)
-- Proper container hierarchy: Tenancy → Region → VCN → Subnet → Services
-- Opens directly in draw.io with no library imports needed
-
-## Key Design Decisions
-
-- Validation is **automatic** — inferred from architecture + workload profile, no manual checklists
-- Scorecard is a **standard output** alongside ADRs, cost estimates, and diagrams
-- Output emphasis is **persona-driven** based on `decision_drivers.political.primary_audience`
-- Checks are **conditional** — only applicable checks are evaluated based on workload flags
+- **Empirical over theoretical** — cite metrics, not marketing
+- **Simplicity first** — complexity must be earned
+- **Honest about limitations** — acknowledge OCI gaps
+- **Composable** — patterns combine, not monolithic templates
+- **KB is the moat** — field experience, not documentation regurgitation

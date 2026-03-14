@@ -1,0 +1,69 @@
+# OCI Service: Oracle Container Engine for Kubernetes (OKE)
+# Last verified: 2026-03
+
+service:
+  name: "Oracle Container Engine for Kubernetes (OKE)"
+  id: oke
+  category: infrastructure
+  color: "#2D5967"
+
+description: "Managed Kubernetes service with Oracle-optimized control plane, integrated with OCI networking, IAM, and observability."
+
+when_to_use:
+  - "Containerized applications (microservices, 12-factor apps)"
+  - "Need horizontal auto-scaling for application tier"
+  - "Multi-team environments needing namespace isolation"
+  - "CI/CD-driven deployments"
+  - "Workloads requiring service mesh, ingress controllers"
+
+when_not_to_use:
+  - "Simple stateless functions → use OCI Functions instead"
+  - "Single monolithic app with no container strategy → use Compute VMs"
+  - "Team has no Kubernetes experience and timeline is tight"
+  - "Batch processing only → consider OCI Data Flow or Compute"
+
+variants:
+  - id: oke_managed
+    name: "OKE Managed Nodes"
+    description: "Customer manages worker nodes (OS patching, scaling config)"
+  - id: oke_virtual
+    name: "OKE Virtual Nodes"
+    description: "Serverless worker nodes — no OS management, pay per pod"
+    use_when:
+      - "Want zero node management overhead"
+      - "Bursty workloads with variable pod count"
+      - "Cost optimization for intermittent workloads"
+
+sizing:
+  control_plane: "Free (managed by Oracle)"
+  worker_nodes:
+    recommended_shapes:
+      - "VM.Standard.E4.Flex (general purpose, best price/performance)"
+      - "VM.Standard.A1.Flex (ARM/Ampere, 30-50% cheaper for compatible workloads)"
+      - "VM.Standard3.Flex (Intel, when Intel compatibility required)"
+      - "VM.GPU.A10.1 / VM.GPU.A100 (GPU workloads)"
+    sizing_guidance: "Start with 3 nodes across fault domains for HA. Size OCPUs based on aggregate pod CPU requests + 20% headroom."
+
+gotchas:
+  - id: oke_lb_shape
+    severity: LOW
+    description: "OKE creates OCI Load Balancers for LoadBalancer-type services. Default is 10 Mbps flexible — adjust annotation for production bandwidth."
+
+  - id: oke_cni_choice
+    severity: MEDIUM
+    description: "VCN-Native Pod Networking (OCI CNI) gives pods VCN IPs directly — better for NSG integration but consumes subnet IPs. Flannel overlay is simpler but no direct VCN integration."
+
+  - id: oke_pv_block_volume
+    severity: LOW
+    description: "Persistent volumes use OCI Block Volumes. For ReadWriteMany, use OCI File Storage (FSS) CSI driver."
+
+implied_dependencies:
+  - service: vcn
+    reason: "Worker nodes and pods need VCN subnets"
+  - service: load_balancer
+    reason: "Ingress traffic to services"
+  - service: block_storage
+    reason: "Persistent volumes for stateful pods"
+
+references:
+  documentation: "https://docs.oracle.com/en-us/iaas/Content/ContEng/home.htm"

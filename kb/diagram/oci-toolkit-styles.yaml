@@ -1,0 +1,138 @@
+# OCI Diagram Toolkit Styles Reference
+# Extracted from OCI Architecture Diagram Toolkit v24.2
+# Source: https://docs.oracle.com/en-us/iaas/Content/General/Reference/graphicsfordiagrams.htm
+
+color_palette:
+  # Service block colors
+  infra_teal: "#2D5967"
+  database_copper: "#AA643B"
+  integration_purple: "#804998"
+
+  # Background colors
+  region_fill: "#F5F4F2"
+  ad_fill: "#DFDCD8"
+  subnet_fill: "#FCFBFA"
+
+  # Text and border colors
+  primary_text: "#312D2A"    # NEVER use pure black
+  secondary_text: "#70665E"  # Muted labels, titles
+  container_border: "#9E9892"
+  vcn_subnet_border: "#AE562C"  # Burnt orange — signature OCI visual
+  connector_gray: "#706E6F"
+  near_black: "#161513"     # Darkest accent (rare)
+
+  # Special
+  dormant_fill: "#DFDCD8"
+  dormant_border: "#9E9892"
+  dormant_text: "#70665E"
+  legacy_fill: "#70665E"
+
+typography:
+  font_family: "Oracle Sans"
+  fallback: "Segoe UI, Helvetica Neue, Arial, sans-serif"
+  container_labels: "11-12px, #312D2A"
+  service_labels: "8-9px, #FFFFFF on colored background"
+  title: "10px, italic, #70665E"
+  rule: "Text is NEVER pure black — always #312D2A"
+
+container_styles:
+  tenancy:
+    border: "dashed #9E9892"
+    fill: "none"
+    stroke_width: 1
+    text: "#312D2A"
+
+  region:
+    border: "solid #9E9892"
+    fill: "#F5F4F2"
+    stroke_width: 1
+    rounded: true
+    arc_size: 10
+    text: "#312D2A"
+    notes: "ONLY container with solid fill"
+
+  availability_domain:
+    border: "solid #9E9892"
+    fill: "#DFDCD8"
+    stroke_width: 1
+    rounded: true
+    arc_size: 1
+    text: "#312D2A"
+    font_style: "bold"
+
+  vcn:
+    border: "dashed #AE562C"
+    fill: "none"
+    stroke_width: 2
+    text: "#AE562C"
+    notes: "SIGNATURE ORACLE VISUAL — thick dashed burnt orange"
+
+  subnet:
+    border: "dashed #AE562C"
+    fill: "#FCFBFA"
+    stroke_width: 1
+    text: "#AE562C"
+    rounded: true
+    arc_size: 3
+    notes: "Thinner than VCN, near-white fill"
+
+  compartment:
+    border: "dashed #9E9892"
+    fill: "none"
+    stroke_width: 1
+    text: "#312D2A"
+    notes: "Same as Tenancy"
+
+service_block_style:
+  common: "rounded=1; strokeColor=none; fontColor=#FFFFFF; fontSize=8; fontFamily=Oracle Sans; arcSize=8"
+  vary: "fillColor per category"
+  dormant: "fillColor=#DFDCD8; strokeColor=#9E9892; fontColor=#70665E; fontStyle=2 (italic)"
+
+connection_styles:
+  standard:
+    color: "#706E6F"
+    stroke_width: 1
+    style: "solid"
+    arrows: "end only"
+
+  database:
+    color: "#AA643B"
+    stroke_width: 1.5
+    style: "solid"
+    arrows: "end only"
+
+  data_guard:
+    color: "#AE562C"
+    stroke_width: 2
+    style: "dashed (10 6)"
+    arrows: "end only"
+
+  fastconnect:
+    color: "#804998"
+    stroke_width: 2
+    style: "solid"
+    arrows: "bidirectional"
+
+  migration:
+    color: "#706E6F"
+    stroke_width: 1.5
+    style: "dashed (12 6)"
+    arrows: "end only"
+
+  etl_event:
+    color: "#804998"
+    stroke_width: 1
+    style: "dashed"
+    arrows: "end only"
+
+design_rules:
+  - "VCN/Subnet borders are ALWAYS dashed burnt orange #AE562C"
+  - "VCN strokeWidth=2, Subnet strokeWidth=1"
+  - "Region is the ONLY container with solid fill (#F5F4F2)"
+  - "Service blocks: solid fill, NO stroke, white text"
+  - "Text is NEVER pure black — always #312D2A"
+  - "Font is Oracle Sans"
+  - "Connectors use #706E6F gray by default"
+  - "ADG/replication arrows: dashed burnt orange"
+  - "FastConnect: solid purple, bidirectional"
+  - "Database services = copper, Integration = purple, everything else = teal"

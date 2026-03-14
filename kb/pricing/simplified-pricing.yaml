@@ -1,0 +1,92 @@
+# OCI Simplified Pricing Models
+# For estimation only — verify against oracle.com/cloud/pricing for actuals
+# Last reviewed: 2025 (verify for current rates)
+
+disclaimer: |
+  These are approximate pricing models for estimation purposes.
+  Actual pricing varies by region, commitment level, and negotiated discounts.
+  Always verify against https://www.oracle.com/cloud/pricing/
+
+compute:
+  payg:
+    e4_flex:
+      ocpu_per_hour: 0.025
+      memory_gb_per_hour: 0.0015
+      notes: "AMD EPYC. Most common general-purpose shape."
+    e5_flex:
+      ocpu_per_hour: 0.030
+      memory_gb_per_hour: 0.0018
+      notes: "AMD EPYC Gen 4."
+    a1_flex:
+      ocpu_per_hour: 0.01
+      memory_gb_per_hour: 0.001
+      notes: "ARM/Ampere. Best price/performance for compatible workloads."
+    a2_flex:
+      ocpu_per_hour: 0.013
+      memory_gb_per_hour: 0.0013
+      notes: "Ampere Gen 2."
+    standard3_flex:
+      ocpu_per_hour: 0.032
+      memory_gb_per_hour: 0.002
+      notes: "Intel Xeon."
+
+  reserved_discount:
+    one_year: "~35-40% vs PAYG"
+    three_year: "~55-65% vs PAYG"
+
+autonomous_database:
+  adb_s:
+    license_included:
+      ocpu_per_hour: 1.3441
+      storage_tb_per_month: 118.40
+    byol:
+      ocpu_per_hour: 0.3360
+      storage_tb_per_month: 118.40
+    notes: |
+      BYOL saves ~75% on compute.
+      Auto-scaling: billed per OCPU-second for additional OCPUs.
+      Exadata storage included in storage price.
+
+  adb_d:
+    notes: "Pricing based on Exadata infrastructure shape. Contact Oracle for quotes."
+
+block_volume:
+  balanced:
+    gb_per_month: 0.0255
+  higher_performance:
+    gb_per_month: 0.0340
+  ultra_high_performance:
+    gb_per_month: 0.0425
+  backup:
+    gb_per_month: 0.05
+    notes: "Incremental backups — actual cost depends on change rate"
+
+object_storage:
+  standard:
+    gb_per_month: 0.0255
+    first_10tb: "included"
+  infrequent_access:
+    gb_per_month: 0.01
+    retrieval_per_gb: 0.01
+  archive:
+    gb_per_month: 0.004
+    restore_per_gb: 0.02
+
+networking:
+  fastconnect:
+    1gbps_per_month: 300
+    10gbps_per_month: 918
+    notes: "Port fee only. Inbound data transfer: free. Outbound: standard rates."
+  load_balancer:
+    flexible_base_per_month: 27.74  # 10 Mbps minimum
+    per_mbps_per_month: 2.77
+  data_transfer:
+    inbound: "Free"
+    outbound_first_10tb: 0.0085
+    notes: "Per GB. OCI outbound is significantly cheaper than AWS/Azure."
+
+estimation_helpers:
+  monthly_hours: 730
+  monthly_from_hourly: "hourly_rate * 730"
+  byol_savings_pct: "50-75% for Oracle Database products"
+  reserved_vs_payg: "35-65% savings depending on term length"
