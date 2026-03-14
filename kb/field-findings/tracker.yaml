@@ -11,8 +11,12 @@
 # Entry format:
 #   id:             Unique identifier (FF-YYYYMM-NNN)
 #   date:           When discovered (YYYY-MM-DD)
-#   reported_by:    Who found it (name or initials)
-#   client:         Client name or anonymized reference (e.g., "Financial Services Client A")
+#   contributor:    Attribution block (replaces flat "reported_by")
+#     name:         Who found it (required)
+#     team:         Team or role (required)
+#     client:       Client name or anonymized reference (optional)
+#     context:      Brief context — PoC, migration, assessment (optional)
+#     confidence:   validated / observed / reported / inferred (required)
 #   product:        OCI product/service affected
 #   version:        Product version if relevant
 #   severity:       CRITICAL / HIGH / MEDIUM / LOW / INFO
@@ -26,6 +30,7 @@
 #   resolution:     How it was resolved
 #   affects_matrix: Feature matrix entry this relates to (if any)
 #   tags:           Searchable tags
+#   confirmations:  List of peer confirmations (optional)
 #
 # HOW TO ADD:
 # 1. Add entry at the TOP of the findings list (newest first)
@@ -75,8 +80,12 @@ findings:
 
   - id: "FF-202603-001"
     date: "2026-03-10"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
     product: "OCI CLI"
     version: "CLI 3.73.1 and 3.75.0"
     severity: "MEDIUM"
@@ -99,8 +108,12 @@ findings:
 
   - id: "FF-202603-002"
     date: "2026-03-08"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
     product: "ADB-S Dedicated Elastic Pool (DEP)"
     version: "23ai"
     severity: "HIGH"
@@ -124,8 +137,12 @@ findings:
 
   - id: "FF-202603-003"
     date: "2026-03-05"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
     product: "ADB-S Dedicated Elastic Pool (DEP)"
     version: "23ai"
     severity: "MEDIUM"
@@ -149,8 +166,12 @@ findings:
 
   - id: "FF-202603-004"
     date: "2026-03-01"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
     product: "ADB-S"
     version: "23ai"
     severity: "MEDIUM"
@@ -175,8 +196,12 @@ findings:
 
   - id: "FF-202603-005"
     date: "2026-02-20"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "observed"
     product: "ADB-S"
     version: "23ai"
     severity: "LOW"
@@ -203,8 +228,12 @@ findings:
 
   - id: "FF-202603-006"
     date: "2026-02-15"
-    reported_by: "Diego Cabrera"
-    client: "Strategic Migration Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Migration assessment"
+      confidence: "validated"
     product: "OCI DMS"
     version: "current"
     severity: "MEDIUM"
@@ -228,8 +257,12 @@ findings:
 
   - id: "FF-202603-007"
     date: "2026-02-10"
-    reported_by: "Diego Cabrera"
-    client: "Pepe SRL"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Pepe SRL"
+      context: "Discovery engagement"
+      confidence: "validated"
     product: "ADB-S"
     version: "23ai"
     severity: "INFO"
@@ -256,8 +289,12 @@ findings:
   # =========================================================================
   # - id: "FF-YYYYMM-NNN"
   #   date: "YYYY-MM-DD"
-  #   reported_by: ""
-  #   client: ""
+  #   contributor:
+  #     name: ""
+  #     team: ""
+  #     client: ""            # Optional — anonymize if sensitive
+  #     context: ""           # Optional — PoC, migration, assessment
+  #     confidence: ""        # validated / observed / reported / inferred
   #   product: ""
   #   version: ""
   #   severity: ""  # CRITICAL / HIGH / MEDIUM / LOW / INFO
@@ -272,3 +309,4 @@ findings:
   #   resolution: null
   #   affects_matrix: null  # Feature matrix entry name, or null
   #   tags: []
+  #   confirmations: []     # Peer confirmations

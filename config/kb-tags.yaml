@@ -1,0 +1,56 @@
+# =============================================================================
+# KB TAG TAXONOMY
+# =============================================================================
+#
+# Standardized tags for consistent search and categorization across all KB files.
+# The CLI validates tags against this taxonomy and suggests corrections for
+# unknown tags using fuzzy matching.
+#
+# Referenced by: tools/findings_cli.py, tools/kb_linter.py
+# =============================================================================
+
+---
+taxonomy:
+  products:
+    - adb-s
+    - adb-d
+    - dep
+    - exacs
+    - dbcs
+    - oke
+    - functions
+    - vcn
+    - drg
+    - fastconnect
+    - dms
+    - goldengate
+    - data-safe
+    - vault
+
+  versions:
+    - 19c
+    - 21c
+    - 23ai
+    - 26ai
+
+  categories:
+    - ha
+    - dr
+    - security
+    - networking
+    - performance
+    - migration
+    - cost
+    - sizing
+    - compliance
+
+  severity_tags:
+    - blocker
+    - workaround-available
+    - cosmetic
+
+  lifecycle:
+    - design
+    - migration
+    - day2
+    - decommission

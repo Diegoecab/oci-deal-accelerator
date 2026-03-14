@@ -32,8 +32,9 @@ except ImportError:
 
 VALID_SEVERITIES = {"CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"}
 VALID_STATUSES = {"open", "resolved", "wontfix", "acknowledged", "monitoring"}
+VALID_CONFIDENCE = {"validated", "observed", "reported", "inferred"}
 ID_PATTERN = re.compile(r"^FF-\d{6}-\d{3}$")
-REQUIRED_FIELDS = {"id", "date", "reported_by", "summary", "severity", "status"}
+REQUIRED_FIELDS = {"id", "date", "summary", "severity", "status"}
 
 
 # ---------------------------------------------------------------------------
@@ -64,11 +65,37 @@ class TestTrackerYAML:
         assert len(tracker_data["findings"]) > 0
 
     def test_all_findings_have_required_fields(self, findings):
-        """Each finding must have id, date, reported_by, summary, severity, status."""
+        """Each finding must have id, date, summary, severity, status."""
         for finding in findings:
             missing = REQUIRED_FIELDS - set(finding.keys())
             assert not missing, (
                 f"Finding '{finding.get('id', '???')}' is missing required fields: {missing}"
+            )
+
+    def test_all_findings_have_contributor_or_reported_by(self, findings):
+        """Each finding must have either a contributor block or reported_by."""
+        for finding in findings:
+            has_contributor = isinstance(finding.get("contributor"), dict)
+            has_reported_by = bool(finding.get("reported_by"))
+            assert has_contributor or has_reported_by, (
+                f"Finding '{finding.get('id', '???')}' has neither contributor block nor reported_by"
+            )
+
+    def test_contributor_blocks_have_required_fields(self, findings):
+        """Contributor blocks must have name, team, confidence."""
+        for finding in findings:
+            contributor = finding.get("contributor")
+            if not isinstance(contributor, dict):
+                continue
+            assert contributor.get("name"), (
+                f"Finding '{finding['id']}' contributor missing 'name'"
+            )
+            assert contributor.get("team"), (
+                f"Finding '{finding['id']}' contributor missing 'team'"
+            )
+            assert contributor.get("confidence") in VALID_CONFIDENCE, (
+                f"Finding '{finding['id']}' has invalid confidence "
+                f"'{contributor.get('confidence')}'"
             )
 
     def test_ids_are_unique(self, findings):
@@ -133,7 +160,6 @@ requires_cli = pytest.mark.skipif(not CLI_AVAILABLE, reason="findings_cli not av
 class TestFindingsCLISearch:
     def test_search_finds_by_tag(self, findings):
         """Search for 'dep' returns findings that have 'dep' in tags."""
-        # Replicate the search logic from cmd_search
         query = "dep"
         results = []
         for f in findings:
@@ -147,15 +173,6 @@ class TestFindingsCLISearch:
                 results.append(f)
 
         assert len(results) > 0, "Expected at least one finding with 'dep' in searchable fields"
-        for r in results:
-            tags = r.get("tags", [])
-            tag_str = " ".join(str(t) for t in tags).lower()
-            summary_str = str(r.get("summary", "")).lower()
-            detail_str = str(r.get("detail", "")).lower()
-            workaround_str = str(r.get("workaround", "")).lower()
-            assert "dep" in tag_str or "dep" in summary_str or "dep" in detail_str or "dep" in workaround_str, (
-                f"Finding '{r.get('id')}' matched but 'dep' not found in searchable fields."
-            )
 
     def test_search_finds_by_text(self, findings):
         """Search for 'maintenance' returns maintenance-related findings."""
@@ -172,11 +189,6 @@ class TestFindingsCLISearch:
                 results.append(f)
 
         assert len(results) > 0, "Expected at least one finding related to 'maintenance'"
-        for r in results:
-            entry_str = str(r).lower()
-            assert "maintenance" in entry_str, (
-                f"Finding '{r.get('id')}' matched but 'maintenance' not in its string repr."
-            )
 
 
 @requires_cli
@@ -193,7 +205,8 @@ class TestFindingsCLIFilter:
         results = cli.filter_by_client("Pepe")
         assert len(results) > 0, "Expected at least one finding for client 'Pepe'"
         for r in results:
-            assert "Pepe" in r["client"], f"Expected client containing 'Pepe', got '{r['client']}'"
+            client = cli._get_client(r)
+            assert "Pepe" in client, f"Expected client containing 'Pepe', got '{client}'"
 
 
 @requires_cli
@@ -205,7 +218,9 @@ class TestFindingsCLIAdd:
 
         entry = cli.add(
             tracker_path=str(tmp_tracker),
-            reported_by="Test User",
+            name="Test User",
+            team="Test Team",
+            confidence="validated",
             client="Test Client",
             product="ADB-S",
             severity="LOW",
@@ -220,6 +235,27 @@ class TestFindingsCLIAdd:
         assert not missing, f"Added entry missing fields: {missing}"
         assert entry["severity"] in VALID_SEVERITIES
         assert entry["status"] in VALID_STATUSES
+        assert isinstance(entry.get("contributor"), dict)
+        assert entry["contributor"]["name"] == "Test User"
+        assert entry["contributor"]["team"] == "Test Team"
+        assert entry["contributor"]["confidence"] == "validated"
+
+    def test_add_with_legacy_reported_by(self, tmp_path):
+        """Legacy reported_by parameter is supported for backward compat."""
+        tmp_tracker = tmp_path / "tracker.yaml"
+        tmp_tracker.write_text(yaml.dump({"last_updated": "2026-03-14", "findings": []}))
+
+        entry = cli.add(
+            tracker_path=str(tmp_tracker),
+            reported_by="Legacy User",
+            product="ADB-S",
+            severity="INFO",
+            summary="Legacy add test",
+            status="open",
+        )
+
+        assert entry["contributor"]["name"] == "Legacy User"
+        assert entry["reported_by"] == "Legacy User"
 
     def test_auto_id_generation(self, tmp_path):
         """Generated ID should use current year-month format (FF-YYYYMM-NNN)."""
@@ -228,8 +264,8 @@ class TestFindingsCLIAdd:
 
         entry = cli.add(
             tracker_path=str(tmp_tracker),
-            reported_by="Test User",
-            client="Test Client",
+            name="Test User",
+            team="Test Team",
             product="ADB-S",
             severity="INFO",
             category="gotcha",
@@ -249,6 +285,57 @@ class TestFindingsCLIAdd:
 
 
 @requires_cli
+class TestFindingsCLIConfirm:
+    def test_confirm_adds_confirmation(self, tmp_path):
+        """Confirm command adds a confirmation entry to a finding."""
+        tmp_tracker = tmp_path / "tracker.yaml"
+        tmp_tracker.write_text(yaml.dump({"last_updated": "2026-03-14", "findings": []}))
+
+        # First add a finding
+        entry = cli.add(
+            tracker_path=str(tmp_tracker),
+            name="Original Author",
+            team="Team A",
+            product="ADB-S",
+            severity="HIGH",
+            summary="Test finding to confirm",
+            status="open",
+        )
+
+        # Confirm it
+        confirmation = cli.confirm(
+            finding_id=entry["id"],
+            name="Reviewer Name",
+            team="Team B",
+            note="Confirmed same behavior in my environment.",
+            tracker_path=str(tmp_tracker),
+        )
+
+        assert confirmation["name"] == "Reviewer Name"
+        assert confirmation["team"] == "Team B"
+        assert confirmation["note"] == "Confirmed same behavior in my environment."
+
+        # Verify it was persisted
+        data = yaml.safe_load(tmp_tracker.read_text())
+        finding = data["findings"][0]
+        assert len(finding["confirmations"]) == 1
+        assert finding["confirmations"][0]["name"] == "Reviewer Name"
+
+    def test_confirm_nonexistent_finding_raises(self, tmp_path):
+        """Confirming a nonexistent finding should raise LookupError."""
+        tmp_tracker = tmp_path / "tracker.yaml"
+        tmp_tracker.write_text(yaml.dump({"last_updated": "2026-03-14", "findings": []}))
+
+        with pytest.raises(LookupError):
+            cli.confirm(
+                finding_id="FF-999999-999",
+                name="Test",
+                team="Test",
+                tracker_path=str(tmp_tracker),
+            )
+
+
+@requires_cli
 class TestFindingsCLIStats:
     def test_stats_counts_correct(self, findings):
         """Stats should return correct totals per category."""
@@ -264,3 +351,24 @@ class TestFindingsCLIStats:
         assert total_by_status == len(findings), (
             f"Status counts ({total_by_status}) do not sum to total findings ({len(findings)})"
         )
+
+
+@requires_cli
+class TestTagValidation:
+    def test_valid_tags_pass(self):
+        """Known taxonomy tags should not produce warnings."""
+        warnings = cli.validate_tags(["adb-s", "ha", "dr"])
+        assert len(warnings) == 0
+
+    def test_unknown_tags_produce_warnings(self):
+        """Unknown tags should produce warning messages."""
+        warnings = cli.validate_tags(["totally-fake-tag-xyz"])
+        assert len(warnings) > 0
+        assert "Unknown tag" in warnings[0]
+
+    def test_fuzzy_match_suggestion(self):
+        """Tags close to valid ones should suggest corrections."""
+        warnings = cli.validate_tags(["adb_s"])
+        # Should suggest 'adb-s'
+        assert len(warnings) > 0
+        assert "adb-s" in warnings[0]

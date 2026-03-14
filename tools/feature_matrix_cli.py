@@ -22,6 +22,8 @@ import sys
 from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 
+VALID_CONFIDENCE = {"validated", "observed", "reported", "inferred"}
+
 import yaml
 
 
@@ -445,6 +447,25 @@ def cmd_update(args: argparse.Namespace) -> None:
     if args.notes:
         cell["notes"] = args.notes
 
+    # Add contributor attribution if provided
+    contributor_name = getattr(args, "name", None)
+    contributor_team = getattr(args, "team", None)
+    if contributor_name and contributor_team:
+        contributor = {
+            "name": contributor_name,
+            "team": contributor_team,
+            "date": date.today().isoformat(),
+        }
+        confidence = getattr(args, "confidence", None)
+        if confidence and confidence in VALID_CONFIDENCE:
+            contributor["confidence"] = confidence
+        cell["contributor"] = contributor
+
+    # Add field_finding_ref if provided
+    field_ref = getattr(args, "field_finding_ref", None)
+    if field_ref:
+        cell["field_finding_ref"] = field_ref
+
     feature["matrix"][args.deployment][args.version] = cell
 
     # Update last_verified at root
@@ -584,6 +605,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_update.add_argument("version", help="Version id.")
     p_update.add_argument("--status", required=True, help="New status value.")
     p_update.add_argument("--notes", default=None, help="Optional notes for the cell.")
+    p_update.add_argument("--name", default=None, help="Contributor name for attribution.")
+    p_update.add_argument("--team", default=None, help="Contributor team for attribution.")
+    p_update.add_argument("--confidence", default=None, help="Confidence level: validated/observed/reported/inferred.")
+    p_update.add_argument("--field-finding-ref", default=None, help="Reference to field finding ID.")
 
     # --- export ---
     p_export = subparsers.add_parser(

@@ -1,0 +1,40 @@
+# =============================================================================
+# KB DOMAIN OWNERSHIP
+# =============================================================================
+#
+# Each KB area has an owner responsible for quality and freshness.
+# The owner doesn't write everything — they ensure content is reviewed
+# and up to date on the specified cadence.
+#
+# Referenced by: tools/kb_linter.py, tools/kb_cli.py
+# =============================================================================
+
+---
+domains:
+  - area: "kb/services/"
+    owner: { name: "Diego Cabrera", team: "Field Architecture" }
+    review_cadence: "quarterly"
+
+  - area: "kb/patterns/"
+    owner: { name: "Diego Cabrera", team: "Field Architecture" }
+    review_cadence: "quarterly"
+
+  - area: "kb/compatibility/"
+    owner: { name: "TBD", team: "Database Specialists" }
+    review_cadence: "on Oracle version release + quarterly"
+
+  - area: "kb/pricing/"
+    owner: { name: "TBD", team: "Solution Engineering" }
+    review_cadence: "monthly (pricing changes frequently)"
+
+  - area: "kb/competitive/"
+    owner: { name: "TBD", team: "Competitive Intelligence" }
+    review_cadence: "quarterly + on competitor announcements"
+
+  - area: "kb/field-findings/"
+    owner: { name: "All", team: "Everyone contributes" }
+    review_cadence: "continuous"
+
+  - area: "kb/well-architected/"
+    owner: { name: "TBD", team: "Cloud Architecture" }
+    review_cadence: "on Oracle WA Framework updates"

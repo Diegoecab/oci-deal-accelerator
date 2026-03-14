@@ -94,3 +94,8 @@ competitive_notes:
 references:
   documentation: "https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/exaoverview.htm"
   pricing: "https://www.oracle.com/cloud/price-list/#exadata"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with shapes, sizing, gotchas, dependencies"
