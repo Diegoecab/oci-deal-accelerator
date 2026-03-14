@@ -139,3 +139,8 @@ references:
   documentation: "https://docs.oracle.com/en/cloud/paas/autonomous-database/"
   pricing: "https://www.oracle.com/autonomous-database/pricing/"
   sizing_guide: "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-database-cpu.html"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with sizing rules, gotchas, competitive notes, HA/DR options"

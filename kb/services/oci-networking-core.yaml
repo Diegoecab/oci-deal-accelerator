@@ -90,3 +90,8 @@ gotchas:
 references:
   documentation: "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm"
   vcn_best_practices: "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/bestpractices.htm"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with VCN, subnets, gateways, DRG design rules and gotchas"

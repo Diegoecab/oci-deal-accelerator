@@ -67,3 +67,8 @@ implied_dependencies:
 
 references:
   documentation: "https://docs.oracle.com/en-us/iaas/Content/ContEng/home.htm"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with managed/virtual nodes, sizing, gotchas, dependencies"

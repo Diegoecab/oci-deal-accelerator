@@ -17,6 +17,12 @@
 #   BROKEN    — Documented as available but does not work (see field_finding ref)
 #   UNTESTED  — Not yet verified by the team
 #
+# Cell format (enhanced with attribution):
+#   status:           Required — one of the status values above
+#   notes:            Optional — concise description of caveats
+#   contributor:      Optional — attribution block (name, team, date, confidence)
+#   field_finding_ref: Optional — link to field finding ID (e.g., FF-202603-008)
+#
 # To edit: add/modify entries and update last_verified. Keep notes concise.
 # =============================================================================
 
@@ -233,13 +239,29 @@ features:
       adb_s_ep:
         "23ai": { status: "GA_CAVEAT", notes: "Billing starts at AVAILABLE. Co-location at next maintenance window. Pool can't auto-scale." }
       adb_d_dep:
-        "23ai": { status: "GA_CAVEAT", notes: "Provisioning days-weeks. ADG must be disabled before joining. Maintenance window immutable. Saturday/Sunday default." }
+        "23ai":
+          status: "GA_CAVEAT"
+          notes: "Provisioning days-weeks. ADG must be disabled before joining. Maintenance window immutable. Saturday/Sunday default."
+          contributor:
+            name: "Diego Cabrera"
+            team: "Field Architecture"
+            date: "2026-03-14"
+            confidence: "validated"
+          field_finding_ref: "FF-202603-002"
 
   - name: "Cross-Region Read Offload (ProxySQL/Refreshable Clone)"
     category: "operations"
     matrix:
       adb_s:
-        "23ai": { status: "LIMITED", notes: "Architecturally impossible without pre-provisioned Elastic Pool in Region B post-switchover. Mitigation for planned: DBMS_PROXY_SQL.DISABLE_READ_ONLY_OFFLOAD. For unplanned: OCI Events + Functions." }
+        "23ai":
+          status: "LIMITED"
+          notes: "Architecturally impossible without pre-provisioned Elastic Pool in Region B post-switchover. Mitigation for planned: DBMS_PROXY_SQL.DISABLE_READ_ONLY_OFFLOAD. For unplanned: OCI Events + Functions."
+          contributor:
+            name: "Diego Cabrera"
+            team: "Field Architecture"
+            date: "2026-03-14"
+            confidence: "validated"
+          field_finding_ref: "FF-202603-005"
         "26ai": { status: "UNTESTED", notes: "Same architectural constraint expected to persist." }
 
   - name: "OCI CLI Management"
