@@ -1,0 +1,82 @@
+---
+last_verified: 2026-03-14
+description: OCI pricing models and discount structures.
+---
+
+models:
+  payg:
+    name: "Pay As You Go"
+    commitment: none
+    discount: none
+    billing: "Per second (compute), per hour (database), per month (storage)"
+    when_to_use:
+      - "Variable/unpredictable workloads"
+      - "Short-term projects"
+      - "Dev/test environments"
+      - "Initial cloud adoption (before committing)"
+
+  monthly_flex:
+    name: "Monthly Flex (Universal Credits)"
+    commitment: "Minimum $1,000/month or custom commitment"
+    discount: "Volume discounts on committed spend"
+    billing: "Committed credits consumed by usage"
+    when_to_use:
+      - "Steady-state production workloads"
+      - "Known baseline consumption"
+      - "Multiple services across OCI"
+    discount_tiers:
+      - spend: "$1K-$10K/month"
+        discount: "~5-10%"
+      - spend: "$10K-$50K/month"
+        discount: "~10-20%"
+      - spend: "$50K+/month"
+        discount: "~20-30% (negotiated)"
+
+  annual_flex:
+    name: "Annual Flex (Committed)"
+    commitment: "1-year or 3-year commitment"
+    discount: "Deeper discounts than monthly flex"
+    when_to_use:
+      - "Established production workloads with predictable spend"
+      - "Organizations committed to OCI long-term"
+
+  byol:
+    name: "Bring Your Own License"
+    discount: "~50% on database OCPU costs"
+    eligible:
+      - "Oracle Database Enterprise Edition"
+      - "Oracle Database Standard Edition 2"
+      - "Oracle WebLogic"
+      - "Oracle Java SE"
+    conversion: "1 processor license = 2 OCPUs"
+    when_to_use:
+      - "Existing Oracle on-prem licenses with active support"
+      - "Licenses not being used elsewhere"
+    when_NOT_to_use:
+      - "No existing licenses"
+      - "Licenses still needed for on-prem during migration"
+      - "Standard Edition workloads on ADB (requires EE)"
+
+  reserved_capacity:
+    name: "Reserved Capacity"
+    commitment: "1-year or 3-year for specific shapes"
+    discount:
+      1_year: "~35% off on-demand"
+      3_year: "~55% off on-demand"
+    when_to_use:
+      - "Known compute shapes running 24/7"
+      - "Predictable database capacity"
+    notes: "Shape-specific, less flexible than Universal Credits"
+
+estimation_approach:
+  step_1: "Calculate PAYG cost first (baseline)"
+  step_2: "Apply BYOL if customer has eligible licenses"
+  step_3: "Show savings with Monthly Flex / Annual Flex for steady-state"
+  step_4: "Compare total annual cost vs current on-prem spending"
+  step_5: "Include migration costs in year 1"
+  assumptions_to_state:
+    - "Hours per month (730 for 24/7)"
+    - "Auto-scaling hours per day (estimate)"
+    - "Data transfer volumes"
+    - "Backup retention"
+    - "Support tier"

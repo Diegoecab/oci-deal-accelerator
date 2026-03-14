@@ -1,0 +1,54 @@
+---
+last_verified: 2026-03-14
+description: OCI to Azure service mapping for competitive positioning.
+---
+
+service_mapping:
+  database:
+    - oci: "ADB-S"
+      azure: "Azure SQL Managed Instance / Azure Database for PostgreSQL"
+      oci_advantage: |
+        ADB-S runs actual Oracle Database. Azure SQL MI is SQL Server only.
+        No native Oracle database service on Azure.
+        Oracle on Azure VMs loses Exadata performance and autonomous operations.
+      azure_advantage: "Native SQL Server support if migrating from SQL Server."
+    - oci: "ExaCS"
+      azure: "Oracle Database@Azure (ExaCS in Azure datacenters)"
+      notes: |
+        Oracle Database@Azure is ExaCS running in Azure datacenters with
+        direct connectivity to Azure services. Available in select regions.
+        This is a partnership offering, not a competitive comparison.
+
+  compute:
+    - oci: "OCI Compute"
+      azure: "Azure Virtual Machines"
+      oci_advantage: "Flexible shapes, lower cost for Oracle workloads."
+      azure_advantage: "Deeper Microsoft ecosystem integration, Hybrid Benefit."
+
+  networking:
+    - oci: "OCI Interconnect with Azure"
+      azure: "Azure ExpressRoute with OCI"
+      notes: |
+        OCI and Azure have a direct interconnect in multiple regions.
+        Low-latency (<2ms) connectivity for hybrid deployments.
+        Enables Oracle DB on OCI with apps on Azure.
+
+pricing_comparison:
+  notes: |
+    For Oracle workloads, OCI is significantly cheaper:
+    - No Oracle license surcharge on OCI
+    - Exadata performance not available on Azure
+    - BYOL works better on OCI
+    - Data egress cheaper on OCI
+
+common_objections:
+  - objection: "We're an Azure shop — Microsoft is our strategic partner"
+    response: |
+      Oracle Database@Azure allows running OCI database services directly
+      in Azure datacenters. Your team stays in the Azure portal while
+      getting OCI database performance and economics.
+  - objection: "We prefer Azure SQL for our databases"
+    response: |
+      For SQL Server workloads, Azure SQL is excellent. For Oracle database
+      workloads that must remain Oracle, OCI provides superior performance
+      and cost. Consider multi-cloud: Azure for .NET/SQL Server, OCI for Oracle.

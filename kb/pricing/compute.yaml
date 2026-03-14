@@ -1,0 +1,67 @@
+---
+last_verified: 2026-03-14
+description: OCI Compute pricing for estimation purposes.
+  Prices are approximate and subject to change. Always verify with
+  OCI pricing calculator for final quotes.
+currency: USD
+---
+
+flexible_shapes:
+  VM.Standard.E5.Flex:
+    ocpu_per_hour: 0.0230
+    memory_per_gb_hour: 0.0015
+    monthly_730h:
+      ocpu: 16.79
+      memory_per_gb: 1.10
+    notes: "AMD EPYC, best price/performance for general workloads"
+
+  VM.Standard3.Flex:
+    ocpu_per_hour: 0.0360
+    memory_per_gb_hour: 0.0024
+    monthly_730h:
+      ocpu: 26.28
+      memory_per_gb: 1.75
+    notes: "Intel Xeon, for Intel-optimized workloads"
+
+  VM.Standard.A2.Flex:
+    ocpu_per_hour: 0.0100
+    memory_per_gb_hour: 0.0007
+    monthly_730h:
+      ocpu: 7.30
+      memory_per_gb: 0.51
+    notes: "Ampere Arm, best cost for Arm-compatible workloads"
+
+  VM.Optimized3.Flex:
+    ocpu_per_hour: 0.0540
+    memory_per_gb_hour: 0.0024
+    monthly_730h:
+      ocpu: 39.42
+      memory_per_gb: 1.75
+    notes: "Highest single-thread performance"
+
+gpu_shapes:
+  VM.GPU.A10.1:
+    per_hour: 2.145
+    gpu_count: 1
+    notes: "NVIDIA A10, inference workloads"
+  BM.GPU.H100.8:
+    per_hour: 39.02
+    gpu_count: 8
+    notes: "NVIDIA H100, training workloads"
+
+estimation_helpers:
+  typical_app_server:
+    config: "VM.Standard.E5.Flex, 4 OCPU, 64 GB"
+    monthly: 162.56  # (4 * 16.79) + (64 * 1.10)
+  typical_web_server:
+    config: "VM.Standard.E5.Flex, 2 OCPU, 16 GB"
+    monthly: 51.18   # (2 * 16.79) + (16 * 1.10)
+  typical_bastion:
+    config: "VM.Standard.E5.Flex, 1 OCPU, 8 GB"
+    monthly: 25.59   # (1 * 16.79) + (8 * 1.10)
+
+discounts:
+  preemptible: "~50% off on-demand"
+  reserved_1yr: "~35% off on-demand"
+  reserved_3yr: "~55% off on-demand"
+  universal_credits: "Volume discounts on committed spend"

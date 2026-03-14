@@ -1,0 +1,80 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database Dedicated (ADB-D)
+category: database
+oci_color: "#AA643B"
+---
+
+what: Autonomous Database on dedicated Exadata infrastructure. Provides isolation,
+  higher resource limits, and more control while retaining autonomous operations
+  (auto-patching, auto-tuning, auto-scaling).
+
+when_to_use:
+  - Regulatory/compliance requirement for dedicated infrastructure
+  - Need for container database (CDB) level control
+  - Sustained workloads >128 OCPUs per database
+  - Multiple databases that benefit from shared Exadata infrastructure
+  - Organizations that want autonomous features but need infrastructure isolation
+  - Need to control maintenance windows precisely
+
+when_NOT_to_use:
+  - Small/medium workloads (ADB-S is simpler and cheaper)
+  - Teams that don't need infrastructure isolation
+  - Budget-constrained projects (dedicated infrastructure has higher base cost)
+  - Rapid prototyping or dev/test (ADB-S provisions faster)
+
+limits:
+  max_ocpu_per_vm_cluster: 400
+  max_adb_per_vm_cluster: 200
+  max_storage_per_vm_cluster_tb: 192
+  min_exadata_infrastructure: "Quarter rack (base)"
+  max_vm_clusters_per_infra: 8
+
+features:
+  auto_scaling: true
+  auto_indexing: true
+  auto_partitioning: true
+  autonomous_data_guard: true
+  cross_region_adg: true
+  private_endpoint: true
+  customer_managed_keys: true
+  fleet_management: true
+  maintenance_window_control: true
+  resource_pool_management: true
+  os_access: false
+  rac: false  # Not traditional RAC, but Exadata-managed HA
+
+ha_dr:
+  local_ha: "Exadata-managed, automatic failover within infrastructure"
+  autonomous_data_guard:
+    same_region: "Synchronous, automatic failover"
+    cross_region: "Asynchronous, manual or automatic failover"
+
+sizing_rules:
+  minimum_infrastructure: "Quarter rack equivalent"
+  ocpu_allocation: "Shared across all ADBs in the VM cluster"
+  storage_allocation: "Shared Exadata storage pool"
+
+pricing:
+  model: dedicated_infrastructure
+  infrastructure_base: "Exadata infrastructure (fixed cost per shape)"
+  ocpu_payg: "Per OCPU per hour on top of infrastructure"
+  byol_discount: "~50% on OCPU costs"
+  notes:
+    - "Infrastructure cost is fixed regardless of utilization"
+    - "OCPU billing is for databases provisioned on the infrastructure"
+    - "Higher base cost but better economics at scale (>128 OCPUs sustained)"
+
+gotchas:
+  - id: ADB-D-001
+    issue: "Provisioning infrastructure takes hours, not minutes"
+    impact: "Cannot spin up quickly like ADB-S"
+    recommendation: "Plan infrastructure provisioning well ahead of database needs"
+  - id: ADB-D-002
+    issue: "Minimum infrastructure commitment"
+    impact: "Even at low utilization, you pay for the base infrastructure"
+    recommendation: "Only choose ADB-D when sustained usage justifies the base cost"
+  - id: ADB-D-003
+    issue: "Maintenance windows affect all databases on the infrastructure"
+    impact: "Need to coordinate maintenance across all tenants"
+    recommendation: "Use maintenance window control to schedule during off-peak"

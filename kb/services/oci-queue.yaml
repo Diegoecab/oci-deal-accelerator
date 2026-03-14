@@ -1,0 +1,45 @@
+---
+last_verified: 2026-03-14
+service: OCI Queue
+category: integration
+oci_color: "#6B4D9A"
+---
+
+what: Fully managed serverless message queue. Supports standard queue semantics
+  with at-least-once delivery, visibility timeout, and dead letter queues.
+
+when_to_use:
+  - Decoupling microservices
+  - Work distribution across consumers
+  - Buffering requests during traffic spikes
+  - Simple pub/sub messaging without Kafka complexity
+
+when_NOT_to_use:
+  - Need strict ordering (use OCI Streaming)
+  - Need real-time streaming analytics (use OCI Streaming)
+  - Need message replay (use OCI Streaming)
+  - Complex routing/filtering (use OCI Streaming or third-party)
+
+limits:
+  max_message_size_kb: 512
+  max_retention_days: 7
+  max_queues_per_compartment: 100
+  max_channels_per_queue: 10
+  max_visibility_timeout_hours: 12
+
+features:
+  dead_letter_queue: true
+  visibility_timeout: true
+  long_polling: true
+  batched_operations: true
+  encryption_at_rest: true
+  private_endpoint: true
+
+pricing:
+  model: per_request
+  per_million_requests: 0.40
+  data_transfer: "Standard OCI egress pricing"
+  notes:
+    - "No minimum commitment"
+    - "Billed per API request (send, receive, delete)"
+    - "Very cost-effective for moderate throughput"

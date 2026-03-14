@@ -1,0 +1,57 @@
+---
+last_verified: 2026-03-14
+description: ADB-S auto-scaling behavior, timing, and sizing implications.
+---
+
+auto_scaling:
+  ocpu_scaling:
+    trigger: "CPU demand exceeds current allocation"
+    max_scale: "3x base OCPUs (up to 128 OCPU maximum)"
+    ramp_up_time: "2-3 minutes to begin scaling"
+    ramp_down_time: "After sustained low utilization (5-10 minutes)"
+    billing: "Only billed during active scaling period, per OCPU per second"
+
+  storage_scaling:
+    trigger: "Storage usage approaches allocated storage"
+    behavior: "Auto-expands storage allocation"
+    billing: "Billed for allocated storage"
+
+sizing_recommendations:
+  base_ocpu_strategy: |
+    Size base OCPUs for P75 utilization, not average.
+    Auto-scaling handles P95+ bursts, but the 2-3 minute ramp-up
+    means very short spikes may complete before scaling activates.
+
+  guidelines:
+    - scenario: "Steady OLTP workload"
+      base: "P75 utilization"
+      auto_scale: "Enable, set max to P95 or 2x base"
+    - scenario: "Highly variable workload (2x+ peak/baseline)"
+      base: "P50 utilization"
+      auto_scale: "Enable, set max to 3x base"
+    - scenario: "Batch processing with known peak times"
+      base: "Baseline requirement"
+      auto_scale: "Enable, supplement with scheduled scaling if available"
+    - scenario: "Dev/test"
+      base: "1-2 OCPUs"
+      auto_scale: "Disable to control costs"
+
+connection_impact:
+  connections_per_ocpu: 300
+  example: |
+    Base 8 OCPUs → 2,400 connections
+    Auto-scale to 16 OCPUs → 4,800 connections
+    Connection limits scale with OCPUs automatically
+
+performance_during_scaling:
+  notes:
+    - "Active sessions are not interrupted during scale-up"
+    - "New connections get additional capacity immediately"
+    - "Scale-down uses connection draining — active sessions complete normally"
+    - "Brief performance dip possible during scaling transition"
+
+gotchas:
+  - "Short bursts (<3 min) may complete before auto-scaling activates"
+  - "Very rapid burst from 0 to max can cause connection queuing"
+  - "Auto-scaling cost can surprise if workload is consistently above base"
+  - "Monitor auto-scaling events to right-size base OCPUs over time"

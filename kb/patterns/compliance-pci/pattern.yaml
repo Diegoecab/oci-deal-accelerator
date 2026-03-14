@@ -1,0 +1,94 @@
+---
+last_verified: 2026-03-14
+pattern: PCI-DSS Compliance Overlay
+category: compliance
+---
+
+description: |
+  Additional security controls required for PCI-DSS compliance on OCI.
+  Builds on top of the security-baseline pattern.
+
+pci_scope_definition:
+  cardholder_data_environment:
+    - "Databases storing PAN (Primary Account Number)"
+    - "Application servers processing card data"
+    - "Network segments carrying card data"
+  out_of_scope:
+    - "Reporting databases (if no PAN)"
+    - "Development environments (if no real card data)"
+    - "Management/monitoring infrastructure"
+  recommendation: |
+    Minimize PCI scope aggressively. Use tokenization to remove PAN
+    from most systems. Only the tokenization service and payment
+    gateway should be in scope.
+
+controls:
+  network_segmentation:
+    pci_req: "Requirement 1: Network segmentation"
+    implementation:
+      - "Dedicated VCN for CDE (Cardholder Data Environment)"
+      - "NSGs restricting traffic to/from CDE"
+      - "Network Firewall for traffic inspection between CDE and non-CDE"
+      - "No internet-facing services in CDE subnet"
+      - "Document all network flows in and out of CDE"
+
+  encryption:
+    pci_req: "Requirement 3 & 4: Protect stored and transmitted data"
+    implementation:
+      - "TDE with customer-managed keys (OCI Vault) for databases"
+      - "TLS 1.2+ for all data in transit"
+      - "Column-level encryption for PAN if stored"
+      - "Key rotation per PCI requirements (annual minimum)"
+      - "Data masking for non-production environments (Data Safe)"
+
+  access_control:
+    pci_req: "Requirement 7 & 8: Access control"
+    implementation:
+      - "Dedicated compartment for CDE resources"
+      - "IAM policies restricting CDE access to authorized personnel"
+      - "MFA required for all CDE access"
+      - "Privileged access management with session recording"
+      - "Quarterly access reviews"
+
+  monitoring:
+    pci_req: "Requirement 10: Logging and monitoring"
+    implementation:
+      - "Centralized logging (OCI Logging + SIEM integration)"
+      - "Audit trail for all CDE access (OCI Audit)"
+      - "Real-time alerting for security events (Cloud Guard)"
+      - "Log retention minimum 12 months (1 year online, archive older)"
+      - "Daily log review process"
+
+  vulnerability_management:
+    pci_req: "Requirement 5 & 6: Vulnerability management"
+    implementation:
+      - "Vulnerability Scanning service for compute instances"
+      - "Data Safe security assessments for databases"
+      - "Automated patching via OS Management"
+      - "Web Application Firewall (WAF) for public endpoints"
+      - "Quarterly vulnerability scans, annual penetration tests"
+
+  dr_for_pci:
+    pci_req: "Requirement 12: DR and business continuity"
+    implementation:
+      - "Cross-region DR for CDE (same PCI controls in DR region)"
+      - "DR region must also be PCI-compliant"
+      - "Annual DR drill with PCI scope validation"
+
+oci_pci_services:
+  - service: "OCI Vault"
+    role: "Customer-managed encryption keys"
+  - service: "Data Safe"
+    role: "Database security assessment, data masking, audit"
+  - service: "Cloud Guard"
+    role: "Threat detection, security posture management"
+  - service: "WAF"
+    role: "Web application firewall for public endpoints"
+  - service: "Bastion"
+    role: "Secure access to CDE without public IPs"
+  - service: "Network Firewall"
+    role: "Traffic inspection between CDE and non-CDE"
+  - service: "Vulnerability Scanning"
+    role: "Automated vulnerability detection"
+  - service: "OS Management"
+    role: "Automated patching"

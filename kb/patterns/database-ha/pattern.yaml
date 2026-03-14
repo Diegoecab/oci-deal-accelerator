@@ -1,0 +1,87 @@
+---
+last_verified: 2026-03-14
+pattern: Database High Availability
+category: database
+---
+
+description: |
+  Patterns for achieving high availability for Oracle databases on OCI.
+  Covers ADB-S, ADB-D, ExaCS, and DBCS configurations.
+
+patterns:
+  adb_s_ha:
+    name: "ADB-S Built-in HA"
+    availability: "99.95% SLA"
+    rto: "<30 seconds"
+    rpo: "0 (synchronous)"
+    components:
+      - "ADB-S with Autonomous Data Guard (same-region)"
+      - "Automatic failover enabled"
+      - "No additional configuration needed"
+    cost_impact: "2x OCPU cost (standby billed at same rate)"
+    when_to_use:
+      - "Standard HA requirement"
+      - "Same-region protection sufficient"
+    notes:
+      - "Standby is provisioned automatically when ADG is enabled"
+      - "Failover is transparent to applications using recommended connection strings"
+      - "Switchover for planned maintenance is automatic"
+
+  adb_s_cross_region:
+    name: "ADB-S Cross-Region ADG"
+    availability: "99.95% SLA per region, survives region failure"
+    rto: "<5 minutes (automatic), <30 minutes (manual)"
+    rpo: "Seconds (asynchronous replication)"
+    components:
+      - "ADB-S primary in Region 1"
+      - "ADB-S standby in Region 2 (cross-region ADG)"
+      - "Optional: Refreshable clone in Region 2 for reporting"
+    cost_impact: "2x OCPU + inter-region data transfer"
+    when_to_use:
+      - "Compliance requires geo-redundant DR"
+      - "RTO < 30 minutes for region failure"
+      - "Business-critical workloads"
+    notes:
+      - "Cross-region ADG is asynchronous — RPO is not zero"
+      - "Automatic failover requires ADG Auto-Failover configuration"
+      - "Test failover quarterly"
+
+  exacs_rac_ha:
+    name: "ExaCS RAC High Availability"
+    availability: "99.95%+ (RAC + Data Guard)"
+    rto: "<60 seconds (RAC failover)"
+    rpo: "0 (synchronous within RAC)"
+    components:
+      - "ExaCS with multi-node RAC"
+      - "Data Guard to standby ExaCS (same or cross-region)"
+      - "Fast-Start Failover (FSFO) with Observer"
+    cost_impact: "2x infrastructure for Data Guard standby"
+    when_to_use:
+      - "Application requires RAC"
+      - "Sub-minute RTO required"
+      - "High-throughput OLTP workloads"
+
+  dbcs_ha:
+    name: "DBCS 2-Node RAC + Data Guard"
+    availability: "99.95%"
+    rto: "<60 seconds (RAC), <5 minutes (Data Guard)"
+    rpo: "0 (synchronous within region)"
+    components:
+      - "DBCS 2-node RAC (primary)"
+      - "DBCS Data Guard standby"
+    cost_impact: "3x compute (2 RAC + 1 DG standby)"
+    when_to_use:
+      - "Moderate workloads needing HA"
+      - "Budget doesn't allow Exadata"
+
+decision_tree: |
+  Need HA for Oracle Database?
+  ├── Using ADB-S?
+  │   ├── Same-region sufficient → Enable ADG (built-in)
+  │   └── Cross-region required → Cross-region ADG
+  ├── Using ExaCS?
+  │   ├── RAC for local HA
+  │   └── Data Guard for DR (same or cross-region)
+  └── Using DBCS?
+      ├── 2-node RAC for local HA
+      └── Data Guard for DR

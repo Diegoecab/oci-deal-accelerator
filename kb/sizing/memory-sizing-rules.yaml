@@ -1,0 +1,57 @@
+---
+last_verified: 2026-03-14
+description: Memory sizing guidelines for OCI compute and database workloads.
+---
+
+compute_memory:
+  flexible_shapes:
+    min_gb_per_ocpu: 1
+    max_gb_per_ocpu: 64
+    default_gb_per_ocpu: 16
+    recommendation: |
+      Start with 16 GB per OCPU for general workloads.
+      Java applications: 8-16 GB per OCPU.
+      In-memory caches (Redis, Memcached): size for data set + 20%.
+      Database client/app servers: 8 GB per OCPU usually sufficient.
+
+  common_ratios:
+    general_purpose: 16  # GB per OCPU
+    memory_intensive: 32
+    compute_intensive: 8
+    java_application: 12
+    web_server: 8
+
+database_memory:
+  adb_s:
+    notes: "Memory managed automatically by ADB. Not directly configurable."
+    sga_estimate: "~7 GB per OCPU"
+    pga_estimate: "~2.5 GB per OCPU"
+
+  exacs:
+    notes: "Memory allocated per VM cluster from Exadata infrastructure pool"
+    recommendation: "Size VM cluster memory based on SGA+PGA requirements"
+    typical_sga_per_ocpu: 8
+    typical_pga_per_ocpu: 3
+
+  dbcs:
+    notes: "Memory = compute shape memory. Choose shape accordingly."
+    recommendation: |
+      Total DB memory = SGA + PGA aggregate
+      SGA = 60-80% of available memory
+      PGA = 10-20% of available memory
+      OS overhead = 10-15%
+
+sizing_from_source:
+  on_prem_oracle_to_oci:
+    steps:
+      - "Get current SGA + PGA sizes from AWR/ASH"
+      - "Add 15% for OS overhead"
+      - "Map to compute shape with sufficient memory"
+      - "For ADB: translate to OCPU count (memory scales automatically)"
+    notes: "ADB auto-tunes memory, so OCPU sizing is the key input"
+
+  aws_rds_to_oci:
+    steps:
+      - "Note current instance class memory"
+      - "Map to equivalent OCI shape memory"
+      - "For ADB: divide memory by 10 to estimate OCPU count"

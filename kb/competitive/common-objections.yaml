@@ -1,0 +1,85 @@
+---
+last_verified: 2026-03-14
+description: Common customer objections about OCI and evidence-based responses.
+---
+
+objections:
+  - id: OBJ-001
+    category: market
+    objection: "OCI is a niche cloud — AWS/Azure are the leaders"
+    response: |
+      OCI is the #4 cloud globally and growing fastest in database PaaS.
+      For Oracle database workloads specifically, OCI is the leader:
+      - Only cloud with Exadata hardware
+      - Only cloud with Autonomous Database
+      - Best Oracle license portability
+      The question isn't "best cloud overall" but "best cloud for this workload."
+    evidence: "Gartner, IDC reports on cloud database market"
+
+  - id: OBJ-002
+    category: risk
+    objection: "What if Oracle EOLs or changes OCI pricing?"
+    response: |
+      OCI pricing has only decreased since launch. Oracle's cloud investment
+      is $50B+ in CapEx. OCI is Oracle's strategic platform — not a side project.
+      Contractual pricing protection exists via Annual Flex and Universal Credits.
+    mitigation: "Use annual flex contracts with pricing guarantees"
+
+  - id: OBJ-003
+    category: skills
+    objection: "Our team has no OCI experience"
+    response: |
+      ADB-S reduces DBA workload by 80% (no patching, tuning, scaling).
+      OCI console follows familiar cloud patterns. Terraform provider is mature.
+      Oracle provides free training and certification. Typical ramp-up is 2-4 weeks.
+    mitigation: "Include training budget in migration plan"
+
+  - id: OBJ-004
+    category: features
+    objection: "OCI doesn't have as many services as AWS"
+    response: |
+      True for breadth (AWS has 200+ services). For database and enterprise
+      workloads, OCI feature parity is strong. Key services are GA:
+      - Compute, networking, storage, Kubernetes, serverless
+      - Monitoring, logging, IAM, security
+      - Queue, Streaming, API Gateway
+      What matters is whether OCI has what *you* need, not a raw count.
+
+  - id: OBJ-005
+    category: cost
+    objection: "We can get better pricing from AWS/Azure"
+    response: |
+      OCI list prices are already 30-50% below AWS for equivalent configs.
+      For Oracle specifically:
+      - No Oracle license surcharge on OCI
+      - BYOL discount is deeper on OCI
+      - Data egress is 10x cheaper
+      Request a detailed cost comparison with matched configurations.
+
+  - id: OBJ-006
+    category: migration
+    objection: "Migration is too risky and expensive"
+    response: |
+      Oracle provides free migration tools (ZDM, DMS) and migration credits.
+      Phased migration reduces risk. ADB-S migrations from on-prem Exadata
+      are well-documented with reference architectures. Typical timeline is
+      8-16 weeks for database migration.
+    mitigation: "Phased migration with rollback plan at each phase"
+
+  - id: OBJ-007
+    category: vendor_lock
+    objection: "We don't want vendor lock-in with Oracle"
+    response: |
+      You're already locked into Oracle Database (the software). OCI doesn't
+      add lock-in — it reduces cost and operational burden of running Oracle.
+      OCI also supports open source: PostgreSQL, MySQL, Kubernetes, Terraform.
+      If you want to reduce Oracle dependency, that's a separate conversation
+      about database modernization, not cloud choice.
+
+  - id: OBJ-008
+    category: availability
+    objection: "OCI has fewer regions than AWS"
+    response: |
+      OCI has 50+ public cloud regions globally, covering all major markets.
+      If a specific region is required, check current availability.
+      For Oracle Database@Azure, OCI services run inside Azure regions.
