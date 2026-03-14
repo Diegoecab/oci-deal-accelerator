@@ -1,0 +1,49 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database Serverless Elastic Pool
+category: database
+oci_color: "#AA643B"
+---
+
+what: Pool of pre-provisioned ADB-S resources that multiple databases share.
+  Reduces provisioning time and allows resource sharing across databases.
+
+when_to_use:
+  - Many small databases (SaaS per-tenant model)
+  - Need fast provisioning (<1 minute vs 2-5 minutes for standard ADB-S)
+  - Workloads with staggered peak times across databases
+  - Dev/test environments with many short-lived databases
+
+when_NOT_to_use:
+  - Single large database (just use ADB-S directly)
+  - All databases peak simultaneously (no benefit from pooling)
+  - Need strict resource isolation between databases
+
+limits:
+  max_ocpu_per_pool: 512
+  max_databases_per_pool: 1000
+  max_storage_per_pool_tb: 4096
+
+features:
+  shared_resources: true
+  fast_provisioning: true
+  auto_scaling: "Per database within pool limits"
+  leader_follower: "Leader database manages pool, followers consume"
+
+pricing:
+  model: pool_based
+  pool_ocpu_payg: "Per OCPU per hour for the pool"
+  notes:
+    - "Pool resources are billed whether databases use them or not"
+    - "Individual databases draw from the pool allocation"
+    - "Cost-effective when average utilization across pool is >50%"
+
+gotchas:
+  - id: EP-001
+    issue: "Pool resources are committed even when idle"
+    impact: "Under-utilized pools cost more than individual ADB-S instances"
+    recommendation: "Size pool for aggregate average, not sum of peaks"
+  - id: EP-002
+    issue: "Noisy neighbor risk within pool"
+    impact: "One database can consume disproportionate resources"
+    recommendation: "Set per-database OCPU limits to prevent resource hogging"

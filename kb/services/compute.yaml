@@ -1,0 +1,73 @@
+---
+last_verified: 2026-03-14
+service: OCI Compute
+category: compute
+oci_color: "#4F7B6E"
+---
+
+what: Virtual machines and bare metal instances. Flexible shapes allow custom
+  OCPU/memory ratios. AMD, Intel, and Arm options available.
+
+shape_families:
+  - name: VM.Standard.E5.Flex
+    processor: "AMD EPYC 9J14 (Genoa)"
+    max_ocpu: 94
+    memory_per_ocpu_gb: "1-64 GB per OCPU"
+    use_for: "General purpose, most workloads"
+  - name: VM.Standard3.Flex
+    processor: "Intel Xeon (Ice Lake)"
+    max_ocpu: 32
+    memory_per_ocpu_gb: "1-64 GB per OCPU"
+    use_for: "Intel-optimized workloads"
+  - name: VM.Standard.A2.Flex
+    processor: "Ampere Altra (Arm)"
+    max_ocpu: 80
+    memory_per_ocpu_gb: "1-64 GB per OCPU"
+    use_for: "Arm-compatible workloads, cost optimization"
+  - name: VM.Optimized3.Flex
+    processor: "Intel Xeon (Ice Lake)"
+    max_ocpu: 18
+    memory_per_ocpu_gb: "1-64 GB per OCPU"
+    use_for: "High-frequency trading, HPC"
+  - name: VM.GPU.A10.1
+    processor: "NVIDIA A10"
+    gpu_count: 1
+    use_for: "AI/ML inference, GPU workloads"
+  - name: BM.GPU.H100.8
+    processor: "NVIDIA H100 (8 GPUs)"
+    gpu_count: 8
+    use_for: "AI/ML training, large model inference"
+
+when_to_use:
+  - Traditional VM-based applications
+  - Applications not suited for containers
+  - Database clients and application servers
+  - Bastion hosts and jump boxes
+  - GPU workloads (AI/ML, rendering)
+
+when_NOT_to_use:
+  - Containerized microservices (use OKE)
+  - Serverless event-driven workloads (use Functions)
+  - Managed database workloads (use ADB/DBCS)
+
+features:
+  flexible_shapes: true
+  burstable: "Burstable instances available (VM.Standard.E5.Flex.Burstable)"
+  preemptible: "Preemptible instances at reduced cost"
+  dedicated_hosts: true
+  live_migration: true
+  boot_volume_backup: true
+  instance_pools: true
+  autoscaling: "Instance pool autoscaling"
+
+pricing:
+  model: per_ocpu_per_hour
+  e5_flex_per_ocpu: 0.0230
+  standard3_flex_per_ocpu: 0.0360
+  a2_flex_per_ocpu: 0.0100
+  memory_per_gb: 0.0015
+  preemptible_discount: "~50% off on-demand"
+  notes:
+    - "Flexible shapes: OCPU + memory billed separately"
+    - "Always Free tier: 1 VM.Standard.E2.1.Micro (AMD)"
+    - "Preemptible instances can be reclaimed with 30s notice"

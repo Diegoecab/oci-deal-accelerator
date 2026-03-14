@@ -1,0 +1,74 @@
+---
+last_verified: 2026-03-14
+service: Oracle Container Engine for Kubernetes (OKE)
+category: compute
+oci_color: "#4F7B6E"
+---
+
+what: Managed Kubernetes service. Oracle manages the control plane; customer manages
+  worker nodes (or uses virtual nodes for serverless). CNCF-conformant Kubernetes.
+
+when_to_use:
+  - Containerized applications (microservices, 12-factor apps)
+  - Teams with Kubernetes expertise
+  - Need for horizontal pod autoscaling
+  - CI/CD pipelines deploying container images
+  - Multi-cloud Kubernetes strategy (standard K8s APIs)
+
+when_NOT_to_use:
+  - Simple single-binary applications (use Compute VM)
+  - Team has no container/K8s experience and no desire to learn
+  - Very small workloads where VM overhead is sufficient
+  - Stateful legacy applications not designed for containers
+
+node_types:
+  managed_nodes:
+    what: "Customer-managed worker nodes (VMs or BMs)"
+    control: "Full SSH access, custom images, flexible shapes"
+  virtual_nodes:
+    what: "Serverless container execution, no node management"
+    control: "No SSH access, limited to container configuration"
+    billing: "Per pod resource usage (OCPU-hour, GB-hour)"
+
+limits:
+  max_clusters_per_region: 50
+  max_node_pools_per_cluster: 100
+  max_nodes_per_node_pool: 1000
+  max_pods_per_node: 110
+  kubernetes_versions: "Supports N, N-1, N-2 versions"
+
+features:
+  managed_control_plane: true
+  virtual_nodes: true
+  cluster_autoscaler: true
+  horizontal_pod_autoscaler: true
+  gpu_node_pools: true
+  arm_node_pools: true
+  private_clusters: true
+  network_policies: true
+  service_mesh: "OCI Service Mesh integration"
+  container_registry: "OCI Container Registry (OCIR)"
+
+pricing:
+  control_plane: "Free (enhanced clusters have a small fee)"
+  worker_nodes: "Standard Compute pricing for node shapes"
+  virtual_nodes: "Per pod OCPU-hour and GB-hour"
+  notes:
+    - "Control plane is free for basic clusters"
+    - "Enhanced clusters: $0.10/hr per cluster"
+    - "Worker node cost = Compute instance cost"
+    - "Virtual nodes billed per pod resource consumption"
+
+gotchas:
+  - id: OKE-001
+    issue: "Cluster autoscaler can take 5-10 minutes to provision new nodes"
+    impact: "Sudden traffic spikes may not be handled instantly"
+    recommendation: "Keep warm pool of nodes or use virtual nodes for burst capacity"
+  - id: OKE-002
+    issue: "Virtual nodes don't support DaemonSets"
+    impact: "Cannot run monitoring/logging agents as DaemonSets on virtual nodes"
+    recommendation: "Use sidecar containers for monitoring on virtual nodes"
+  - id: OKE-003
+    issue: "Persistent volumes require Block Volume or File Storage"
+    impact: "Stateful workloads need CSI driver configuration"
+    recommendation: "Use OCI CSI drivers, test failover behavior with PVCs"

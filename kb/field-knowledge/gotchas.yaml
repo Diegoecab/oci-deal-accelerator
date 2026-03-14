@@ -1,0 +1,115 @@
+---
+last_verified: 2026-03-14
+description: |
+  Real-world gotchas and undocumented behaviors observed in OCI deployments.
+  These supplement official documentation with field experience.
+---
+
+gotchas:
+  - id: FF-202603-001
+    service: ADB-S
+    severity: medium
+    title: "Auto-scaling ramp-up delay"
+    description: |
+      ADB-S auto-scaling takes 2-3 minutes to activate. Workloads with
+      sudden burst patterns may experience degradation before scaling completes.
+    recommendation: "Size base OCPUs for P75, not P50, to absorb initial burst"
+    discovered: "2025-06"
+
+  - id: FF-202603-002
+    service: ADB-S
+    severity: high
+    title: "TAC replay incompatibility with UTL_HTTP"
+    description: |
+      Transparent Application Continuity (TAC) cannot replay operations
+      involving UTL_HTTP, DBMS_PIPE, or NOCACHE sequences. Applications
+      using these features will see errors during planned/unplanned failovers.
+    recommendation: "Audit PL/SQL code for non-replayable calls before migration"
+    discovered: "2024-11"
+
+  - id: FF-202603-003
+    service: ExaCS
+    severity: medium
+    title: "VM cluster modification downtime"
+    description: |
+      Modifying ExaCS VM cluster configuration (adding OCPUs, changing memory)
+      may require rolling restart of database nodes. Plan during maintenance window.
+    recommendation: "Size initial VM cluster with growth headroom"
+    discovered: "2025-02"
+
+  - id: FF-202603-004
+    service: ADB-S
+    severity: low
+    title: "DEP provisioning timeline"
+    description: |
+      Dedicated Exadata Provider (DEP) for ADB-S Elastic Pool provisioning
+      can take days to weeks depending on region capacity. Not relevant for
+      standard ADB-S, but important for Elastic Pool architectures.
+    recommendation: "Start DEP provisioning early if planning Elastic Pool deployment"
+    discovered: "2025-08"
+
+  - id: FF-202603-005
+    service: FastConnect
+    severity: medium
+    title: "Partner provisioning delays"
+    description: |
+      FastConnect partner provisioning varies from 1-6 weeks depending on
+      partner and location. Some partners require physical cross-connect
+      installation in co-location facilities.
+    recommendation: "Start FastConnect procurement 6-8 weeks before needed. Use VPN as interim."
+    discovered: "2025-01"
+
+  - id: FF-202603-006
+    service: OKE
+    severity: medium
+    title: "Cluster autoscaler node warm-up"
+    description: |
+      New nodes provisioned by cluster autoscaler take 5-10 minutes to become
+      ready (image pull, kubelet startup, pod scheduling). During this time,
+      pods remain pending.
+    recommendation: "Maintain warm pool of nodes or use virtual nodes for burst"
+    discovered: "2025-04"
+
+  - id: FF-202603-007
+    service: ADB-S
+    severity: low
+    title: "Auto Indexing visibility"
+    description: |
+      Auto Indexing creates indexes as HIDDEN by default. They're invisible
+      to the optimizer until validated (confirmed beneficial). This is by design
+      but can confuse DBAs expecting to see new indexes.
+    recommendation: "Monitor via DBMS_AUTO_INDEX views, not USER_INDEXES"
+    discovered: "2025-03"
+
+  - id: FF-202603-008
+    service: Networking
+    severity: high
+    title: "VCN CIDR overlap blocks peering"
+    description: |
+      VCN CIDR blocks cannot overlap for local or remote peering. This is
+      enforced at DRG attachment time and cannot be changed without recreating
+      VCNs. Plan IP addressing before deployment.
+    recommendation: "Document IP addressing scheme across all VCNs and on-prem networks"
+    discovered: "2024-09"
+
+  - id: FF-202603-009
+    service: ADB-S
+    severity: medium
+    title: "Cross-region ADG switchover time"
+    description: |
+      Cross-region switchover (planned) completes in 2-5 minutes for ADB-S.
+      Failover (unplanned) takes 5-15 minutes including DNS propagation.
+      Applications with hard connection timeouts may need adjustment.
+    recommendation: "Configure connection pool retry with 30-second timeout"
+    discovered: "2025-07"
+
+  - id: FF-202603-010
+    service: DBCS
+    severity: medium
+    title: "Block volume IOPS ceiling"
+    description: |
+      DBCS on VM shapes uses Block Volume for data. IOPS are capped by
+      the block volume performance tier (max 35K for Higher Performance).
+      Workloads needing >35K IOPS should use ExaCS or ADB-S.
+    recommendation: "Validate IOPS requirements before choosing DBCS over Exadata"
+    discovered: "2025-05"

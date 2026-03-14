@@ -1,0 +1,72 @@
+---
+last_verified: 2026-03-14
+pattern: Hub-and-Spoke Networking
+category: networking
+---
+
+description: |
+  Hub-and-spoke VCN topology for enterprise OCI deployments.
+  Centralizes shared services (firewalls, DNS, connectivity) in a hub VCN
+  with spoke VCNs for workloads.
+
+architecture:
+  hub_vcn:
+    purpose: "Shared services, connectivity, security inspection"
+    components:
+      - "DRG (Dynamic Routing Gateway)"
+      - "Network Firewall (optional)"
+      - "DNS resolver"
+      - "FastConnect / VPN termination"
+      - "Bastion service"
+      - "Management subnet"
+    cidr_example: "10.0.0.0/16"
+
+  spoke_vcns:
+    purpose: "Workload isolation"
+    examples:
+      - name: "Production"
+        cidr: "10.1.0.0/16"
+        subnets:
+          - "Public subnet (LB): 10.1.0.0/24"
+          - "Private subnet (App): 10.1.1.0/24"
+          - "Private subnet (DB): 10.1.2.0/24"
+      - name: "Non-Production"
+        cidr: "10.2.0.0/16"
+      - name: "DMZ"
+        cidr: "10.3.0.0/16"
+
+  connectivity:
+    hub_to_spoke: "VCN attachments via DRG"
+    spoke_to_spoke: "Transit routing through DRG (no direct peering needed)"
+    on_prem: "FastConnect or VPN to DRG in hub"
+
+when_to_use:
+  - "Multiple environments (prod, non-prod, DMZ)"
+  - "Centralized connectivity to on-prem"
+  - "Security inspection required between workloads"
+  - "Shared services (DNS, NTP, monitoring) across workloads"
+
+when_NOT_to_use:
+  - "Single-VCN deployments"
+  - "Simple architectures with 1-2 workloads"
+
+ip_planning:
+  recommendation: |
+    Plan CIDR ranges before deployment. Overlapping CIDRs prevent peering.
+    Use /16 for VCNs, /24 for subnets. Reserve ranges for future growth.
+  example_scheme:
+    hub: "10.0.0.0/16"
+    production: "10.1.0.0/16"
+    non_production: "10.2.0.0/16"
+    dmz: "10.3.0.0/16"
+    dr_region: "10.128.0.0/9"
+
+gotchas:
+  - id: HUB-001
+    issue: "DRG route table limits"
+    impact: "Max 200 route rules per DRG route table"
+    recommendation: "Aggregate routes where possible, plan for scale"
+  - id: HUB-002
+    issue: "Network Firewall throughput"
+    impact: "Inspect all traffic adds latency and cost"
+    recommendation: "Only inspect north-south and selected east-west traffic"

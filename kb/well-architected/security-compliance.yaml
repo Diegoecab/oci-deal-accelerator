@@ -1,0 +1,75 @@
+---
+last_verified: 2026-03-14
+pillar: Security & Compliance
+max_score: 20
+source: "Oracle Cloud Infrastructure Well-Architected Framework"
+---
+
+checks:
+  - id: SEC-IAM-01
+    name: "IAM Least Privilege"
+    description: "IAM policies follow least-privilege principle with compartment isolation"
+    weight: 3
+    pass_criteria: "Compartment hierarchy defined, policies scoped to minimum required access"
+    fail_impact: "Over-privileged access increases blast radius of credential compromise"
+
+  - id: SEC-IAM-02
+    name: "MFA Enforcement"
+    description: "MFA required for all human users, especially administrators"
+    weight: 2
+    pass_criteria: "MFA enabled for all IAM users, federation with MFA-enabled IdP"
+    fail_impact: "Password-only access vulnerable to credential stuffing and phishing"
+
+  - id: SEC-IAM-03
+    name: "Instance Principals"
+    description: "Workloads use instance/resource principals instead of API keys"
+    weight: 2
+    pass_criteria: "No API keys for production workloads, instance principals configured"
+    fail_impact: "API keys can be leaked, rotated manually, and are hard to audit"
+
+  - id: SEC-NET-01
+    name: "Private Subnets"
+    description: "Databases and application servers in private subnets"
+    weight: 3
+    pass_criteria: "Only load balancers and bastion hosts have public IPs"
+    fail_impact: "Public-facing databases/servers exposed to internet attacks"
+
+  - id: SEC-NET-02
+    name: "NSG Micro-segmentation"
+    description: "Network Security Groups for granular traffic control"
+    weight: 2
+    pass_criteria: "NSGs restrict traffic between tiers (web→app→db)"
+    fail_impact: "Lateral movement possible after initial compromise"
+
+  - id: SEC-ENC-01
+    name: "Encryption at Rest"
+    description: "All data encrypted at rest with appropriate key management"
+    weight: 2
+    pass_criteria: "Default encryption active, CMK for sensitive data via OCI Vault"
+    fail_impact: "Data exposure risk if storage is compromised"
+
+  - id: SEC-ENC-02
+    name: "TLS in Transit"
+    description: "All network communication encrypted with TLS 1.2+"
+    weight: 2
+    pass_criteria: "TLS enforced on load balancers, database connections, API calls"
+    fail_impact: "Data interception possible on unencrypted channels"
+
+  - id: SEC-MON-01
+    name: "Cloud Guard"
+    description: "Cloud Guard enabled for security posture management"
+    weight: 2
+    pass_criteria: "Cloud Guard configured with appropriate responder recipes"
+    fail_impact: "Misconfigurations and threats go undetected"
+
+  - id: SEC-DB-01
+    name: "Data Safe"
+    description: "Data Safe enabled for database security assessment"
+    weight: 2
+    pass_criteria: "Security assessment, user assessment, activity auditing active"
+    fail_impact: "Database vulnerabilities and anomalous access undetected"
+
+scoring:
+  pass: "16-20 points"
+  warn: "10-15 points"
+  fail: "<10 points"

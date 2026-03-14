@@ -1,0 +1,77 @@
+---
+last_verified: 2026-03-14
+service: Database Cloud Service (DBCS)
+category: database
+oci_color: "#AA643B"
+---
+
+what: Oracle Database on VM or Bare Metal in OCI. Full DBA control with
+  automated provisioning and backup. Available as single-instance or 2-node RAC.
+
+editions:
+  - Standard Edition
+  - Enterprise Edition
+  - Enterprise Edition High Performance
+  - Enterprise Edition Extreme Performance
+
+when_to_use:
+  - Standard Edition workloads (ADB requires EE)
+  - Need full OS and database control without Exadata
+  - Moderate workloads that don't need Exadata performance
+  - Budget-conscious deployments where Exadata is over-provisioned
+  - Development and test environments mirroring production DB config
+  - Applications requiring specific Oracle versions or patches
+
+when_NOT_to_use:
+  - High-performance OLTP (Exadata or ADB better)
+  - Variable workloads benefiting from auto-scaling (use ADB-S)
+  - No DBA team available (use ADB-S)
+  - Need Exadata features (Smart Scan, HCC, Flash Cache)
+
+limits:
+  vm_shapes:
+    - "VM.Standard.E5.Flex: 1-94 OCPUs"
+    - "VM.Standard3.Flex: 1-32 OCPUs"
+  bm_shapes:
+    - "BM.Standard.E5: 128 OCPUs"
+    - "BM.DenseIO.E5: 128 OCPUs with NVMe"
+  max_storage_tb: 80  # block storage
+  rac_max_nodes: 2
+
+features:
+  os_access: true
+  rac: "2-node RAC on VM shapes"
+  data_guard: true
+  cross_region_data_guard: true
+  custom_db_home: true
+  custom_patches: true
+  automated_backup: true
+  database_management: true
+
+ha_dr:
+  local_ha: "2-node RAC for HA, single-instance with automated restart"
+  data_guard:
+    same_region: "Synchronous or async, FSFO available"
+    cross_region: "Asynchronous, manual or auto failover"
+
+pricing:
+  model: per_ocpu_per_hour
+  vm_ocpu_payg: 0.1360  # per OCPU per hour (EE)
+  vm_ocpu_byol: 0.0680
+  bm_per_hour: "Fixed per shape"
+  storage: "Block Volume pricing applies"
+  notes:
+    - "VM shapes billed per enabled OCPU per hour"
+    - "BM shapes billed per hour for the full shape"
+    - "Storage is separate (Block Volume pricing)"
+    - "Backup storage at Object Storage rates"
+
+gotchas:
+  - id: DBCS-001
+    issue: "2-node RAC is maximum on VM shapes"
+    impact: "Cannot scale RAC beyond 2 nodes (use ExaCS for more)"
+    recommendation: "If >2 RAC nodes needed, evaluate ExaCS"
+  - id: DBCS-002
+    issue: "Performance limited by block storage"
+    impact: "Cannot match Exadata IOPS/latency"
+    recommendation: "Use higher performance block volumes or move to ExaCS for I/O intensive workloads"

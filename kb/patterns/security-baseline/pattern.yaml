@@ -1,0 +1,96 @@
+---
+last_verified: 2026-03-14
+pattern: Security Baseline
+category: security
+---
+
+description: |
+  Minimum security configuration for any OCI deployment. Covers IAM,
+  networking, encryption, monitoring, and compliance foundations.
+
+layers:
+  identity:
+    name: "Identity & Access Management"
+    requirements:
+      - item: "MFA for all users"
+        implementation: "Enable MFA in IAM, enforce via policy"
+        priority: critical
+      - item: "Least-privilege policies"
+        implementation: "Use compartments + IAM policies, avoid broad allow statements"
+        priority: critical
+      - item: "No API keys for production"
+        implementation: "Use instance principals or resource principals"
+        priority: high
+      - item: "Federated identity"
+        implementation: "SAML/OIDC federation with corporate IdP"
+        priority: high
+      - item: "Break-glass procedure"
+        implementation: "Documented emergency access with MFA-protected tenancy admin"
+        priority: high
+
+  network:
+    name: "Network Security"
+    requirements:
+      - item: "Private subnets for all workloads"
+        implementation: "Only load balancers and bastion in public subnets"
+        priority: critical
+      - item: "NSGs over security lists"
+        implementation: "Granular VNIC-level firewall rules"
+        priority: high
+      - item: "Service Gateway for OCI services"
+        implementation: "Private path to Object Storage, ADB, etc."
+        priority: high
+      - item: "WAF for public-facing applications"
+        implementation: "OCI WAF with OWASP rule sets"
+        priority: high
+      - item: "No public IPs on databases"
+        implementation: "Use private endpoints, Bastion for admin access"
+        priority: critical
+
+  encryption:
+    name: "Encryption"
+    requirements:
+      - item: "Encryption at rest (default)"
+        implementation: "OCI encrypts all data at rest by default (Oracle-managed keys)"
+        priority: critical
+      - item: "Customer-managed keys for sensitive data"
+        implementation: "OCI Vault with HSM-backed keys"
+        priority: high
+      - item: "TLS 1.2+ for all connections"
+        implementation: "Enforce in load balancer, database, API configurations"
+        priority: critical
+      - item: "TDE for databases"
+        implementation: "Enabled by default on ADB, configure on DBCS/ExaCS"
+        priority: critical
+
+  monitoring:
+    name: "Monitoring & Audit"
+    requirements:
+      - item: "Audit logging enabled"
+        implementation: "OCI Audit service (enabled by default, 365-day retention)"
+        priority: critical
+      - item: "Cloud Guard enabled"
+        implementation: "Detect misconfigurations and threats"
+        priority: high
+      - item: "VCN Flow Logs"
+        implementation: "Enable on critical subnets for network forensics"
+        priority: medium
+      - item: "Alarms for security events"
+        implementation: "Monitoring alarms + Notifications for critical events"
+        priority: high
+      - item: "Data Safe for databases"
+        implementation: "Security assessment, user assessment, data masking"
+        priority: high
+
+  compute:
+    name: "Compute Security"
+    requirements:
+      - item: "OS Management for patching"
+        implementation: "OCI OS Management service for automated patching"
+        priority: high
+      - item: "Bastion service for SSH"
+        implementation: "No direct SSH from internet, use OCI Bastion"
+        priority: critical
+      - item: "Instance metadata v2"
+        implementation: "Disable v1 to prevent SSRF attacks"
+        priority: high

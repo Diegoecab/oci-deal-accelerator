@@ -1,0 +1,59 @@
+---
+last_verified: 2026-03-14
+description: OCI Storage pricing for estimation purposes.
+currency: USD
+---
+
+block_volume:
+  balanced:
+    per_gb_month: 0.0255
+    per_tb_month: 26.11
+  higher_performance:
+    per_gb_month: 0.0340
+    per_tb_month: 34.82
+  lower_cost:
+    per_gb_month: 0.0170
+    per_tb_month: 17.41
+  uhp:
+    notes: "Priced per VPU, varies by configuration"
+  boot_volume:
+    free_tier: "200 GB included"
+    additional: "Same as block volume pricing"
+  backup:
+    per_gb_month: 0.0050
+
+object_storage:
+  standard:
+    per_gb_month: 0.0255
+    per_tb_month: 26.11
+  infrequent_access:
+    per_gb_month: 0.0100
+    per_tb_month: 10.24
+  archive:
+    per_gb_month: 0.0026
+    per_tb_month: 2.66
+  api_requests:
+    per_10k_put: 0.0040
+    per_10k_get: 0.0003
+  free_tier:
+    storage_gb: 10
+    requests: 50000
+
+file_storage:
+  per_gb_month: 0.0340
+  per_tb_month: 34.82
+
+data_transfer:
+  ingress: "Free"
+  egress_internet:
+    first_10tb_month: "Free"
+    per_gb_after: 0.0085
+  inter_region:
+    per_gb: 0.0085
+  fastconnect:
+    ingress: "Free"
+    egress: "Free"
+  notes: |
+    OCI egress pricing is significantly cheaper than AWS/Azure/GCP.
+    First 10 TB/month internet egress is free.
+    FastConnect egress is free (no per-GB charge).

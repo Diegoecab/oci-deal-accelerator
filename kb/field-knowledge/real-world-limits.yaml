@@ -1,0 +1,77 @@
+---
+last_verified: 2026-03-14
+description: |
+  Real-world limits that differ from official documentation or are not
+  well-documented. These come from actual deployment experience.
+---
+
+limits:
+  - service: ADB-S
+    limit: "Concurrent connections"
+    documented: "300 per OCPU"
+    real_world: |
+      300 per OCPU is the hard limit, but performance degrades noticeably
+      past 200 active sessions per OCPU. Size for 200 concurrent active
+      sessions per OCPU, not 300.
+    recommendation: "Plan for 200 active sessions per OCPU as practical limit"
+
+  - service: ADB-S
+    limit: "Auto-scaling speed"
+    documented: "Automatic"
+    real_world: |
+      Takes 2-3 minutes to begin scaling. Not instantaneous. Very short
+      bursts (< 3 minutes) may complete before scaling activates.
+    recommendation: "Size base OCPUs for P75 to absorb initial burst"
+
+  - service: ExaCS
+    limit: "Provisioning time"
+    documented: "Hours"
+    real_world: |
+      Can take 4-8 hours for infrastructure provisioning. VM cluster
+      creation adds another 1-2 hours. Total: 6-10 hours first time.
+    recommendation: "Plan provisioning 1-2 business days ahead"
+
+  - service: OKE
+    limit: "Node provisioning"
+    documented: "Minutes"
+    real_world: |
+      Node provisioning: 3-5 minutes for compute instance.
+      Node ready (kubelet + image pull): 5-10 minutes total.
+      Pod scheduling after node ready: 10-30 seconds.
+    recommendation: "Plan for 10-minute node scale-up, keep warm pool for critical workloads"
+
+  - service: FastConnect
+    limit: "Provisioning time"
+    documented: "Varies by partner"
+    real_world: |
+      Partner-based: 2-6 weeks depending on partner and location.
+      Co-location: 1-2 weeks if already in the same facility.
+      Always have IPSec VPN as backup during provisioning.
+    recommendation: "Start procurement 6-8 weeks early, use VPN as interim"
+
+  - service: Block Volume
+    limit: "IOPS per volume"
+    documented: "Up to 25K (Balanced), 35K (Higher Performance)"
+    real_world: |
+      Documented limits are achievable with sufficient volume size.
+      Small volumes (< 200 GB) won't reach max IOPS due to per-GB ratio.
+      Need 417 GB for 25K IOPS on Balanced (60 IOPS/GB).
+    recommendation: "Size volumes for IOPS requirement, not just capacity"
+
+  - service: Object Storage
+    limit: "API rate limits"
+    documented: "Request-based"
+    real_world: |
+      Burst throttling can occur at ~1000 requests/second per bucket.
+      Use multipart upload for large objects. Prefix partitioning helps
+      for high-throughput scenarios.
+    recommendation: "Use multipart upload, prefix partitioning for high throughput"
+
+  - service: ADB-S
+    limit: "Maximum databases per tenancy"
+    documented: "Service limits page"
+    real_world: |
+      Default limit is often 10-20 ADB instances per region. Need to
+      request limit increase via support ticket. Increases are usually
+      approved within 1-2 business days.
+    recommendation: "Request limit increases early in project planning"

@@ -1,0 +1,47 @@
+---
+last_verified: 2026-03-14
+pillar: Performance & Cost Optimization
+max_score: 10
+source: "Oracle Cloud Infrastructure Well-Architected Framework"
+---
+
+checks:
+  - id: PERF-SIZE-01
+    name: "Right-Sized Resources"
+    description: "Compute and database resources sized based on actual requirements"
+    weight: 3
+    pass_criteria: "Sizing based on measured metrics (P75/P95), not guesswork"
+    fail_impact: "Over-provisioning wastes money, under-provisioning causes performance issues"
+
+  - id: PERF-BYOL-01
+    name: "BYOL Analysis"
+    description: "BYOL eligibility analyzed for Oracle licenses"
+    weight: 2
+    pass_criteria: "License count verified, BYOL applied where eligible"
+    fail_impact: "Paying full PAYG when BYOL discount available (~50% savings)"
+
+  - id: PERF-COST-01
+    name: "Cost Monitoring"
+    description: "Budget alerts and cost analysis configured"
+    weight: 2
+    pass_criteria: "OCI Budgets set with alerts at 80% and 100% thresholds"
+    fail_impact: "Unexpected cost overruns go unnoticed"
+
+  - id: PERF-COST-02
+    name: "Reserved/Committed Pricing"
+    description: "Steady-state resources on committed pricing"
+    weight: 1
+    pass_criteria: "Baseline compute/database on reserved or annual flex pricing"
+    fail_impact: "Paying on-demand rates for predictable workloads (35-55% premium)"
+
+  - id: PERF-OPT-01
+    name: "Storage Tier Optimization"
+    description: "Data lifecycle policies move cold data to cheaper tiers"
+    weight: 2
+    pass_criteria: "Lifecycle rules for Object Storage, archive policies defined"
+    fail_impact: "Paying standard tier rates for rarely accessed data"
+
+scoring:
+  pass: "8-10 points"
+  warn: "5-7 points"
+  fail: "<5 points"

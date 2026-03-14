@@ -1,0 +1,133 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database Serverless (ADB-S)
+category: database
+oci_color: "#AA643B"
+---
+
+what: Fully managed Oracle Database with auto-scaling, auto-patching, auto-tuning.
+  Runs on shared Exadata infrastructure. Supports OLTP, DW, APEX, and JSON workloads.
+
+editions:
+  - OLTP (Transaction Processing)
+  - DW (Data Warehousing)
+  - APEX (Application Development)
+  - JSON (Document Store)
+
+when_to_use:
+  - OLTP or mixed workloads under 128 OCPUs
+  - Teams without dedicated DBAs
+  - Variable/unpredictable workload patterns (auto-scaling)
+  - Rapid provisioning needed (minutes, not days)
+  - Dev/test environments that need to scale down to zero
+  - APEX application development
+
+when_NOT_to_use:
+  - Workloads requiring OS-level access
+  - Need for RAC (use ExaCS or ADB-D)
+  - Regulatory requirement for dedicated infrastructure
+  - Sustained >128 OCPU usage (ADB-D or ExaCS cheaper)
+  - Need custom database parameters not exposed in ADB-S
+  - Workloads with heavy PL/SQL using UTL_FILE or OS commands
+
+limits:
+  max_ocpu: 128
+  max_storage_tb: 383
+  max_ocpu_auto_scale: "3x base OCPU (up to 128)"
+  min_ocpu: 1
+  backup_retention_days: 1-60
+  max_connections_per_ocpu: 300
+  max_concurrent_statements: "not hard limited, but performance degrades past 10x OCPU count"
+
+features:
+  auto_scaling: true
+  auto_indexing: true
+  auto_partitioning: true
+  autonomous_data_guard: true
+  cross_region_adg: true
+  private_endpoint: true
+  customer_managed_keys: true
+  data_safe: true
+  database_actions: true
+  apex: true
+  ords: true
+  sql_developer_web: true
+  oracle_ml: true
+  graph: true
+  spatial: true
+  json_duality_views: true
+  select_ai: true
+
+ha_dr:
+  local_ha: "Built-in — Exadata infrastructure handles node failures transparently"
+  autonomous_data_guard:
+    same_region: "Synchronous standby, automatic failover, RPO=0, RTO<30s"
+    cross_region: "Asynchronous standby, manual or automatic failover, RPO=seconds, RTO<minutes"
+  refreshable_clone: "Read-only clone refreshed on schedule, useful for reporting offload"
+  backup:
+    automatic: "Daily full + incremental, retained 1-60 days"
+    manual: "On-demand to Object Storage"
+    cross_region: "Automatic backup replication to another region"
+
+gotchas:
+  - id: ADB-S-001
+    issue: "Auto-scaling activation takes 2-3 minutes"
+    impact: "Short burst workloads may complete before scaling kicks in"
+    recommendation: "Size base OCPUs for P75 not P50 to handle bursts during ramp-up"
+  - id: ADB-S-002
+    issue: "TAC replay not guaranteed with non-replayable operations"
+    impact: "UTL_HTTP, DBMS_PIPE, NOCACHE sequences break transparent failover"
+    recommendation: "Audit application code for non-replayable calls before migration"
+  - id: ADB-S-003
+    issue: "Auto Indexing creates indexes HIDDEN by default"
+    impact: "No risk — indexes are invisible to optimizer until validated"
+    recommendation: "Monitor via DBMS_AUTO_INDEX, indexes become visible after validation"
+  - id: ADB-S-004
+    issue: "Cross-region ADG is async only"
+    impact: "RPO is seconds, not zero — data loss possible in region failure"
+    recommendation: "Document RPO clearly in DR runbook, acceptable for most workloads"
+  - id: ADB-S-005
+    issue: "Connection draining during scaling"
+    impact: "Active sessions may see brief interruption during scale-up/down"
+    recommendation: "Use connection pool with retry logic, ADB handles graceful drain"
+
+sizing_rules:
+  ocpu_base: "P75 of current CPU utilization, converted via cpu-conversion-ratios.yaml"
+  ocpu_max: "P95 or 2x base, whichever is higher"
+  storage: "Current data size + 30% growth headroom + index overhead (~20%)"
+  auto_scaling_trigger: "Enable if peak-to-baseline ratio > 1.5x"
+
+pricing:
+  model: per_ocpu_per_hour
+  base_ocpu_payg: 1.6808  # per OCPU per hour
+  base_ocpu_byol: 0.8404  # per OCPU per hour with BYOL
+  storage_per_tb_month: 25.00
+  exadata_storage_per_tb_month: 137.00
+  backup_per_tb_month: 2.50
+  auto_scaling: "Same rate as base, billed only when active"
+  byol_discount: "~50% on OCPU costs"
+  notes:
+    - "Minimum 1 OCPU, billed per second"
+    - "Storage billed per TB per month, minimum 1 TB (20 GB for APEX)"
+    - "Auto-scaling OCPUs billed only during active scaling periods"
+    - "ADG standby billed at same rate as primary"
+
+migration_tools:
+  - name: Oracle Zero Downtime Migration (ZDM)
+    use_for: "On-prem Oracle to ADB-S with near-zero downtime"
+    notes: "Preferred tool, handles both physical and logical migration"
+  - name: Oracle Data Pump
+    use_for: "Simple migrations where downtime is acceptable"
+    notes: "Export/import, supports schema-level and full database"
+  - name: GoldenGate
+    use_for: "Real-time replication during migration with zero downtime"
+    notes: "Requires GoldenGate license, complex setup"
+  - name: OCI Database Migration Service (DMS)
+    use_for: "Managed migration service with monitoring"
+    notes: "Uses GoldenGate under the hood, simpler to manage"
+
+competitive_comparison:
+  aws_rds: "ADB-S is fully autonomous (no patching/tuning), RDS requires manual ops"
+  aws_aurora: "Aurora lacks Oracle compatibility; ADB-S runs Oracle natively"
+  azure_sql: "Azure SQL Managed Instance has Oracle compatibility gaps"
+  gcp_cloud_sql: "No Oracle option on GCP Cloud SQL"

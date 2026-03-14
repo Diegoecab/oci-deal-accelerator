@@ -1,0 +1,54 @@
+---
+last_verified: 2026-03-14
+pillar: Operational Efficiency
+max_score: 10
+source: "Oracle Cloud Infrastructure Well-Architected Framework"
+---
+
+checks:
+  - id: OPS-IAC-01
+    name: "Infrastructure as Code"
+    description: "All infrastructure defined in Terraform or Resource Manager"
+    weight: 3
+    pass_criteria: "Terraform modules for all resources, state in remote backend"
+    fail_impact: "Manual provisioning leads to drift, inconsistency, and slow DR recovery"
+
+  - id: OPS-DEPLOY-01
+    name: "CI/CD Pipeline"
+    description: "Automated deployment pipeline for application and infrastructure"
+    weight: 2
+    pass_criteria: "OCI DevOps or third-party CI/CD deploying to all environments"
+    fail_impact: "Manual deployments are slow, error-prone, and not auditable"
+
+  - id: OPS-MON-01
+    name: "Monitoring Alarms"
+    description: "OCI Monitoring alarms for key metrics"
+    weight: 2
+    pass_criteria: "Alarms for CPU, memory, storage, connections, error rates"
+    fail_impact: "Issues not detected until user impact"
+
+  - id: OPS-MON-02
+    name: "Centralized Logging"
+    description: "Application and infrastructure logs centralized"
+    weight: 1
+    pass_criteria: "OCI Logging service with log groups, optional SIEM integration"
+    fail_impact: "Troubleshooting requires accessing individual instances"
+
+  - id: OPS-MON-03
+    name: "APM Configured"
+    description: "Application Performance Monitoring for end-to-end tracing"
+    weight: 1
+    pass_criteria: "OCI APM or third-party APM (Datadog, New Relic) configured"
+    fail_impact: "Application performance issues hard to diagnose"
+
+  - id: OPS-PATCH-01
+    name: "Patch Management"
+    description: "Automated patching strategy for OS and middleware"
+    weight: 1
+    pass_criteria: "OS Management for compute, ADB auto-patches databases"
+    fail_impact: "Unpatched systems vulnerable to known exploits"
+
+scoring:
+  pass: "8-10 points"
+  warn: "5-7 points"
+  fail: "<5 points"

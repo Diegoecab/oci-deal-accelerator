@@ -1,0 +1,67 @@
+---
+last_verified: 2026-03-14
+description: CPU conversion ratios from various source platforms to OCI OCPUs.
+  1 OCPU = 1 physical core with hyperthreading = 2 vCPUs.
+---
+
+ratios:
+  # On-prem to OCI
+  intel_core_to_ocpu:
+    ratio: 1.0
+    notes: "1 Intel physical core ≈ 1 OCPU"
+  amd_core_to_ocpu:
+    ratio: 0.9
+    notes: "AMD cores slightly less performant per-clock, but EPYC is competitive"
+  sparc_core_to_ocpu:
+    ratio: 0.5
+    notes: "SPARC cores are wider, 1 SPARC ≈ 0.5 OCPU for most workloads"
+  power_core_to_ocpu:
+    ratio: 0.7
+    notes: "IBM POWER cores are wider than x86, varies by workload"
+
+  # Cloud to OCI
+  aws_vcpu_to_ocpu:
+    ratio: 0.5
+    notes: "1 AWS vCPU = 1 hyperthread = 0.5 OCPU"
+  azure_vcpu_to_ocpu:
+    ratio: 0.5
+    notes: "1 Azure vCPU = 1 hyperthread = 0.5 OCPU"
+  gcp_vcpu_to_ocpu:
+    ratio: 0.5
+    notes: "1 GCP vCPU = 1 hyperthread = 0.5 OCPU"
+
+  # Oracle-specific
+  oracle_processor_license_to_ocpu:
+    ratio: 2.0
+    notes: |
+      1 Oracle Processor License = 2 OCPUs (for BYOL on OCI).
+      This is the Named User Plus or Processor metric conversion.
+      Verify with Oracle License Management Services for complex scenarios.
+  exadata_on_prem_core_to_ocpu:
+    ratio: 1.0
+    notes: "Exadata on-prem cores map 1:1 to OCI OCPUs"
+
+sizing_methodology:
+  step_1: "Identify source CPU type and count"
+  step_2: "Apply conversion ratio to get raw OCPU count"
+  step_3: "Apply utilization factor"
+  step_4: "Set base OCPU = P75 utilization * raw OCPU count"
+  step_5: "Set max OCPU = P95 utilization * raw OCPU count (for auto-scaling)"
+  step_6: "Round up to nearest valid OCPU increment"
+
+  example:
+    source: "16 Intel cores, avg 70% utilization, P95 = 85%"
+    raw_ocpu: 16
+    base_ocpu: "16 * 0.75 = 12 OCPUs (P75 estimated at 75%)"
+    max_ocpu: "16 * 0.85 = 14 OCPUs → round to 16 OCPUs"
+    recommendation: "ADB-S: 12 OCPU base, auto-scale to 16"
+
+utilization_assumptions:
+  when_p75_unknown: "Assume P75 = avg * 1.07 (typical for OLTP)"
+  when_p95_unknown: "Assume P95 = avg * 1.21 (typical for OLTP)"
+  when_avg_unknown: "Assume 70% average utilization for production OLTP"
+  when_nothing_known: |
+    Use Exadata baselines:
+    - X8M quarter rack: ~100 OCPUs effective capacity
+    - X8M half rack: ~200 OCPUs effective capacity
+    - X8M full rack: ~400 OCPUs effective capacity

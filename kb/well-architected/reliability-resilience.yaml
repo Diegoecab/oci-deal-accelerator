@@ -1,0 +1,61 @@
+---
+last_verified: 2026-03-14
+pillar: Reliability & Resilience
+max_score: 15
+source: "Oracle Cloud Infrastructure Well-Architected Framework"
+---
+
+checks:
+  - id: REL-HA-01
+    name: "Database High Availability"
+    description: "Database has HA configuration matching availability SLA"
+    weight: 3
+    pass_criteria: "ADG enabled (ADB-S) or RAC+DG (ExaCS) matching stated SLA"
+    fail_impact: "Single point of failure for database tier"
+
+  - id: REL-HA-02
+    name: "Compute Redundancy"
+    description: "Application tier has multiple instances across fault domains"
+    weight: 2
+    pass_criteria: "Instance pool with min 2 instances in different fault domains"
+    fail_impact: "App tier SPOF, full outage on instance failure"
+
+  - id: REL-DR-01
+    name: "Cross-Region DR"
+    description: "DR strategy defined with cross-region replication"
+    weight: 3
+    pass_criteria: "DR region identified, replication configured, RTO/RPO documented"
+    fail_impact: "Region failure causes complete data loss or extended outage"
+
+  - id: REL-DR-02
+    name: "Backup Strategy"
+    description: "Automated backups with defined retention and cross-region copy"
+    weight: 2
+    pass_criteria: "Automated backups enabled, retention set, cross-region replication active"
+    fail_impact: "Data loss risk, extended recovery time"
+
+  - id: REL-DR-03
+    name: "DR Drill Schedule"
+    description: "Regular DR failover drills scheduled and documented"
+    weight: 2
+    pass_criteria: "Quarterly DR drills with documented runbook and results"
+    fail_impact: "DR plan untested, likely to fail when needed"
+
+  - id: REL-SCALE-01
+    name: "Auto-Scaling"
+    description: "Auto-scaling configured for variable workloads"
+    weight: 2
+    pass_criteria: "ADB auto-scaling enabled, compute auto-scaling policies defined"
+    fail_impact: "Performance degradation during traffic spikes"
+
+  - id: REL-NET-01
+    name: "Redundant Connectivity"
+    description: "Redundant network connectivity for on-prem connections"
+    weight: 1
+    pass_criteria: "Dual FastConnect circuits or FastConnect + VPN backup"
+    fail_impact: "Single circuit failure disconnects on-prem"
+
+scoring:
+  pass: "12-15 points"
+  warn: "8-11 points"
+  fail: "<8 points"

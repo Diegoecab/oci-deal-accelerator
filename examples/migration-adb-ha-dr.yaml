@@ -1,0 +1,217 @@
+# Example architecture spec: Oracle Database migration to ADB-S
+# with cross-region HA/DR.
+#
+# Customer profile:
+# - 3 Oracle 19c databases on Exadata X8M on-prem
+# - Largest database: 4TB OLTP
+# - GoldenGate replication to reporting DB
+# - 99.95% availability, PCI compliance
+# - Seasonal peaks 3x normal (Black Friday)
+# - Current Oracle licensing: $2M/year, BYOL with 8 processor licenses
+# - 6-month migration timeline
+
+tenancy:
+  name: "Oracle Cloud Infrastructure"
+  width: 2200
+  height: 1000
+
+  regions:
+    - id: r1
+      name: "Region — US East (Ashburn)"
+      x: 20
+      y: 40
+      width: 1060
+      height: 940
+
+      vcns:
+        - id: vcn1
+          name: "VCN prod-vcn 10.0.0.0/16"
+          x: 20
+          y: 40
+          width: 1000
+          height: 880
+
+          subnets:
+            - id: sub-pub
+              name: "Public Subnet — Web Tier 10.0.0.0/24"
+              x: 20
+              y: 30
+              width: 460
+              height: 200
+              services:
+                - id: lb1
+                  name: "Flexible LB\n100 Mbps"
+                  type: lb
+                  x: 25
+                  y: 35
+                  width: 170
+                  height: 85
+                - id: waf1
+                  name: "WAF\nOWASP Rules"
+                  type: waf
+                  x: 225
+                  y: 35
+                  width: 170
+                  height: 85
+
+            - id: sub-app
+              name: "Private Subnet — App Tier 10.0.1.0/24"
+              x: 20
+              y: 250
+              width: 460
+              height: 200
+              services:
+                - id: app1
+                  name: "VM.Standard.E5.Flex\n4 OCPU / 64 GB"
+                  type: compute
+                  x: 25
+                  y: 35
+                  width: 170
+                  height: 85
+                - id: app2
+                  name: "VM.Standard.E5.Flex\n4 OCPU / 64 GB"
+                  type: compute
+                  x: 225
+                  y: 35
+                  width: 170
+                  height: 85
+
+            - id: sub-db
+              name: "Private Subnet — Data Tier 10.0.2.0/24"
+              x: 20
+              y: 470
+              width: 950
+              height: 380
+              services:
+                - id: adb-oltp
+                  name: "ADB-S OLTP\n8 OCPU (auto-scale 16)\n4 TB / BYOL"
+                  type: adb
+                  x: 25
+                  y: 35
+                  width: 200
+                  height: 85
+                - id: adb-dw
+                  name: "ADB-S DW\n4 OCPU / 2 TB\nBYOL"
+                  type: adb
+                  x: 250
+                  y: 35
+                  width: 200
+                  height: 85
+                - id: adb-apex
+                  name: "ADB-S APEX\n2 OCPU / 200 GB"
+                  type: adb
+                  x: 475
+                  y: 35
+                  width: 200
+                  height: 85
+                - id: vault1
+                  name: "OCI Vault\nHSM Keys"
+                  type: vault
+                  x: 25
+                  y: 150
+                  width: 170
+                  height: 85
+                - id: datasafe1
+                  name: "Data Safe\nSecurity + Audit"
+                  type: datasafe
+                  x: 250
+                  y: 150
+                  width: 170
+                  height: 85
+                - id: bastion1
+                  name: "Bastion\nSSH Access"
+                  type: bastion
+                  x: 475
+                  y: 150
+                  width: 170
+                  height: 85
+
+            - id: sub-mgmt
+              name: "Private Subnet — Management 10.0.3.0/24"
+              x: 500
+              y: 30
+              width: 460
+              height: 200
+              services:
+                - id: oke1
+                  name: "OKE Cluster\n3 workers (future)"
+                  type: oke
+                  x: 25
+                  y: 35
+                  width: 170
+                  height: 85
+
+    - id: r2
+      name: "Region — US West (Phoenix) [DR]"
+      x: 1120
+      y: 40
+      width: 1060
+      height: 940
+
+      vcns:
+        - id: vcn2
+          name: "VCN dr-vcn 10.128.0.0/16"
+          x: 20
+          y: 40
+          width: 1000
+          height: 880
+
+          subnets:
+            - id: sub-dr-db
+              name: "Private Subnet — DR Data Tier 10.128.2.0/24"
+              x: 20
+              y: 30
+              width: 460
+              height: 380
+              services:
+                - id: adb-dr-standby
+                  name: "ADB-S Standby\n8 OCPU / 4 TB\nAuto-Failover"
+                  type: adb
+                  x: 25
+                  y: 35
+                  width: 200
+                  height: 85
+                - id: adb-dr-clone
+                  name: "Refreshable Clone\n4 OCPU / 4 TB\nReporting Offload"
+                  type: adb
+                  x: 25
+                  y: 150
+                  width: 200
+                  height: 85
+
+connections:
+  - id: c1
+    label: "Autonomous Data Guard\n(async, RPO ≈ seconds)"
+    type: adg
+    source: adb-oltp
+    target: adb-dr-standby
+
+  - id: c2
+    label: "Refreshable Clone"
+    type: replication
+    source: adb-dr-standby
+    target: adb-dr-clone
+
+  - id: c3
+    label: ""
+    type: network
+    source: lb1
+    target: app1
+
+  - id: c4
+    label: ""
+    type: network
+    source: lb1
+    target: app2
+
+  - id: c5
+    label: ""
+    type: network
+    source: app1
+    target: adb-oltp
+
+  - id: c6
+    label: ""
+    type: network
+    source: app2
+    target: adb-oltp

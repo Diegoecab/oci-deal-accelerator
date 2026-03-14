@@ -1,0 +1,111 @@
+---
+last_verified: 2026-03-14
+description: |
+  Visual styles matching Oracle's official OCI Style Guide for Draw.io Toolkit v24.2.
+  Source: https://docs.oracle.com/en-us/iaas/Content/General/Reference/graphicsfordiagrams.htm
+---
+
+colors:
+  # Oracle brand colors
+  oracle_red: "#C74634"
+  burnt_orange: "#AE562C"
+  teal: "#4F7B6E"
+  copper: "#AA643B"
+  purple: "#6B4D9A"
+  charcoal: "#312D2A"
+  light_gray: "#F5F4F2"
+  medium_gray: "#CCCCCC"
+  white: "#FFFFFF"
+
+  # Category colors
+  database: "#AA643B"       # Copper
+  compute: "#4F7B6E"        # Teal
+  networking: "#4F7B6E"     # Teal
+  storage: "#4F7B6E"        # Teal
+  security: "#6B4D9A"       # Purple
+  integration: "#6B4D9A"    # Purple
+  monitoring: "#6B4D9A"     # Purple
+
+styles:
+  tenancy:
+    fill: "#FFFFFF"
+    stroke: "#312D2A"
+    stroke_width: 2
+    rounded: true
+    dash: false
+    font_color: "#312D2A"
+    font_size: 16
+    font_family: "Oracle Sans"
+
+  region:
+    fill: "#F5F4F2"
+    stroke: "#312D2A"
+    stroke_width: 1
+    rounded: true
+    dash: false
+    font_color: "#312D2A"
+    font_size: 14
+
+  availability_domain:
+    fill: "#FFFFFF"
+    stroke: "#CCCCCC"
+    stroke_width: 1
+    rounded: false
+    dash: true
+    font_color: "#312D2A"
+    font_size: 12
+
+  vcn:
+    fill: "none"
+    stroke: "#AE562C"
+    stroke_width: 2
+    rounded: true
+    dash: true
+    font_color: "#312D2A"
+    font_size: 12
+
+  subnet:
+    fill: "none"
+    stroke: "#AE562C"
+    stroke_width: 1
+    rounded: false
+    dash: true
+    font_color: "#312D2A"
+    font_size: 11
+
+  service_block:
+    fill: "#FFFFFF"
+    stroke_width: 1
+    rounded: true
+    dash: false
+    font_color: "#312D2A"
+    font_size: 10
+    # stroke color determined by category (database=copper, compute=teal, etc.)
+
+  connection:
+    data_guard:
+      stroke: "#AA643B"
+      stroke_width: 2
+      dash: true
+      label_color: "#312D2A"
+    network:
+      stroke: "#4F7B6E"
+      stroke_width: 1
+      dash: false
+    replication:
+      stroke: "#6B4D9A"
+      stroke_width: 1
+      dash: true
+
+layout:
+  default_spacing: 30
+  service_width: 170
+  service_height: 85
+  subnet_padding: 20
+  vcn_padding: 30
+  region_padding: 40
+
+  typical_canvas:
+    single_region: "1200 x 800"
+    dual_region: "2400 x 800"
+    hub_spoke: "1600 x 1200"

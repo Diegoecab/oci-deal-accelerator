@@ -1,0 +1,83 @@
+---
+last_verified: 2026-03-14
+description: OCI to AWS service mapping for competitive positioning.
+---
+
+service_mapping:
+  database:
+    - oci: "ADB-S (Autonomous Database Serverless)"
+      aws: "Amazon RDS / Aurora"
+      oci_advantage: |
+        ADB-S is fully autonomous (auto-patching, auto-tuning, auto-scaling).
+        RDS/Aurora require manual patching, tuning, and capacity management.
+        ADB-S runs actual Oracle Database; Aurora is MySQL/PostgreSQL compatible only.
+      aws_advantage: "Aurora Serverless v2 has faster scaling for MySQL/PostgreSQL workloads."
+    - oci: "ExaCS (Exadata Cloud Service)"
+      aws: "Amazon RDS Custom for Oracle / EC2 with Oracle"
+      oci_advantage: |
+        ExaCS provides actual Exadata hardware with Smart Scan, Flash Cache, HCC.
+        RDS Custom has limited OS access. EC2 loses Exadata performance features.
+      aws_advantage: "Broader ecosystem integration if already on AWS."
+
+  compute:
+    - oci: "OCI Compute (Flexible shapes)"
+      aws: "Amazon EC2"
+      oci_advantage: |
+        Flexible shapes allow any OCPU/memory ratio (1-64 GB per OCPU).
+        EC2 has fixed instance types. OCI generally cheaper for equivalent specs.
+      aws_advantage: "Broader instance type selection, more GPU options, Graviton ARM chips."
+    - oci: "OKE"
+      aws: "Amazon EKS"
+      oci_advantage: "Free control plane for basic clusters. EKS charges $0.10/hr."
+      aws_advantage: "Larger ecosystem (Fargate, App Runner), more community tooling."
+
+  networking:
+    - oci: "FastConnect"
+      aws: "AWS Direct Connect"
+      oci_advantage: "Free egress over FastConnect. Direct Connect charges per GB."
+      aws_advantage: "More points of presence globally."
+    - oci: "OCI data egress"
+      aws: "AWS data egress"
+      oci_advantage: |
+        First 10 TB/month free. After that, $0.0085/GB.
+        AWS charges $0.09/GB (10x more expensive).
+      aws_advantage: "None — OCI egress pricing is a clear advantage."
+
+  storage:
+    - oci: "Object Storage"
+      aws: "Amazon S3"
+      oci_advantage: "S3-compatible API. Lower egress costs."
+      aws_advantage: "More storage classes, deeper ecosystem integration."
+
+pricing_comparison:
+  general_notes: |
+    OCI is typically 30-50% cheaper than AWS for equivalent workloads.
+    Key cost advantages:
+    1. Data egress: 10x cheaper than AWS
+    2. Compute: 20-40% cheaper for equivalent shapes
+    3. BYOL: OCI offers better Oracle license portability
+    4. Database: ADB-S includes auto-ops that would cost extra on AWS
+
+  oracle_database_specific: |
+    Running Oracle on AWS is expensive:
+    - AWS charges a license surcharge for Oracle on RDS
+    - No Exadata performance on AWS
+    - BYOL is more restrictive on AWS
+    - Oracle support is limited for AWS deployments
+    OCI is the natural home for Oracle database workloads.
+
+common_objections:
+  - objection: "We're already on AWS and don't want to manage another cloud"
+    response: |
+      OCI Interconnect with AWS (Oracle Database@AWS) allows running
+      Oracle databases on OCI with direct low-latency connection to AWS
+      workloads. Best of both worlds — Oracle on OCI, apps on AWS.
+  - objection: "AWS has more services and a bigger ecosystem"
+    response: |
+      True for breadth. For Oracle database workloads specifically, OCI
+      provides better performance (Exadata), lower cost, and autonomous
+      operations that AWS cannot match.
+  - objection: "Our team knows AWS, not OCI"
+    response: |
+      OCI console and APIs follow similar patterns. ADB-S requires less
+      DBA skill than RDS Oracle. Migration training is typically 2-4 weeks.

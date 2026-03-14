@@ -1,0 +1,45 @@
+---
+last_verified: 2026-03-14
+pillar: Distributed Cloud
+max_score: 10
+source: "Oracle Cloud Infrastructure Well-Architected Framework"
+---
+
+description: |
+  Evaluates multi-region, data residency, and sovereign cloud requirements.
+  This pillar is N/A for single-region deployments without data sovereignty needs.
+
+checks:
+  - id: DC-REGION-01
+    name: "Multi-Region Strategy"
+    description: "Architecture spans multiple regions for resilience or proximity"
+    weight: 3
+    pass_criteria: "Primary and DR regions defined, cross-region replication active"
+    applicability: "Required for Tier 1/2 availability, optional otherwise"
+
+  - id: DC-DATA-01
+    name: "Data Residency Compliance"
+    description: "Data stored in regions compliant with regulatory requirements"
+    weight: 3
+    pass_criteria: "Data residency requirements documented, regions selected accordingly"
+    applicability: "Required for GDPR, data sovereignty regulations"
+
+  - id: DC-SOVEREIGN-01
+    name: "Sovereign Cloud"
+    description: "Sovereign cloud regions used when required by regulation"
+    weight: 2
+    pass_criteria: "OCI Sovereign Cloud or Dedicated Region deployed"
+    applicability: "Government, defense, highly regulated industries"
+
+  - id: DC-EDGE-01
+    name: "Edge/Hybrid Consideration"
+    description: "Edge computing or hybrid cloud strategy evaluated"
+    weight: 2
+    pass_criteria: "Roving Edge, Dedicated Region, or hybrid architecture documented"
+    applicability: "IoT, latency-sensitive, or disconnected workloads"
+
+scoring:
+  pass: "8-10 points"
+  warn: "5-7 points"
+  fail: "<5 points"
+  na: "Mark as N/A if no multi-region or sovereignty requirements"

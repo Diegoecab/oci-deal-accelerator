@@ -1,0 +1,78 @@
+---
+last_verified: 2026-03-14
+description: OCI Database service pricing for estimation purposes.
+  Prices are approximate. Verify with OCI pricing calculator.
+currency: USD
+---
+
+adb_serverless:
+  ocpu:
+    payg_per_hour: 1.6808
+    byol_per_hour: 0.8404
+    payg_monthly_730h: 1226.98
+    byol_monthly_730h: 613.49
+  storage:
+    per_tb_month: 25.00
+    exadata_storage_per_tb_month: 137.00
+  backup:
+    per_tb_month: 2.50
+  auto_scaling:
+    notes: "Same per-OCPU rate, billed only during active scaling"
+  adg_standby:
+    notes: "Billed at same rate as primary (OCPU + storage)"
+
+  estimation_helpers:
+    small_oltp:
+      config: "2 OCPU, 1 TB, PAYG"
+      monthly: 2478.96  # (2 * 1226.98) + (1 * 25)
+    medium_oltp:
+      config: "8 OCPU, 4 TB, BYOL"
+      monthly: 5007.92  # (8 * 613.49) + (4 * 25)
+    large_oltp:
+      config: "32 OCPU, 16 TB, BYOL"
+      monthly: 20031.68  # (32 * 613.49) + (16 * 25)
+
+adb_dedicated:
+  infrastructure:
+    quarter_rack_monthly: 24000
+    half_rack_monthly: 48000
+    full_rack_monthly: 96000
+  ocpu:
+    payg_per_hour: 1.6808
+    byol_per_hour: 0.8404
+  notes: "Infrastructure + OCPU billing"
+
+exacs:
+  infrastructure:
+    quarter_rack_monthly: 10000
+    half_rack_monthly: 20000
+  enabled_ocpu:
+    payg_per_hour: 0.336
+    byol_per_hour: 0.168
+  notes: "Infrastructure cost + per enabled OCPU"
+
+dbcs:
+  vm:
+    ee_per_ocpu_hour: 0.1360
+    ee_byol_per_ocpu_hour: 0.0680
+    se_per_ocpu_hour: 0.0680
+    monthly_730h:
+      ee_per_ocpu: 99.28
+      ee_byol_per_ocpu: 49.64
+      se_per_ocpu: 49.64
+  storage:
+    notes: "Block Volume pricing applies (see storage.yaml)"
+
+byol_rules:
+  oracle_processor_to_ocpu: 2
+  notes: |
+    1 Oracle Processor License = 2 OCPUs on OCI.
+    Example: 8 processor licenses = 16 OCPUs eligible for BYOL.
+    BYOL provides ~50% discount on OCPU costs.
+    Verify license count with Oracle License Management Services.
+  eligible_editions:
+    - "Enterprise Edition"
+    - "Enterprise Edition High Performance"
+    - "Enterprise Edition Extreme Performance"
+  not_eligible:
+    - "Standard Edition (different licensing model)"

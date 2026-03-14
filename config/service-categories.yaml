@@ -1,0 +1,93 @@
+---
+last_verified: 2026-03-14
+description: Service to category and color mapping for diagrams and reports.
+---
+
+categories:
+  database:
+    color: "#AA643B"
+    display_name: "Database"
+    services:
+      - adb-serverless
+      - adb-dedicated
+      - adb-elastic-pool
+      - exacs
+      - dbcs
+      - mysql
+      - postgresql
+      - nosql
+
+  compute:
+    color: "#4F7B6E"
+    display_name: "Compute"
+    services:
+      - compute-vm
+      - compute-bm
+      - oke
+      - functions
+      - container-instances
+
+  networking:
+    color: "#4F7B6E"
+    display_name: "Networking"
+    services:
+      - vcn
+      - subnet
+      - load-balancer
+      - network-load-balancer
+      - fastconnect
+      - vpn
+      - drg
+      - dns
+      - waf
+      - network-firewall
+
+  storage:
+    color: "#4F7B6E"
+    display_name: "Storage"
+    services:
+      - block-volume
+      - object-storage
+      - file-storage
+      - archive-storage
+
+  security:
+    color: "#6B4D9A"
+    display_name: "Security"
+    services:
+      - vault
+      - bastion
+      - cloud-guard
+      - data-safe
+      - vulnerability-scanning
+      - certificates
+
+  integration:
+    color: "#6B4D9A"
+    display_name: "Integration"
+    services:
+      - queue
+      - streaming
+      - api-gateway
+      - events
+      - notifications
+      - email-delivery
+
+  observability:
+    color: "#6B4D9A"
+    display_name: "Observability"
+    services:
+      - monitoring
+      - logging
+      - logging-analytics
+      - apm
+      - ops-insights
+
+  governance:
+    color: "#6B4D9A"
+    display_name: "Governance"
+    services:
+      - compartments
+      - budgets
+      - tagging
+      - resource-manager
