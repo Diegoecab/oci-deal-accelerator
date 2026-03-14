@@ -1,0 +1,59 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database Serverless Elastic Pool (DEP)
+category: database
+oci_color: "#AA643B"
+---
+
+what: >
+  Pool of pre-provisioned ADB-S resources shared across multiple autonomous databases.
+  Enables resource sharing and burst capacity for ISVs and multi-tenant applications.
+
+when_to_use:
+  - ISV with multiple customer databases needing resource pooling
+  - Multi-tenant SaaS application with per-tenant databases
+  - Development teams needing many small databases from a shared pool
+  - Workloads with complementary peak patterns (databases can borrow from pool)
+
+when_NOT_to_use:
+  - Single database workloads — no pooling benefit
+  - Unpredictable number of databases — pool sizing is tricky
+  - Need immediate provisioning — DEP setup has delays
+  - Small number of databases (<5) — overhead not justified
+
+features:
+  resource_pooling: true
+  burst_capacity: "databases can burst beyond their allocation using pool reserves"
+  pool_management: "centralized OCPU and storage allocation"
+  per_database_limits: "configurable min/max per database within pool"
+
+limits:
+  min_pool_size: "128 OCPU (minimum)"
+  max_pool_size: "4096 OCPU"
+  max_databases_per_pool: 500
+
+gotchas:
+  - id: "DEP-001"
+    issue: "Provisioning takes days to weeks"
+    impact: "Cannot be used for urgent deployments"
+    mitigation: "Plan ahead, use individual ADB-S for urgent needs"
+    field_finding: "FF-202603-004"
+
+  - id: "DEP-002"
+    issue: "Pool sizing requires workload analysis"
+    impact: "Over-provisioning wastes money, under-provisioning causes contention"
+    mitigation: "Start with 1.5x aggregate peak, monitor and adjust"
+
+  - id: "DEP-003"
+    issue: "Not all ADB-S features available immediately in DEP"
+    impact: "Feature parity gaps may exist"
+    mitigation: "Verify required features against DEP feature matrix before committing"
+
+sizing_rules:
+  pool_ocpu: "Sum of all database base OCPUs * 1.3 (for burst headroom)"
+  pool_storage: "Sum of all database storage * 1.2 (for growth)"
+
+pricing_model:
+  base: "per pool OCPU per hour"
+  storage: "per TB per month (shared across pool)"
+  notes: "Cost-effective when databases have complementary peak patterns"

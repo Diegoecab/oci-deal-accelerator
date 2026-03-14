@@ -1,0 +1,92 @@
+---
+last_verified: 2026-03-14
+description: Service to category and color mapping for diagram generation
+---
+
+categories:
+  database:
+    color: "#AA643B"
+    stroke: "#8A5030"
+    text: "#FFFFFF"
+    icon_prefix: "oci-db"
+  compute:
+    color: "#647A4F"
+    stroke: "#4D6139"
+    text: "#FFFFFF"
+    icon_prefix: "oci-compute"
+  networking:
+    color: "#3B7393"
+    stroke: "#2D5A73"
+    text: "#FFFFFF"
+    icon_prefix: "oci-net"
+  storage:
+    color: "#5A5A5A"
+    stroke: "#404040"
+    text: "#FFFFFF"
+    icon_prefix: "oci-storage"
+  security:
+    color: "#8B4F8B"
+    stroke: "#6B3D6B"
+    text: "#FFFFFF"
+    icon_prefix: "oci-sec"
+  integration:
+    color: "#564B9E"
+    stroke: "#413A7A"
+    text: "#FFFFFF"
+    icon_prefix: "oci-int"
+  management:
+    color: "#3B7393"
+    stroke: "#2D5A73"
+    text: "#FFFFFF"
+    icon_prefix: "oci-mgmt"
+
+services:
+  # Database services
+  adb: { category: "database", label: "Autonomous Database" }
+  adb-s: { category: "database", label: "ADB-S" }
+  adb-d: { category: "database", label: "ADB-D" }
+  adb-dep: { category: "database", label: "ADB Elastic Pool" }
+  dbcs: { category: "database", label: "DBCS" }
+  exacs: { category: "database", label: "ExaCS" }
+  data-safe: { category: "database", label: "Data Safe" }
+  goldengate: { category: "database", label: "GoldenGate" }
+
+  # Compute services
+  vm: { category: "compute", label: "Compute VM" }
+  bm: { category: "compute", label: "Bare Metal" }
+  oke: { category: "compute", label: "OKE" }
+  functions: { category: "compute", label: "Functions" }
+  container-instances: { category: "compute", label: "Container Instances" }
+
+  # Networking services
+  vcn: { category: "networking", label: "VCN" }
+  lb: { category: "networking", label: "Load Balancer" }
+  waf: { category: "networking", label: "WAF" }
+  drg: { category: "networking", label: "DRG" }
+  fastconnect: { category: "networking", label: "FastConnect" }
+  vpn: { category: "networking", label: "VPN" }
+  dns: { category: "networking", label: "DNS" }
+  nfw: { category: "networking", label: "Network Firewall" }
+
+  # Storage services
+  object-storage: { category: "storage", label: "Object Storage" }
+  block-volume: { category: "storage", label: "Block Volume" }
+  file-storage: { category: "storage", label: "File Storage" }
+
+  # Security services
+  vault: { category: "security", label: "Vault" }
+  bastion: { category: "security", label: "Bastion" }
+  cloud-guard: { category: "security", label: "Cloud Guard" }
+  iam: { category: "security", label: "IAM" }
+
+  # Integration services
+  queue: { category: "integration", label: "OCI Queue" }
+  streaming: { category: "integration", label: "Streaming" }
+  api-gateway: { category: "integration", label: "API Gateway" }
+  notifications: { category: "integration", label: "Notifications" }
+
+  # Management services
+  monitoring: { category: "management", label: "Monitoring" }
+  logging: { category: "management", label: "Logging" }
+  apm: { category: "management", label: "APM" }
+  devops: { category: "management", label: "DevOps" }

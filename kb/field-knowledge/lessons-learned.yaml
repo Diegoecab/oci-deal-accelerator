@@ -1,0 +1,94 @@
+---
+last_verified: 2026-03-14
+description: Patterns and anti-patterns from real customer engagements
+---
+
+lessons:
+
+  - id: "LL-001"
+    title: "Start with ADB-S, not ExaCS"
+    category: "architecture"
+    lesson: >
+      For customers without strong DBA teams, always recommend ADB-S first.
+      ExaCS requires operational maturity that many organizations underestimate.
+      ADB-S eliminates 80% of DBA tasks and reduces time-to-value significantly.
+    anti_pattern: "Recommending ExaCS because the on-prem team is used to Exadata"
+    better_approach: "ADB-S with auto-scaling — let Oracle manage the database"
+
+  - id: "LL-002"
+    title: "Migration: data size determines method, not preference"
+    category: "migration"
+    lesson: >
+      For databases < 1 TB, Data Pump is simplest and fastest.
+      For 1-10 TB, ZDM provides the best balance of speed and automation.
+      For > 10 TB or zero-downtime, GoldenGate is the only reliable option.
+      Don't over-engineer migration for small databases.
+    anti_pattern: "Using GoldenGate for a 200 GB database"
+    better_approach: "Data Pump export → Object Storage → Data Pump import"
+
+  - id: "LL-003"
+    title: "Always plan FastConnect early"
+    category: "networking"
+    lesson: >
+      FastConnect provisioning is the longest lead-time item in most
+      OCI projects (2-4 weeks). Start the order in week 1 and use
+      VPN as interim connectivity. Don't let FastConnect delay block
+      the entire project.
+    anti_pattern: "Waiting until infrastructure is ready to order FastConnect"
+    better_approach: "Order FastConnect on day 1, use VPN until ready"
+
+  - id: "LL-004"
+    title: "BYOL audit before proposal"
+    category: "commercial"
+    lesson: >
+      Always ask the customer to provide their Oracle license position
+      (number of processor licenses, editions, options) before creating
+      the architecture proposal. BYOL can change the TCO comparison
+      dramatically and influence service selection.
+    anti_pattern: "Presenting PAYG pricing without BYOL analysis"
+    better_approach: "Get license count early, show both PAYG and BYOL"
+
+  - id: "LL-005"
+    title: "Don't skip the DR drill"
+    category: "operations"
+    lesson: >
+      Every DR plan looks good on paper. Quarterly DR drills reveal
+      problems: stale configurations, DNS propagation delays, application
+      reconnection issues, configuration drift between primary and DR.
+      Insist on DR drills as part of the architecture proposal.
+    anti_pattern: "Setting up DR and never testing it"
+    better_approach: "Quarterly automated DR drill with documented results"
+
+  - id: "LL-006"
+    title: "Terraform from day 1"
+    category: "operations"
+    lesson: >
+      ClickOps (manual console provisioning) creates configuration drift
+      and makes DR/scaling impossible to automate. Define Terraform
+      modules from the start, even for POC. The extra time is always
+      worth it.
+    anti_pattern: "Manual console provisioning for production"
+    better_approach: "Terraform modules in git, applied via CI/CD"
+
+  - id: "LL-007"
+    title: "ADB-S replaces GoldenGate for many use cases"
+    category: "architecture"
+    lesson: >
+      Customers using GoldenGate purely for OLTP→DW replication can
+      often replace it with ADB-S Refreshable Clones. This eliminates
+      GoldenGate licensing, operational complexity, and a separate
+      GoldenGate infrastructure. Only keep GoldenGate for heterogeneous
+      replication or real-time CDC requirements.
+    anti_pattern: "Migrating GoldenGate to cloud just because it existed on-prem"
+    better_approach: "Evaluate if ADB-S Refreshable Clone meets reporting needs"
+
+  - id: "LL-008"
+    title: "Cost comparison must include operational costs"
+    category: "commercial"
+    lesson: >
+      Raw infrastructure cost comparison (OCI vs AWS) is incomplete.
+      Factor in DBA salaries ($150-250K/year per DBA), training costs,
+      and operational overhead. ADB-S eliminating 1-2 DBA positions
+      often exceeds the infrastructure savings.
+    anti_pattern: "Comparing only infrastructure unit costs"
+    better_approach: "Total Cost of Ownership including people and process"

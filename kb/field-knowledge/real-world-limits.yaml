@@ -1,0 +1,63 @@
+---
+last_verified: 2026-03-14
+description: Practical limits vs documented limits — what actually works in production
+---
+
+limits:
+
+  adb_s:
+    documented_max_ocpu: 128
+    practical_max_ocpu: 128
+    notes: "Documented and practical limits align for OCPU"
+
+    documented_max_storage: "383 TB"
+    practical_max_storage: "~200 TB recommended"
+    notes_storage: >
+      While 383 TB is the documented limit, databases over 200 TB
+      start to see longer backup times and restore times that may
+      not meet DR RTO requirements. Plan accordingly.
+
+    documented_concurrent_sessions: "OCPU-dependent"
+    practical_concurrent_sessions: "~150-200 active sessions per OCPU"
+    notes_sessions: >
+      Oracle documents a formula based on OCPU. In practice, with
+      typical OLTP workload mix, 150-200 genuinely active sessions
+      per OCPU is sustainable. Beyond this, connection pooling is essential.
+
+    auto_scale_frequency: "documented as 'automatic'"
+    practical_scale_frequency: "minimum 2-3 minute intervals"
+    notes_scaling: "Cannot scale faster than every 2-3 minutes per direction"
+
+  exacs:
+    documented_quarter_rack_ocpu: 46
+    practical_usable_ocpu: 40
+    notes: "Reserve 6 OCPUs for system processes, ASM, Grid Infrastructure"
+
+    documented_storage: "48 TB usable (Quarter Rack)"
+    practical_storage: "~36 TB with normal redundancy"
+    notes_storage: "ASM normal redundancy + system overhead reduces usable space"
+
+  dbcs:
+    documented_max_rac_nodes: 2
+    practical_rac_notes: >
+      2-node RAC works well for HA. Don't expect linear scaling —
+      typical overhead is 10-15% per node for RAC synchronization.
+
+  fastconnect:
+    documented_bandwidth: "1, 2, 5, 10 Gbps"
+    practical_throughput: "80-90% of link speed"
+    notes: >
+      Actual throughput is 80-90% of link speed due to protocol overhead.
+      Budget for 8 Gbps effective on a 10 Gbps link.
+
+  oke:
+    documented_max_nodes: 1000
+    practical_max_nodes: "500-700 without careful tuning"
+    notes: >
+      Beyond 500 nodes, etcd performance and API server scaling need
+      attention. Most enterprise OKE clusters are 10-50 nodes.
+
+  vcn:
+    documented_max_vcns_per_region: 300
+    practical_recommendation: "< 20 VCNs with hub-spoke topology"
+    notes: "More VCNs = more complexity. Hub-spoke with DRG is preferred."

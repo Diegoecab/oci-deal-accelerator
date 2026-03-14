@@ -1,0 +1,161 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database Serverless (ADB-S)
+category: database
+oci_color: "#AA643B"
+---
+
+what: >
+  Fully managed Oracle Database with auto-scaling, auto-patching, auto-tuning.
+  Runs on shared Exadata infrastructure. Available as OLTP (ATP) or Data Warehouse (ADW) workload types.
+
+when_to_use:
+  - OLTP or mixed workloads under 128 OCPUs
+  - Teams without dedicated DBAs
+  - Variable/unpredictable workload patterns (auto-scaling)
+  - Rapid provisioning needed (minutes, not days)
+  - Dev/test environments needing quick spin-up
+  - APEX application hosting
+
+when_NOT_to_use:
+  - Workloads requiring OS-level access
+  - Need for RAC (use ExaCS or ADB-D)
+  - Regulatory requirement for dedicated infrastructure
+  - Sustained >128 OCPU usage (ADB-D or ExaCS cheaper at scale)
+  - Custom Oracle options not supported (Spatial, Graph — check feature matrix)
+  - Need for specific Oracle version pinning
+
+features:
+  auto_scaling:
+    enabled: true
+    cpu_range: "1-128 OCPU"
+    scale_up_time: "2-3 minutes"
+    scale_down_time: "5-10 minutes"
+    billing: "per OCPU per hour, only when scaling is active"
+    notes: "Size base OCPUs for P75 workload, not P50"
+  auto_indexing:
+    enabled: true
+    default_state: "HIDDEN indexes"
+    notes: "Indexes created as HIDDEN by default — instantly reversible. Monitor via AUTO_INDEX_REPORT."
+  auto_patching:
+    enabled: true
+    frequency: "quarterly, Oracle-managed schedule"
+    downtime: "rolling, typically <30 seconds"
+  data_guard:
+    local: true
+    cross_region: true
+    mode: "async only for cross-region"
+    rpo: "seconds (cross-region)"
+    rto: "minutes (auto-failover)"
+    switchover: "manual or autonomous"
+  refreshable_clone:
+    enabled: true
+    use_case: "reporting offload, dev/test"
+    lag: "configurable, minimum 1 hour"
+  private_endpoint:
+    enabled: true
+    required_for: "production workloads, compliance"
+  data_safe:
+    enabled: true
+    integrated: true
+  vault_integration:
+    enabled: true
+    tde_customer_managed_keys: true
+
+limits:
+  max_ocpu: 128
+  max_storage_tb: 383
+  max_concurrent_sessions: "OCPU-dependent, ~1.875 sessions per OCPU baseline"
+  backup_retention: "1-60 days"
+  supported_versions: ["19c", "23ai"]
+
+gotchas:
+  - id: "ADB-S-001"
+    issue: "Auto-scaling activation takes 2-3 minutes"
+    impact: "Spike workloads may see latency before scale-up completes"
+    mitigation: "Size base OCPUs for P75 of normal load, not P50"
+
+  - id: "ADB-S-002"
+    issue: "TAC replay not guaranteed with non-replayable operations"
+    impact: "UTL_HTTP, DBMS_PIPE, NOCACHE sequences break transparent failover"
+    mitigation: "Audit application code for non-replayable calls before migration"
+
+  - id: "ADB-S-003"
+    issue: "Auto Indexing creates indexes HIDDEN by default"
+    impact: "None — indexes are invisible to optimizer until validated"
+    mitigation: "Monitor via AUTO_INDEX_REPORT, manually VISIBLE if needed"
+
+  - id: "ADB-S-004"
+    issue: "Cross-region ADG is async only"
+    impact: "RPO is seconds, not zero — data loss possible in region failure"
+    mitigation: "Document RPO in DR plan, consider ExaCS for zero RPO requirement"
+
+  - id: "ADB-S-005"
+    issue: "Some PL/SQL packages restricted in shared environment"
+    impact: "UTL_FILE, UTL_TCP, DBMS_SCHEDULER limited or unavailable"
+    mitigation: "Use Object Storage + DBMS_CLOUD instead of UTL_FILE"
+
+  - id: "ADB-S-006"
+    issue: "Cannot choose specific Exadata hardware generation"
+    impact: "Performance characteristics may vary between provisions"
+    mitigation: "Use ADB-D if hardware consistency is required"
+
+sizing_rules:
+  ocpu_base: "P75 of current CPU utilization, converted via cpu-conversion-ratios.yaml"
+  ocpu_max: "P95 or 2x base, whichever is higher"
+  storage: "Current data size + 30% growth headroom + index overhead (typically 1.2-1.5x data)"
+  auto_scale_ceiling: "3x base OCPU (default) or custom limit"
+
+pricing_model:
+  base: "per OCPU per hour (PAYG) or per month (monthly flex)"
+  storage: "per TB per month"
+  byol_discount: "~50% reduction on OCPU cost"
+  auto_scaling: "billed only when active, per OCPU per hour at same rate"
+  data_guard_standby: "same as primary (OCPU + storage)"
+  refreshable_clone: "storage only when not connected, OCPU + storage when connected"
+
+migration_paths:
+  from_on_prem:
+    - method: "Oracle Data Pump"
+      best_for: "< 1 TB, acceptable downtime"
+      downtime: "hours"
+    - method: "Oracle Zero Downtime Migration (ZDM)"
+      best_for: "> 1 TB, minimal downtime"
+      downtime: "minutes"
+    - method: "GoldenGate"
+      best_for: "zero downtime, real-time sync during migration"
+      downtime: "seconds"
+    - method: "RMAN restore from Object Storage"
+      best_for: "large databases, backup-based migration"
+      downtime: "hours"
+  from_aws_rds:
+    - method: "Data Pump export/import via Object Storage"
+      best_for: "< 500 GB"
+      downtime: "hours"
+    - method: "GoldenGate for heterogeneous replication"
+      best_for: "zero downtime migration from RDS"
+      downtime: "seconds"
+  from_exacs:
+    - method: "Data Guard switchover"
+      best_for: "existing ExaCS to ADB-S (same region)"
+      downtime: "minutes"
+
+competitive_positioning:
+  vs_aws_aurora:
+    oci_advantages:
+      - "Full Oracle Database compatibility (not just PostgreSQL/MySQL)"
+      - "Auto-scaling is true OCPU scaling, not just storage"
+      - "Built-in Data Guard DR (Aurora requires separate Global Database setup)"
+    aws_advantages:
+      - "Broader ecosystem integration"
+      - "More regions available"
+      - "Serverless v2 scales more granularly (0.5 ACU increments)"
+  vs_aws_rds_oracle:
+    oci_advantages:
+      - "True autonomous operations (auto-patching, auto-tuning)"
+      - "Significantly lower cost with BYOL"
+      - "Auto-scaling (RDS Oracle cannot auto-scale compute)"
+      - "No multi-AZ RAC limitation"
+    aws_advantages:
+      - "Existing AWS ecosystem integration"
+      - "Multi-AZ standby is simpler to configure"

@@ -1,0 +1,61 @@
+---
+last_verified: 2026-03-14
+pillar: Operational Efficiency
+max_score: 10
+description: Oracle Well-Architected Framework — Operational Efficiency pillar checks
+---
+
+checks:
+
+  - id: "OPS-IAC-01"
+    name: "Infrastructure as Code"
+    weight: 2
+    question: "Is infrastructure defined and deployed via Terraform/ORM?"
+    pass_criteria: "All resources defined in Terraform, stored in version control"
+    fail_impact: "Manual deployments, configuration drift, hard to reproduce"
+    remediation: "Define Terraform modules for all infrastructure"
+
+  - id: "OPS-DEPLOY-01"
+    name: "Deployment automation"
+    weight: 2
+    question: "Is application deployment automated (CI/CD)?"
+    pass_criteria: "CI/CD pipeline for application deployments"
+    fail_impact: "Manual deployments are error-prone and slow"
+    remediation: "Implement CI/CD pipeline (OCI DevOps, GitHub Actions, etc.)"
+
+  - id: "OPS-MON-01"
+    name: "Centralized monitoring"
+    weight: 2
+    question: "Is monitoring centralized with actionable alerts?"
+    pass_criteria: "OCI Monitoring + Logging with alarm policies"
+    fail_impact: "Siloed monitoring, alert fatigue, missed incidents"
+    remediation: "Configure OCI Monitoring, Logging, and Notifications"
+
+  - id: "OPS-MON-03"
+    name: "APM and tracing"
+    weight: 1
+    question: "Is application performance monitoring configured?"
+    pass_criteria: "OCI APM or third-party APM with distributed tracing"
+    fail_impact: "Cannot diagnose application-level performance issues"
+    remediation: "Enable OCI APM, instrument application code"
+
+  - id: "OPS-PATCH-01"
+    name: "Patching strategy"
+    weight: 2
+    question: "Is there a defined patching cadence for OS and database?"
+    pass_criteria: "Quarterly patching schedule with automated process"
+    fail_impact: "Unpatched systems accumulate vulnerabilities"
+    remediation: "Define patching schedule, use OS Management Service"
+
+  - id: "OPS-RUNBOOK-01"
+    name: "Operational runbooks"
+    weight: 1
+    question: "Are runbooks documented for common operational tasks?"
+    pass_criteria: "Documented runbooks for backup, restore, failover, scaling"
+    fail_impact: "Ad-hoc troubleshooting, knowledge silos"
+    remediation: "Document operational procedures, store in wiki/repo"
+
+scoring:
+  pass: ">= 8/10"
+  needs_improvement: "5-7/10"
+  fail: "< 5/10"

@@ -1,0 +1,53 @@
+---
+last_verified: 2026-03-14
+pillar: Performance & Cost Optimization
+max_score: 10
+description: Oracle Well-Architected Framework — Performance & Cost Optimization pillar checks
+---
+
+checks:
+
+  - id: "PERF-SIZE-01"
+    name: "Right-sized resources"
+    weight: 2
+    question: "Are compute and database resources right-sized based on utilization data?"
+    pass_criteria: "Sizing based on actual metrics (P75/P95), not guesswork"
+    fail_impact: "Over-provisioned = wasted cost, under-provisioned = poor performance"
+    remediation: "Collect utilization metrics, resize to match actual needs"
+
+  - id: "PERF-BYOL-01"
+    name: "BYOL optimization"
+    weight: 2
+    question: "Are existing Oracle licenses applied via BYOL where applicable?"
+    pass_criteria: "All eligible licenses mapped to OCI BYOL"
+    fail_impact: "Paying PAYG for licenses already owned"
+    remediation: "Audit Oracle licenses, apply BYOL to eligible services"
+
+  - id: "PERF-COMMIT-01"
+    name: "Committed pricing"
+    weight: 2
+    question: "Is committed pricing (annual flex) used for stable workloads?"
+    pass_criteria: "Production workloads on annual flex or monthly flex"
+    fail_impact: "Missing 30-60% discount on predictable spend"
+    remediation: "Analyze spend patterns, move stable workloads to committed pricing"
+
+  - id: "PERF-MON-01"
+    name: "Cost monitoring"
+    weight: 2
+    question: "Are budget alerts and cost analysis configured?"
+    pass_criteria: "Budget alerts at 80% and 100%, monthly cost review process"
+    fail_impact: "Cost surprises, no visibility into spend trends"
+    remediation: "Configure OCI Budgets with alerts, schedule monthly reviews"
+
+  - id: "PERF-OPT-01"
+    name: "Performance monitoring"
+    weight: 2
+    question: "Are performance baselines and alerts configured?"
+    pass_criteria: "Monitoring alarms for CPU, memory, IOPS, latency"
+    fail_impact: "Performance degradation goes undetected"
+    remediation: "Configure OCI Monitoring alarms with appropriate thresholds"
+
+scoring:
+  pass: ">= 8/10"
+  needs_improvement: "5-7/10"
+  fail: "< 5/10"

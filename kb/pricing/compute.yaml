@@ -1,0 +1,57 @@
+---
+last_verified: 2026-03-14
+description: OCI compute pricing for estimation (USD, US regions)
+disclaimer: "Prices are approximate and for estimation only. Always verify with OCI pricing calculator."
+---
+
+# All prices in USD per hour unless noted
+
+compute_shapes:
+
+  vm_standard_e4_flex:
+    name: "VM.Standard.E4.Flex (AMD EPYC)"
+    ocpu_per_hour: 0.025
+    memory_per_gb_per_hour: 0.0015
+    example: "4 OCPU / 64 GB = $0.196/hr = $143/mo"
+
+  vm_standard_e5_flex:
+    name: "VM.Standard.E5.Flex (AMD EPYC)"
+    ocpu_per_hour: 0.026
+    memory_per_gb_per_hour: 0.0016
+    example: "4 OCPU / 64 GB = $0.206/hr = $150/mo"
+
+  vm_standard_a1_flex:
+    name: "VM.Standard.A1.Flex (Ampere ARM)"
+    ocpu_per_hour: 0.01
+    memory_per_gb_per_hour: 0.001
+    example: "4 OCPU / 24 GB = $0.064/hr = $47/mo"
+    notes: "Most cost-effective for compatible workloads"
+
+  vm_standard3_flex:
+    name: "VM.Standard3.Flex (Intel Ice Lake)"
+    ocpu_per_hour: 0.054
+    memory_per_gb_per_hour: 0.0007
+    example: "4 OCPU / 64 GB = $0.261/hr = $190/mo"
+
+  bm_standard_e4_128:
+    name: "BM.Standard.E4.128 (Bare Metal AMD)"
+    per_hour: 3.20
+    ocpu: 128
+    memory_gb: 2048
+    monthly: 2336
+
+  vm_gpu_a10_1:
+    name: "VM.GPU.A10.1 (NVIDIA A10)"
+    per_hour: 2.48
+    gpu: 1
+    ocpu: 15
+    memory_gb: 240
+
+container_instances:
+  per_ocpu_per_hour: 0.0225
+  per_gb_memory_per_hour: 0.0025
+  notes: "Serverless containers, no cluster management"
+
+monthly_calculation:
+  hours_per_month: 730
+  notes: "Based on average month (365.25 days / 12 months * 24 hours)"

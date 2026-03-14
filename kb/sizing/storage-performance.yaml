@@ -1,0 +1,81 @@
+---
+last_verified: 2026-03-14
+description: Storage performance characteristics and sizing rules for OCI storage tiers
+---
+
+storage_tiers:
+
+  block_volume:
+    balanced:
+      iops_per_gb: 60
+      max_iops: 25000
+      throughput_mbps_per_gb: 0.48
+      max_throughput_mbps: 480
+      use_case: "general purpose, most workloads"
+    higher_performance:
+      iops_per_gb: 75
+      max_iops: 35000
+      throughput_mbps_per_gb: 0.6
+      max_throughput_mbps: 480
+      use_case: "database, transactional workloads"
+    ultra_high_performance:
+      iops_per_gb: 90
+      max_iops: 225000
+      throughput_mbps_per_gb: 0.72
+      max_throughput_mbps: 2680
+      use_case: "highest IOPS requirements"
+    lower_cost:
+      iops_per_gb: 2
+      max_iops: 3000
+      throughput_mbps_per_gb: 0.024
+      max_throughput_mbps: 480
+      use_case: "backups, archival, cold data"
+
+  adb_storage:
+    description: "ADB-S storage is Exadata-backed — performance scales with OCPU"
+    iops_per_ocpu: "approximately 12,500 read IOPS per OCPU"
+    throughput_per_ocpu: "approximately 1 GB/s per 8 OCPU"
+    notes:
+      - "Storage performance scales linearly with OCPU allocation"
+      - "Smart Scan offloads filtering to storage — effective IOPS much higher"
+      - "HCC (Hybrid Columnar Compression) reduces storage I/O for analytics"
+
+  exadata_storage:
+    description: "Exadata Cloud Service storage with Smart Flash Cache"
+    flash_cache_iops: "up to 2.5M IOPS per rack"
+    disk_iops: "up to 350K IOPS per rack"
+    throughput: "up to 100 GB/s per rack (flash)"
+    notes:
+      - "Smart Flash Cache absorbs most read I/O"
+      - "Storage Indexes eliminate unnecessary I/O"
+      - "Performance scales with rack size"
+
+  object_storage:
+    standard:
+      throughput: "virtually unlimited (distributed)"
+      latency: "10-50ms per request"
+      use_case: "backups, data lake, unstructured data"
+    archive:
+      restore_time: "1 hour minimum"
+      use_case: "long-term retention, compliance archives"
+
+sizing_rules:
+  from_on_prem:
+    step_1: "Measure current data size (all datafiles + temp + redo)"
+    step_2: "Add ASM overhead: 2x for normal redundancy, 3x for high"
+    step_3: "Add 30% growth headroom"
+    step_4: "Add index overhead (typically 1.2-1.5x data size)"
+    formula: "OCI storage = data_size * asm_factor * 1.3 * index_factor"
+    notes:
+      - "ADB-S handles ASM internally — only specify usable data size"
+      - "DBCS requires explicit ASM sizing"
+      - "ExaCS includes Exadata storage management"
+
+  iops_sizing:
+    step_1: "Collect current IOPS (avg, P95) from AWR or OS stats"
+    step_2: "Map to OCI storage tier that provides required P95 IOPS"
+    step_3: "For ADB-S, verify OCPU allocation provides sufficient IOPS"
+    notes:
+      - "Most on-prem Oracle workloads are over-provisioned on IOPS"
+      - "Smart Scan on ADB/ExaCS reduces effective IOPS requirements"
+      - "Start with balanced tier, upgrade if monitoring shows saturation"

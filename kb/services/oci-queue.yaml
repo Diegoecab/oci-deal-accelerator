@@ -1,0 +1,53 @@
+---
+last_verified: 2026-03-14
+service: OCI Queue
+category: integration
+oci_color: "#564B9E"
+---
+
+what: >
+  Serverless message queuing service for decoupling application components.
+  Provides at-least-once delivery with configurable visibility timeout.
+
+when_to_use:
+  - Asynchronous task processing between application tiers
+  - Decoupling producers and consumers
+  - Work queue patterns (fan-out, load leveling)
+  - Simple point-to-point messaging without Kafka complexity
+
+when_NOT_to_use:
+  - Need pub/sub pattern — use OCI Streaming (Kafka-compatible)
+  - Need message ordering guarantees — OCI Queue is best-effort ordering
+  - Need exactly-once delivery — design for at-least-once with idempotency
+  - High-throughput event streaming — use OCI Streaming
+
+features:
+  delivery: "at-least-once"
+  ordering: "best-effort (not FIFO)"
+  dead_letter_queue: true
+  visibility_timeout: "configurable per message"
+  long_polling: true
+  max_message_size: "512 KB"
+  retention: "up to 7 days"
+
+limits:
+  max_queues_per_tenancy: 100
+  max_message_size: "512 KB"
+  max_retention: "7 days"
+  throughput: "unlimited (serverless scaling)"
+
+gotchas:
+  - id: "QUEUE-001"
+    issue: "Not FIFO — messages may be delivered out of order"
+    impact: "Applications requiring strict ordering will have issues"
+    mitigation: "Implement sequence numbers in message body, reorder at consumer"
+
+  - id: "QUEUE-002"
+    issue: "At-least-once delivery means duplicates possible"
+    impact: "Consumer must be idempotent"
+    mitigation: "Implement deduplication using message ID tracking"
+
+pricing_model:
+  base: "per API request"
+  storage: "per GB per month for message retention"
+  notes: "Very cost-effective for moderate throughput patterns"

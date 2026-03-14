@@ -1,0 +1,125 @@
+---
+last_verified: 2026-03-14
+pattern: Database Disaster Recovery
+category: database-dr
+---
+
+description: >
+  DR patterns for Oracle database workloads on OCI. Covers cross-region
+  replication, backup-based DR, and pilot-light architectures.
+
+patterns:
+
+  adb_s_cross_region_adg:
+    name: "ADB-S Cross-Region Autonomous Data Guard"
+    services: ["adb-serverless"]
+    rto: "minutes (auto-failover available)"
+    rpo: "seconds (async replication)"
+    cost_multiplier: "2x (standby = same cost as primary)"
+    description: >
+      Cross-region ADG with automatic failover. Standby is always running
+      and billable. Can also create refreshable clones for read offload.
+    requirements:
+      - "Two regions with ADB-S availability"
+      - "Sufficient OCPU quota in DR region"
+    components:
+      primary:
+        - "ADB-S primary (production)"
+      dr:
+        - "ADB-S standby (cross-region ADG)"
+        - "Optional: Refreshable clone for reporting"
+    gotchas:
+      - "Async only — zero RPO not possible cross-region"
+      - "Standby billed at full rate (OCPU + storage)"
+      - "DNS/connection string changes on failover unless using global URL"
+
+  adb_s_backup_based_dr:
+    name: "ADB-S Backup-Based DR"
+    services: ["adb-serverless"]
+    rto: "hours"
+    rpo: "hours (last backup)"
+    cost_multiplier: "1.1x (backup storage only)"
+    description: >
+      Lowest-cost DR using automatic backups stored cross-region in Object Storage.
+      Restore from backup in DR region when needed.
+    requirements:
+      - "Cross-region backup configured"
+    gotchas:
+      - "RTO depends on database size — large DBs take hours to restore"
+      - "RPO is last backup time — potential hours of data loss"
+      - "Must pre-plan networking in DR region"
+
+  dbcs_data_guard_cross_region:
+    name: "DBCS Cross-Region Data Guard"
+    services: ["dbcs"]
+    rto: "minutes (manual switchover) to hours (rebuild)"
+    rpo: "zero (sync local) / seconds (async cross-region)"
+    cost_multiplier: "2x"
+    description: >
+      Traditional Data Guard between DBCS instances across regions.
+      Customer manages the Data Guard configuration.
+    requirements:
+      - "DBCS instances in both regions"
+      - "DBA team to manage Data Guard"
+      - "FastConnect or VPN between regions"
+    gotchas:
+      - "Customer manages switchover/failover — not automatic"
+      - "Network latency affects sync replication performance"
+      - "DBA must validate standby regularly"
+
+  exacs_data_guard_cross_region:
+    name: "ExaCS Cross-Region Data Guard"
+    services: ["exacs"]
+    rto: "minutes"
+    rpo: "zero (sync) / seconds (async)"
+    cost_multiplier: "2x infrastructure"
+    description: >
+      Data Guard between ExaCS deployments across regions.
+      Highest performance DR with Exadata acceleration.
+    requirements:
+      - "ExaCS in both regions (minimum Quarter Rack each)"
+      - "Skilled DBA team"
+      - "FastConnect between regions"
+    gotchas:
+      - "Very expensive — 2x Exadata infrastructure"
+      - "Sync mode adds latency — only viable within ~100km"
+
+  pilot_light:
+    name: "Pilot Light DR"
+    services: ["adb-serverless", "dbcs"]
+    rto: "30-60 minutes"
+    rpo: "seconds to minutes"
+    cost_multiplier: "1.3-1.5x"
+    description: >
+      Database replication is active, but compute/app tier is dormant.
+      Terraform provisions app infrastructure on-demand during DR event.
+    requirements:
+      - "Terraform modules for full stack"
+      - "Tested DR runbook"
+      - "Pre-allocated compute capacity (or on-demand)"
+    components:
+      always_on:
+        - "Database standby (ADG or Data Guard)"
+        - "Networking (VCN, subnets, DRG)"
+      on_demand:
+        - "Compute instances (Terraform provisioned)"
+        - "Load balancers"
+        - "Application configuration"
+    gotchas:
+      - "Compute provisioning may fail during regional outage (capacity)"
+      - "Application config drift between primary and DR"
+      - "Must test quarterly to validate Terraform still works"
+
+decision_tree:
+  - condition: "RPO < 1 minute + automated failover"
+    recommendation: "adb_s_cross_region_adg"
+    rationale: "Automatic failover with seconds RPO"
+  - condition: "Lowest cost DR"
+    recommendation: "adb_s_backup_based_dr"
+    rationale: "Only pay for backup storage, accept hours of RPO/RTO"
+  - condition: "Zero RPO (local)"
+    recommendation: "dbcs_data_guard_cross_region with sync mode"
+    rationale: "Sync Data Guard provides zero data loss"
+  - condition: "Balance cost and RTO"
+    recommendation: "pilot_light"
+    rationale: "Database replicated, compute on-demand"

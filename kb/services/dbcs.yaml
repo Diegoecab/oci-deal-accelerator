@@ -1,0 +1,100 @@
+---
+last_verified: 2026-03-14
+service: Database Cloud Service (DBCS)
+category: database
+oci_color: "#AA643B"
+---
+
+what: >
+  Oracle Database running on OCI compute (VM or Bare Metal) with automated provisioning,
+  patching, and backup. Customer manages the database but OCI manages infrastructure.
+  Also known as "Base Database Service."
+
+when_to_use:
+  - Lift-and-shift migration needing OS-level access
+  - Applications requiring specific Oracle options (Advanced Security, Partitioning)
+  - Teams with strong DBA skills wanting full control
+  - Workloads needing specific Oracle versions or patch levels
+  - Need for RAC on VM (2-node RAC supported)
+  - Legacy applications with hard dependencies on OS-level customization
+
+when_NOT_to_use:
+  - No DBA team — use ADB-S instead
+  - Variable workloads needing auto-scaling — DBCS is fixed size
+  - Want autonomous patching/tuning — use ADB-S
+  - High-performance OLTP needing Exadata — use ExaCS or ADB
+
+features:
+  os_access: true
+  rac_support: "2-node RAC on VM shapes"
+  data_guard:
+    local: true
+    cross_region: true
+    mode: "sync (local), async (cross-region)"
+    rpo: "zero (sync), seconds (async)"
+  backup:
+    automatic: true
+    retention: "1-60 days"
+    destination: "Object Storage or local"
+  patching:
+    automated: true
+    customer_scheduled: true
+    notes: "Customer controls when patches are applied"
+  shapes:
+    vm: ["VM.Standard.E4.Flex", "VM.Standard.E5.Flex", "VM.Standard3.Flex"]
+    bm: ["BM.Standard.E4.128", "BM.DenseIO.E4.128"]
+
+limits:
+  max_ocpu_vm: "64 OCPU per node"
+  max_ocpu_bm: "128 OCPU"
+  max_storage_vm: "40 TB"
+  max_storage_bm: "51.2 TB (local NVMe)"
+  supported_versions: ["11.2", "12.2", "18c", "19c", "21c", "23ai"]
+  supported_editions: ["Standard", "Enterprise", "Enterprise High Performance", "Enterprise Extreme Performance"]
+
+gotchas:
+  - id: "DBCS-001"
+    issue: "VM shapes do not auto-scale — manual resize required"
+    impact: "Peak workloads may be under-resourced or over-provisioned"
+    mitigation: "Size for P90, use monitoring alerts for capacity planning"
+
+  - id: "DBCS-002"
+    issue: "2-node RAC has shared storage dependency"
+    impact: "Storage failure affects both nodes"
+    mitigation: "Use ASM with normal or high redundancy, regular backup validation"
+
+  - id: "DBCS-003"
+    issue: "Patching requires customer action"
+    impact: "Unpatched databases accumulate security vulnerabilities"
+    mitigation: "Schedule quarterly patch windows, automate with OCI CLI scripts"
+
+  - id: "DBCS-004"
+    issue: "OS management is customer responsibility"
+    impact: "Unpatched OS, misconfigured security, storage management"
+    mitigation: "Use OS Management Service, implement CIS benchmarks"
+
+sizing_rules:
+  ocpu: "P90 of current CPU utilization, converted via cpu-conversion-ratios.yaml"
+  memory: "Match current allocation or use memory-sizing-rules.yaml"
+  storage: "Current data size + ASM overhead (2x normal, 3x high) + 30% growth"
+
+pricing_model:
+  base: "per OCPU per hour (PAYG) or committed (monthly flex)"
+  storage: "per GB per month (Block Storage)"
+  byol_discount: "~50% on database license cost"
+  rac_premium: "2x node cost (both nodes licensed)"
+
+migration_paths:
+  from_on_prem:
+    - method: "RMAN backup/restore"
+      best_for: "same version migration"
+      downtime: "hours"
+    - method: "Data Guard"
+      best_for: "minimal downtime, same version"
+      downtime: "minutes"
+    - method: "Data Pump"
+      best_for: "cross-version migration"
+      downtime: "hours"
+    - method: "ZDM"
+      best_for: "automated migration workflow"
+      downtime: "minutes"

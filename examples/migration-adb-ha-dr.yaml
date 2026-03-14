@@ -1,0 +1,213 @@
+# Example architecture spec: Oracle on-premises Exadata to ADB-S migration
+# with cross-region HA/DR. Based on a typical enterprise customer scenario.
+# Customer: Acme Corp (example)
+
+architecture:
+  name: "Acme Corp — ADB-S Migration with HA/DR"
+
+  regions:
+    - id: r1
+      label: "Region — US East (Ashburn)"
+      vcns:
+        - id: vcn1
+          label: "VCN prod-vcn 10.0.0.0/16"
+          subnets:
+            # Data Tier
+            - id: sub-db
+              label: "Private Subnet — Data Tier (10.0.1.0/24)"
+              x: 20
+              y: 30
+              width: 520
+              height: 450
+              services:
+                - id: adb-oltp
+                  label: "ADB-S OLTP\n8 OCPU / 4 TB / BYOL"
+                  type: adb
+                  x: 25
+                  y: 35
+                  width: 200
+                  height: 70
+                - id: adb-dw
+                  label: "ADB-S DW\n4 OCPU / 2 TB"
+                  type: adb
+                  x: 25
+                  y: 125
+                  width: 200
+                  height: 70
+                - id: adb-apex
+                  label: "ADB-S APEX\n2 OCPU / 200 GB"
+                  type: adb
+                  x: 25
+                  y: 215
+                  width: 200
+                  height: 70
+                - id: data-safe
+                  label: "Data Safe"
+                  type: data-safe
+                  x: 280
+                  y: 35
+                  width: 120
+                  height: 50
+                - id: vault
+                  label: "OCI Vault (TDE Keys)"
+                  type: vault
+                  x: 280
+                  y: 105
+                  width: 120
+                  height: 50
+
+            # App Tier
+            - id: sub-app
+              label: "Private Subnet — App Tier (10.0.2.0/24)"
+              x: 560
+              y: 30
+              width: 520
+              height: 200
+              services:
+                - id: app1
+                  label: "VM.Standard.E5.Flex\n4 OCPU / 64 GB"
+                  type: vm
+                  x: 25
+                  y: 35
+                  width: 200
+                  height: 70
+                - id: app2
+                  label: "VM.Standard.E5.Flex\n4 OCPU / 64 GB"
+                  type: vm
+                  x: 270
+                  y: 35
+                  width: 200
+                  height: 70
+
+            # OKE Tier
+            - id: sub-oke
+              label: "Private Subnet — OKE Workers (10.0.3.0/21)"
+              x: 560
+              y: 250
+              width: 520
+              height: 150
+              services:
+                - id: oke
+                  label: "OKE Cluster\n3 Workers (E5.Flex 8 OCPU)"
+                  type: oke
+                  x: 25
+                  y: 35
+                  width: 250
+                  height: 70
+
+            # DMZ
+            - id: sub-dmz
+              label: "Public Subnet — DMZ (10.0.0.0/24)"
+              x: 560
+              y: 420
+              width: 520
+              height: 100
+              services:
+                - id: waf
+                  label: "WAF"
+                  type: waf
+                  x: 25
+                  y: 30
+                  width: 100
+                  height: 50
+                - id: lb
+                  label: "Load Balancer"
+                  type: lb
+                  x: 160
+                  y: 30
+                  width: 140
+                  height: 50
+                - id: bastion
+                  label: "Bastion"
+                  type: bastion
+                  x: 340
+                  y: 30
+                  width: 100
+                  height: 50
+
+    - id: r2
+      label: "Region — US West (Phoenix) [DR]"
+      vcns:
+        - id: vcn-dr
+          label: "VCN dr-vcn 10.1.0.0/16"
+          subnets:
+            - id: sub-dr-db
+              label: "Private Subnet — DR Data Tier (10.1.1.0/24)"
+              x: 20
+              y: 30
+              width: 520
+              height: 300
+              services:
+                - id: adb-standby
+                  label: "ADB-S Standby\n8 OCPU / 4 TB (ADG)"
+                  type: adb
+                  x: 25
+                  y: 35
+                  width: 200
+                  height: 70
+                - id: adb-clone
+                  label: "Refreshable Clone\n4 OCPU / 4 TB"
+                  type: adb
+                  x: 25
+                  y: 125
+                  width: 200
+                  height: 70
+
+  connections:
+    - id: c-adg
+      label: "Autonomous Data Guard\n(async, RPO ≈ seconds)"
+      type: adg
+      source: sub-db
+      target: sub-dr-db
+    - id: c-fc
+      label: "FastConnect 10 Gbps\n(to on-premises)"
+      type: fastconnect
+      source: vcn1
+      target: r1  # represents external connectivity
+
+# Cost estimate for this architecture
+cost_estimate:
+  currency: USD
+  byol_licenses: 8  # Oracle Processor Licenses
+
+  line_items:
+    - component: "ADB-S OLTP (8 OCPU, 4 TB)"
+      monthly_payg: 3669
+      monthly_byol: 2072
+    - component: "ADB-S DW (4 OCPU, 2 TB)"
+      monthly_payg: 1835
+      monthly_byol: 1036
+    - component: "ADB-S APEX (2 OCPU, 200 GB)"
+      monthly_payg: 822
+      monthly_byol: 422
+    - component: "ADB-S DR Standby (8 OCPU, 4 TB via ADG)"
+      monthly_payg: 3669
+      monthly_byol: 2072
+    - component: "ADB-S DR Refreshable Clone (4 OCPU, 4 TB)"
+      monthly_payg: 1835
+      monthly_byol: 1036
+    - component: "Compute (2x E5.Flex 4 OCPU / 64 GB)"
+      monthly_payg: 300
+      monthly_byol: 300
+    - component: "OKE (3 workers E5.Flex 8 OCPU / 128 GB)"
+      monthly_payg: 910
+      monthly_byol: 910
+    - component: "FastConnect 10 Gbps"
+      monthly_payg: 600
+      monthly_byol: 600
+    - component: "Storage, Monitoring, WAF, Bastion, Other"
+      monthly_payg: 900
+      monthly_byol: 900
+
+  totals:
+    monthly_payg: 14540
+    monthly_byol: 9348
+    annual_payg: 174480
+    annual_byol: 112176
+
+  assumptions:
+    - "730 hours per month"
+    - "BYOL: 8 processor licenses covering 16 OCPU"
+    - "Auto-scaling assumed active ~4 hours/day (not included in base estimate)"
+    - "Data transfer estimates: 500 GB/month inter-region"
+    - "No reserved/committed pricing applied (would reduce further)"

@@ -1,0 +1,106 @@
+---
+last_verified: 2026-03-14
+service: Exadata Cloud Service (ExaCS)
+category: database
+oci_color: "#AA643B"
+---
+
+what: >
+  Oracle Exadata platform running in OCI with full customer control. Provides
+  highest performance, RAC support, and dedicated infrastructure. Customer manages
+  databases with full OS and root access.
+
+when_to_use:
+  - Highest-performance OLTP requiring Exadata Smart Scan, Storage Indexes
+  - Need for multi-node RAC clusters
+  - Regulatory requirement for dedicated hardware with full control
+  - Large consolidated database environments (many databases on shared Exadata)
+  - Workloads requiring OS-level access AND Exadata performance
+  - Migration from on-premises Exadata (minimal architecture changes)
+
+when_NOT_to_use:
+  - No DBA team — operational burden is high
+  - Small workloads (<4 OCPU) — minimum commitment too large
+  - Variable workloads with long idle periods — paying for dedicated hardware
+  - Want autonomous management — use ADB-D instead
+  - Budget-constrained — minimum Quarter Rack is expensive
+
+features:
+  os_access: true
+  root_access: true
+  rac_support: "full RAC with up to 32 nodes"
+  data_guard:
+    local: true
+    cross_region: true
+    mode: "sync (local), async (cross-region)"
+    rpo: "zero (sync), seconds (async)"
+  exadata_features:
+    smart_scan: true
+    storage_indexes: true
+    hybrid_columnar_compression: true
+    smart_flash_cache: true
+    rdma_network: true
+  vm_clusters: "multiple VM clusters on single Exadata infrastructure"
+  online_scaling: "add/remove OCPUs and storage online"
+
+limits:
+  shapes:
+    quarter_rack_x9m: "46 OCPUs, 720 GB RAM, 48 TB usable"
+    half_rack_x9m: "92 OCPUs, 1440 GB RAM, 96 TB usable"
+    full_rack_x9m: "184 OCPUs, 2880 GB RAM, 192 TB usable"
+  max_nodes_per_cluster: 32
+  supported_versions: ["11.2", "12.2", "18c", "19c", "21c", "23ai"]
+
+gotchas:
+  - id: "EXACS-001"
+    issue: "Infrastructure provisioning takes 3-7 business days"
+    impact: "Cannot do rapid deployment — significant lead time"
+    mitigation: "Pre-provision infrastructure, use ADB-S for POC"
+
+  - id: "EXACS-002"
+    issue: "Minimum commitment is a Quarter Rack"
+    impact: "Significant cost floor even for small workloads"
+    mitigation: "Consolidate multiple databases, use VM clusters to partition"
+
+  - id: "EXACS-003"
+    issue: "Customer responsible for all database management"
+    impact: "Need skilled DBAs for patching, tuning, backup management"
+    mitigation: "Budget for DBA team or managed services partner"
+
+  - id: "EXACS-004"
+    issue: "Exadata storage scaling is in fixed increments"
+    impact: "Cannot add small amounts of storage"
+    mitigation: "Plan storage growth, provision with headroom"
+
+  - id: "EXACS-005"
+    issue: "GI and Exadata system software patches are customer-managed"
+    impact: "Falling behind on patches creates security and support risk"
+    mitigation: "Quarterly patching cadence, test in non-prod VM cluster first"
+
+sizing_rules:
+  infrastructure: "Sum of all database OCPU + 25% headroom for RAC overhead"
+  storage: "Sum of all data + ASM mirrors + 40% growth headroom"
+  minimum: "Quarter Rack unless consolidating many databases"
+
+pricing_model:
+  base: "per infrastructure (fixed) + per OCPU per hour (variable)"
+  infrastructure_cost: "significant — includes Exadata hardware, networking, storage"
+  byol_discount: "~50% on OCPU/database costs"
+  notes: "Break-even vs DBCS typically at 32+ sustained OCPUs"
+
+migration_paths:
+  from_on_prem_exadata:
+    - method: "Data Guard switchover"
+      best_for: "same Exadata generation, minimal changes"
+      downtime: "minutes"
+    - method: "RMAN duplicate"
+      best_for: "cross-generation migration"
+      downtime: "hours"
+  from_dbcs:
+    - method: "Data Guard"
+      best_for: "minimal downtime migration"
+      downtime: "minutes"
+  from_aws:
+    - method: "GoldenGate"
+      best_for: "zero downtime from RDS Oracle"
+      downtime: "seconds"

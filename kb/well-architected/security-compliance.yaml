@@ -1,0 +1,93 @@
+---
+last_verified: 2026-03-14
+pillar: Security & Compliance
+max_score: 20
+description: Oracle Well-Architected Framework — Security & Compliance pillar checks
+---
+
+checks:
+
+  - id: "SEC-IAM-01"
+    name: "IAM least-privilege policies"
+    weight: 2
+    question: "Are IAM policies scoped to minimum required permissions?"
+    pass_criteria: "Compartment-based isolation with group-specific policies"
+    fail_impact: "Over-privileged users can access/modify unintended resources"
+    remediation: "Review and tighten IAM policies, use policy analyzer"
+
+  - id: "SEC-IAM-02"
+    name: "MFA enforcement"
+    weight: 2
+    question: "Is MFA required for all console and API users?"
+    pass_criteria: "MFA enforced via IAM policy for all user groups"
+    fail_impact: "Credential compromise leads to full account takeover"
+    remediation: "Enable MFA requirement in IAM, use FIDO2 or TOTP"
+
+  - id: "SEC-IAM-03"
+    name: "Federation with corporate IdP"
+    weight: 1
+    question: "Is identity federated with corporate identity provider?"
+    pass_criteria: "SAML 2.0 or OIDC federation configured"
+    fail_impact: "Shadow accounts, no centralized access management"
+    remediation: "Configure SAML federation with corporate IdP"
+
+  - id: "SEC-NET-01"
+    name: "Private subnets for data tier"
+    weight: 2
+    question: "Are databases and sensitive workloads in private subnets?"
+    pass_criteria: "No public IPs on database or internal application instances"
+    fail_impact: "Direct internet exposure of sensitive systems"
+    remediation: "Move to private subnets, use Bastion for admin access"
+
+  - id: "SEC-NET-02"
+    name: "NSG-based security"
+    weight: 1
+    question: "Are Network Security Groups used (vs. Security Lists)?"
+    pass_criteria: "NSGs attached to VNICs with specific allow rules"
+    fail_impact: "Overly broad security rules at subnet level"
+    remediation: "Migrate from Security Lists to NSGs"
+
+  - id: "SEC-NET-03"
+    name: "WAF on public endpoints"
+    weight: 2
+    question: "Is WAF configured for all internet-facing endpoints?"
+    pass_criteria: "OCI WAF with OWASP Core Rule Set enabled"
+    fail_impact: "Vulnerable to web application attacks"
+    remediation: "Enable OCI WAF, configure protection rules"
+
+  - id: "SEC-DATA-01"
+    name: "Encryption at rest with customer keys"
+    weight: 2
+    question: "Is TDE configured with Vault-managed customer keys?"
+    pass_criteria: "OCI Vault integration for TDE master key management"
+    fail_impact: "Oracle-managed keys — less control over key lifecycle"
+    remediation: "Create Vault, configure TDE to use customer-managed keys"
+
+  - id: "SEC-DATA-02"
+    name: "Data Safe enabled"
+    weight: 2
+    question: "Is Oracle Data Safe configured for database security?"
+    pass_criteria: "Data Safe registered with security assessment and auditing"
+    fail_impact: "No visibility into database security posture"
+    remediation: "Register databases with Data Safe, run initial assessment"
+
+  - id: "SEC-MON-01"
+    name: "Cloud Guard enabled"
+    weight: 2
+    question: "Is Cloud Guard enabled with CIS benchmark recipes?"
+    pass_criteria: "Cloud Guard active in all compartments with detector recipes"
+    fail_impact: "No automated security monitoring or threat detection"
+    remediation: "Enable Cloud Guard, configure CIS detector recipe"
+
+  - id: "SEC-MON-02"
+    name: "Audit logging"
+    weight: 2
+    question: "Is audit logging enabled and retained for compliance period?"
+    pass_criteria: "Audit logs collected for all compartments, 365-day retention"
+    fail_impact: "Cannot investigate security incidents or prove compliance"
+    remediation: "Enable audit logging, configure retention to Object Storage"
+
+scoring:
+  pass: ">= 16/20"
+  needs_improvement: "12-15/20"
+  fail: "< 12/20"

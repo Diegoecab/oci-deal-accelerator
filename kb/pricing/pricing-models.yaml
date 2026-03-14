@@ -1,0 +1,90 @@
+---
+last_verified: 2026-03-14
+description: OCI pricing model comparison and BYOL rules
+---
+
+pricing_models:
+
+  payg:
+    name: "Pay As You Go (PAYG)"
+    commitment: "none"
+    discount: "0% (list price)"
+    billing: "per hour/second, billed monthly"
+    flexibility: "full — start/stop anytime"
+    best_for:
+      - "POC and development"
+      - "Variable workloads"
+      - "Short-term projects"
+      - "Unknown usage patterns"
+
+  monthly_flex:
+    name: "Monthly Flex (Monthly Universal Credits)"
+    commitment: "monthly minimum spend"
+    discount: "typically negotiated, varies"
+    billing: "prepaid monthly credits"
+    flexibility: "credits apply to any OCI service"
+    best_for:
+      - "Established workloads with predictable spend"
+      - "Customers wanting discount without long commitment"
+
+  annual_flex:
+    name: "Annual Flex (Annual Universal Credits)"
+    commitment: "1 or 3 year term"
+    discount: "significant — typically 30-60% off PAYG"
+    billing: "prepaid annual credits"
+    flexibility: "credits apply to any OCI service"
+    best_for:
+      - "Production workloads with committed spend"
+      - "Largest discount for predictable workloads"
+      - "Multi-service environments"
+
+  support_rewards:
+    name: "Support Rewards"
+    description: >
+      25% of annual OCI spend is credited toward Oracle Support costs.
+      Available for annual flex contracts.
+    impact: "Effectively reduces existing on-prem support costs"
+
+byol:
+  name: "Bring Your Own License (BYOL)"
+  description: >
+    Customers with existing Oracle database licenses (from on-prem or other clouds)
+    can bring them to OCI for significant discounts on database services.
+
+  rules:
+    license_ratio:
+      database: "1 processor license = 2 OCPU"
+      application: "varies by product"
+    eligible_services:
+      - "ADB-S"
+      - "ADB-D"
+      - "DBCS"
+      - "ExaCS"
+    typical_discount: "~50% on OCPU/database costs"
+    requirements:
+      - "Valid Oracle Database license with active Software Update License & Support"
+      - "License must be moved from previous deployment (cannot be used simultaneously)"
+      - "Customer must comply with Oracle licensing terms"
+
+  calculation_example:
+    scenario: "Customer has 8 Oracle Database Enterprise Edition processor licenses"
+    ocpu_coverage: "8 * 2 = 16 OCPU covered by BYOL"
+    impact: "16 OCPU of ADB-S at BYOL rate (~50% off PAYG OCPU cost)"
+    notes:
+      - "Storage is NOT discounted by BYOL"
+      - "Compute (non-database) is NOT discounted by BYOL"
+      - "If usage exceeds BYOL coverage, overage billed at PAYG rate"
+
+cost_estimation_rules:
+  step_1: "Identify all services and their sizing"
+  step_2: "Determine pricing model (PAYG for estimation, then optimize)"
+  step_3: "Apply BYOL if customer has existing Oracle licenses"
+  step_4: "Calculate monthly and annual costs"
+  step_5: "Compare with current spend for savings analysis"
+  step_6: "Factor in migration costs (one-time) separately"
+  assumptions_to_document:
+    - "Hours per month (730 standard)"
+    - "Auto-scaling utilization assumption"
+    - "Data growth rate"
+    - "Data transfer volumes"
+    - "BYOL license count and coverage"

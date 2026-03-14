@@ -1,0 +1,73 @@
+---
+last_verified: 2026-03-14
+pattern: PCI-DSS Compliance Overlay
+category: compliance
+---
+
+description: >
+  Additional controls required for PCI-DSS compliance on OCI.
+  Applied on top of the security baseline pattern.
+
+pci_requirements:
+
+  network_segmentation:
+    pci_req: "1.x - Network segmentation"
+    controls:
+      - "Dedicated compartment for CDE (Cardholder Data Environment)"
+      - "NSGs restricting traffic to CDE subnets"
+      - "Network Firewall for traffic inspection at CDE boundary"
+      - "No direct internet access to/from CDE"
+    oci_services: ["VCN", "NSG", "Network Firewall", "DRG"]
+
+  encryption:
+    pci_req: "3.x - Protect stored cardholder data"
+    controls:
+      - "TDE with customer-managed keys in OCI Vault"
+      - "Key rotation every 12 months"
+      - "Tokenization for card data at rest"
+    oci_services: ["Vault", "ADB-S TDE", "Data Safe"]
+
+  access_control:
+    pci_req: "7.x - Restrict access by need to know"
+    controls:
+      - "IAM policies scoped to CDE compartment"
+      - "MFA required for all CDE access"
+      - "Bastion with session recording for admin access"
+      - "No shared accounts"
+    oci_services: ["IAM", "Bastion", "Audit"]
+
+  monitoring:
+    pci_req: "10.x - Track and monitor access"
+    controls:
+      - "Audit logging for all CDE resources"
+      - "SIEM integration via Streaming/Logging"
+      - "Cloud Guard with PCI-specific recipes"
+      - "File Integrity Monitoring for CDE hosts"
+    oci_services: ["Audit", "Logging", "Cloud Guard", "OSSM"]
+
+  dr_requirements:
+    pci_req: "12.x - Maintain security policy"
+    controls:
+      - "Cross-region DR for CDE (geo-redundant)"
+      - "DR site must meet same PCI controls"
+      - "Quarterly DR drill and validation"
+    oci_services: ["ADG", "Data Guard", "Terraform"]
+
+  vulnerability_management:
+    pci_req: "6.x - Develop and maintain secure systems"
+    controls:
+      - "Quarterly vulnerability scans"
+      - "WAF with PCI ruleset"
+      - "Patching within 30 days of critical CVE"
+    oci_services: ["Vulnerability Scanning", "WAF", "OS Management"]
+
+gotchas:
+  - id: "PCI-001"
+    issue: "PCI scope creep — connecting non-CDE systems to CDE widens scope"
+    mitigation: "Strict network segmentation, tokenize data before leaving CDE"
+  - id: "PCI-002"
+    issue: "Shared-tenancy concerns for PCI Level 1"
+    mitigation: "ADB-S is acceptable for most PCI levels; use ADB-D for Level 1 if auditor requires"
+  - id: "PCI-003"
+    issue: "Key rotation must be documented and auditable"
+    mitigation: "Use Vault auto-rotation, log key operations to Audit"

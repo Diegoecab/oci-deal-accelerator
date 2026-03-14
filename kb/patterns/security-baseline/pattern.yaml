@@ -1,0 +1,72 @@
+---
+last_verified: 2026-03-14
+pattern: Security Baseline
+category: security
+---
+
+description: >
+  Standard security controls for all OCI deployments.
+  Every architecture should include these as a baseline.
+
+controls:
+
+  identity:
+    - control: "IAM least-privilege policies"
+      implementation: "Compartment-based isolation, group-based policies"
+      mandatory: true
+    - control: "MFA for all console users"
+      implementation: "TOTP or FIDO2 MFA enrollment"
+      mandatory: true
+    - control: "Federation with corporate IdP"
+      implementation: "SAML 2.0 or OIDC integration"
+      mandatory: "for enterprise deployments"
+    - control: "API key rotation"
+      implementation: "90-day rotation policy, use instance principals where possible"
+      mandatory: true
+
+  network:
+    - control: "Private subnets for all data and compute"
+      implementation: "No public IPs on database or app servers"
+      mandatory: true
+    - control: "NSGs over Security Lists"
+      implementation: "Per-resource security groups"
+      mandatory: true
+    - control: "Bastion service for admin access"
+      implementation: "OCI Bastion with session time limits"
+      mandatory: true
+    - control: "WAF on public endpoints"
+      implementation: "OCI WAF with OWASP ruleset"
+      mandatory: "if internet-facing"
+    - control: "Service Gateway for OCI service access"
+      implementation: "Route to Object Storage, ADB via service gateway"
+      mandatory: true
+
+  data:
+    - control: "TDE with customer-managed keys"
+      implementation: "OCI Vault (KMS) integration"
+      mandatory: "for compliance workloads"
+    - control: "Data Safe for database security"
+      implementation: "Enable assessment, auditing, masking"
+      mandatory: true
+    - control: "Object Storage encryption"
+      implementation: "SSE with Vault-managed keys"
+      mandatory: true
+
+  monitoring:
+    - control: "Cloud Guard"
+      implementation: "Enable with CIS benchmark detector recipes"
+      mandatory: true
+    - control: "Audit log collection"
+      implementation: "All compartments, retain 365 days"
+      mandatory: true
+    - control: "Security Zone"
+      implementation: "Prevent security policy violations"
+      mandatory: "for production compartments"
+
+  operations:
+    - control: "Vulnerability scanning"
+      implementation: "OCI Vulnerability Scanning Service"
+      mandatory: true
+    - control: "OS patching"
+      implementation: "OS Management Service"
+      mandatory: true

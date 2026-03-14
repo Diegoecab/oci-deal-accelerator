@@ -1,0 +1,41 @@
+---
+last_verified: 2026-03-14
+pillar: Distributed Cloud
+max_score: 5
+description: Oracle Well-Architected Framework — Distributed Cloud pillar checks
+---
+
+checks:
+
+  - id: "DC-REGION-01"
+    name: "Multi-region architecture"
+    weight: 2
+    question: "Is the architecture designed for multi-region deployment?"
+    pass_criteria: "Primary + DR region with defined failover mechanism"
+    fail_impact: "Regional outage causes complete service loss"
+    remediation: "Design cross-region DR with ADG or Data Guard"
+    applicability: "Required for production workloads with >99.9% SLA"
+
+  - id: "DC-DATA-01"
+    name: "Data residency compliance"
+    weight: 2
+    question: "Is data residency addressed for regulatory requirements?"
+    pass_criteria: "Data stored in compliant regions, DR within jurisdiction"
+    fail_impact: "Regulatory violation, data sovereignty breach"
+    remediation: "Map regulatory requirements to OCI regions"
+    applicability: "Required when data residency regulations apply"
+
+  - id: "DC-SOVEREIGN-01"
+    name: "Sovereign cloud consideration"
+    weight: 1
+    question: "Has sovereign cloud been evaluated for government/sensitive workloads?"
+    pass_criteria: "Sovereign cloud assessed if applicable, documented decision"
+    fail_impact: "Missing security clearance requirements"
+    remediation: "Evaluate OCI Sovereign Cloud or Government Cloud regions"
+    applicability: "Government, defense, or classified workloads only"
+
+scoring:
+  pass: ">= 4/5"
+  needs_improvement: "2-3/5"
+  fail: "< 2/5"
+  not_applicable: "Score N/A when single-region is acceptable and no data residency requirements"

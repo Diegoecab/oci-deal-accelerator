@@ -1,0 +1,63 @@
+---
+last_verified: 2026-03-14
+description: Autonomous Database auto-scaling behavior and sizing guidance
+---
+
+auto_scaling:
+  trigger: "CPU utilization exceeds base OCPU capacity"
+  scale_up:
+    time: "2-3 minutes from trigger"
+    granularity: "1 OCPU increments"
+    max: "3x base OCPU (default) or custom limit"
+  scale_down:
+    time: "5-10 minutes after load decreases"
+    behavior: "gradual step-down, not immediate"
+  billing:
+    model: "per OCPU per hour, only for scaled OCPUs"
+    notes: "Billing is per-second granularity, minimum 1 minute"
+
+sizing_guidance:
+  base_ocpu:
+    target: "P75 of steady-state CPU utilization"
+    rationale: >
+      Base OCPUs handle 75% of normal load without auto-scaling.
+      This minimizes cost while ensuring scaling only activates for genuine peaks.
+    minimum: "1 OCPU (smallest ADB-S)"
+    common_mistake: "Sizing base for P50 causes frequent auto-scaling, increasing costs"
+
+  auto_scale_ceiling:
+    default: "3x base"
+    custom: "can be set to any value up to 128 OCPU"
+    guidance: "Set to P99 of peak load, converted to OCPU"
+
+  storage:
+    auto_scaling: false
+    notes: "Storage does not auto-scale — must be manually increased"
+    guidance: "Provision for 12-18 months of growth, monitor monthly"
+
+workload_types:
+  oltp:
+    description: "ATP (Autonomous Transaction Processing)"
+    typical_base: "4-32 OCPU"
+    scaling_pattern: "burst peaks, short duration"
+    key_metric: "transactions per second, latency P99"
+  dw:
+    description: "ADW (Autonomous Data Warehouse)"
+    typical_base: "2-16 OCPU"
+    scaling_pattern: "query-driven peaks, longer duration"
+    key_metric: "query execution time, concurrent users"
+  apex:
+    description: "APEX application workloads"
+    typical_base: "1-4 OCPU"
+    scaling_pattern: "user-session driven"
+    key_metric: "concurrent active sessions, page load time"
+
+performance_baselines:
+  per_ocpu:
+    tps: "~2,000-5,000 simple OLTP transactions"
+    concurrent_sessions: "~100-200 active sessions"
+    query_throughput: "workload dependent — use AWR for estimation"
+  notes:
+    - "Performance varies significantly with workload complexity"
+    - "These are rough baselines for initial sizing only"
+    - "Always validate with representative workload testing"

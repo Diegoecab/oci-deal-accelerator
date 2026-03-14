@@ -1,0 +1,50 @@
+---
+last_verified: 2026-03-14
+pattern: Compute Scaling
+category: compute
+---
+
+description: >
+  Scaling patterns for OCI compute workloads.
+  Covers autoscaling, instance pools, and OKE scaling.
+
+patterns:
+
+  instance_pool_autoscaling:
+    name: "Instance Pool with Autoscaling"
+    services: ["Compute"]
+    description: >
+      Instance pools with autoscaling policies based on CPU, memory,
+      or custom metrics. Suitable for stateless application tiers.
+    configuration:
+      min_instances: 2
+      max_instances: "based on peak load analysis"
+      scale_out_threshold: "CPU > 70% for 5 minutes"
+      scale_in_threshold: "CPU < 30% for 10 minutes"
+      cooldown: "5 minutes"
+    gotchas:
+      - "Scale-out takes 3-5 minutes (instance boot + app startup)"
+      - "Stateful applications need session affinity or external session store"
+
+  oke_autoscaling:
+    name: "OKE Cluster Autoscaler + HPA"
+    services: ["OKE"]
+    description: >
+      Kubernetes Horizontal Pod Autoscaler for pod scaling,
+      Cluster Autoscaler for node pool scaling.
+    configuration:
+      hpa: "scale pods based on CPU/memory/custom metrics"
+      cluster_autoscaler: "add/remove worker nodes based on pending pods"
+    gotchas:
+      - "Node scale-out takes 3-7 minutes"
+      - "Configure pod disruption budgets to avoid scale-in disruption"
+
+  flex_shape_vertical:
+    name: "Flex Shape Vertical Scaling"
+    services: ["Compute"]
+    description: >
+      Use flex shapes to right-size instances. Can change OCPU/memory
+      with a reboot (not live).
+    gotchas:
+      - "Requires instance reboot — brief downtime"
+      - "Plan for maintenance window if resizing production"

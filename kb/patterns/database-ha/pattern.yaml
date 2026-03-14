@@ -1,0 +1,89 @@
+---
+last_verified: 2026-03-14
+pattern: Database High Availability
+category: database-ha
+---
+
+description: >
+  HA patterns for Oracle database workloads on OCI. Covers local redundancy
+  within a single region using Availability Domains and Fault Domains.
+
+patterns:
+
+  adb_s_local_ha:
+    name: "ADB-S Local HA (Built-in)"
+    services: ["adb-serverless"]
+    availability: "99.95%"
+    rto: "< 2 minutes (automatic)"
+    rpo: "zero (synchronous)"
+    description: >
+      ADB-S includes built-in local HA via Autonomous Data Guard within the region.
+      Failover is automatic and transparent to applications using TAC-enabled drivers.
+    requirements:
+      - "JDBC Thin driver with TAC enabled"
+      - "Application uses replayable transactions"
+    gotchas:
+      - "Non-replayable operations (UTL_HTTP, DBMS_PIPE) break TAC replay"
+      - "Failover adds 30-120 seconds of unavailability"
+
+  adb_s_with_autoscaling:
+    name: "ADB-S with Auto-Scaling"
+    services: ["adb-serverless"]
+    availability: "99.95%"
+    description: >
+      ADB-S with auto-scaling enabled to handle load spikes.
+      Base OCPU handles P75, auto-scaling handles peaks up to 3x base.
+    sizing:
+      base_ocpu: "P75 of steady-state load"
+      max_ocpu: "3x base (default) or custom ceiling"
+    gotchas:
+      - "Scale-up takes 2-3 minutes — size base for normal operations"
+      - "Scale-down takes 5-10 minutes — brief over-billing during cooldown"
+
+  dbcs_rac:
+    name: "DBCS 2-Node RAC"
+    services: ["dbcs"]
+    availability: "99.99% (with proper configuration)"
+    rto: "seconds (TAF/TAC)"
+    rpo: "zero (shared storage)"
+    description: >
+      2-node RAC cluster on DBCS VMs for highest local availability.
+      Requires Enterprise Edition Extreme Performance.
+    requirements:
+      - "Enterprise Extreme Performance edition"
+      - "Minimum 2 OCPU per node"
+      - "Shared ASM storage"
+    gotchas:
+      - "Both nodes must be licensed — 2x OCPU cost"
+      - "Shared storage is single point of failure"
+      - "RAC overhead ~10-15% on throughput"
+
+  exacs_rac:
+    name: "ExaCS Multi-Node RAC"
+    services: ["exacs"]
+    availability: "99.99%+"
+    rto: "seconds"
+    rpo: "zero"
+    description: >
+      Full RAC on Exadata Cloud Service for maximum availability and performance.
+      Supports up to 32 nodes per cluster.
+    requirements:
+      - "Quarter Rack minimum"
+      - "Skilled DBA team for RAC management"
+    gotchas:
+      - "Significant cost — full Exadata infrastructure"
+      - "Complex configuration and management"
+
+decision_tree:
+  - condition: "No DBA team"
+    recommendation: "adb_s_local_ha"
+    rationale: "Built-in HA, no manual configuration needed"
+  - condition: "Need 99.99%+ with zero RPO"
+    recommendation: "dbcs_rac or exacs_rac"
+    rationale: "RAC provides sub-second failover with shared storage"
+  - condition: "Variable workload"
+    recommendation: "adb_s_with_autoscaling"
+    rationale: "Auto-scaling handles load spikes without over-provisioning"
+  - condition: "Highest performance + HA"
+    recommendation: "exacs_rac"
+    rationale: "Exadata hardware acceleration + RAC"

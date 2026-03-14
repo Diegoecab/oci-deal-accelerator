@@ -1,0 +1,70 @@
+---
+last_verified: 2026-03-14
+service: Oracle Kubernetes Engine (OKE)
+category: compute
+oci_color: "#647A4F"
+---
+
+what: >
+  Managed Kubernetes service for running containerized workloads.
+  OCI manages the control plane; customer manages worker nodes.
+
+when_to_use:
+  - Containerized application tiers (microservices, APIs)
+  - Teams with Kubernetes expertise wanting managed control plane
+  - Applications needing horizontal scaling and rolling updates
+  - Multi-cloud portability requirement (standard Kubernetes)
+  - CI/CD pipeline targets needing container orchestration
+
+when_NOT_to_use:
+  - Simple single-container applications — use Container Instances
+  - No container expertise — learning curve is steep
+  - Monolithic applications not yet containerized — use Compute VMs
+  - Serverless event-driven workloads — use Functions
+
+features:
+  managed_control_plane: true
+  control_plane_cost: "free"
+  worker_node_types: ["managed", "virtual", "self-managed"]
+  auto_scaling:
+    cluster_autoscaler: true
+    horizontal_pod_autoscaler: true
+    vertical_pod_autoscaler: true
+  networking:
+    vcn_native_pod_networking: true
+    flannel: true
+    load_balancer_integration: true
+  gpu_support: true
+  arm_support: "Ampere A1 worker nodes"
+
+limits:
+  max_worker_nodes: 1000
+  max_pods_per_node: 110
+  control_plane_sla: "99.95%"
+  supported_k8s_versions: "latest 3 minor versions"
+
+gotchas:
+  - id: "OKE-001"
+    issue: "Control plane is free but worker nodes are full compute cost"
+    impact: "Cost is primarily worker node compute + load balancers"
+    mitigation: "Right-size worker pools, use cluster autoscaler"
+
+  - id: "OKE-002"
+    issue: "VCN-native pod networking requires larger subnets"
+    impact: "IP address exhaustion in small subnets"
+    mitigation: "Plan CIDR allocation for pod networking (/16 recommended)"
+
+  - id: "OKE-003"
+    issue: "Persistent volumes use OCI Block Storage"
+    impact: "Block volume IOPS limits apply to stateful workloads"
+    mitigation: "Use higher performance tiers for database workloads"
+
+sizing_rules:
+  workers: "Start with 3 workers for HA, size based on pod resource requests"
+  node_shape: "E5.Flex for general, A1 for cost-optimized, GPU for ML"
+
+pricing_model:
+  control_plane: "free"
+  workers: "standard compute pricing per shape"
+  load_balancers: "per flexible LB pricing"
+  block_storage: "standard block volume pricing for PVs"

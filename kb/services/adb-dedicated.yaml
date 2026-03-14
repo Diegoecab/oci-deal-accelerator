@@ -1,0 +1,88 @@
+---
+last_verified: 2026-03-14
+service: Autonomous Database on Dedicated Exadata (ADB-D)
+category: database
+oci_color: "#AA643B"
+---
+
+what: >
+  Autonomous Database running on dedicated Exadata infrastructure within customer's tenancy.
+  Provides isolation, control, and higher resource limits while retaining autonomous capabilities.
+
+when_to_use:
+  - Regulatory requirements for dedicated infrastructure (HIPAA, PCI Level 1)
+  - Sustained high CPU usage (>128 OCPU continuously)
+  - Need for multiple database consolidation on shared Exadata
+  - Require hardware-level isolation from other tenants
+  - Large enterprise with >10 databases needing consolidated management
+  - Need for RAC-like capabilities with autonomous management
+
+when_NOT_to_use:
+  - Small workloads (<16 OCPU sustained) — ADB-S is more cost-effective
+  - Variable workloads with long idle periods — paying for dedicated infra
+  - Quick provisioning needed — Exadata infra setup takes days
+  - Budget-constrained projects — minimum commitment is significant
+
+features:
+  dedicated_infrastructure: true
+  container_databases: "up to 400 ADBs per Exadata infrastructure"
+  auto_scaling:
+    enabled: true
+    cpu_range: "per database, up to infrastructure limits"
+    notes: "Scaling within dedicated pool — no noisy neighbor risk"
+  auto_patching:
+    enabled: true
+    customer_controlled_schedule: true
+    maintenance_window: "customer-defined (not Oracle-defined)"
+  data_guard:
+    local: true
+    cross_region: true
+    mode: "sync (local), async (cross-region)"
+    rpo: "zero (local sync), seconds (cross-region async)"
+  private_endpoint:
+    enabled: true
+    default: true
+  vm_cluster_control:
+    enabled: true
+    notes: "Control over VM cluster sizing, memory allocation"
+
+limits:
+  min_exadata_infra: "Quarter Rack (X9M: 46 OCPUs, 720 GB RAM)"
+  max_exadata_infra: "Full Rack (X9M: 736 OCPUs, 11,520 GB RAM)"
+  max_databases_per_infra: 400
+  supported_versions: ["19c", "23ai"]
+
+gotchas:
+  - id: "ADB-D-001"
+    issue: "Infrastructure provisioning takes 2-5 business days"
+    impact: "Cannot do rapid POC — plan ahead"
+    mitigation: "Use ADB-S for POC, then migrate to ADB-D for production"
+
+  - id: "ADB-D-002"
+    issue: "Minimum commitment is a Quarter Rack"
+    impact: "Cost floor is significant even for small workloads"
+    mitigation: "Consolidate multiple databases to improve utilization"
+
+  - id: "ADB-D-003"
+    issue: "Maintenance windows are customer-managed"
+    impact: "Customer must plan and schedule patching"
+    mitigation: "Set up automated maintenance windows, test patches in clone first"
+
+sizing_rules:
+  infrastructure: "Sum of all database OCPU requirements + 20% headroom"
+  storage: "Sum of all database storage + ASM overhead (~2x for normal redundancy)"
+  minimum_viable: "Quarter Rack for <10 databases, Half Rack for 10-50"
+
+pricing_model:
+  base: "per Exadata infrastructure (fixed) + per OCPU per hour (variable)"
+  infrastructure_cost: "significant fixed monthly cost for Exadata hardware"
+  byol_discount: "~50% on OCPU costs"
+  notes: "Break-even vs ADB-S typically at ~64-96 sustained OCPU"
+
+migration_paths:
+  from_adb_s:
+    - method: "Data Pump or cloning"
+      downtime: "minutes to hours depending on size"
+  from_on_prem:
+    - method: "Same as ADB-S migration methods"
+      notes: "ZDM, Data Pump, GoldenGate all supported"

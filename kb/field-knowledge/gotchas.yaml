@@ -1,0 +1,127 @@
+---
+last_verified: 2026-03-14
+description: Real-world gotchas that the official documentation doesn't emphasize
+---
+
+gotchas:
+
+  - id: "FF-202603-001"
+    service: "ADB-S"
+    category: "performance"
+    title: "Auto-scaling lag on cold start"
+    description: >
+      When ADB-S auto-scaling activates after a period of low usage,
+      the first scale-up event takes 2-3 minutes. During this time,
+      queries may see elevated latency or queuing.
+    impact: "User-visible latency spike at start of peak period"
+    mitigation: >
+      Size base OCPUs for P75 (not P50) of normal load.
+      For predictable peaks (e.g., batch jobs), pre-warm with a dummy query load.
+    discovered: "2024-11"
+    verified: "2026-03"
+
+  - id: "FF-202603-002"
+    service: "ADB-S"
+    category: "migration"
+    title: "TAC replay breaks with certain PL/SQL packages"
+    description: >
+      Transparent Application Continuity (TAC) cannot replay transactions
+      that call non-replayable operations: UTL_HTTP, DBMS_PIPE, DBMS_AQ
+      (direct), NOCACHE sequences, and some DBMS_SCHEDULER operations.
+    impact: "Application errors during failover for affected transactions"
+    mitigation: >
+      Audit all PL/SQL code for non-replayable calls before migration.
+      Refactor UTL_HTTP to use external service calls.
+      Convert NOCACHE sequences to CACHE sequences.
+    discovered: "2024-06"
+    verified: "2026-03"
+
+  - id: "FF-202603-003"
+    service: "ADB-S"
+    category: "operations"
+    title: "Auto Indexing visibility delay"
+    description: >
+      Auto Indexing creates indexes as HIDDEN by default. The optimizer
+      validates them before making them VISIBLE. This validation can
+      take hours to days depending on workload patterns.
+    impact: "Expected performance improvement from auto-indexing may be delayed"
+    mitigation: >
+      Monitor AUTO_INDEX_REPORT regularly. Manually VISIBLE tested indexes
+      if faster adoption needed. Don't assume immediate effect.
+    discovered: "2025-01"
+    verified: "2026-03"
+
+  - id: "FF-202603-004"
+    service: "ADB-S Elastic Pool (DEP)"
+    category: "provisioning"
+    title: "DEP provisioning takes days to weeks"
+    description: >
+      Despite being a serverless offering, Elastic Pool provisioning
+      involves backend capacity reservation that can take 3-14 business
+      days in some regions. This is not reflected in documentation.
+    impact: "Cannot use DEP for urgent deployments or quick POCs"
+    mitigation: >
+      Plan DEP provisioning well in advance. Use individual ADB-S instances
+      for immediate needs, migrate to DEP later.
+    discovered: "2025-09"
+    verified: "2026-03"
+
+  - id: "FF-202603-005"
+    service: "ExaCS"
+    category: "provisioning"
+    title: "Quarter Rack lead time varies by region"
+    description: >
+      ExaCS Quarter Rack provisioning in popular regions (Ashburn, Phoenix)
+      typically completes in 3-5 days. Less popular regions may take 7-14
+      days due to hardware availability.
+    impact: "Project timeline at risk if ExaCS provisioning delays"
+    mitigation: >
+      Confirm estimated provisioning time with Oracle support before
+      committing to project timeline. Pre-order infrastructure.
+    discovered: "2025-04"
+    verified: "2026-02"
+
+  - id: "FF-202603-006"
+    service: "FastConnect"
+    category: "networking"
+    title: "FastConnect provisioning requires partner coordination"
+    description: >
+      FastConnect provisioning involves the partner (e.g., Equinix, Megaport)
+      and can take 2-4 weeks. Cross-connects at the colocation facility
+      are the most common delay.
+    impact: "Hybrid connectivity delayed, affecting migration timeline"
+    mitigation: >
+      Order FastConnect in week 1 of project. Use VPN as interim
+      connectivity while FastConnect is being provisioned.
+    discovered: "2024-08"
+    verified: "2026-01"
+
+  - id: "FF-202603-007"
+    service: "DBCS"
+    category: "operations"
+    title: "GI patching on RAC requires both nodes"
+    description: >
+      Grid Infrastructure patching on 2-node RAC requires patching both
+      nodes, and rolling patches don't always work cleanly. There's a
+      risk of manual intervention needed between nodes.
+    impact: "Longer maintenance windows than expected for RAC patching"
+    mitigation: >
+      Allocate 2-4 hours for RAC GI patching. Test on non-prod first.
+      Have rollback plan ready. Consider ADB-S to eliminate this burden.
+    discovered: "2025-06"
+    verified: "2026-02"
+
+  - id: "FF-202603-008"
+    service: "OKE"
+    category: "networking"
+    title: "VCN-native pod networking IP exhaustion"
+    description: >
+      VCN-native pod networking assigns real VCN IPs to pods. A cluster
+      with 3 workers × 110 pods = 330 IPs minimum. Subnet must be
+      large enough (at least /21 for moderate clusters).
+    impact: "Pods fail to schedule due to IP exhaustion in small subnets"
+    mitigation: >
+      Plan pod subnet CIDR for maximum expected cluster size.
+      Use /16 for large clusters. Consider flannel CNI if IP space is constrained.
+    discovered: "2025-03"
+    verified: "2026-03"

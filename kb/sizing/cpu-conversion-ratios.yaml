@@ -1,0 +1,95 @@
+---
+last_verified: 2026-03-14
+description: CPU conversion ratios for sizing OCI resources from on-premises or other cloud platforms
+---
+
+# CPU Conversion Ratios
+# OCI OCPU = 1 physical core with hyperthreading = 2 vCPUs
+# These ratios convert source platform CPU metrics to OCI OCPUs
+
+conversions:
+
+  # On-premises Intel/AMD to OCI OCPU
+  intel_xeon_to_ocpu:
+    description: "Intel Xeon physical core to OCI OCPU"
+    ratio: 1.0
+    notes: "1 Intel Xeon core ≈ 1 OCI OCPU (both hyperthreaded)"
+    generations:
+      broadwell_v4: 0.85  # older gen slightly less performant
+      skylake_v5: 0.95
+      cascade_lake_v6: 1.0
+      ice_lake_v7: 1.05
+      sapphire_rapids_v8: 1.1
+
+  amd_epyc_to_ocpu:
+    description: "AMD EPYC physical core to OCI OCPU"
+    ratio: 1.0
+    notes: "AMD EPYC and OCI E4/E5 shapes are both AMD — near 1:1"
+
+  # Oracle on-premises processor metrics
+  oracle_processor_license_to_ocpu:
+    description: "Oracle on-prem processor license to OCI OCPU"
+    ratio: 2.0
+    notes: >
+      1 Oracle Processor License = 2 OCPUs for BYOL.
+      Oracle licensing: Intel/AMD core factor 0.5, so 1 core = 0.5 processor licenses.
+      On OCI: 1 OCPU = 0.5 processor licenses (same factor).
+
+  # Exadata on-premises to OCI
+  exadata_x8m_core_to_ocpu:
+    description: "Exadata X8M enabled core to OCI OCPU"
+    ratio: 1.0
+    notes: "Direct 1:1 — Exadata cores map directly to OCPUs"
+
+  exadata_x7_core_to_ocpu:
+    description: "Exadata X7 enabled core to OCI OCPU"
+    ratio: 0.9
+    notes: "X7 slightly older generation, ~90% of X8M/X9M performance"
+
+  exadata_x6_core_to_ocpu:
+    description: "Exadata X6 enabled core to OCI OCPU"
+    ratio: 0.8
+    notes: "X6 is 2 generations behind, budget ~20% more OCPU"
+
+  # AWS to OCI
+  aws_vcpu_to_ocpu:
+    description: "AWS vCPU to OCI OCPU"
+    ratio: 0.5
+    notes: "1 AWS vCPU = 1 hyperthread. 1 OCI OCPU = 2 vCPUs. So 2 AWS vCPUs ≈ 1 OCI OCPU."
+
+  aws_rds_vcpu_to_ocpu:
+    description: "AWS RDS Oracle vCPU to OCI OCPU for database workloads"
+    ratio: 0.5
+    notes: "Same as general AWS vCPU, but verify with actual CPU utilization metrics"
+
+  # Azure to OCI
+  azure_vcpu_to_ocpu:
+    description: "Azure vCPU to OCI OCPU"
+    ratio: 0.5
+    notes: "Same logic as AWS — 2 Azure vCPUs ≈ 1 OCI OCPU"
+
+  # GCP to OCI
+  gcp_vcpu_to_ocpu:
+    description: "GCP vCPU to OCI OCPU"
+    ratio: 0.5
+    notes: "2 GCP vCPUs ≈ 1 OCI OCPU"
+
+sizing_methodology:
+  step_1: "Collect source CPU metrics: avg utilization, P75, P90, P95"
+  step_2: "Convert source cores/vCPUs to OCI OCPUs using ratios above"
+  step_3: "Apply utilization-based sizing:"
+  rules:
+    base_ocpu: "converted_cores * (P75_utilization / 100)"
+    max_ocpu: "converted_cores * (P95_utilization / 100)"
+    minimum: "2 OCPU (for production workloads)"
+  step_4: "Round up to nearest even number for Oracle licensing efficiency"
+  step_5: "Validate against service limits (e.g., ADB-S max 128 OCPU)"
+
+examples:
+  - scenario: "On-prem Exadata X8M with 16 enabled cores, avg 70% CPU"
+    calculation: "16 cores * 1.0 ratio = 16 OCPUs raw. P75 at 75% = 12 OCPU base. P95 at 90% = 14 OCPU max."
+    recommendation: "ADB-S: 12 OCPU base, auto-scale to 16 OCPU"
+
+  - scenario: "AWS RDS Oracle db.r5.4xlarge (16 vCPUs), avg 50% CPU"
+    calculation: "16 vCPU * 0.5 = 8 OCPUs raw. P75 at 55% = 5 OCPU base."
+    recommendation: "ADB-S: 4 OCPU base (round to even), auto-scale to 8 OCPU"

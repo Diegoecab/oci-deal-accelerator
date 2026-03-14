@@ -1,0 +1,92 @@
+---
+last_verified: 2026-03-14
+description: Common customer objections and evidence-based responses
+---
+
+objections:
+
+  - id: "OBJ-001"
+    objection: "OCI is too small / not a real cloud provider"
+    response: >
+      OCI has 50+ commercial regions globally, serves some of the world's largest
+      enterprises (including all major banks), and runs Oracle's own SaaS (Fusion,
+      NetSuite) at massive scale. OCI's Gen2 architecture was built from scratch
+      with security and performance as primary design goals, not bolted on.
+    evidence:
+      - "Oracle runs its own $5B+ SaaS business on OCI"
+      - "Major financial institutions (Deutsche Bank, HSBC) run on OCI"
+      - "50+ commercial regions, 10+ government regions"
+
+  - id: "OBJ-002"
+    objection: "We're already on AWS / We're an AWS shop"
+    response: >
+      OCI doesn't need to replace AWS. Many customers run Oracle databases on OCI
+      and everything else on AWS. OCI-AWS interconnect (via FastConnect or VPN)
+      provides low-latency connectivity. Alternatively, Oracle Database@Azure
+      offers similar integration for Azure customers.
+    evidence:
+      - "OCI-AWS cross-cloud interconnect is GA in multiple regions"
+      - "Customers like 8x8, Netsmart run multi-cloud OCI+AWS"
+      - "BYOL savings alone can justify the migration"
+
+  - id: "OBJ-003"
+    objection: "Oracle is just trying to lock us in"
+    response: >
+      OCI actually provides more portability than the alternatives for Oracle workloads.
+      BYOL means you keep your licenses. Standard Kubernetes (OKE) and Terraform
+      are the deployment tools. GoldenGate supports heterogeneous replication to/from
+      any database. There's no OCI-specific lock-in beyond what Oracle Database itself
+      represents.
+    evidence:
+      - "OKE is CNCF-certified Kubernetes"
+      - "Terraform provider is open-source"
+      - "GoldenGate supports Oracle → PostgreSQL, MySQL, Kafka"
+
+  - id: "OBJ-004"
+    objection: "AWS RDS Oracle is good enough"
+    response: >
+      RDS Oracle is a managed database, not an autonomous one. Key differences:
+      no auto-scaling compute, no auto-tuning, no auto-indexing, no RAC support,
+      no OS access, limited to r5/r6 instance types, no Exadata performance.
+      For simple Oracle workloads RDS may suffice, but for production OLTP at
+      scale, ADB-S provides significantly more capability.
+    evidence:
+      - "RDS Oracle cannot auto-scale compute"
+      - "RDS Oracle is single-instance (no RAC)"
+      - "RDS Oracle patching requires maintenance windows with potential downtime"
+
+  - id: "OBJ-005"
+    objection: "OCI pricing seems too good to be true"
+    response: >
+      OCI pricing is genuinely lower, especially for Oracle workloads. This is
+      because Oracle controls the full stack (hardware, hypervisor, database),
+      and offers BYOL discounts that other clouds cannot match. Data egress is
+      10x cheaper than AWS. These are real, verifiable price differences.
+    evidence:
+      - "Independent analyst reports confirm 30-50% cost advantage"
+      - "Data egress: OCI $0.0085/GB vs AWS $0.09/GB"
+      - "BYOL: ~50% OCPU discount, not available on equivalent AWS services"
+
+  - id: "OBJ-006"
+    objection: "Our team doesn't know OCI"
+    response: >
+      OCI learning curve is manageable. If the team knows AWS, OCI concepts map
+      directly (VPC→VCN, EC2→Compute, S3→Object Storage). Oracle University
+      provides free OCI training. For database workloads, ADB-S reduces
+      operational complexity (no DBA tasks), which is actually easier than
+      managing RDS Oracle.
+    evidence:
+      - "OCI Foundations certification is free"
+      - "Terraform is the same tool on OCI as on AWS"
+      - "ADB-S requires less DBA skill than RDS Oracle, not more"
+
+  - id: "OBJ-007"
+    objection: "What about Oracle's support reputation?"
+    response: >
+      Oracle Cloud support is separate from traditional Oracle support.
+      OCI provides 24/7 support with defined SLAs. For critical production
+      issues, response times are minutes, not hours. The Support Rewards
+      program also offsets existing Oracle support costs.
+    evidence:
+      - "99.95% SLA with financial backing"
+      - "Support Rewards: 25% of OCI spend credited to support costs"

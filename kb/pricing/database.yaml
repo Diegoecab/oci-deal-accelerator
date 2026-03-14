@@ -1,0 +1,83 @@
+---
+last_verified: 2026-03-14
+description: OCI database service pricing for estimation (USD, US regions)
+disclaimer: "Prices are approximate and for estimation only. Always verify with OCI pricing calculator."
+---
+
+adb_serverless:
+  payg:
+    ocpu_per_hour: 0.5472
+    storage_per_tb_per_month: 118.40
+    example_8ocpu_4tb: "$3,195/mo OCPU + $474/mo storage = $3,669/mo"
+  byol:
+    ocpu_per_hour: 0.2736
+    storage_per_tb_per_month: 118.40
+    example_8ocpu_4tb: "$1,598/mo OCPU + $474/mo storage = $2,072/mo"
+    license_requirement: "1 processor license per 2 OCPU"
+  auto_scaling:
+    rate: "same as base OCPU rate"
+    billing: "per second, minimum 1 minute"
+  data_guard_standby:
+    rate: "same as primary"
+    notes: "Standby is always billable when ADG is enabled"
+  refreshable_clone:
+    connected: "OCPU + storage (same as primary rates)"
+    disconnected: "storage only"
+
+adb_dedicated:
+  payg:
+    exadata_infra_per_hour: "varies by shape (Quarter/Half/Full Rack)"
+    ocpu_per_hour: 0.5472
+    storage_per_tb_per_month: 118.40
+  byol:
+    ocpu_per_hour: 0.2736
+    storage_per_tb_per_month: 118.40
+  infrastructure_cost:
+    quarter_rack_x9m_per_month: "~$12,000-15,000"
+    half_rack_x9m_per_month: "~$24,000-30,000"
+    notes: "Infrastructure is a significant fixed cost"
+
+dbcs:
+  vm:
+    payg:
+      ee_ocpu_per_hour: 0.3836
+      ee_hp_ocpu_per_hour: 0.4932
+      ee_ep_ocpu_per_hour: 0.6028
+      standard_ocpu_per_hour: 0.2192
+    byol:
+      ocpu_per_hour: 0.1096
+      notes: "BYOL applies to database license only, not compute"
+    compute_cost: "standard VM.Standard.E4/E5.Flex pricing"
+    storage_cost: "Block Volume pricing"
+  bm:
+    payg:
+      ee_ep_per_hour: 9.636
+    notes: "Bare metal includes fixed OCPU count"
+
+exacs:
+  payg:
+    ocpu_per_hour: 0.5472
+    storage_per_tb_per_month: 118.40
+  byol:
+    ocpu_per_hour: 0.2736
+    storage_per_tb_per_month: 118.40
+  infrastructure:
+    quarter_rack_x9m:
+      enabled_ocpu: 46
+      base_monthly: "~$18,000-22,000"
+    half_rack_x9m:
+      enabled_ocpu: 92
+      base_monthly: "~$36,000-44,000"
+
+break_even_analysis:
+  adb_s_vs_adb_d: >
+    ADB-D breaks even vs multiple ADB-S instances at approximately
+    64-96 sustained OCPU total across all databases on the infrastructure.
+    Below this, ADB-S is cheaper. Above this, ADB-D amortizes infra cost.
+  adb_s_vs_dbcs: >
+    ADB-S is typically 20-40% more expensive per OCPU than DBCS,
+    but eliminates DBA operational cost. Factor in $150-250K/year
+    per DBA when comparing total cost of ownership.
+  dbcs_vs_exacs: >
+    ExaCS breaks even vs multiple DBCS instances at approximately
+    32+ sustained OCPU with Exadata performance requirements.

@@ -1,0 +1,78 @@
+---
+last_verified: 2026-03-14
+pattern: Hub-Spoke VCN Topology
+category: networking
+---
+
+description: >
+  Standard hub-spoke networking pattern for OCI deployments.
+  Hub VCN contains shared services (firewall, DNS, bastion).
+  Spoke VCNs contain workloads, connected via DRG or LPG.
+
+components:
+  hub_vcn:
+    purpose: "Shared services, internet gateway, NAT gateway, firewall"
+    subnets:
+      - name: "dmz-public"
+        purpose: "WAF, Load Balancers"
+        cidr_example: "10.0.0.0/24"
+      - name: "shared-services"
+        purpose: "Bastion, DNS, NTP"
+        cidr_example: "10.0.1.0/24"
+      - name: "firewall"
+        purpose: "Network Firewall (if required)"
+        cidr_example: "10.0.2.0/24"
+
+  spoke_vcn_database:
+    purpose: "Database tier — private only"
+    subnets:
+      - name: "db-private"
+        purpose: "Database instances, ADB private endpoints"
+        cidr_example: "10.1.0.0/24"
+      - name: "db-backup"
+        purpose: "Backup network (optional, for RMAN traffic isolation)"
+        cidr_example: "10.1.1.0/24"
+
+  spoke_vcn_application:
+    purpose: "Application tier"
+    subnets:
+      - name: "app-private"
+        purpose: "Application servers, OKE workers"
+        cidr_example: "10.2.0.0/24"
+      - name: "app-public"
+        purpose: "Public-facing load balancers (if needed)"
+        cidr_example: "10.2.1.0/24"
+
+  connectivity:
+    drg:
+      purpose: "Dynamic Routing Gateway — connects all VCNs and on-premises"
+      notes: "Preferred over LPG for >2 VCNs"
+    fastconnect:
+      purpose: "Dedicated private connectivity to on-premises"
+      redundancy: "Always deploy redundant (2x circuits, different providers)"
+    vpn:
+      purpose: "IPSec VPN as backup or for small workloads"
+      notes: "Lower cost but higher latency and lower bandwidth than FastConnect"
+
+security_controls:
+  - "NSGs (Network Security Groups) — preferred over Security Lists"
+  - "WAF on all public-facing endpoints"
+  - "Bastion service for SSH/RDP access (no public IPs on compute)"
+  - "Service Gateway for OCI service access without internet"
+  - "Network Firewall for inspection (if compliance requires)"
+
+sizing_guidance:
+  cidr_planning: "Use /16 per VCN, /24 per subnet minimum"
+  ip_reservation: "Reserve 30% of address space for growth"
+  oke_pods: "If using VCN-native pod networking, allocate /16 for pod subnet"
+
+gotchas:
+  - id: "NET-001"
+    issue: "DRG has per-attachment limits"
+    mitigation: "Check DRG limits — currently 300 VCN attachments"
+  - id: "NET-002"
+    issue: "Cross-region traffic via DRG incurs data transfer charges"
+    mitigation: "Estimate data transfer costs, use compression where possible"
+  - id: "NET-003"
+    issue: "FastConnect provisioning takes 2-4 weeks"
+    mitigation: "Order FastConnect early in project timeline"

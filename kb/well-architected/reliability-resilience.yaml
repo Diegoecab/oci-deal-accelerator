@@ -1,0 +1,69 @@
+---
+last_verified: 2026-03-14
+pillar: Reliability & Resilience
+max_score: 15
+description: Oracle Well-Architected Framework — Reliability & Resilience pillar checks
+---
+
+checks:
+
+  - id: "REL-HA-01"
+    name: "Database high availability"
+    weight: 3
+    question: "Is database HA configured (Data Guard, RAC, or ADB built-in)?"
+    pass_criteria: "Active HA mechanism with defined RTO/RPO"
+    fail_impact: "Single point of failure for database tier"
+    remediation: "Enable Data Guard (ADB) or RAC (DBCS/ExaCS)"
+
+  - id: "REL-HA-02"
+    name: "Compute redundancy"
+    weight: 2
+    question: "Are compute instances distributed across fault domains/ADs?"
+    pass_criteria: "Instance pools or placement groups across FDs"
+    fail_impact: "Hardware failure takes down all instances"
+    remediation: "Distribute across fault domains, use instance pools"
+
+  - id: "REL-DR-01"
+    name: "Cross-region DR"
+    weight: 3
+    question: "Is cross-region DR configured for critical workloads?"
+    pass_criteria: "ADG or Data Guard to secondary region with tested failover"
+    fail_impact: "Regional outage causes extended downtime"
+    remediation: "Configure cross-region ADG or Data Guard"
+
+  - id: "REL-DR-02"
+    name: "Backup strategy"
+    weight: 2
+    question: "Are automated backups configured and tested?"
+    pass_criteria: "Automated backups with cross-region copy, restore tested"
+    fail_impact: "Data loss on failure, untested recovery"
+    remediation: "Enable automatic backups, schedule quarterly restore tests"
+
+  - id: "REL-DR-03"
+    name: "DR drill schedule"
+    weight: 1
+    question: "Are DR drills performed regularly?"
+    pass_criteria: "Quarterly DR drill with documented results"
+    fail_impact: "DR plan may not work when needed"
+    remediation: "Schedule quarterly automated DR drills"
+
+  - id: "REL-SCALE-01"
+    name: "Auto-scaling configured"
+    weight: 2
+    question: "Is auto-scaling enabled for variable workloads?"
+    pass_criteria: "ADB auto-scaling or instance pool autoscaling configured"
+    fail_impact: "Under-provisioned during peaks, over-provisioned during lulls"
+    remediation: "Enable auto-scaling with appropriate thresholds"
+
+  - id: "REL-NET-01"
+    name: "Redundant connectivity"
+    weight: 2
+    question: "Is network connectivity redundant (dual FastConnect/VPN)?"
+    pass_criteria: "Redundant FastConnect or FastConnect + VPN backup"
+    fail_impact: "Single circuit failure disconnects on-premises"
+    remediation: "Deploy redundant FastConnect from different providers"
+
+scoring:
+  pass: ">= 12/15"
+  needs_improvement: "9-11/15"
+  fail: "< 9/15"

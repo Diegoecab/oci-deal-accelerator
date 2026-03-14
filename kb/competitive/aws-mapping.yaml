@@ -1,0 +1,95 @@
+---
+last_verified: 2026-03-14
+description: OCI to AWS service mapping for competitive positioning
+---
+
+database_services:
+  adb_serverless:
+    aws_equivalent: "Amazon RDS Oracle / Aurora"
+    oci_advantages:
+      - "True autonomous operations (auto-patching, auto-tuning, auto-scaling)"
+      - "BYOL with significant discount (~50%)"
+      - "Built-in cross-region Data Guard"
+      - "Auto Indexing (no equivalent in RDS)"
+      - "Full PL/SQL compatibility (Aurora is PostgreSQL/MySQL only)"
+    aws_advantages:
+      - "More regions globally"
+      - "Deeper ecosystem integration (Lambda, S3 events, etc.)"
+      - "Aurora Serverless v2 for PostgreSQL/MySQL workloads"
+      - "Multi-AZ with automated failover (simpler for RDS)"
+    key_differentiator: >
+      OCI ADB-S is the only truly autonomous Oracle database. AWS RDS Oracle
+      requires manual patching, manual tuning, and cannot auto-scale compute.
+
+  exacs:
+    aws_equivalent: "No direct equivalent"
+    notes: >
+      AWS does not offer Exadata. The closest is RDS Oracle on the largest
+      instance types, but without Smart Scan, Storage Indexes, or RDMA networking.
+      For Exadata workloads, OCI is the only cloud option.
+
+  dbcs:
+    aws_equivalent: "Amazon RDS Oracle"
+    oci_advantages:
+      - "2-node RAC support (RDS Oracle is single-instance only)"
+      - "Full OS access (RDS has no OS access)"
+      - "All Oracle editions and options available"
+      - "BYOL discount"
+    aws_advantages:
+      - "Simpler provisioning"
+      - "Multi-AZ standby included"
+      - "Read Replicas"
+
+compute:
+  vm_flex:
+    aws_equivalent: "EC2 instances"
+    oci_advantages:
+      - "Flex shapes — pay only for OCPU and memory you need"
+      - "Consistent pricing (no instance type proliferation)"
+      - "Dense I/O shapes for local NVMe"
+    aws_advantages:
+      - "Broader instance family selection"
+      - "Spot instances with deeper discounts"
+      - "Graviton (ARM) ecosystem more mature"
+
+  oke:
+    aws_equivalent: "Amazon EKS"
+    oci_advantages:
+      - "Free control plane (EKS charges $0.10/hr = $73/mo)"
+      - "VCN-native pod networking"
+      - "Virtual node pools (serverless workers)"
+    aws_advantages:
+      - "Larger ecosystem (Helm charts, operators)"
+      - "Fargate integration for serverless containers"
+      - "More managed add-ons"
+
+networking:
+  fastconnect:
+    aws_equivalent: "AWS Direct Connect"
+    oci_advantages:
+      - "Lower port fees"
+      - "Built-in redundancy options"
+    aws_advantages:
+      - "More colocation locations globally"
+
+storage:
+  object_storage:
+    aws_equivalent: "Amazon S3"
+    oci_advantages:
+      - "Dramatically lower data egress costs"
+      - "First 10 TB/month outbound free"
+    aws_advantages:
+      - "More storage classes"
+      - "Richer event integration"
+      - "S3 Select for in-place query"
+
+pricing_comparison:
+  general: >
+    OCI is typically 30-50% cheaper than AWS for equivalent Oracle database workloads,
+    primarily due to BYOL discounts, lower OCPU pricing, and much lower data egress costs.
+  data_egress: >
+    OCI: $0.0085/GB (first 10 TB free). AWS: $0.09/GB (first 1 GB free).
+    For data-intensive workloads, this is a massive differentiator.
+  support: >
+    OCI Support Rewards: 25% of OCI spend credited toward Oracle Support.
+    No AWS equivalent for Oracle license support offsets.

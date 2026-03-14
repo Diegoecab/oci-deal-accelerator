@@ -1,0 +1,59 @@
+---
+last_verified: 2026-03-14
+description: OCI to Azure service mapping for competitive positioning
+---
+
+database_services:
+  adb_serverless:
+    azure_equivalent: "Azure SQL Managed Instance / Oracle on Azure VMs"
+    oci_advantages:
+      - "Native Oracle — not running on generic VMs"
+      - "Autonomous operations (auto-patch, auto-tune, auto-scale)"
+      - "BYOL with full Oracle support"
+      - "Exadata-backed performance"
+    azure_advantages:
+      - "Oracle Database@Azure (joint Oracle-Azure offering) — same region"
+      - "Azure ecosystem integration"
+      - "Unified billing through Azure"
+    key_note: >
+      Oracle Database@Azure puts OCI Exadata hardware inside Azure datacenters.
+      This is a collaborative offering, not competitive. If customer is Azure-first,
+      consider Oracle Database@Azure as the landing zone.
+
+  oracle_database_at_azure:
+    description: "Joint Oracle-Microsoft offering: OCI Exadata in Azure DCs"
+    services_available: ["ADB-S", "ADB-D", "ExaCS"]
+    regions: "limited but expanding"
+    benefits:
+      - "Low-latency connection to Azure services"
+      - "Unified Azure Portal management"
+      - "Azure billing integration"
+      - "Full Oracle database capabilities"
+    limitations:
+      - "Limited region availability"
+      - "Slightly higher latency than native OCI for Oracle-to-Oracle"
+      - "Some OCI services not available through Azure"
+
+compute:
+  vm_flex:
+    azure_equivalent: "Azure Virtual Machines"
+    oci_advantages:
+      - "Flex shapes — granular OCPU/memory"
+      - "Simpler pricing model"
+    azure_advantages:
+      - "Broader VM family selection"
+      - "Azure Spot VMs"
+      - "Closer integration with Microsoft workloads"
+
+networking:
+  fastconnect:
+    azure_equivalent: "Azure ExpressRoute"
+    notes: "For Oracle Database@Azure, interconnect is built-in"
+
+pricing_comparison:
+  general: >
+    OCI is typically 25-40% cheaper for Oracle database workloads.
+    Oracle Database@Azure pricing is OCI pricing billed through Azure.
+  key_differentiator: >
+    If customer is Azure-first, Oracle Database@Azure provides the best of both.
+    If customer is database-first, native OCI is simpler and has full feature set.

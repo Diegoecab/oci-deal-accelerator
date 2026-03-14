@@ -1,0 +1,59 @@
+---
+last_verified: 2026-03-14
+description: Memory sizing rules for OCI compute and database workloads
+---
+
+general_rules:
+  default_ratio: "16 GB per OCPU for standard workloads"
+  database_ratio: "16-32 GB per OCPU depending on SGA requirements"
+  app_server_ratio: "8-16 GB per OCPU for application tiers"
+
+adb_memory:
+  managed: true
+  description: "ADB-S and ADB-D manage memory automatically"
+  sga_allocation: "auto-tuned based on OCPU count and workload"
+  pga_allocation: "auto-tuned, ~20% of total memory"
+  notes:
+    - "Cannot manually set SGA/PGA in ADB-S"
+    - "Memory scales proportionally with OCPU"
+    - "Approximate: 14 GB per OCPU for SGA"
+
+dbcs_memory:
+  managed: false
+  description: "Customer controls SGA/PGA sizing on DBCS"
+  guidelines:
+    sga: "60-70% of available memory"
+    pga: "20-25% of available memory"
+    os_reserve: "10-15% for OS and agents"
+  flex_shapes:
+    - shape: "VM.Standard.E4.Flex"
+      memory_per_ocpu: "up to 64 GB (1:64 ratio max)"
+      recommended: "16 GB per OCPU for database"
+    - shape: "VM.Standard.E5.Flex"
+      memory_per_ocpu: "up to 64 GB"
+      recommended: "16 GB per OCPU for database"
+
+compute_memory:
+  flex_shapes:
+    - shape: "VM.Standard.E4.Flex"
+      min_memory: "1 GB"
+      max_memory: "1024 GB"
+      ratio_range: "1-64 GB per OCPU"
+    - shape: "VM.Standard.E5.Flex"
+      min_memory: "1 GB"
+      max_memory: "1024 GB"
+      ratio_range: "1-64 GB per OCPU"
+    - shape: "VM.Standard.A1.Flex"
+      min_memory: "1 GB"
+      max_memory: "512 GB"
+      ratio_range: "1-64 GB per OCPU"
+
+sizing_from_on_prem:
+  step_1: "Collect current memory allocation and utilization"
+  step_2: "For databases: check SGA hit ratio, PGA usage"
+  step_3: "Match or reduce based on utilization data"
+  step_4: "Choose flex shape with appropriate memory ratio"
+  notes:
+    - "Most on-prem databases are over-provisioned on memory"
+    - "ADB-S auto-tunes memory — don't over-size OCPU for memory"
+    - "Start with recommended ratio, monitor and adjust"

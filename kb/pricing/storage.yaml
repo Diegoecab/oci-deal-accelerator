@@ -1,0 +1,53 @@
+---
+last_verified: 2026-03-14
+description: OCI storage pricing for estimation (USD, US regions)
+disclaimer: "Prices are approximate and for estimation only. Always verify with OCI pricing calculator."
+---
+
+block_volume:
+  balanced:
+    per_gb_per_month: 0.0255
+    performance_units: "included (60 IOPS/GB)"
+    example_1tb: "$26.11/mo"
+  higher_performance:
+    per_gb_per_month: 0.0340
+    per_performance_unit: 0.0017
+    example_1tb: "$34.82/mo + performance units"
+  ultra_high_performance:
+    per_gb_per_month: 0.0425
+    per_performance_unit: 0.0034
+    notes: "Highest IOPS tier"
+  lower_cost:
+    per_gb_per_month: 0.0170
+    notes: "Backup and archival use"
+
+  boot_volume:
+    pricing: "same as block volume balanced tier"
+    default_size: "47 GB"
+
+object_storage:
+  standard:
+    storage_per_gb_per_month: 0.0255
+    requests_per_10k: 0.0034
+    data_transfer: "first 10 TB/mo free (intra-region)"
+  infrequent_access:
+    storage_per_gb_per_month: 0.010
+    min_retention: "31 days"
+    retrieval_per_gb: 0.010
+  archive:
+    storage_per_gb_per_month: 0.002
+    min_retention: "90 days"
+    restore_time: "1 hour minimum"
+    restore_per_gb: 0.025
+
+file_storage:
+  per_gb_per_month: 0.030
+  snapshots: "incremental, same rate"
+  notes: "NFS-compatible, good for shared application storage"
+
+data_transfer:
+  intra_region: "free"
+  inter_region_per_gb: 0.0085
+  outbound_internet_per_gb: 0.0085
+  first_10tb_outbound: "free per month"
+  notes: "OCI data egress is significantly cheaper than AWS/Azure/GCP"
