@@ -45,6 +45,39 @@ last_updated: "2026-03-14"
 
 findings:
 
+  - id: "FF-202603-008"
+    date: "2026-03-14"
+    reported_by: "Diego Cabrera"
+    client: "Vector Search Customer"
+    product: "ADB-S"
+    version: "23ai"
+    severity: "HIGH"
+    category: "limitation"
+    summary: "Distributed HNSW indexes not available — 100M+ vector search requires partitioning workaround"
+    detail: |
+      ADB-S AI Vector Search supports HNSW indexes but they are node-local on
+      multi-node RAC (≥64 ECPUs). At 100M+ vectors, queries on a 2-node RAC
+      miss vectors on the other node. Results are either incomplete or require
+      cross-node scan that blows P95 >200ms.
+
+      Workaround from internal DB PM team: hash-partition vector table on
+      vector_id, create partition-local HNSW index. Queries hit single
+      partition on single node, maintaining <50ms at 100M scale.
+
+      Requires table redesign — cannot be applied to existing unpartitioned
+      vector tables without data reload.
+    workaround: |
+      Hash-partition vector table by vector_id. Create HNSW index as LOCAL
+      (partition-level). Ensure partition pruning in queries.
+      Source: internal DB PM team contact [name].
+      Validated on ADB-S 23ai with 120M vectors, P95 = 38ms on 64 ECPU.
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "AI Vector Search (HNSW)"
+    tags: ["vector-search", "hnsw", "distributed", "rac", "partitioning", "100m", "latency", "ai-vector-search"]
+
   - id: "FF-202603-001"
     date: "2026-03-10"
     contributor:

@@ -232,6 +232,74 @@ features:
       dbcs_ee:
         "23ai": { status: "GA", notes: "Requires 23ai version." }
 
+  # --- AI / Vector Search ---
+  - name: "AI Vector Search (HNSW)"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai":
+          status: "GA_CAVEAT"
+          notes: |
+            HNSW indexes are node-local on multi-node RAC. Works well up to
+            ~50M vectors on single node (≤24 ECPUs). At 100M+ on multi-node
+            (≥64 ECPUs), requires hash-partitioned vector table with LOCAL
+            HNSW index for <50ms P95. See FF-202603-008.
+          scale_limits:
+            single_node_max_vectors: "~50M with <50ms P95"
+            multi_node_requires: "Hash partitioning + LOCAL HNSW index"
+            validated_at: "120M vectors, 64 ECPU, P95 = 38ms (with workaround)"
+            without_workaround: "P95 >200ms at 100M+ on 2-node RAC"
+          field_finding_ref: "FF-202603-008"
+        "26ai":
+          status: "UNTESTED"
+          notes: "Check if distributed HNSW is added in 26ai. Expected to remain node-local."
+      adb_s_ep:
+        "23ai":
+          status: "GA_CAVEAT"
+          notes: "Same node-local limitation as ADB-S Serverless."
+          field_finding_ref: "FF-202603-008"
+      adb_d:
+        "23ai":
+          status: "GA_CAVEAT"
+          notes: "Same limitation. Dedicated infra doesn't change HNSW locality."
+      exacs:
+        "23ai":
+          status: "GA_CAVEAT"
+          notes: "RAC with HNSW has same node-local constraint. Partitioning workaround applies."
+      dbcs_ee:
+        "23ai":
+          status: "NOT_AVAIL"
+          notes: "AI Vector Search requires 23ai. Available in EE but HNSW performance limited without Exadata storage."
+
+  - name: "AI Vector Search (IVF)"
+    category: "developer"
+    matrix:
+      adb_s:
+        "23ai":
+          status: "GA"
+          notes: |
+            IVF (Inverted File) indexes ARE distributed across RAC nodes.
+            Works at 100M+ scale without partitioning. However, IVF has
+            lower recall than HNSW at same latency budget. Trade-off:
+            IVF for scale without redesign, HNSW+partitioning for best recall.
+        "26ai":
+          status: "UNTESTED"
+      adb_s_ep:
+        "23ai":
+          status: "GA"
+          notes: "Same as ADB-S Serverless."
+      adb_d:
+        "23ai":
+          status: "GA"
+      exacs:
+        "23ai":
+          status: "GA"
+          notes: "IVF distributed across RAC nodes. Exadata storage accelerates scans."
+      dbcs_ee:
+        "23ai":
+          status: "NOT_AVAIL"
+          notes: "AI Vector Search requires 23ai. Available in EE but performance limited without Exadata."
+
   # --- Deployment / Operations ---
   - name: "Elastic Pool Membership"
     category: "operations"
