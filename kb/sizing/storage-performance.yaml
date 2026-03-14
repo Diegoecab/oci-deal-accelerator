@@ -1,0 +1,70 @@
+---
+last_verified: 2026-03-14
+description: Storage performance characteristics across OCI storage tiers.
+---
+
+storage_tiers:
+  adb_serverless:
+    type: "Exadata managed storage"
+    iops_random_read: "Up to 600K per ADB instance"
+    iops_random_write: "Workload dependent"
+    throughput: "Scales with OCPUs"
+    latency_read_us: "<200 (Smart Scan eligible)"
+    latency_write_us: "<500"
+    notes: "Performance scales with OCPU count, Exadata Smart Scan offloads queries"
+
+  exadata_storage:
+    type: "Exadata Smart Storage"
+    iops_random_read: "Up to 6.4M per rack (X9M)"
+    throughput_gbps: "Up to 100 GB/s (X9M)"
+    smart_scan: true
+    flash_cache: true
+    hcc: true
+    notes: "Highest performance tier, Smart Scan can offload full table scans"
+
+  block_volume_balanced:
+    type: "Block Volume (Balanced)"
+    iops_per_gb: 60
+    max_iops: 25000
+    throughput_kbps_per_gb: 480
+    max_throughput_mbps: 480
+    latency_us: "Sub-millisecond"
+
+  block_volume_higher_performance:
+    type: "Block Volume (Higher Performance)"
+    iops_per_gb: 75
+    max_iops: 35000
+    throughput_kbps_per_gb: 600
+    max_throughput_mbps: 600
+    latency_us: "Sub-millisecond"
+
+  block_volume_uhp:
+    type: "Block Volume (Ultra High Performance)"
+    max_iops: 450000
+    max_throughput_mbps: 2680
+    notes: "Requires UHP-enabled shapes"
+
+  object_storage:
+    type: "Object Storage"
+    throughput: "High (parallel multipart uploads)"
+    latency: "Milliseconds (first byte)"
+    use_for: "Backups, archives, unstructured data"
+    not_for: "Random IOPS workloads"
+
+  file_storage:
+    type: "File Storage (NFS)"
+    max_iops: 25000
+    max_throughput_mbps: 1200
+    latency: "Sub-millisecond"
+    use_for: "Shared file access, NFS workloads"
+
+sizing_from_source:
+  exadata_to_adb:
+    notes: "ADB-S on Exadata infra — performance is comparable or better"
+    recommendation: "Map directly, ADB auto-tunes storage"
+  physical_server_to_block_volume:
+    notes: "Match IOPS and throughput requirements to block volume tier"
+    recommendation: "Use Higher Performance for database, Balanced for app tier"
+  san_to_block_volume:
+    notes: "SAN IOPS vary widely — get actual metrics"
+    recommendation: "Size for P95 IOPS, test with fio before migration"

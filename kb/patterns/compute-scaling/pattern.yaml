@@ -1,0 +1,72 @@
+---
+last_verified: 2026-03-14
+pattern: Compute Scaling
+category: compute
+---
+
+description: |
+  Auto-scaling and load balancing patterns for OCI compute workloads.
+
+patterns:
+  instance_pool_autoscaling:
+    name: "Instance Pool Auto-Scaling"
+    components:
+      - "Instance Pool with instance configuration"
+      - "Auto-scaling policy (metric-based or schedule-based)"
+      - "Load Balancer (flexible or network)"
+    scaling_metrics:
+      - "CPU utilization"
+      - "Memory utilization"
+      - "Custom metrics via Monitoring service"
+    scaling_speed: "New instances in 2-5 minutes"
+    when_to_use:
+      - "Stateless applications"
+      - "Web/API tiers"
+      - "Batch processing with variable load"
+
+  oke_horizontal_pod_autoscaling:
+    name: "OKE Horizontal Pod Autoscaler"
+    components:
+      - "OKE cluster with managed nodes"
+      - "HPA resource definitions"
+      - "Cluster Autoscaler for node scaling"
+    scaling_metrics:
+      - "CPU utilization"
+      - "Memory utilization"
+      - "Custom metrics"
+    scaling_speed: "Pods: seconds, Nodes: 5-10 minutes"
+    when_to_use:
+      - "Containerized microservices"
+      - "Applications already on Kubernetes"
+
+  oke_virtual_nodes:
+    name: "OKE Virtual Nodes (Serverless)"
+    components:
+      - "OKE cluster with virtual node pool"
+      - "No node management required"
+    scaling_speed: "Seconds (no node provisioning)"
+    when_to_use:
+      - "Burst workloads"
+      - "Event-driven container workloads"
+      - "Teams that don't want to manage nodes"
+
+load_balancing:
+  flexible_lb:
+    type: "Layer 7 (HTTP/HTTPS)"
+    features:
+      - "SSL termination"
+      - "Path-based routing"
+      - "Session persistence"
+      - "Health checks"
+      - "WAF integration"
+    bandwidth: "10 Mbps to 8 Gbps"
+    use_for: "Web applications, API endpoints"
+
+  network_lb:
+    type: "Layer 4 (TCP/UDP)"
+    features:
+      - "Ultra-low latency"
+      - "Preserves source IP"
+      - "Health checks"
+    bandwidth: "Up to line rate"
+    use_for: "Database connections, non-HTTP protocols, high-throughput"

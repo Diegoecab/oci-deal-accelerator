@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="OCI Architecture" id="oci-arch-1">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Oracle Cloud Infrastructure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#312D2A;strokeWidth=2;fontColor=#312D2A;fontSize=16;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="1" vertex="1">
+          <mxGeometry x="0" y="0" width="2200" height="1000" as="geometry"/>
+        </mxCell>
+        <mxCell id="3" value="Region — US East (Ashburn)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F4F2;strokeColor=#312D2A;strokeWidth=1;fontColor=#312D2A;fontSize=14;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="2" vertex="1">
+          <mxGeometry x="20" y="40" width="1060" height="940" as="geometry"/>
+        </mxCell>
+        <mxCell id="4" value="VCN prod-vcn 10.0.0.0/16" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=2;dashed=1;fontColor=#312D2A;fontSize=12;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="3" vertex="1">
+          <mxGeometry x="20" y="40" width="1000" height="880" as="geometry"/>
+        </mxCell>
+        <mxCell id="5" value="Public Subnet — Web Tier 10.0.0.0/24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=11;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="4" vertex="1">
+          <mxGeometry x="20" y="30" width="460" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="6" value="Flexible LB&amp;#xa;100 Mbps" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4F7B6E;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="5" vertex="1">
+          <mxGeometry x="25" y="35" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="7" value="WAF&amp;#xa;OWASP Rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B4D9A;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="5" vertex="1">
+          <mxGeometry x="225" y="35" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="8" value="Private Subnet — App Tier 10.0.1.0/24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=11;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="4" vertex="1">
+          <mxGeometry x="20" y="250" width="460" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="9" value="VM.Standard.E5.Flex&amp;#xa;4 OCPU / 64 GB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4F7B6E;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="8" vertex="1">
+          <mxGeometry x="25" y="35" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="10" value="VM.Standard.E5.Flex&amp;#xa;4 OCPU / 64 GB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4F7B6E;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="8" vertex="1">
+          <mxGeometry x="225" y="35" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="11" value="Private Subnet — Data Tier 10.0.2.0/24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=11;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="4" vertex="1">
+          <mxGeometry x="20" y="470" width="950" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="12" value="ADB-S OLTP&amp;#xa;8 OCPU (auto-scale 16)&amp;#xa;4 TB / BYOL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AA643B;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="25" y="35" width="200" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="13" value="ADB-S DW&amp;#xa;4 OCPU / 2 TB&amp;#xa;BYOL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AA643B;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="250" y="35" width="200" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="14" value="ADB-S APEX&amp;#xa;2 OCPU / 200 GB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AA643B;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="475" y="35" width="200" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="15" value="OCI Vault&amp;#xa;HSM Keys" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B4D9A;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="25" y="150" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="16" value="Data Safe&amp;#xa;Security + Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B4D9A;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="250" y="150" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="17" value="Bastion&amp;#xa;SSH Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6B4D9A;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="11" vertex="1">
+          <mxGeometry x="475" y="150" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="18" value="Private Subnet — Management 10.0.3.0/24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=11;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="4" vertex="1">
+          <mxGeometry x="500" y="30" width="460" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="19" value="OKE Cluster&amp;#xa;3 workers (future)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4F7B6E;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="18" vertex="1">
+          <mxGeometry x="25" y="35" width="170" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="20" value="Region — US West (Phoenix) [DR]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F4F2;strokeColor=#312D2A;strokeWidth=1;fontColor=#312D2A;fontSize=14;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="2" vertex="1">
+          <mxGeometry x="1120" y="40" width="1060" height="940" as="geometry"/>
+        </mxCell>
+        <mxCell id="21" value="VCN dr-vcn 10.128.0.0/16" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=2;dashed=1;fontColor=#312D2A;fontSize=12;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="20" vertex="1">
+          <mxGeometry x="20" y="40" width="1000" height="880" as="geometry"/>
+        </mxCell>
+        <mxCell id="22" value="Private Subnet — DR Data Tier 10.128.2.0/24" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#AE562C;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=11;fontFamily=Oracle Sans;verticalAlign=top;align=left;spacingLeft=10;spacingTop=5;container=1;collapsible=0;" parent="21" vertex="1">
+          <mxGeometry x="20" y="30" width="460" height="380" as="geometry"/>
+        </mxCell>
+        <mxCell id="23" value="ADB-S Standby&amp;#xa;8 OCPU / 4 TB&amp;#xa;Auto-Failover" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AA643B;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="22" vertex="1">
+          <mxGeometry x="25" y="35" width="200" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="24" value="Refreshable Clone&amp;#xa;4 OCPU / 4 TB&amp;#xa;Reporting Offload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#AA643B;strokeWidth=1;fontColor=#312D2A;fontSize=10;fontFamily=Oracle Sans;verticalAlign=middle;align=center;" parent="22" vertex="1">
+          <mxGeometry x="25" y="150" width="200" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="25" value="Autonomous Data Guard&amp;#xa;(async, RPO ≈ seconds)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#AA643B;strokeWidth=2;dashed=1;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="12" target="23"/>
+        <mxCell id="26" value="Refreshable Clone" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#6B4D9A;strokeWidth=1;dashed=1;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="23" target="24"/>
+        <mxCell id="27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4F7B6E;strokeWidth=1;dashed=0;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="6" target="9"/>
+        <mxCell id="28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4F7B6E;strokeWidth=1;dashed=0;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="6" target="10"/>
+        <mxCell id="29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4F7B6E;strokeWidth=1;dashed=0;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="9" target="12"/>
+        <mxCell id="30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#4F7B6E;strokeWidth=1;dashed=0;fontColor=#312D2A;fontSize=9;fontFamily=Oracle Sans;" parent="1" edge="1" source="10" target="12"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
