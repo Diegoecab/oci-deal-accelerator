@@ -1,0 +1,203 @@
+# Example: E-Commerce Platform on OCI
+# This sample architecture demonstrates how the Deal Accelerator composes
+# and validates an OCI architecture for a mid-size e-commerce platform.
+
+architecture:
+  name: "E-Commerce Platform — OCI Architecture"
+  version: "1.0"
+
+  # --- Landing Zone ---
+  landing_zone:
+    type: "cis_landing_zone"
+    compartments:
+      - name: "Network"
+        purpose: "Hub VCN, DRG, connectivity"
+      - name: "Security"
+        purpose: "Vault, Cloud Guard, Bastion"
+      - name: "AppDev"
+        purpose: "OKE, Functions, API Gateway"
+      - name: "Database"
+        purpose: "ATP, Data Safe"
+
+  # --- Identity & Access ---
+  identity:
+    iam_policies: "least-privilege per compartment"
+    mfa: true
+    federation: "SAML with customer Okta IdP"
+    instance_principals: true
+    resource_principals: true
+    identity_domains: 1
+    admin_restrictions: "break-glass account only for tenancy admin"
+
+  # --- Network ---
+  network:
+    topology: "hub-spoke"
+    hub_vcn:
+      cidr: "10.0.0.0/16"
+      service_gateway: true
+      nat_gateway: true
+      internet_gateway: true
+      drg: true
+    spoke_vcns:
+      - name: "app-vcn"
+        cidr: "10.1.0.0/16"
+        subnets:
+          - name: "public-lb"
+            type: "public"
+            cidr: "10.1.1.0/24"
+          - name: "private-app"
+            type: "private"
+            cidr: "10.1.2.0/24"
+          - name: "private-db"
+            type: "private"
+            cidr: "10.1.3.0/24"
+    security:
+      nsg: true
+      security_lists: false
+      waf: true
+      tls_on_load_balancers: true
+      bastion_service: true
+      ssh_restricted: "bastion only, no 0.0.0.0/0"
+    load_balancers:
+      - type: "Flexible Load Balancer"
+        tier: "400Mbps"
+        health_checks: true
+        tls: true
+    connectivity:
+      fastconnect:
+        enabled: true
+        bandwidth: "1 Gbps"
+        redundant: true
+        diverse_paths: true
+      vpn_backup: true
+
+  # --- Compute ---
+  compute:
+    oke_cluster:
+      name: "ecom-oke"
+      version: "1.28"
+      node_pool:
+        shape: "VM.Standard.E4.Flex"
+        ocpus: 4
+        memory_gb: 64
+        nodes: 3
+        autoscaling:
+          enabled: true
+          min_nodes: 3
+          max_nodes: 10
+      placement: "across fault domains"
+
+  # --- Database ---
+  database:
+    autonomous_database:
+      - name: "ecom-atp"
+        type: "ATP"
+        ocpus: 4
+        storage_tb: 2
+        auto_scaling: true
+        private_endpoint: true
+        tde: true
+        vault_key_management: true
+        key_rotation_days: 90
+        data_guard:
+          enabled: true
+          standby_region: "us-phoenix-1"
+        data_safe: true
+        backup:
+          automated: true
+          retention_days: 30
+          cross_region_copy: true
+        patching: "automated quarterly"
+
+  # --- Storage ---
+  storage:
+    object_storage:
+      - name: "ecom-assets"
+        tier: "Standard"
+        encryption: "customer-managed key via OCI Vault"
+        public_access: false
+        retention_rules: true
+        auto_tiering: true
+        replication:
+          enabled: true
+          target_region: "us-phoenix-1"
+    block_volumes:
+      - attached_to: "oke-nodes"
+        performance_tier: "Balanced"
+        backup_policy: "silver"
+        encryption: "OCI Vault"
+
+  # --- Security ---
+  security:
+    cloud_guard:
+      enabled: true
+      detector_recipes: ["OCI Activity Detector", "OCI Configuration Detector"]
+      responder_recipes: ["OCI Responder Recipe"]
+    vault:
+      enabled: true
+      key_management: "customer-managed"
+    security_zones:
+      enabled: true
+      compartments: ["Database", "AppDev"]
+    vulnerability_scanning:
+      enabled: true
+      targets: ["oke-nodes"]
+    audit:
+      enabled: true
+      retention_days: 365
+    flow_logs:
+      enabled: true
+      subnets: "all"
+    tags:
+      defined_namespaces:
+        - name: "CostCenter"
+          tags: ["Project", "Environment", "Owner"]
+        - name: "Operations"
+          tags: ["PatchGroup", "BackupPolicy"]
+
+  # --- Operations ---
+  operations:
+    iac: "Terraform with OCI Resource Manager"
+    cicd: "OCI DevOps with build and deployment pipelines"
+    deployment_strategy: "blue/green"
+    environment_parity: true
+    monitoring:
+      alarms: true
+      custom_metrics: true
+      logging_analytics: true
+      apm: true
+      database_management: true
+      ops_insights: true
+    os_management:
+      os_management_hub: true
+      patching_schedule: "monthly, Saturday 2AM maintenance window"
+      vulnerability_sla: "Critical: 24h, High: 7d, Medium: 30d"
+    notifications:
+      enabled: true
+      topics: ["infra-alerts", "security-alerts", "cost-alerts"]
+    runbooks: "planned for Day-2 operations"
+    automated_remediation: "OCI Events + Functions for auto-scaling alerts"
+    support_plan: "Premier Support"
+    budgets:
+      enabled: true
+      per_compartment: true
+      alert_threshold: "80%"
+
+  # --- Cost Optimization ---
+  cost:
+    licensing: "BYOL for existing Oracle Database licenses"
+    reserved_capacity: "1-year for OKE node pool base capacity"
+    dev_test:
+      shapes: "VM.Standard.E4.Flex (2 OCPU)"
+      scheduling: "off nights and weekends"
+
+  # --- Disaster Recovery ---
+  dr:
+    dr_region: "us-phoenix-1"
+    strategy: "active-passive with Data Guard"
+    rpo: "< 5 minutes (Data Guard async)"
+    rto: "< 1 hour"
+    dns_failover: "OCI Traffic Management with health checks"
+    app_tier_dr: "Terraform-on-demand in DR region"
+    drill_schedule: "quarterly"
+    documented_procedures: true

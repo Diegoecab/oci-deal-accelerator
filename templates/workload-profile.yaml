@@ -1,0 +1,116 @@
+# OCI Deal Accelerator — Workload Profile Template
+# Fill this out during the Discovery phase to drive architecture composition and WA validation
+
+workload_profile:
+  # --- Business Context ---
+  business_context:
+    customer_name: ""
+    industry: ""  # e.g., financial_services, healthcare, retail, manufacturing, public_sector
+    engagement_type: ""  # migration, greenfield, expansion, modernization
+    timeline: ""  # e.g., "6 months", "Q3 2026"
+    budget_range: ""  # e.g., "$50K-100K/month"
+    competitive_situation: ""  # aws_incumbent, azure_incumbent, on_prem_only, multi_cloud
+    oracle_relationship: ""  # existing_ula, existing_licenses, new_customer
+
+  # --- Compliance & Regulatory ---
+  compliance:
+    regulatory_frameworks: []  # PCI-DSS, HIPAA, SOC2, GDPR, FedRAMP, etc.
+    data_residency_required: false
+    data_residency_regions: []  # e.g., [us-ashburn-1, eu-frankfurt-1]
+    sovereign_requirements: false
+    audit_requirements: ""  # e.g., "annual SOC2 audit", "quarterly PCI scan"
+
+  # --- Application Portfolio ---
+  applications:
+    - name: ""
+      type: ""  # database, web_app, api, batch, streaming, analytics
+      current_platform: ""  # on_prem, aws, azure, gcp
+      technology_stack: []  # e.g., [java, spring_boot, oracle_db_19c]
+      criticality: ""  # mission_critical, business_critical, standard, dev_test
+      users: ""  # e.g., "5000 concurrent", "internal only"
+      data_volume: ""  # e.g., "2TB", "500GB growing 10%/year"
+
+  # --- Performance Requirements ---
+  performance:
+    compute_iops: ""  # e.g., "50K IOPS sustained"
+    storage_iops: ""
+    network_throughput: ""  # e.g., "10 Gbps"
+    latency_requirements: ""  # e.g., "< 5ms database response"
+    peak_patterns: ""  # steady, daily_peaks, seasonal, unpredictable
+
+  # --- Resilience Requirements ---
+  resilience:
+    rto: ""  # e.g., "1 hour", "15 minutes"
+    rpo: ""  # e.g., "0 (zero data loss)", "1 hour"
+    availability_target: ""  # e.g., "99.95%", "99.99%"
+    dr_required: false
+    dr_type: ""  # active_active, active_passive, pilot_light, backup_restore
+    backup_retention: ""  # e.g., "30 days", "7 years for compliance"
+
+  # --- Connectivity ---
+  connectivity:
+    type: ""  # fastconnect, vpn, internet, hybrid
+    bandwidth: ""  # e.g., "10 Gbps"
+    on_prem_integration: false
+    multi_cloud_integration: false
+    existing_network: ""  # e.g., "MPLS to 3 data centers"
+
+  # --- Operational Maturity ---
+  operations:
+    iac_experience: ""  # none, basic, advanced
+    cloud_experience: ""  # none, basic_aws, advanced_multi_cloud
+    team_size: ""  # e.g., "3 cloud engineers"
+    existing_tools: []  # e.g., [terraform, ansible, jenkins, datadog]
+    managed_services_preference: ""  # self_managed, managed, fully_managed
+
+  # --- Decision Drivers ---
+  decision_drivers:
+    technical:
+      - ""  # e.g., "Need Oracle RAC equivalent in cloud"
+    commercial:
+      - ""  # e.g., "Existing ULA covers DB licenses"
+    political:
+      primary_audience: ""  # cloud_architect, security_architect, enterprise_architect, cto, finance
+      decision_maker: ""
+      influencers: []
+      concerns: []  # e.g., ["vendor lock-in", "migration risk", "cost predictability"]
+
+  # --- Derived Flags (auto-populated by validation engine) ---
+  flags:
+    has_databases: false
+    has_autonomous_database: false
+    has_production_databases: false
+    has_compute_instances: false
+    has_production_compute: false
+    has_block_volumes: false
+    has_object_storage: false
+    has_critical_data_in_object_storage: false
+    has_critical_object_storage: false
+    has_large_object_storage: false
+    has_load_balancers: false
+    has_internet_facing_services: false
+    has_fastconnect: false
+    has_drg: false
+    has_variable_workloads: false
+    has_critical_workloads: false
+    has_critical_data: false
+    has_application_workloads: false
+    has_production_applications: false
+    has_production_workloads: false
+    has_auto_scaling: false
+    has_oracle_licensed_services: false
+    has_stable_production_workloads: false
+    has_dev_test_environments: false
+    has_multiple_environments: false
+    has_sensitive_workloads: false
+    multi_tenant: false
+    multi_environment: false
+    enterprise_customer: false
+    hub_spoke_topology: false
+    requires_dr: false
+    multi_region: false
+    hybrid_cloud: false
+    multicloud: false
+    has_data_residency_requirements: false
+    has_sovereign_requirements: false
+    distributed_cloud_applicable: false

@@ -1,0 +1,115 @@
+# OCI Well-Architected Framework — Landing Zone Patterns
+# Reference: https://docs.oracle.com/en/solutions/cis-oci-benchmark/
+
+landing_zones:
+  - name: "CIS OCI Landing Zone"
+    id: cis_landing_zone
+    description: "CIS Benchmark-aligned landing zone with security best practices baked in"
+    reference: "https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart"
+    use_when:
+      - "Enterprise customers requiring CIS compliance"
+      - "Greenfield OCI deployments"
+      - "Customers with regulatory requirements"
+    provides:
+      compartments:
+        - name: "Network"
+          purpose: "Hub VCN, DRG, FastConnect, VPN"
+        - name: "Security"
+          purpose: "Cloud Guard, Vault, Bastion, VSS"
+        - name: "AppDev"
+          purpose: "Application workloads, OKE, Functions"
+        - name: "Database"
+          purpose: "Database services, Data Safe"
+        - name: "ExaCS"
+          purpose: "Exadata Cloud Service (if applicable)"
+      networking:
+        - "Hub-spoke VCN topology via DRG"
+        - "Service Gateway for OCI service access"
+        - "NAT Gateway for outbound internet"
+        - "Bastion service for secure access"
+        - "NSGs for fine-grained network security"
+      identity:
+        - "Break-glass admin account"
+        - "Separation of duties (network, security, appdev admins)"
+        - "Least-privilege IAM policies"
+        - "Dynamic groups for instance principals"
+      security:
+        - "Cloud Guard with default recipes"
+        - "Security Zones for production"
+        - "VCN Flow Logs enabled"
+        - "OCI Vault for key management"
+        - "Vulnerability Scanning service"
+      governance:
+        - "Defined tags for cost tracking"
+        - "Budgets per compartment"
+        - "Notification topics for events"
+
+  - name: "Oracle Enterprise Landing Zone"
+    id: oelz
+    description: "Multi-environment enterprise landing zone with full lifecycle management"
+    reference: "https://github.com/oracle-quickstart/terraform-oci-open-lz"
+    use_when:
+      - "Large enterprise deployments"
+      - "Multi-workload environments"
+      - "Customers needing full environment isolation"
+    provides:
+      compartments:
+        - name: "Shared Infrastructure"
+          purpose: "Common services, networking hub, security"
+        - name: "Production"
+          purpose: "Production workloads with Security Zones"
+        - name: "Non-Production"
+          purpose: "Dev, test, staging environments"
+        - name: "Logging"
+          purpose: "Centralized logging and audit"
+      networking:
+        - "Hub VCN with Network Firewall option"
+        - "Spoke VCNs per workload/environment"
+        - "DRG for transit routing"
+        - "DNS views per environment"
+      identity:
+        - "Multiple Identity Domains"
+        - "Federated authentication"
+        - "Role-based access control"
+      security:
+        - "Cloud Guard with custom recipes"
+        - "Security Zones"
+        - "WAF integration"
+        - "Data Safe"
+
+  - name: "Minimal Landing Zone"
+    id: minimal_lz
+    description: "Lightweight landing zone for POCs, small workloads, or single-application deployments"
+    use_when:
+      - "Proof of concept"
+      - "Small workloads (< 10 resources)"
+      - "Single application deployment"
+      - "Developer sandbox"
+    provides:
+      compartments:
+        - name: "Workload"
+          purpose: "All resources for the workload"
+      networking:
+        - "Single VCN"
+        - "Public and private subnets"
+        - "Internet Gateway + NAT Gateway"
+        - "Service Gateway"
+      identity:
+        - "Basic IAM policies"
+        - "Instance principals for compute"
+      security:
+        - "Cloud Guard (default)"
+        - "Default encryption"
+
+selection_criteria:
+  - condition: "regulatory_compliance OR enterprise_customer"
+    recommendation: "cis_landing_zone"
+    rationale: "CIS compliance provides strong security baseline and meets audit requirements"
+
+  - condition: "multi_environment AND large_enterprise"
+    recommendation: "oelz"
+    rationale: "Full environment isolation with centralized governance"
+
+  - condition: "poc OR small_workload OR single_application"
+    recommendation: "minimal_lz"
+    rationale: "Fast deployment without over-engineering; can upgrade to CIS later"

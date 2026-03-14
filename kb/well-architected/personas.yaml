@@ -1,0 +1,156 @@
+# OCI Well-Architected Framework — Personas and Role-to-Pillar Mapping
+# Used to target Deal Accelerator outputs to the right audience
+
+personas:
+  - name: "Cloud Architect"
+    id: cloud_architect
+    description: "Responsible for overall cloud architecture design and implementation"
+    primary_pillars:
+      - reliability_resilience
+      - security_compliance
+      - operational_efficiency
+    output_emphasis:
+      - "Full architecture diagram with all service interactions"
+      - "ADRs for all major design decisions"
+      - "Reliability and HA patterns"
+      - "Operational readiness checklist"
+    scorecard_focus:
+      lead_with: "Overall architecture health"
+      highlight_gaps: ["HIGH severity across all pillars"]
+      de_emphasize: ["LOW severity cost optimizations"]
+
+  - name: "Security Architect"
+    id: security_architect
+    description: "Responsible for security posture, compliance, and risk management"
+    primary_pillars:
+      - security_compliance
+    output_emphasis:
+      - "Security scorecard with all checks detailed"
+      - "IAM policy structure and federation design"
+      - "Encryption strategy (at-rest, in-transit, key management)"
+      - "Cloud Guard configuration and detector recipes"
+      - "Data Safe assessment and recommendations"
+      - "Network security architecture (NSGs, WAF, Firewall)"
+      - "Compliance mapping to regulatory requirements"
+    scorecard_focus:
+      lead_with: "Security and Compliance pillar"
+      highlight_gaps: ["All security gaps regardless of severity"]
+      de_emphasize: ["Performance optimization", "Cost management"]
+
+  - name: "Enterprise Architect"
+    id: enterprise_architect
+    description: "Responsible for strategic alignment, cost optimization, and enterprise governance"
+    primary_pillars:
+      - performance_cost
+      - distributed_cloud
+      - operational_efficiency
+    output_emphasis:
+      - "TCO analysis with BYOL and reserved capacity"
+      - "Business case with competitive positioning"
+      - "Distributed cloud strategy if applicable"
+      - "Governance model and tagging strategy"
+      - "Migration roadmap and phasing"
+    scorecard_focus:
+      lead_with: "Cost optimization and business alignment"
+      highlight_gaps: ["Cost management gaps", "Governance gaps"]
+      de_emphasize: ["Technical implementation details"]
+
+  - name: "Network Architect"
+    id: network_architect
+    description: "Responsible for network design, connectivity, and security"
+    primary_pillars:
+      - security_compliance
+      - reliability_resilience
+    output_emphasis:
+      - "VCN topology with CIDR ranges and subnet design"
+      - "FastConnect/VPN connectivity with redundancy"
+      - "DRG routing and transit networking"
+      - "NSG rules and WAF configuration"
+      - "DNS and Traffic Management design"
+      - "Network Firewall placement and rules"
+    scorecard_focus:
+      lead_with: "Network security and reliability checks"
+      highlight_gaps: ["Network-related gaps across all pillars"]
+      de_emphasize: ["Database security", "Application monitoring"]
+
+  - name: "Database Administrator"
+    id: dba
+    description: "Responsible for database architecture, performance, and operations"
+    primary_pillars:
+      - security_compliance
+      - reliability_resilience
+      - performance_cost
+    output_emphasis:
+      - "Database service selection rationale"
+      - "Data Guard / ADG configuration"
+      - "Backup and recovery strategy"
+      - "Data Safe configuration"
+      - "Performance tuning and monitoring"
+      - "TDE and encryption key management"
+    scorecard_focus:
+      lead_with: "Database security and reliability checks"
+      highlight_gaps: ["Database-related gaps across all pillars"]
+      de_emphasize: ["Network design", "Compute sizing"]
+
+  - name: "DevOps Engineer"
+    id: devops_engineer
+    description: "Responsible for CI/CD, IaC, and operational automation"
+    primary_pillars:
+      - operational_efficiency
+    output_emphasis:
+      - "Terraform module structure and Resource Manager stacks"
+      - "CI/CD pipeline design (OCI DevOps or third-party)"
+      - "Deployment strategy (blue/green, canary)"
+      - "Monitoring and alerting configuration"
+      - "Automated remediation with Events + Functions"
+      - "OS Management Hub setup"
+    scorecard_focus:
+      lead_with: "Operational Efficiency pillar"
+      highlight_gaps: ["IaC gaps", "CI/CD gaps", "Monitoring gaps"]
+      de_emphasize: ["Cost optimization", "Distributed cloud"]
+
+  - name: "CTO / VP Engineering"
+    id: cto
+    description: "Executive decision maker focused on risk, timeline, and strategic value"
+    primary_pillars:
+      - security_compliance
+      - reliability_resilience
+      - performance_cost
+    output_emphasis:
+      - "Executive summary (1-page)"
+      - "Risk register with mitigation strategies"
+      - "Competitive positioning vs AWS/Azure"
+      - "Implementation timeline with milestones"
+      - "Cost summary with optimization opportunities"
+      - "Well-Architected scorecard summary"
+    scorecard_focus:
+      lead_with: "Overall status with HIGH severity gaps"
+      highlight_gaps: ["HIGH severity only"]
+      de_emphasize: ["Technical implementation details", "LOW severity items"]
+
+  - name: "Finance / Procurement"
+    id: finance
+    description: "Focused on cost, licensing, and commercial terms"
+    primary_pillars:
+      - performance_cost
+    output_emphasis:
+      - "Detailed cost breakdown by service"
+      - "BYOL vs. License Included analysis"
+      - "Reserved capacity savings (1yr vs 3yr)"
+      - "Monthly and annual cost projections"
+      - "Budget configuration per compartment"
+      - "Comparison with current spend (on-prem or competitor)"
+    scorecard_focus:
+      lead_with: "Performance and Cost Optimization pillar"
+      highlight_gaps: ["Cost-related gaps only"]
+      de_emphasize: ["All technical pillars"]
+
+# Mapping from political decision drivers to personas
+decision_driver_mapping:
+  technical_leadership: [cloud_architect, cto]
+  security_focused: [security_architect]
+  cost_conscious: [enterprise_architect, finance]
+  operations_focused: [devops_engineer]
+  database_centric: [dba]
+  network_focused: [network_architect]
+  executive_sponsorship: [cto, finance]

@@ -1,0 +1,212 @@
+# OCI Well-Architected Framework — Pillar 2: Reliability and Resilience
+# Source: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+
+pillar:
+  name: "Reliability and Resilience"
+  id: reliability_resilience
+  reference: "https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html"
+
+categories:
+  - name: "Scalability"
+    id: scalability
+    checks:
+      - id: REL-SCL-001
+        name: "Auto-scaling configured"
+        description: "Auto-scaling configured for variable workloads"
+        auto_detect:
+          pass_if: "auto-scaling policies defined for compute or OKE"
+          gap_if: "variable workloads without auto-scaling"
+        severity: MEDIUM
+        applies_when: "has_variable_workloads"
+
+      - id: REL-SCL-002
+        name: "Service limits reviewed"
+        description: "Service limits reviewed and increased where needed"
+        auto_detect:
+          pass_if: "service limit review mentioned in deployment plan"
+          gap_if: "no service limit review planned"
+        severity: LOW
+        applies_when: always
+
+      - id: REL-SCL-003
+        name: "Capacity reservations"
+        description: "Capacity reservations for critical workloads"
+        auto_detect:
+          pass_if: "capacity reservations specified for critical compute"
+          gap_if: "critical production workloads without capacity reservations"
+        severity: MEDIUM
+        applies_when: "has_critical_workloads"
+
+  - name: "Fault-Tolerant Networking"
+    id: fault_tolerant_networking
+    checks:
+      - id: REL-NET-001
+        name: "Redundant FastConnect"
+        description: "Redundant FastConnect circuits (2 virtual circuits, different physical paths)"
+        auto_detect:
+          pass_if: "dual FastConnect circuits on diverse paths"
+          gap_if: "single FastConnect circuit without redundancy"
+        severity: HIGH
+        applies_when: "has_fastconnect"
+
+      - id: REL-NET-002
+        name: "VPN backup for FastConnect"
+        description: "VPN as backup if FastConnect is primary"
+        auto_detect:
+          pass_if: "IPSec VPN configured as FastConnect backup"
+          gap_if: "FastConnect without VPN backup"
+        severity: MEDIUM
+        applies_when: "has_fastconnect"
+
+      - id: REL-NET-003
+        name: "Redundant DRG tunnels"
+        description: "DRG with redundant tunnels"
+        auto_detect:
+          pass_if: "DRG configured with redundant IPSec tunnels"
+          gap_if: "DRG with single tunnel"
+        severity: MEDIUM
+        applies_when: "has_drg"
+
+      - id: REL-NET-004
+        name: "Load Balancer health checks"
+        description: "Load Balancer health checks configured"
+        auto_detect:
+          pass_if: "health check policies defined on load balancers"
+          gap_if: "load balancers without health checks"
+        severity: HIGH
+        applies_when: "has_load_balancers"
+
+      - id: REL-NET-005
+        name: "Multi-AD/FD compute placement"
+        description: "Multiple ADs or FDs used for compute placement"
+        auto_detect:
+          pass_if: "compute instances distributed across ADs or FDs"
+          gap_if: "all compute in single AD/FD"
+        severity: HIGH
+        applies_when: "has_production_compute"
+
+  - name: "Data Backup"
+    id: data_backup
+    checks:
+      - id: REL-BAK-001
+        name: "Automated database backups"
+        description: "Automated backups enabled for all databases"
+        auto_detect:
+          pass_if: "automated backup configured for all database services"
+          gap_if: "any database without automated backup"
+        severity: HIGH
+        applies_when: "has_databases"
+
+      - id: REL-BAK-002
+        name: "Backup retention policy"
+        description: "Backup retention policy defined and documented"
+        auto_detect:
+          pass_if: "backup retention periods specified"
+          gap_if: "no backup retention policy defined"
+        severity: MEDIUM
+        applies_when: "has_databases"
+
+      - id: REL-BAK-003
+        name: "Block Volume backups"
+        description: "Block Volume backups scheduled"
+        auto_detect:
+          pass_if: "block volume backup policies configured"
+          gap_if: "block volumes without backup schedules"
+        severity: MEDIUM
+        applies_when: "has_block_volumes"
+
+      - id: REL-BAK-004
+        name: "Cross-region backup copy"
+        description: "Cross-region backup copy for critical data"
+        auto_detect:
+          pass_if: "cross-region backup replication configured"
+          gap_if: "critical data without cross-region backup"
+        severity: MEDIUM
+        applies_when: "has_critical_data"
+
+      - id: REL-BAK-005
+        name: "Boot volume backups"
+        description: "Boot volume backups for compute instances"
+        auto_detect:
+          pass_if: "boot volume backup policies configured"
+          gap_if: "compute instances without boot volume backups"
+        severity: LOW
+        applies_when: "has_compute_instances"
+
+  - name: "Data Replication"
+    id: data_replication
+    checks:
+      - id: REL-REP-001
+        name: "Data Guard / ADG"
+        description: "Data Guard (or ADG for ADB) configured for HA databases"
+        auto_detect:
+          pass_if: "Data Guard or Autonomous Data Guard configured"
+          gap_if: "production databases without HA replication"
+        severity: HIGH
+        applies_when: "has_production_databases"
+
+      - id: REL-REP-002
+        name: "RPO/RTO documented"
+        description: "RPO/RTO documented and validated with actual testing"
+        auto_detect:
+          pass_if: "RPO and RTO targets defined with validation plan"
+          gap_if: "no RPO/RTO targets documented"
+        severity: HIGH
+        applies_when: "has_production_workloads"
+
+      - id: REL-REP-003
+        name: "Cross-region Object Storage replication"
+        description: "Cross-region replication for Object Storage"
+        auto_detect:
+          pass_if: "Object Storage replication configured to DR region"
+          gap_if: "critical object storage without cross-region replication"
+        severity: MEDIUM
+        applies_when: "has_critical_object_storage"
+
+  - name: "Disaster Recovery"
+    id: disaster_recovery
+    checks:
+      - id: REL-DR-001
+        name: "DR region identified"
+        description: "DR region identified and provisioned"
+        auto_detect:
+          pass_if: "DR region specified in architecture"
+          gap_if: "no DR region identified"
+        severity: HIGH
+        applies_when: "requires_dr"
+
+      - id: REL-DR-002
+        name: "DR architecture documented"
+        description: "DR architecture documented with switchover/failover procedures"
+        auto_detect:
+          pass_if: "DR runbook with switchover/failover procedures defined"
+          gap_if: "no DR procedures documented"
+        severity: HIGH
+        applies_when: "requires_dr"
+
+      - id: REL-DR-003
+        name: "DR drill schedule"
+        description: "DR drill schedule defined (quarterly minimum)"
+        auto_detect:
+          pass_if: "DR drill schedule defined"
+          gap_if: "no DR drill schedule"
+        severity: MEDIUM
+        applies_when: "requires_dr"
+
+      - id: REL-DR-004
+        name: "DNS failover"
+        description: "DNS failover or traffic management configured"
+        auto_detect:
+          pass_if: "OCI Traffic Management or DNS failover configured"
+          gap_if: "no automated DNS failover for DR"
+        severity: MEDIUM
+        applies_when: "requires_dr"
+
+      - id: REL-DR-005
+        name: "Application tier DR"
+        description: "Application tier DR strategy (pre-provisioned, Terraform-on-demand, or pilot light)"
+        auto_detect:
+          pass_if: "application DR strategy defined and documented"
+          gap_if: "no application tier DR strategy"
+        severity: HIGH
+        applies_when: "requires_dr"

@@ -1,0 +1,155 @@
+# OCI Well-Architected Framework — Pillar 3: Performance and Cost Optimization
+# Source: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+
+pillar:
+  name: "Performance and Cost Optimization"
+  id: performance_cost
+  reference: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
+
+categories:
+  - name: "Compute Sizing"
+    id: compute_sizing
+    checks:
+      - id: PERF-CMP-001
+        name: "Right-sized shapes"
+        description: "Shapes selected based on workload profile (not over-provisioned)"
+        auto_detect:
+          pass_if: "compute shapes justified by workload requirements"
+          gap_if: "shapes selected without workload sizing analysis"
+        severity: MEDIUM
+        applies_when: "has_compute_instances"
+
+      - id: PERF-CMP-002
+        name: "Flex shapes used"
+        description: "Flex shapes used where possible (pay for what you use)"
+        auto_detect:
+          pass_if: "flex shapes specified for variable workloads"
+          gap_if: "fixed shapes used where flex would be more cost-effective"
+        severity: LOW
+        applies_when: "has_compute_instances"
+
+      - id: PERF-CMP-003
+        name: "Burstable for dev/test"
+        description: "Burstable instances considered for dev/test"
+        auto_detect:
+          pass_if: "burstable or preemptible instances for non-production"
+          gap_if: "production-grade shapes used for dev/test"
+        severity: LOW
+        applies_when: "has_dev_test_environments"
+
+      - id: PERF-CMP-004
+        name: "ARM (Ampere) considered"
+        description: "ARM (Ampere) considered for compatible workloads (better price/performance)"
+        auto_detect:
+          pass_if: "Ampere (A1/A2) shapes evaluated for compatible workloads"
+          gap_if: "x86 shapes used where ARM would provide better price/performance"
+        severity: LOW
+        applies_when: "has_compute_instances"
+
+  - name: "Storage Strategy"
+    id: storage_strategy
+    checks:
+      - id: PERF-STR-001
+        name: "Storage tier matches access pattern"
+        description: "Storage tier matches access pattern (Standard, Infrequent Access, Archive)"
+        auto_detect:
+          pass_if: "storage tiers aligned with data access frequency"
+          gap_if: "all data on Standard tier without tiering analysis"
+        severity: MEDIUM
+        applies_when: "has_object_storage"
+
+      - id: PERF-STR-002
+        name: "Block Volume performance tier"
+        description: "Block Volume performance tier matches IOPS needs"
+        auto_detect:
+          pass_if: "block volume performance tier matches documented IOPS requirements"
+          gap_if: "block volume tier not aligned with workload IOPS needs"
+        severity: MEDIUM
+        applies_when: "has_block_volumes"
+
+      - id: PERF-STR-003
+        name: "Object Storage auto-tiering"
+        description: "Auto-tiering enabled for Object Storage where applicable"
+        auto_detect:
+          pass_if: "auto-tiering configured for applicable buckets"
+          gap_if: "large object storage without auto-tiering evaluation"
+        severity: LOW
+        applies_when: "has_large_object_storage"
+
+  - name: "Network Tuning"
+    id: network_tuning
+    checks:
+      - id: PERF-NET-001
+        name: "Right-sized bandwidth"
+        description: "Bandwidth provisioned matches actual needs (not over-provisioned FastConnect)"
+        auto_detect:
+          pass_if: "FastConnect bandwidth justified by traffic analysis"
+          gap_if: "bandwidth provisioned without traffic analysis"
+        severity: MEDIUM
+        applies_when: "has_fastconnect"
+
+      - id: PERF-NET-002
+        name: "LB type justified"
+        description: "Network Load Balancer vs. Flexible Load Balancer decision justified"
+        auto_detect:
+          pass_if: "load balancer type selection documented with rationale"
+          gap_if: "load balancer type chosen without justification"
+        severity: LOW
+        applies_when: "has_load_balancers"
+
+  - name: "Cost Management"
+    id: cost_management
+    checks:
+      - id: PERF-CST-001
+        name: "BYOL analysis"
+        description: "BYOL vs. License Included analysis done"
+        auto_detect:
+          pass_if: "BYOL vs. License Included comparison documented"
+          gap_if: "licensing model chosen without analysis"
+        severity: HIGH
+        applies_when: "has_oracle_licensed_services"
+
+      - id: PERF-CST-002
+        name: "Reserved capacity considered"
+        description: "Reserved capacity considered for stable workloads (1-year or 3-year)"
+        auto_detect:
+          pass_if: "reserved capacity evaluated for stable production workloads"
+          gap_if: "all on-demand pricing for stable workloads"
+        severity: MEDIUM
+        applies_when: "has_stable_production_workloads"
+
+      - id: PERF-CST-003
+        name: "Budgets and cost alerts"
+        description: "Budgets and cost alerts configured per compartment"
+        auto_detect:
+          pass_if: "OCI Budgets configured with alert thresholds"
+          gap_if: "no budget alerts configured"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: PERF-CST-004
+        name: "Cost attribution tagging"
+        description: "Tagging strategy enables cost attribution"
+        auto_detect:
+          pass_if: "cost-tracking tags defined and enforced"
+          gap_if: "no cost attribution tagging strategy"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: PERF-CST-005
+        name: "Auto-scaling cost controls"
+        description: "Auto-scaling min/max configured to prevent runaway costs"
+        auto_detect:
+          pass_if: "auto-scaling policies include max limits"
+          gap_if: "auto-scaling without upper bounds"
+        severity: MEDIUM
+        applies_when: "has_auto_scaling"
+
+      - id: PERF-CST-006
+        name: "Non-prod optimization"
+        description: "Non-production environments use smaller shapes or are scheduled off"
+        auto_detect:
+          pass_if: "non-prod environments use reduced shapes or have schedules"
+          gap_if: "non-prod environments running same shapes as production 24/7"
+        severity: LOW
+        applies_when: "has_dev_test_environments"

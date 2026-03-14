@@ -1,0 +1,173 @@
+# OCI Well-Architected Framework — Pillar 4: Operational Efficiency
+# Source: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+
+pillar:
+  name: "Operational Efficiency"
+  id: operational_efficiency
+  reference: "https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html"
+
+categories:
+  - name: "Deployment Strategy"
+    id: deployment_strategy
+    checks:
+      - id: OPS-DEP-001
+        name: "Infrastructure as Code"
+        description: "Infrastructure as Code (Terraform, Resource Manager) for all resources"
+        auto_detect:
+          pass_if: "Terraform or Resource Manager specified for infrastructure provisioning"
+          gap_if: "no IaC strategy specified"
+        severity: HIGH
+        applies_when: always
+
+      - id: OPS-DEP-002
+        name: "CI/CD pipeline"
+        description: "CI/CD pipeline defined for application deployment"
+        auto_detect:
+          pass_if: "CI/CD pipeline specified (OCI DevOps, Jenkins, GitLab, etc.)"
+          gap_if: "no CI/CD pipeline defined"
+        severity: MEDIUM
+        applies_when: "has_application_workloads"
+
+      - id: OPS-DEP-003
+        name: "Deployment strategy"
+        description: "Blue/green or canary deployment strategy for production changes"
+        auto_detect:
+          pass_if: "deployment strategy (blue/green, canary, rolling) defined"
+          gap_if: "no deployment strategy for production changes"
+        severity: MEDIUM
+        applies_when: "has_production_applications"
+
+      - id: OPS-DEP-004
+        name: "Environment parity"
+        description: "Environment parity (dev/staging/prod use same IaC templates)"
+        auto_detect:
+          pass_if: "same IaC templates used across environments with variable overrides"
+          gap_if: "different provisioning methods across environments"
+        severity: MEDIUM
+        applies_when: "has_multiple_environments"
+
+  - name: "Workload Monitoring"
+    id: workload_monitoring
+    checks:
+      - id: OPS-MON-001
+        name: "OCI Monitoring alarms"
+        description: "OCI Monitoring alarms configured for key metrics"
+        auto_detect:
+          pass_if: "monitoring alarms defined for CPU, memory, disk, network"
+          gap_if: "no monitoring alarms configured"
+        severity: HIGH
+        applies_when: always
+
+      - id: OPS-MON-002
+        name: "Custom application metrics"
+        description: "Custom metrics for application-specific KPIs"
+        auto_detect:
+          pass_if: "custom metrics defined for application performance"
+          gap_if: "no application-level monitoring beyond infrastructure metrics"
+        severity: MEDIUM
+        applies_when: "has_application_workloads"
+
+      - id: OPS-MON-003
+        name: "Logging Analytics"
+        description: "Logging Analytics for centralized log analysis"
+        auto_detect:
+          pass_if: "OCI Logging Analytics configured"
+          gap_if: "no centralized log analysis solution"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: OPS-MON-004
+        name: "APM configured"
+        description: "APM configured for application tracing"
+        auto_detect:
+          pass_if: "OCI APM or third-party APM configured"
+          gap_if: "no application performance monitoring"
+        severity: LOW
+        applies_when: "has_application_workloads"
+
+      - id: OPS-MON-005
+        name: "Database Management"
+        description: "Database Management enabled for DB performance monitoring"
+        auto_detect:
+          pass_if: "OCI Database Management service enabled"
+          gap_if: "databases without performance monitoring"
+        severity: MEDIUM
+        applies_when: "has_databases"
+
+      - id: OPS-MON-006
+        name: "Ops Insights"
+        description: "Ops Insights for capacity planning"
+        auto_detect:
+          pass_if: "Ops Insights configured for capacity planning"
+          gap_if: "no capacity planning solution"
+        severity: LOW
+        applies_when: "has_production_workloads"
+
+  - name: "OS Management"
+    id: os_management
+    checks:
+      - id: OPS-OSM-001
+        name: "OS Management Hub"
+        description: "OS Management Hub for patch management"
+        auto_detect:
+          pass_if: "OS Management Hub configured for compute fleet"
+          gap_if: "no automated OS patch management"
+        severity: MEDIUM
+        applies_when: "has_compute_instances"
+
+      - id: OPS-OSM-002
+        name: "Automated patching schedule"
+        description: "Automated patching schedule for compute instances"
+        auto_detect:
+          pass_if: "patching schedule defined with maintenance windows"
+          gap_if: "no patching schedule for compute instances"
+        severity: MEDIUM
+        applies_when: "has_compute_instances"
+
+      - id: OPS-OSM-003
+        name: "Vulnerability remediation SLA"
+        description: "Vulnerability remediation SLA defined"
+        auto_detect:
+          pass_if: "vulnerability remediation timelines defined by severity"
+          gap_if: "no vulnerability remediation SLA"
+        severity: MEDIUM
+        applies_when: "has_compute_instances"
+
+  - name: "Operations Support"
+    id: operations_support
+    checks:
+      - id: OPS-SUP-001
+        name: "Support plan level"
+        description: "Support plan level appropriate for workload criticality"
+        auto_detect:
+          pass_if: "Oracle support plan level specified and matches criticality"
+          gap_if: "no support plan consideration"
+        severity: LOW
+        applies_when: always
+
+      - id: OPS-SUP-002
+        name: "Notification topics"
+        description: "Notification topics configured for operational events"
+        auto_detect:
+          pass_if: "OCI Notifications configured for operational events"
+          gap_if: "no notification configuration"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: OPS-SUP-003
+        name: "Operational runbooks"
+        description: "Runbooks documented for common operational procedures"
+        auto_detect:
+          pass_if: "operational runbooks planned or documented"
+          gap_if: "no operational runbooks"
+        severity: LOW
+        applies_when: "has_production_workloads"
+
+      - id: OPS-SUP-004
+        name: "Automated remediation"
+        description: "OCI Events + Functions for automated remediation"
+        auto_detect:
+          pass_if: "event-driven automation configured for common issues"
+          gap_if: "no automated remediation"
+        severity: LOW
+        applies_when: "has_production_workloads"

@@ -1,0 +1,449 @@
+well_architected_scorecard:
+  overall_status: GAPS_IDENTIFIED
+  generated_date: '2026-03-14T05:10:33.276460'
+  architecture_name: examples/sample-architecture.yaml
+  customer: Acme Retail Inc.
+  summary:
+    total_checks: 83
+    total_passed: 51
+    total_gaps: 32
+    high_severity_gaps: 6
+    medium_severity_gaps: 17
+    low_severity_gaps: 9
+  pillars:
+    security_compliance:
+      status: GAPS_IDENTIFIED
+      checks_passed: 20
+      checks_total: 32
+      categories:
+        identity_access:
+          passed: 3
+          total: 6
+          gaps:
+          - check_id: SEC-IAM-003
+            area: Identity & Access
+            finding: no mention of admin account restrictions
+            severity: HIGH
+            recommendation: separate admin groups defined for operations
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-IAM-004
+            area: Identity & Access
+            finding: stored credentials or API keys used for service accounts
+            severity: HIGH
+            recommendation: instance principals or resource principals specified for
+              service-to-service auth
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-IAM-005
+            area: Identity & Access
+            finding: single identity domain for multi-tenant setup
+            severity: MEDIUM
+            recommendation: multiple identity domains defined
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        resource_isolation:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: SEC-ISO-004
+            area: Resource Isolation
+            finding: user credentials used for cross-resource access
+            severity: HIGH
+            recommendation: resource principals used for cross-service access
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        database_security:
+          passed: 6
+          total: 7
+          gaps:
+          - check_id: SEC-DB-006
+            area: Database Security
+            finding: no mention of DELETE permission restrictions
+            severity: MEDIUM
+            recommendation: explicit restriction on DELETE permissions documented
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        data_protection:
+          passed: 2
+          total: 3
+          gaps:
+          - check_id: SEC-DAT-001
+            area: Data Protection
+            finding: any storage service without encryption at rest
+            severity: HIGH
+            recommendation: encryption at rest specified for all storage services
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        network_security:
+          passed: 4
+          total: 7
+          gaps:
+          - check_id: SEC-NET-004
+            area: Network Security
+            finding: OCI services accessed via internet gateway
+            severity: MEDIUM
+            recommendation: Service Gateway configured in VCN
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-NET-005
+            area: Network Security
+            finding: no Network Firewall in hub-spoke topology requiring deep packet
+              inspection
+            severity: LOW
+            recommendation: Network Firewall deployed in hub VCN
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-NET-007
+            area: Network Security
+            finding: ZTPR not considered for sensitive workloads
+            severity: LOW
+            recommendation: ZTPR evaluated or configured
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        monitoring_audit:
+          passed: 2
+          total: 5
+          gaps:
+          - check_id: SEC-MON-003
+            area: Monitoring & Audit
+            finding: no VCN Flow Logs configured
+            severity: MEDIUM
+            recommendation: VCN Flow Logs enabled for critical subnets
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-MON-004
+            area: Monitoring & Audit
+            finding: no vulnerability scanning in architecture
+            severity: MEDIUM
+            recommendation: OCI Vulnerability Scanning configured for compute instances
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-MON-005
+            area: Monitoring & Audit
+            finding: no centralized log aggregation for enterprise workload
+            severity: MEDIUM
+            recommendation: SIEM integration configured or Logging Analytics used
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+    reliability_resilience:
+      status: GAPS_IDENTIFIED
+      checks_passed: 16
+      checks_total: 20
+      categories:
+        scalability:
+          passed: 1
+          total: 3
+          gaps:
+          - check_id: REL-SCL-002
+            area: Scalability
+            finding: no service limit review planned
+            severity: LOW
+            recommendation: service limit review mentioned in deployment plan
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+          - check_id: REL-SCL-003
+            area: Scalability
+            finding: critical production workloads without capacity reservations
+            severity: MEDIUM
+            recommendation: capacity reservations specified for critical compute
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+        fault_tolerant_networking:
+          passed: 4
+          total: 5
+          gaps:
+          - check_id: REL-NET-005
+            area: Fault-Tolerant Networking
+            finding: all compute in single AD/FD
+            severity: HIGH
+            recommendation: compute instances distributed across ADs or FDs
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+        data_backup:
+          passed: 5
+          total: 5
+          gaps: []
+        data_replication:
+          passed: 2
+          total: 2
+          gaps: []
+        disaster_recovery:
+          passed: 4
+          total: 5
+          gaps:
+          - check_id: REL-DR-005
+            area: Disaster Recovery
+            finding: no application tier DR strategy
+            severity: HIGH
+            recommendation: application DR strategy defined and documented
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+    performance_cost:
+      status: PASS_WITH_RECOMMENDATIONS
+      checks_passed: 6
+      checks_total: 14
+      categories:
+        compute_sizing:
+          passed: 1
+          total: 4
+          gaps:
+          - check_id: PERF-CMP-001
+            area: Compute Sizing
+            finding: shapes selected without workload sizing analysis
+            severity: MEDIUM
+            recommendation: compute shapes justified by workload requirements
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+          - check_id: PERF-CMP-003
+            area: Compute Sizing
+            finding: production-grade shapes used for dev/test
+            severity: LOW
+            recommendation: burstable or preemptible instances for non-production
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+          - check_id: PERF-CMP-004
+            area: Compute Sizing
+            finding: x86 shapes used where ARM would provide better price/performance
+            severity: LOW
+            recommendation: Ampere (A1/A2) shapes evaluated for compatible workloads
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+        storage_strategy:
+          passed: 0
+          total: 2
+          gaps:
+          - check_id: PERF-STR-001
+            area: Storage Strategy
+            finding: all data on Standard tier without tiering analysis
+            severity: MEDIUM
+            recommendation: storage tiers aligned with data access frequency
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+          - check_id: PERF-STR-002
+            area: Storage Strategy
+            finding: block volume tier not aligned with workload IOPS needs
+            severity: MEDIUM
+            recommendation: block volume performance tier matches documented IOPS
+              requirements
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+        network_tuning:
+          passed: 1
+          total: 2
+          gaps:
+          - check_id: PERF-NET-002
+            area: Network Tuning
+            finding: load balancer type chosen without justification
+            severity: LOW
+            recommendation: load balancer type selection documented with rationale
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+        cost_management:
+          passed: 4
+          total: 6
+          gaps:
+          - check_id: PERF-CST-002
+            area: Cost Management
+            finding: all on-demand pricing for stable workloads
+            severity: MEDIUM
+            recommendation: reserved capacity evaluated for stable production workloads
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+          - check_id: PERF-CST-006
+            area: Cost Management
+            finding: non-prod environments running same shapes as production 24/7
+            severity: LOW
+            recommendation: non-prod environments use reduced shapes or have schedules
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+    operational_efficiency:
+      status: PASS_WITH_RECOMMENDATIONS
+      checks_passed: 9
+      checks_total: 17
+      categories:
+        deployment_strategy:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: OPS-DEP-004
+            area: Deployment Strategy
+            finding: different provisioning methods across environments
+            severity: MEDIUM
+            recommendation: same IaC templates used across environments with variable
+              overrides
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+        workload_monitoring:
+          passed: 2
+          total: 6
+          gaps:
+          - check_id: OPS-MON-002
+            area: Workload Monitoring
+            finding: no application-level monitoring beyond infrastructure metrics
+            severity: MEDIUM
+            recommendation: custom metrics defined for application performance
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+          - check_id: OPS-MON-003
+            area: Workload Monitoring
+            finding: no centralized log analysis solution
+            severity: MEDIUM
+            recommendation: OCI Logging Analytics configured
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+          - check_id: OPS-MON-005
+            area: Workload Monitoring
+            finding: databases without performance monitoring
+            severity: MEDIUM
+            recommendation: OCI Database Management service enabled
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+          - check_id: OPS-MON-006
+            area: Workload Monitoring
+            finding: no capacity planning solution
+            severity: LOW
+            recommendation: Ops Insights configured for capacity planning
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+        os_management:
+          passed: 1
+          total: 3
+          gaps:
+          - check_id: OPS-OSM-001
+            area: OS Management
+            finding: no automated OS patch management
+            severity: MEDIUM
+            recommendation: OS Management Hub configured for compute fleet
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+          - check_id: OPS-OSM-003
+            area: OS Management
+            finding: no vulnerability remediation SLA
+            severity: MEDIUM
+            recommendation: vulnerability remediation timelines defined by severity
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+        operations_support:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: OPS-SUP-001
+            area: Operations Support
+            finding: no support plan consideration
+            severity: LOW
+            recommendation: Oracle support plan level specified and matches criticality
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+    distributed_cloud:
+      status: NOT_APPLICABLE
+      checks_passed: 0
+      checks_total: 0
+      categories: {}
+  action_items:
+    high_priority:
+    - check_id: SEC-IAM-003
+      pillar: Identity & Access
+      finding: no mention of admin account restrictions
+      recommendation: separate admin groups defined for operations
+    - check_id: SEC-IAM-004
+      pillar: Identity & Access
+      finding: stored credentials or API keys used for service accounts
+      recommendation: instance principals or resource principals specified for service-to-service
+        auth
+    - check_id: SEC-ISO-004
+      pillar: Resource Isolation
+      finding: user credentials used for cross-resource access
+      recommendation: resource principals used for cross-service access
+    - check_id: SEC-DAT-001
+      pillar: Data Protection
+      finding: any storage service without encryption at rest
+      recommendation: encryption at rest specified for all storage services
+    - check_id: REL-NET-005
+      pillar: Fault-Tolerant Networking
+      finding: all compute in single AD/FD
+      recommendation: compute instances distributed across ADs or FDs
+    - check_id: REL-DR-005
+      pillar: Disaster Recovery
+      finding: no application tier DR strategy
+      recommendation: application DR strategy defined and documented
+    medium_priority:
+    - check_id: SEC-IAM-005
+      pillar: Identity & Access
+      finding: single identity domain for multi-tenant setup
+      recommendation: multiple identity domains defined
+    - check_id: SEC-DB-006
+      pillar: Database Security
+      finding: no mention of DELETE permission restrictions
+      recommendation: explicit restriction on DELETE permissions documented
+    - check_id: SEC-NET-004
+      pillar: Network Security
+      finding: OCI services accessed via internet gateway
+      recommendation: Service Gateway configured in VCN
+    - check_id: SEC-MON-003
+      pillar: Monitoring & Audit
+      finding: no VCN Flow Logs configured
+      recommendation: VCN Flow Logs enabled for critical subnets
+    - check_id: SEC-MON-004
+      pillar: Monitoring & Audit
+      finding: no vulnerability scanning in architecture
+      recommendation: OCI Vulnerability Scanning configured for compute instances
+    - check_id: SEC-MON-005
+      pillar: Monitoring & Audit
+      finding: no centralized log aggregation for enterprise workload
+      recommendation: SIEM integration configured or Logging Analytics used
+    - check_id: REL-SCL-003
+      pillar: Scalability
+      finding: critical production workloads without capacity reservations
+      recommendation: capacity reservations specified for critical compute
+    - check_id: PERF-CMP-001
+      pillar: Compute Sizing
+      finding: shapes selected without workload sizing analysis
+      recommendation: compute shapes justified by workload requirements
+    - check_id: PERF-STR-001
+      pillar: Storage Strategy
+      finding: all data on Standard tier without tiering analysis
+      recommendation: storage tiers aligned with data access frequency
+    - check_id: PERF-STR-002
+      pillar: Storage Strategy
+      finding: block volume tier not aligned with workload IOPS needs
+      recommendation: block volume performance tier matches documented IOPS requirements
+    - check_id: PERF-CST-002
+      pillar: Cost Management
+      finding: all on-demand pricing for stable workloads
+      recommendation: reserved capacity evaluated for stable production workloads
+    - check_id: OPS-DEP-004
+      pillar: Deployment Strategy
+      finding: different provisioning methods across environments
+      recommendation: same IaC templates used across environments with variable overrides
+    - check_id: OPS-MON-002
+      pillar: Workload Monitoring
+      finding: no application-level monitoring beyond infrastructure metrics
+      recommendation: custom metrics defined for application performance
+    - check_id: OPS-MON-003
+      pillar: Workload Monitoring
+      finding: no centralized log analysis solution
+      recommendation: OCI Logging Analytics configured
+    - check_id: OPS-MON-005
+      pillar: Workload Monitoring
+      finding: databases without performance monitoring
+      recommendation: OCI Database Management service enabled
+    - check_id: OPS-OSM-001
+      pillar: OS Management
+      finding: no automated OS patch management
+      recommendation: OS Management Hub configured for compute fleet
+    - check_id: OPS-OSM-003
+      pillar: OS Management
+      finding: no vulnerability remediation SLA
+      recommendation: vulnerability remediation timelines defined by severity
+    low_priority:
+    - check_id: SEC-NET-005
+      pillar: Network Security
+      finding: no Network Firewall in hub-spoke topology requiring deep packet inspection
+      recommendation: Network Firewall deployed in hub VCN
+    - check_id: SEC-NET-007
+      pillar: Network Security
+      finding: ZTPR not considered for sensitive workloads
+      recommendation: ZTPR evaluated or configured
+    - check_id: REL-SCL-002
+      pillar: Scalability
+      finding: no service limit review planned
+      recommendation: service limit review mentioned in deployment plan
+    - check_id: PERF-CMP-003
+      pillar: Compute Sizing
+      finding: production-grade shapes used for dev/test
+      recommendation: burstable or preemptible instances for non-production
+    - check_id: PERF-CMP-004
+      pillar: Compute Sizing
+      finding: x86 shapes used where ARM would provide better price/performance
+      recommendation: Ampere (A1/A2) shapes evaluated for compatible workloads
+    - check_id: PERF-NET-002
+      pillar: Network Tuning
+      finding: load balancer type chosen without justification
+      recommendation: load balancer type selection documented with rationale
+    - check_id: PERF-CST-006
+      pillar: Cost Management
+      finding: non-prod environments running same shapes as production 24/7
+      recommendation: non-prod environments use reduced shapes or have schedules
+    - check_id: OPS-MON-006
+      pillar: Workload Monitoring
+      finding: no capacity planning solution
+      recommendation: Ops Insights configured for capacity planning
+    - check_id: OPS-SUP-001
+      pillar: Operations Support
+      finding: no support plan consideration
+      recommendation: Oracle support plan level specified and matches criticality
+  references:
+    framework: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+    security: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+    reliability: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+    operations: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+    distributed: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html

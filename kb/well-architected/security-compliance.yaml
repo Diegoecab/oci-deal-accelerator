@@ -1,0 +1,323 @@
+# OCI Well-Architected Framework — Pillar 1: Security and Compliance
+# Source: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+
+pillar:
+  name: "Security and Compliance"
+  id: security_compliance
+  reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html"
+
+categories:
+  - name: "Identity & Access"
+    id: identity_access
+    checks:
+      - id: SEC-IAM-001
+        name: "Least-privilege IAM policies"
+        description: "IAM policies follow least-privilege (not using broad 'manage all-resources')"
+        auto_detect:
+          pass_if: "architecture specifies granular IAM policies per compartment/service"
+          gap_if: "no IAM policy strategy defined or broad permissions used"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-IAM-002
+        name: "MFA for human users"
+        description: "MFA enabled for all human users"
+        auto_detect:
+          pass_if: "MFA is specified in identity configuration"
+          gap_if: "no MFA mentioned in identity setup"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-IAM-003
+        name: "Tenancy admin restricted"
+        description: "Tenancy admin account NOT used for day-to-day operations"
+        auto_detect:
+          pass_if: "separate admin groups defined for operations"
+          gap_if: "no mention of admin account restrictions"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-IAM-004
+        name: "Instance/resource principals"
+        description: "Service accounts use instance principals or resource principals, not stored credentials"
+        auto_detect:
+          pass_if: "instance principals or resource principals specified for service-to-service auth"
+          gap_if: "stored credentials or API keys used for service accounts"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-IAM-005
+        name: "Multiple Identity Domains"
+        description: "Multiple Identity Domains if multi-tenant or multi-environment"
+        auto_detect:
+          pass_if: "multiple identity domains defined"
+          gap_if: "single identity domain for multi-tenant setup"
+        severity: MEDIUM
+        applies_when: "multi_tenant or multi_environment"
+
+      - id: SEC-IAM-006
+        name: "IdP Federation"
+        description: "Federation configured with customer's IdP (AD, Okta, SAML)"
+        auto_detect:
+          pass_if: "federation with external IdP configured"
+          gap_if: "no IdP federation mentioned when enterprise customer"
+        severity: MEDIUM
+        applies_when: "enterprise_customer"
+
+  - name: "Resource Isolation"
+    id: resource_isolation
+    checks:
+      - id: SEC-ISO-001
+        name: "Compartment organization"
+        description: "Compartments organized by workload/environment (not flat)"
+        auto_detect:
+          pass_if: "hierarchical compartment structure defined"
+          gap_if: "flat compartment structure or no compartment strategy"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-ISO-002
+        name: "Tagging strategy"
+        description: "Tags defined for cost tracking, environment, owner"
+        auto_detect:
+          pass_if: "defined tag namespaces with cost, environment, and owner tags"
+          gap_if: "no tagging strategy defined"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-ISO-003
+        name: "Security Zones"
+        description: "Security Zones enabled for production compartments"
+        auto_detect:
+          pass_if: "Security Zones configured for production compartments"
+          gap_if: "no Security Zones for production workloads"
+        severity: MEDIUM
+        applies_when: "has_production_workloads"
+
+      - id: SEC-ISO-004
+        name: "Resource principal for cross-resource access"
+        description: "Cross-resource access uses resource principals, not user credentials"
+        auto_detect:
+          pass_if: "resource principals used for cross-service access"
+          gap_if: "user credentials used for cross-resource access"
+        severity: HIGH
+        applies_when: always
+
+  - name: "Database Security"
+    id: database_security
+    checks:
+      - id: SEC-DB-001
+        name: "Databases in private subnets"
+        description: "Databases in private subnets only"
+        auto_detect:
+          pass_if: "all database services placed in private subnets"
+          gap_if: "any database accessible from public subnet"
+        severity: HIGH
+        applies_when: "has_databases"
+
+      - id: SEC-DB-002
+        name: "TDE with customer-managed keys"
+        description: "TDE enabled with customer-managed keys (OCI Vault)"
+        auto_detect:
+          pass_if: "TDE with OCI Vault customer-managed keys specified"
+          gap_if: "Oracle-managed keys or no encryption key management specified"
+        severity: HIGH
+        applies_when: "has_databases"
+
+      - id: SEC-DB-003
+        name: "Key rotation policy"
+        description: "Key rotation < 90 days"
+        auto_detect:
+          pass_if: "key rotation policy defined with < 90 day interval"
+          gap_if: "no key rotation policy or > 90 day interval"
+        severity: MEDIUM
+        applies_when: "has_databases"
+
+      - id: SEC-DB-004
+        name: "Data Safe enabled"
+        description: "Data Safe enabled (audit, masking, VPD assessment)"
+        auto_detect:
+          pass_if: "Data Safe configured for database security assessment"
+          gap_if: "Data Safe not included in architecture"
+        severity: MEDIUM
+        applies_when: "has_databases"
+
+      - id: SEC-DB-005
+        name: "Private endpoints for ADB"
+        description: "Private endpoints for Autonomous Database"
+        auto_detect:
+          pass_if: "Autonomous Database configured with private endpoints"
+          gap_if: "Autonomous Database using public endpoints"
+        severity: HIGH
+        applies_when: "has_autonomous_database"
+
+      - id: SEC-DB-006
+        name: "Restricted DELETE permissions"
+        description: "DELETE permissions restricted to minimal users/groups"
+        auto_detect:
+          pass_if: "explicit restriction on DELETE permissions documented"
+          gap_if: "no mention of DELETE permission restrictions"
+        severity: MEDIUM
+        applies_when: "has_databases"
+
+      - id: SEC-DB-007
+        name: "Database security patches"
+        description: "Database security patches applied (CPU/PSU)"
+        auto_detect:
+          pass_if: "patching strategy defined for databases"
+          gap_if: "no database patching strategy"
+        severity: HIGH
+        applies_when: "has_databases"
+
+  - name: "Data Protection"
+    id: data_protection
+    checks:
+      - id: SEC-DAT-001
+        name: "Encryption at rest"
+        description: "Encryption at rest for all storage (Block, File, Object)"
+        auto_detect:
+          pass_if: "encryption at rest specified for all storage services"
+          gap_if: "any storage service without encryption at rest"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-DAT-002
+        name: "OCI Vault key management"
+        description: "Keys managed in OCI Vault (not Oracle-managed)"
+        auto_detect:
+          pass_if: "OCI Vault specified for key management"
+          gap_if: "using Oracle-managed keys or no key management strategy"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-DAT-003
+        name: "No public Object Storage"
+        description: "Object Storage buckets not publicly accessible"
+        auto_detect:
+          pass_if: "Object Storage buckets configured as private"
+          gap_if: "any Object Storage bucket publicly accessible without justification"
+        severity: HIGH
+        applies_when: "has_object_storage"
+
+      - id: SEC-DAT-004
+        name: "Retention rules"
+        description: "Retention rules on critical buckets"
+        auto_detect:
+          pass_if: "retention rules configured for critical data buckets"
+          gap_if: "no retention rules on critical data"
+        severity: MEDIUM
+        applies_when: "has_critical_data_in_object_storage"
+
+  - name: "Network Security"
+    id: network_security
+    checks:
+      - id: SEC-NET-001
+        name: "NSGs over Security Lists"
+        description: "NSGs preferred over Security Lists for fine-grained control"
+        auto_detect:
+          pass_if: "NSGs used as primary network security mechanism"
+          gap_if: "only Security Lists used without NSGs"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-NET-002
+        name: "No default SSH from anywhere"
+        description: "Default security list modified (no SSH from 0.0.0.0/0)"
+        auto_detect:
+          pass_if: "SSH access restricted to specific CIDR ranges or bastion"
+          gap_if: "SSH open to 0.0.0.0/0"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-NET-003
+        name: "WAF on internet-facing endpoints"
+        description: "WAF on all internet-facing endpoints"
+        auto_detect:
+          pass_if: "WAF configured for all internet-facing services"
+          gap_if: "internet-facing endpoints without WAF"
+        severity: HIGH
+        applies_when: "has_internet_facing_services"
+
+      - id: SEC-NET-004
+        name: "Service Gateway"
+        description: "Service Gateway for OCI service access (no internet traversal)"
+        auto_detect:
+          pass_if: "Service Gateway configured in VCN"
+          gap_if: "OCI services accessed via internet gateway"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-NET-005
+        name: "Network Firewall"
+        description: "Network Firewall for hub VCN if required"
+        auto_detect:
+          pass_if: "Network Firewall deployed in hub VCN"
+          gap_if: "no Network Firewall in hub-spoke topology requiring deep packet inspection"
+        severity: LOW
+        applies_when: "hub_spoke_topology"
+
+      - id: SEC-NET-006
+        name: "TLS on Load Balancers"
+        description: "Load Balancers with TLS termination"
+        auto_detect:
+          pass_if: "TLS termination configured on load balancers"
+          gap_if: "load balancers without TLS"
+        severity: HIGH
+        applies_when: "has_load_balancers"
+
+      - id: SEC-NET-007
+        name: "Zero Trust Packet Routing"
+        description: "Zero Trust Packet Routing considered for sensitive workloads"
+        auto_detect:
+          pass_if: "ZTPR evaluated or configured"
+          gap_if: "ZTPR not considered for sensitive workloads"
+        severity: LOW
+        applies_when: "has_sensitive_workloads"
+
+  - name: "Monitoring & Audit"
+    id: monitoring_audit
+    checks:
+      - id: SEC-MON-001
+        name: "Cloud Guard enabled"
+        description: "Cloud Guard enabled with detector and responder recipes"
+        auto_detect:
+          pass_if: "Cloud Guard configured with appropriate recipes"
+          gap_if: "Cloud Guard not included in architecture"
+        severity: HIGH
+        applies_when: always
+
+      - id: SEC-MON-002
+        name: "OCI Audit enabled"
+        description: "OCI Audit service enabled"
+        auto_detect:
+          pass_if: "Audit service enabled (enabled by default, verify retention)"
+          gap_if: "audit service not mentioned or retention not configured"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-MON-003
+        name: "VCN Flow Logs"
+        description: "VCN Flow Logs enabled"
+        auto_detect:
+          pass_if: "VCN Flow Logs enabled for critical subnets"
+          gap_if: "no VCN Flow Logs configured"
+        severity: MEDIUM
+        applies_when: always
+
+      - id: SEC-MON-004
+        name: "Vulnerability Scanning"
+        description: "Vulnerability Scanning enabled"
+        auto_detect:
+          pass_if: "OCI Vulnerability Scanning configured for compute instances"
+          gap_if: "no vulnerability scanning in architecture"
+        severity: MEDIUM
+        applies_when: "has_compute_instances"
+
+      - id: SEC-MON-005
+        name: "SIEM integration"
+        description: "Logs aggregated to SIEM if enterprise requirement"
+        auto_detect:
+          pass_if: "SIEM integration configured or Logging Analytics used"
+          gap_if: "no centralized log aggregation for enterprise workload"
+        severity: MEDIUM
+        applies_when: "enterprise_customer"
