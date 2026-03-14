@@ -23,10 +23,13 @@ oci-deal-accelerator/
 │   ├── scorecard.yaml                 # WA Scorecard output template
 │   └── adr-template.md               # Architecture Decision Record template
 ├── scripts/
-│   └── validate-architecture.py       # WA validation engine
+│   ├── validate-architecture.py       # WA validation engine
+│   └── oci_diagram_gen.py             # .drawio diagram generator (OCI official styles)
 └── examples/
     ├── sample-architecture.yaml       # Example architecture (e-commerce)
-    └── sample-workload-profile.yaml   # Example workload profile
+    ├── sample-workload-profile.yaml   # Example workload profile
+    ├── diagram-spec.yaml              # Example diagram spec (YAML → .drawio)
+    └── ecommerce-architecture.drawio  # Generated diagram (open in draw.io)
 ```
 
 ## Flow
@@ -58,6 +61,20 @@ python scripts/validate-architecture.py \
   --architecture examples/sample-architecture.yaml \
   --output scorecard-output.yaml
 ```
+
+## Generating Diagrams
+
+```bash
+python scripts/oci_diagram_gen.py \
+  --spec examples/diagram-spec.yaml \
+  --output architecture.drawio
+```
+
+The generator produces `.drawio` files matching Oracle's OCI Style Guide v24.2:
+- Dashed burnt orange VCN/Subnet borders (#AE562C)
+- Teal service blocks (#2D5967), copper for databases (#AA643B), purple for integration (#804998)
+- Proper container hierarchy: Tenancy → Region → VCN → Subnet → Services
+- Opens directly in draw.io with no library imports needed
 
 ## Key Design Decisions
 

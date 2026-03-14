@@ -140,11 +140,15 @@ For each significant decision, document:
 - Reserved capacity savings analysis
 - Cost optimization recommendations
 
-### 3. Architecture Diagram Description
-- Network topology with CIDR ranges
-- Service placement across ADs/FDs
-- Data flow and integration points
-- DR architecture
+### 3. Architecture Diagram (.drawio)
+Generate a YAML diagram spec and run it through `scripts/oci_diagram_gen.py` to produce a `.drawio` file that follows Oracle's official OCI visual style:
+- **Visual hierarchy**: Tenancy → Region → VCN (dashed burnt orange) → Subnets → Services
+- **Color coding**: Teal (#2D5967) for infra, Copper (#AA643B) for database, Purple (#804998) for integration
+- **Connections**: Standard (gray), DB (copper), Data Guard (dashed burnt orange), FastConnect (purple bidirectional)
+- **Container styles**: Extracted from OCI Architecture Diagram Toolkit v24.2
+- Opens directly in draw.io (desktop or web) with no library imports needed
+
+The diagram spec format is documented in `examples/diagram-spec.yaml`.
 
 ### 4. Well-Architected Scorecard
 - 5-pillar validation results
