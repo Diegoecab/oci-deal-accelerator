@@ -1,0 +1,53 @@
+# Lessons Learned Template — DELIVER/Improve Phase
+# Captures what worked, what didn't, and improvements for future engagements
+
+lessons_learned:
+  customer_name: ""
+  project_name: ""
+  date: ""
+  architect: ""
+  engagement_tier: ""  # small, standard, complex
+
+  # --- What Worked Well ---
+  # Practices, tools, or decisions to repeat in future engagements
+  successes:
+    - area: ""  # e.g., "Architecture Design"
+      description: ""  # e.g., "ADB-S auto-scaling eliminated capacity planning complexity"
+      reusable: true  # Should this be captured in KB?
+      kb_update: ""  # e.g., "Add to kb/field-knowledge/ as positive finding"
+
+  # --- What Didn't Work ---
+  # Issues encountered and their root cause
+  issues:
+    - area: ""  # e.g., "Migration"
+      description: ""  # e.g., "GoldenGate initial load took 3x longer than estimated"
+      root_cause: ""  # e.g., "Network bandwidth between on-prem and OCI was only 100 Mbps"
+      resolution: ""  # e.g., "Used Data Pump for initial load, GoldenGate for CDC only"
+      kb_update: ""  # e.g., "Update kb/field-findings/ with bandwidth sizing guidance"
+
+  # --- Process Improvements ---
+  # Suggestions for the ECAL/skill process itself
+  process_improvements:
+    - phase: ""  # define, design, deliver
+      suggestion: ""  # e.g., "Add network bandwidth assessment to discovery checklist"
+      priority: ""  # high, medium, low
+
+  # --- Template/Tool Improvements ---
+  tool_improvements:
+    - artifact: ""  # e.g., "workload-profile.yaml"
+      suggestion: ""  # e.g., "Add field for current network bandwidth between sites"
+
+  # --- Customer Feedback ---
+  customer_feedback:
+    overall_satisfaction: ""  # excellent, good, acceptable, needs_improvement
+    positive: []  # e.g., ["Fast turnaround", "Clear cost breakdown"]
+    negative: []  # e.g., ["Wanted more detail on security controls"]
+    would_engage_again: ""  # yes, maybe, no
+
+  # --- Customer Success Story ---
+  # If applicable, capture for internal sharing
+  success_story:
+    publishable: false
+    headline: ""  # e.g., "Financial Services company reduces DB costs 60% with ADB-S"
+    summary: ""  # 2-3 sentence summary
+    metrics: []  # e.g., ["60% cost reduction", "99.995% availability", "Zero downtime migration"]

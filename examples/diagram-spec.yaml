@@ -1,130 +1,132 @@
 # OCI Architecture Diagram Spec — E-Commerce Platform
-# Feed this to: python scripts/oci_diagram_gen.py --spec examples/diagram-spec.yaml
+# Feed this to: python3 tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml
 #
 # This spec matches the sample-architecture.yaml and produces a .drawio file
-# with Oracle's official visual hierarchy and color palette.
+# with Oracle's official visual hierarchy and OCI Library icons.
+#
+# Service block heights are sized for icon (70px) + label text below.
 
 title: "Acme Retail — E-Commerce Platform on OCI\nHA/DR Architecture"
 
 tenancy:
   label: "Oracle Cloud Infrastructure"
-  w: 1870
-  h: 730
+  w: 2100
+  h: 1180
 
   regions:
     # ---- Primary Region ----
     - id: region1
       label: "US East (Ashburn)"
       primary: true
-      w: 1140
-      h: 680
+      w: 1300
+      h: 1130
 
       vcns:
         - id: vcn1
           label: "prod-vcn 10.0.0.0/16"
-          w: 1110
-          h: 600
+          w: 1270
+          h: 950
 
           subnets:
-            # Public subnet — Load Balancer, Bastion, WAF
+            # Public subnet — Load Balancer, Bastion, WAF, API GW
             - id: sub-pub
               label: "Public Subnet\n10.0.1.0/24"
-              w: 250
-              h: 400
+              w: 200
+              h: 850
               services:
                 - id: lb
                   label: "Flexible\nLoad Balancer\n400 Mbps"
                   type: load_balancer
-                  w: 200
-                  h: 65
+                  w: 150
+                  h: 130
                 - id: bastion
                   label: "Bastion\nService"
                   type: bastion
-                  w: 100
-                  h: 45
+                  w: 120
+                  h: 120
                 - id: waf-svc
                   label: "Web Application\nFirewall (WAF)"
                   type: waf
-                  w: 130
-                  h: 45
+                  w: 120
+                  h: 120
                 - id: apigw
                   label: "API Gateway"
                   type: apigw
-                  w: 130
-                  h: 40
+                  w: 120
+                  h: 110
 
-            # App tier — OKE, Functions, Streaming
+            # App tier — OKE, Functions, Streaming, Queue
             - id: sub-app
               label: "Private Subnet — App Tier\n10.0.10.0/24"
-              w: 330
-              h: 400
+              w: 350
+              h: 850
               services:
                 - id: oke
-                  label: "OKE Cluster\nKubernetes v1.28\n3x VM.Standard.E4.Flex\n4 OCPU / 64 GB"
+                  label: "OKE Cluster\nKubernetes v1.28\n3x E4.Flex 4 OCPU"
                   type: oke
-                  w: 280
-                  h: 75
-                  fontSize: 9
+                  w: 300
+                  h: 140
+                  fontSize: 8
                 - id: fn
                   label: "OCI Functions\n(Serverless)"
                   type: functions
-                  w: 140
-                  h: 45
+                  w: 150
+                  h: 120
                 - id: stream
                   label: "OCI Streaming\n(Kafka API)"
                   type: streaming
-                  w: 140
-                  h: 45
+                  w: 150
+                  h: 120
                 - id: queue
                   label: "OCI Queue"
                   type: queue
-                  w: 140
-                  h: 35
+                  w: 150
+                  h: 110
 
             # Data tier — ADB, NoSQL, Cache, Security
             - id: sub-db
               label: "Private Subnet — Data Tier\n10.0.20.0/24"
-              w: 430
-              h: 400
+              w: 650
+              h: 850
               services:
                 - id: adb1
-                  label: "Autonomous Database\nServerless (ADB-S) OLTP\n4 OCPU (auto-scale) / 2 TB\nBYOL — Private Endpoint"
+                  label: "ADB-S OLTP\n4 OCPU (auto-scale) / 2 TB\nBYOL — Private Endpoint"
                   type: adb
-                  w: 380
-                  h: 80
-                  fontSize: 9
+                  w: 200
+                  h: 140
+                  fontSize: 8
                 - id: adb-dw
                   label: "ADB-S Data Warehouse\n4 OCPU / 1 TB"
                   type: adw
-                  w: 380
-                  h: 50
+                  w: 200
+                  h: 130
                 - id: nosql-svc
                   label: "OCI NoSQL\nOn-Demand"
                   type: nosql
-                  w: 180
-                  h: 40
+                  w: 150
+                  h: 120
                 - id: cache-svc
                   label: "OCI Cache\nwith Redis"
                   type: cache
-                  w: 180
-                  h: 40
+                  w: 150
+                  h: 50
                 - id: ds
-                  label: "Data Safe — Audit, Masking, VPD"
+                  label: "Data Safe\nAudit, Masking, VPD"
                   type: data_safe
-                  w: 380
-                  h: 28
+                  w: 150
+                  h: 120
                 - id: vault-svc
-                  label: "OCI Vault — Customer-Managed Keys"
+                  label: "OCI Vault\nCustomer-Managed Keys"
                   type: vault
-                  w: 380
-                  h: 28
+                  w: 150
+                  h: 120
 
           gateways:
-            - {id: igw, label: "Internet\nGateway", type: igw, w: 90}
-            - {id: natgw, label: "NAT\nGateway", type: natgw, w: 90}
-            - {id: sgw, label: "Service\nGateway", type: sgw, w: 90}
-            - {id: drg1, label: "Dynamic Routing\nGateway (DRG)", type: drg, w: 130}
-            - {id: nfw, label: "Network\nFirewall", type: network_firewall, w: 100}
+            - {id: igw, label: "Internet\nGateway", type: igw, w: 100, h: 70}
+            - {id: natgw, label: "NAT\nGateway", type: natgw, w: 100, h: 70}
+            - {id: sgw, label: "Service\nGateway", type: sgw, w: 100, h: 70}
+            - {id: drg1, label: "Dynamic Routing\nGateway (DRG)", type: drg, w: 140, h: 70}
+            - {id: nfw, label: "Network\nFirewall", type: network_firewall, w: 120, h: 70}
 
       observability:
         - Monitoring
@@ -139,54 +141,54 @@ tenancy:
     - id: region2
       label: "US West (Phoenix) — DR"
       primary: false
-      x: 1195
-      w: 640
-      h: 480
+      x: 1350
+      w: 700
+      h: 650
 
       vcns:
         - id: vcn-dr
           label: "dr-vcn 10.1.0.0/16"
-          w: 610
-          h: 400
+          w: 670
+          h: 550
 
           subnets:
             - id: sub-dr-db
               label: "Private Subnet — DR Data Tier\n10.1.20.0/24"
-              w: 580
-              h: 160
+              w: 310
+              h: 400
               services:
                 - id: adb-dr
                   label: "ADB-S Standby\nCross-Region ADG\n4 OCPU / 2 TB"
                   type: adb
-                  w: 260
-                  h: 65
-                  fontSize: 9
+                  w: 200
+                  h: 140
+                  fontSize: 8
                 - id: adb-clone
                   label: "Refreshable Clone\n(Reporting)\n4 OCPU / 2 TB"
                   type: adb
-                  w: 260
-                  h: 65
-                  fontSize: 9
+                  w: 200
+                  h: 140
+                  fontSize: 8
 
             - id: sub-dr-app
               label: "Private Subnet — DR App Tier\n10.1.10.0/24"
-              w: 580
-              h: 100
+              w: 310
+              h: 200
               services:
                 - id: dr-app
-                  label: "App Servers (Dormant)\nProvisioned via Terraform on DR activation"
+                  label: "App Servers (Dormant)\nTerraform on DR activation"
                   type: dormant
-                  w: 320
+                  w: 260
                   h: 50
                 - id: dr-lb
                   label: "LB (Dormant)\nDR Standby"
                   type: dormant
-                  w: 160
+                  w: 180
                   h: 50
 
           gateways:
-            - {id: drg-dr, label: "DRG\n(DR)", type: drg, w: 90}
-            - {id: natgw-dr, label: "NAT\nGateway", type: natgw, w: 90}
+            - {id: drg-dr, label: "DRG\n(DR)", type: drg, w: 100, h: 70}
+            - {id: natgw-dr, label: "NAT\nGateway", type: natgw, w: 100, h: 70}
 
       observability:
         - Monitoring
@@ -196,28 +198,28 @@ tenancy:
 # On-premises data center
 onprem:
   label: "On-Premises Data Center"
-  w: 750
-  h: 120
+  w: 900
+  h: 150
   services:
     - id: src-db
       label: "Source Database\nOracle 19c EE\nExadata X8M\n2 RAC / 4 TB"
       type: exadata
       w: 200
-      h: 80
+      h: 130
     - id: src-app
       label: "Application Servers\nWebLogic 14c\n6x Bare Metal"
       type: vm
       w: 170
-      h: 65
+      h: 120
     - id: src-mq
       label: "MQ Series\nLegacy Queuing"
       type: legacy
-      w: 140
+      w: 150
       h: 55
     - id: src-dns
       label: "Corporate\nDNS / LDAP"
       type: legacy
-      w: 120
+      w: 130
       h: 55
 
 # Connections
@@ -238,7 +240,7 @@ connections:
     to: adb1
     type: migration
     label: "OCI DMS + ZDM"
-    waypoints: [[350, 870], [950, 870]]
+    waypoints: [[400, 1270], [1100, 1270]]
 
   # Streaming from on-prem
   - {from: src-mq, to: stream, type: etl, label: "OCI Streaming\nKafka Connect"}

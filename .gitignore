@@ -4,3 +4,15 @@ __pycache__/
 output/
 *.pptx
 !examples/sample-output/*.pptx
+
+# OCI Toolkit binary (download from Oracle, don't commit)
+kb/diagram/OCI Library.xml
+
+# Build prompt (internal)
+COMPLETE-BUILD-PROMPT.md
+
+# Client-specific examples (never commit customer data)
+examples/farma-sa-*
+
+# Exported screenshots (temporary)
+examples/*.png

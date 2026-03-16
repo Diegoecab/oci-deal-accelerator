@@ -1,0 +1,61 @@
+# Success Criteria Template — DELIVER/Operate Phase
+# Quantitative metrics tied to the Value Story, measured post go-live
+
+success_criteria:
+  customer_name: ""
+  project_name: ""
+  date: ""
+  architect: ""
+  value_story_reference: ""  # Link back to the original value hypothesis
+
+  # --- Metrics ---
+  # Each metric should be SMART and traceable to the Value Story
+  metrics:
+    - name: ""  # e.g., "Database Response Time"
+      category: ""  # performance, availability, cost, operations, business
+      target: ""  # e.g., "P95 < 15ms"
+      baseline: ""  # e.g., "P95 = 45ms (current on-prem)"
+      measurement_method: ""  # e.g., "OCI Monitoring — DB Performance Hub"
+      measurement_cadence: ""  # e.g., "Daily automated, weekly review"
+      owner: ""  # Who tracks this metric
+
+    - name: ""  # e.g., "Monthly Infrastructure Cost"
+      category: ""
+      target: ""  # e.g., "< $25,000/month"
+      baseline: ""  # e.g., "$40,000/month (current Exadata lease + support)"
+      measurement_method: ""  # e.g., "OCI Cost Analysis"
+      measurement_cadence: ""
+      owner: ""
+
+    - name: ""  # e.g., "Unplanned Downtime"
+      category: ""
+      target: ""  # e.g., "Zero in first 90 days"
+      baseline: ""  # e.g., "4 hours/month average"
+      measurement_method: ""
+      measurement_cadence: ""
+      owner: ""
+
+  # --- Review Schedule ---
+  reviews:
+    - milestone: "30-day review"
+      date: ""
+      focus: "Stability, performance baselines, early issues"
+      attendees: []
+
+    - milestone: "60-day review"
+      date: ""
+      focus: "Cost tracking, operational maturity, optimization opportunities"
+      attendees: []
+
+    - milestone: "90-day review"
+      date: ""
+      focus: "Value realization assessment, next phase planning"
+      attendees: []
+
+  # --- Value Realization ---
+  value_realization:
+    hypothesis_validated: ""  # yes, partially, no
+    actual_vs_target: ""  # Summary of metrics performance
+    unexpected_benefits: []  # e.g., ["DBA team freed up for development work"]
+    unexpected_challenges: []  # e.g., ["Application connection pooling needed tuning"]
+    next_hypothesis: ""  # What to tackle next? Returns to DEFINE phase

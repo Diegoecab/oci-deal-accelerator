@@ -1,0 +1,192 @@
+# Go-Live Checklist Template — DELIVER/Operate Phase
+# Pre-go-live verification items. Check ALL before cutover.
+
+go_live_checklist:
+  customer_name: ""
+  project_name: ""
+  target_go_live_date: ""
+  architect: ""
+
+  # --- Infrastructure Readiness ---
+  infrastructure:
+    - item: "All OCI resources provisioned per architecture design"
+      status: ""  # done, in_progress, blocked, not_applicable
+      owner: ""
+      notes: ""
+
+    - item: "Network connectivity verified (FastConnect/VPN throughput and latency)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "DNS cutover plan documented and tested"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "SSL/TLS certificates provisioned and configured"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Non-production environments operational"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Security Readiness ---
+  security:
+    - item: "IAM policies configured per least-privilege design"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Network security (NSGs, WAF, Bastion) configured and tested"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Encryption at rest and in transit verified"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Cloud Guard enabled with appropriate recipes"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Audit logging enabled and retention configured"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Compliance controls verified (PCI/HIPAA/SOC2 if applicable)"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Data Readiness ---
+  data:
+    - item: "Data migration completed and validated"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Data integrity checks passed (row counts, checksums)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Replication lag within acceptable RPO"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Backup and recovery tested (full restore to point-in-time)"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Application Readiness ---
+  application:
+    - item: "Application functional testing passed in OCI environment"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Performance testing completed (meets P95 latency targets)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Connection strings and endpoints updated"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Rollback procedure documented and tested"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Monitoring & Operations Readiness ---
+  operations:
+    - item: "Monitoring dashboards configured and validated"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Alerting rules active and notification channels verified"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Runbooks documented for common failure scenarios"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "On-call rotation established"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Ops team trained on OCI console and tools"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- HA/DR Readiness ---
+  ha_dr:
+    - item: "HA failover tested (automatic recovery verified)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "DR switchover tested (meets RTO/RPO targets)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Auto-scaling tested under load"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Cutover Plan ---
+  cutover:
+    - item: "Cutover window communicated to all stakeholders"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Cutover runbook reviewed and rehearsed"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "Rollback criteria defined (when to roll back)"
+      status: ""
+      owner: ""
+      notes: ""
+
+    - item: "War room / communication channel established for go-live"
+      status: ""
+      owner: ""
+      notes: ""
+
+  # --- Sign-off ---
+  sign_off:
+    - role: "Solutions Architect"
+      name: ""
+      approved: false
+      date: ""
+    - role: "Customer Technical Lead"
+      name: ""
+      approved: false
+      date: ""
+    - role: "Customer Business Sponsor"
+      name: ""
+      approved: false
+      date: ""

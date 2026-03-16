@@ -1,138 +1,188 @@
-# OCI Diagram Toolkit Styles Reference
-# Extracted from OCI Architecture Diagram Toolkit v24.2
-# Source: https://docs.oracle.com/en-us/iaas/Content/General/Reference/graphicsfordiagrams.htm
+# OCI Official Diagram Styles — Extracted from OCI Style Guide for Draw.io Toolkit v24.2
+# Source: OCI Library.xml + OCI Architecture Diagram Toolkit v24.2.drawio
+# This supersedes earlier palette files based on inference from reference architectures.
 
-color_palette:
-  # Service block colors
-  infra_teal: "#2D5967"
-  database_copper: "#AA643B"
-  integration_purple: "#804998"
+# ============================================================
+# CONTAINER STYLES (from Physical Groupings in the toolkit)
+# These are the EXACT styles Oracle uses for diagram containers.
+# ============================================================
 
-  # Background colors
-  region_fill: "#F5F4F2"
-  ad_fill: "#DFDCD8"
-  subnet_fill: "#FCFBFA"
+containers:
 
-  # Text and border colors
-  primary_text: "#312D2A"    # NEVER use pure black
-  secondary_text: "#70665E"  # Muted labels, titles
-  container_border: "#9E9892"
-  vcn_subnet_border: "#AE562C"  # Burnt orange — signature OCI visual
-  connector_gray: "#706E6F"
-  near_black: "#161513"     # Darkest accent (rare)
+  tenancy:
+    # Toolkit item [200]: Physical - Grouping - Tenancy
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED gray border, NO fill"
+      - "Text color is charcoal #312D2A"
+      - "Border is warm gray #9E9892"
 
-  # Special
-  dormant_fill: "#DFDCD8"
-  dormant_border: "#9E9892"
-  dormant_text: "#70665E"
-  legacy_fill: "#70665E"
+  region:
+    # Toolkit item [202]: Physical - Grouping - OCI Region
+    style: "whiteSpace=wrap;html=1;align=center;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=10;strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;"
+    notes:
+      - "SOLID border, rounded corners"
+      - "FILLED with warm gray #F5F4F2"
+      - "This is the only container with a solid background fill"
+
+  availability_domain:
+    # From template styles
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;align=center;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#DFDCD8;fontColor=#312D2A;strokeColor=#9E9892;rounded=1;arcSize=1;fontStyle=1;"
+    notes:
+      - "Slightly darker gray fill #DFDCD8"
+      - "Bold text (fontStyle=1)"
+
+  vcn:
+    # Toolkit item [197]: Physical - Grouping - VCN
+    style: "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#AE562C;strokeColor=#AE562C;perimeterSpacing=0;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED BURNT ORANGE border — this is the signature OCI VCN visual"
+      - "strokeWidth=2 (thicker than subnet)"
+      - "Text AND border are both #AE562C (burnt orange)"
+      - "NO fill — transparent background"
+
+  subnet:
+    # Toolkit item [198]: Physical - Grouping - Subnet
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#AE562C;perimeterSpacing=0;strokeColor=#AE562C;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED BURNT ORANGE border — same color as VCN but THINNER (strokeWidth=1)"
+      - "Inside templates, subnet interior uses fillColor=#FCFBFA (near-white)"
+      - "Text is #AE562C (burnt orange)"
+
+  compartment:
+    # Toolkit item [199]: Physical - Grouping - Compartment
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+    notes:
+      - "Same as tenancy style — dashed gray"
+
+  fault_domain:
+    # Toolkit item [204]
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+
+  tier:
+    # Toolkit item [201]
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+
+# ============================================================
+# SERVICE ICON COLORS
+# ============================================================
+
+service_colors:
+  oci_teal: "#2D5967"
+  oracle_copper: "#AA643B"
+  oracle_purple: "#804998"
+  burnt_orange: "#AE562C"  # Used ONLY for VCN/Subnet borders and text — NOT for service icons
+  oracle_red: "#C74634"     # Accent only
+
+# ============================================================
+# BACKGROUND AND TEXT COLORS
+# ============================================================
+
+backgrounds:
+  region_fill: "#F5F4F2"      # Warm gray — region containers
+  ad_fill: "#DFDCD8"          # Slightly darker — AD containers
+  subnet_fill: "#FCFBFA"      # Near-white — subnet interiors in templates
+  dormant: "#DFDCD8"          # Dormant/inactive elements
+
+text:
+  primary: "#312D2A"           # Charcoal — ALL text (never pure black)
+  secondary: "#70665E"         # Medium gray — step circles, muted text
+  on_dark: "#FFFFFF"           # White — text on colored service blocks
+
+borders:
+  container: "#9E9892"         # Warm gray — tenancy, region, compartment borders
+  vcn_subnet: "#AE562C"       # Burnt orange — VCN and subnet borders ONLY
+  connector: "#312D2A"        # Charcoal — ALL connection arrows (matches text color)
+
+# ============================================================
+# CONNECTOR STYLES (from toolkit items [206-214])
+# ALL connectors use charcoal #312D2A — same as text color.
+# Differentiation is via dash pattern, not color.
+# ============================================================
+
+connectors:
+  standard:
+    # Toolkit item [206]: Physical - Connector
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes:
+      - "Open arrow tip (not filled)"
+      - "Orthogonal routing (right-angle turns)"
+      - "endSize=6 for small consistent arrowheads"
+      - "Color is charcoal #312D2A — NOT gray"
+
+  fastconnect:
+    # Toolkit items [209-210]: Physical - Special Connectors - FastConnect
+    style: "endArrow=open;endFill=0;startArrow=open;startFill=0;strokeColor=#312D2A;strokeWidth=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes:
+      - "Bidirectional open arrows"
+      - "Same charcoal color as standard"
+      - "In toolkit, has lightning/zigzag icon overlay — not reproducible in simple edges"
+
+  site_to_site_vpn:
+    # Toolkit items [211-212]
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes: "Dashed line with lock icon overlay"
+
+  remote_peering:
+    # Toolkit items [213-214]
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes: "Dashed line for inter-region connectivity"
+
+# ============================================================
+# TYPOGRAPHY
+# ============================================================
 
 typography:
   font_family: "Oracle Sans"
-  fallback: "Segoe UI, Helvetica Neue, Arial, sans-serif"
-  container_labels: "11-12px, #312D2A"
-  service_labels: "8-9px, #FFFFFF on colored background"
-  title: "10px, italic, #70665E"
-  rule: "Text is NEVER pure black — always #312D2A"
+  fallback_fonts: "Segoe UI, Helvetica Neue, Arial, sans-serif"
+  container_labels: "fontSize=12, fontColor=#312D2A"
+  service_labels: "fontSize=8-9, fontColor=#FFFFFF (on colored background)"
+  title_text: "fontSize=10, fontColor=#70665E, fontStyle=2 (italic)"
 
-container_styles:
-  tenancy:
-    border: "dashed #9E9892"
-    fill: "none"
-    stroke_width: 1
-    text: "#312D2A"
-
-  region:
-    border: "solid #9E9892"
-    fill: "#F5F4F2"
-    stroke_width: 1
-    rounded: true
-    arc_size: 10
-    text: "#312D2A"
-    notes: "ONLY container with solid fill"
-
-  availability_domain:
-    border: "solid #9E9892"
-    fill: "#DFDCD8"
-    stroke_width: 1
-    rounded: true
-    arc_size: 1
-    text: "#312D2A"
-    font_style: "bold"
-
-  vcn:
-    border: "dashed #AE562C"
-    fill: "none"
-    stroke_width: 2
-    text: "#AE562C"
-    notes: "SIGNATURE ORACLE VISUAL — thick dashed burnt orange"
-
-  subnet:
-    border: "dashed #AE562C"
-    fill: "#FCFBFA"
-    stroke_width: 1
-    text: "#AE562C"
-    rounded: true
-    arc_size: 3
-    notes: "Thinner than VCN, near-white fill"
-
-  compartment:
-    border: "dashed #9E9892"
-    fill: "none"
-    stroke_width: 1
-    text: "#312D2A"
-    notes: "Same as Tenancy"
-
-service_block_style:
-  common: "rounded=1; strokeColor=none; fontColor=#FFFFFF; fontSize=8; fontFamily=Oracle Sans; arcSize=8"
-  vary: "fillColor per category"
-  dormant: "fillColor=#DFDCD8; strokeColor=#9E9892; fontColor=#70665E; fontStyle=2 (italic)"
-
-connection_styles:
-  standard:
-    color: "#706E6F"
-    stroke_width: 1
-    style: "solid"
-    arrows: "end only"
-
-  database:
-    color: "#AA643B"
-    stroke_width: 1.5
-    style: "solid"
-    arrows: "end only"
-
-  data_guard:
-    color: "#AE562C"
-    stroke_width: 2
-    style: "dashed (10 6)"
-    arrows: "end only"
-
-  fastconnect:
-    color: "#804998"
-    stroke_width: 2
-    style: "solid"
-    arrows: "bidirectional"
-
-  migration:
-    color: "#706E6F"
-    stroke_width: 1.5
-    style: "dashed (12 6)"
-    arrows: "end only"
-
-  etl_event:
-    color: "#804998"
-    stroke_width: 1
-    style: "dashed"
-    arrows: "end only"
+# ============================================================
+# KEY VISUAL RULES (from toolkit analysis)
+# ============================================================
 
 design_rules:
-  - "VCN/Subnet borders are ALWAYS dashed burnt orange #AE562C"
-  - "VCN strokeWidth=2, Subnet strokeWidth=1"
-  - "Region is the ONLY container with solid fill (#F5F4F2)"
-  - "Service blocks: solid fill, NO stroke, white text"
-  - "Text is NEVER pure black — always #312D2A"
-  - "Font is Oracle Sans"
-  - "Connectors use #706E6F gray by default"
-  - "ADG/replication arrows: dashed burnt orange"
-  - "FastConnect: solid purple, bidirectional"
-  - "Database services = copper, Integration = purple, everything else = teal"
+  - "VCN and Subnet borders are ALWAYS dashed burnt orange (#AE562C) — this is the signature Oracle visual"
+  - "VCN border is strokeWidth=2, Subnet border is strokeWidth=1"
+  - "Region containers are the ONLY ones with solid background fill (#F5F4F2)"
+  - "Tenancy and Compartment containers are dashed gray, NO fill"
+  - "Service blocks use solid fills with NO stroke (strokeColor=none)"
+  - "Text is NEVER pure black — always charcoal #312D2A"
+  - "Font is Oracle Sans (falls back to Segoe UI)"
+  - "Icons are composite multi-layer Visio stencils in the OCI Library.xml"
+  - "ALL connectors use charcoal #312D2A — same as text, NOT colored"
+  - "Connectors use open arrow tips (endArrow=open, endFill=0) — never filled blocks"
+  - "Connectors use orthogonal routing (edgeStyle=orthogonalEdgeStyle) — never diagonal"
+  - "Arrow size is small and consistent (endSize=6)"
+  - "Dashed lines differentiate replication/migration from standard flows"
+  - "FastConnect is bidirectional (startArrow=open + endArrow=open)"
+  - "Oracle DB-related services use copper #AA643B"
+  - "Integration/messaging services use purple #804998"
+  - "All other OCI services use teal #2D5967"
+
+# ============================================================
+# FULL ICON CATALOG (224 icons in OCI Library.xml)
+# ============================================================
+# See separate file for the full icon list.
+# Key icons for Deal Accelerator:
+#   37: Database - Autonomous DB
+#   18: Networking - Load Balancer
+#   32: Networking - Internet Gateway
+#   33: Networking - NAT Gateway
+#   31: Networking - Service Gateway
+#   30: Networking - Dynamic Routing Gateway DRG
+#   102: Identity and Security - WAF
+#   105: Identity and Security - Vault
+#   106: Identity and Security - Bastion
+#   45: Database - Data Safe
+#   46: Database - NoSQL
+#   74: Developer Services - Container Engine for Kubernetes
+#   2: Compute - Functions
+#   3: Compute - Virtual Machine VM
+#   65: Analytics and AI - Streaming
+#   127: Observability and Management - Queuing
+#   79: Developer Services - API Gateway
+#   120: Observability and Management - Monitoring
+#   123: Observability and Management - Logging Analytics
