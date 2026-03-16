@@ -1,0 +1,1537 @@
+# =============================================================================
+# ORACLE ARCHITECTURE CENTER — REFERENCE CATALOG
+# =============================================================================
+#
+# Index of Oracle Architecture Center content for the Deal Accelerator.
+# Used to match customer architectures with official Oracle reference designs.
+#
+# Matching logic (Phase 2 — Architecture Composition):
+#   STRONG MATCH:   ≥2 service matches + ≥1 tag match
+#   MODERATE MATCH: ≥1 service match + ≥2 tag matches
+#
+# Last refreshed: 2026-03-16
+# Entry count: 123
+# To refresh: python tools/refresh_arch_catalog.py --whats-new
+# =============================================================================
+
+last_refreshed: "2026-03-16"
+source: "https://docs.oracle.com/en/solutions/oracle-architecture-center/"
+entry_count: 123
+
+entries:
+
+  # ===== DATABASE — MULTICLOUD (Database@Azure) =====
+
+  - title: "Deploy Oracle Autonomous Database on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [adb-s, adg, azure]
+    tags: [database, multicloud, azure, ha-dr, autonomous]
+    summary: >
+      Multi-AZ deployment of ADB-S on Database@Azure with Autonomous Data Guard.
+      Recommends VNet peering between app and DB VNets, TAC for availability,
+      and ADG standby in a different AZ for automatic failover.
+    terraform: null
+
+  - title: "Oracle MAA for Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/oracle-maa-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: [exacs, adg, vault, azure]
+    tags: [database, multicloud, azure, ha-dr, autonomous]
+    summary: >
+      Cross-AZ Data Guard on ExaCS in Database@Azure. Active Data Guard
+      recommended for cross-AZ replication (block repair, app continuity,
+      read offload). Backups to Autonomous Recovery Service.
+    terraform: null
+
+  - title: "Implement disaster recovery with local and regional standbys on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/local-regional-standby-dr-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: [exacs, adg, azure, fsdr]
+    tags: [database, multicloud, azure, ha-dr]
+    summary: >
+      Local standby for HA within same region, regional standby for DR
+      across Azure regions. Uses Active Data Guard with Fast-Start Failover.
+      Recommends Full Stack DR service for automated failover orchestration.
+    terraform: null
+
+  - title: "Implement disaster recovery with multi-region standby on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/multi-region-standby-dr-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [exacs, adg, azure]
+    tags: [database, multicloud, azure, ha-dr]
+    summary: >
+      Multi-region DR for ExaCS on Database@Azure using Data Guard.
+      Cross-region standby with switchover/failover capabilities.
+      Includes network topology for Azure-to-Azure cross-region connectivity.
+    terraform: null
+
+  - title: "Implement cross-region disaster recovery for Exadata Database on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/index.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [exacs, adg, azure, fsdr]
+    tags: [database, multicloud, azure, ha-dr]
+    summary: >
+      Cross-region DR for ExaCS on Database@Azure. OCI-managed networks for
+      peering (better performance, first 10 TB/month free). Data Guard for
+      cross-region replication, FSDR for automated failover orchestration.
+    terraform: "https://github.com/oracle-quickstart/oci-multicloud-azure"
+
+  - title: "Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions"
+    url: "https://docs.oracle.com/en/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [exacs, adg, azure]
+    tags: [database, multicloud, azure, ha-dr]
+    summary: >
+      Far Sync instance for zero data loss protection across Azure regions.
+      Synchronous redo transport to Far Sync, async to remote standby.
+      Eliminates performance impact of synchronous shipping over long distances.
+    terraform: null
+
+  - title: "Design a multicloud network to deploy Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/network-for-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [vcn, drg, azure, fastconnect]
+    tags: [networking, multicloud, azure]
+    summary: >
+      Network design patterns for Database@Azure deployments. Covers
+      VNet-to-VCN peering, hub-spoke topologies, and on-premises
+      connectivity via ExpressRoute + FastConnect.
+    terraform: null
+
+  - title: "Learn about selecting network topologies for Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/network-topology-oracle-database-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: [vcn, drg, azure]
+    tags: [networking, multicloud, azure]
+    summary: >
+      Network topology options for Database@Azure. Compares single-VNet,
+      hub-spoke, and transit gateway patterns. Guidance on IP address
+      planning and NSG rules for database traffic.
+    terraform: null
+
+  - title: "Build a secure multicloud architecture for Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/secure-db-azure/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [exacs, adb-s, vault, data-safe, cloud-guard, azure]
+    tags: [database, multicloud, azure, security]
+    summary: >
+      Security architecture for Database@Azure. Covers data encryption
+      with OCI Vault, database activity monitoring with Data Safe,
+      threat detection with Cloud Guard, and network security with NSGs.
+    terraform: null
+
+  - title: "Build Azure CI/CD Pipelines using Oracle Exadata Database Service in Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/azure-pipeline-exacs-dbazure/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [exacs, azure]
+    tags: [database, multicloud, azure, devops]
+    summary: >
+      Azure DevOps pipeline integration with ExaCS on Database@Azure.
+      Automated schema deployment, testing, and migration using
+      Azure Pipelines with Oracle database tooling.
+    terraform: null
+
+  - title: "Deploy a Data Lake leveraging Power BI on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/analytics-pipeline-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [adb-s, azure, object-storage]
+    tags: [data-platform, multicloud, azure, autonomous]
+    summary: >
+      Analytics pipeline combining ADB-S on Database@Azure with Power BI.
+      Data ingestion to Object Storage, transformation in ADB-S,
+      visualization via Power BI DirectQuery or Import mode.
+    terraform: null
+
+  - title: "Deploy Oracle E-Business Suite on Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/deploy-ebs-on-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: [exacs, azure, compute, load-balancer]
+    tags: [application, multicloud, azure, ebs]
+    summary: >
+      EBS application tier on Azure VMs with database on ExaCS via
+      Database@Azure. App-to-DB connectivity through VNet peering.
+      Load balancer for EBS web tier high availability.
+    terraform: null
+
+  - title: "Implement Oracle Database Autonomous Recovery Service with Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/implement-recovery-service-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [exacs, azure]
+    tags: [database, multicloud, azure, ha-dr]
+    summary: >
+      Autonomous Recovery Service for ExaCS backups on Database@Azure.
+      Automated backup management with real-time protection and
+      point-in-time recovery capabilities.
+    terraform: null
+
+  - title: "Move to Oracle Database@Azure with Oracle Zero Downtime Migration"
+    url: "https://docs.oracle.com/en/solutions/oracle-db-at-azure-migration/index.html"
+    type: reference-architecture
+    date: "2024-12"
+    services: [exacs, azure, goldengate]
+    tags: [database, multicloud, azure, migration]
+    summary: >
+      Zero Downtime Migration to Database@Azure using logical or physical
+      online migration. GoldenGate for continuous replication during cutover.
+      Supports on-premises Oracle DB to ExaCS on Database@Azure.
+    terraform: null
+
+  - title: "Migrate business critical applications to Oracle Database@Azure using a phased strategy"
+    url: "https://docs.oracle.com/en/solutions/phased-migration-to-oracle-dba/index.html"
+    type: reference-architecture
+    date: "2025-03"
+    services: [exacs, azure, goldengate, adg]
+    tags: [database, multicloud, azure, migration]
+    summary: >
+      Phased migration to Database@Azure. Leverages OCI networking for DR
+      replication with low-latency, high-bandwidth connectivity. Integrates
+      Autonomous Recovery Service with Data Guard for data protection.
+    terraform: "https://github.com/oracle-quickstart/oci-multicloud-azure"
+
+  - title: "Implement Oracle GoldenGate in Microsoft Azure with Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/implement-goldengate-azure/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [goldengate, exacs, azure]
+    tags: [database, multicloud, azure, integration]
+    summary: >
+      GoldenGate deployment patterns for Database@Azure. Real-time
+      replication between on-premises and ExaCS, or between ExaCS
+      instances across Azure regions.
+    terraform: null
+
+  - title: "Integrate Oracle Database@Azure with your Azure streaming platform using OCI GoldenGate"
+    url: "https://docs.oracle.com/en/solutions/oracle-db-at-azure-streaming/index.html"
+    type: reference-architecture
+    date: "2024-08"
+    services: [goldengate, exacs, azure, streaming]
+    tags: [database, multicloud, azure, integration]
+    summary: >
+      Stream change data from ExaCS on Database@Azure to Azure Event Hubs
+      using OCI GoldenGate. Enables real-time event-driven architectures
+      combining Oracle database with Azure messaging services.
+    terraform: null
+
+  - title: "Create a modern platform with Oracle Database@Azure, OCI GoldenGate, and Azure services"
+    url: "https://docs.oracle.com/en/solutions/modern-platform-oracle-db-at-azure/index.html"
+    type: reference-architecture
+    date: "2024-08"
+    services: [goldengate, exacs, azure]
+    tags: [database, multicloud, azure, integration, data-platform]
+    summary: >
+      Modern data platform combining Database@Azure with Azure PaaS services.
+      GoldenGate for real-time data synchronization between ExaCS and
+      Azure SQL, Cosmos DB, or Synapse Analytics.
+    terraform: null
+
+  - title: "Connect Azure Kubernetes with Oracle Exadata Database Service on Oracle Database at Azure"
+    url: "https://docs.oracle.com/en/solutions/connect-azure-kube-with-oracle/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [exacs, azure, oke]
+    tags: [application, multicloud, azure, database]
+    summary: >
+      AKS workloads connecting to ExaCS on Database@Azure. Network
+      connectivity via VNet peering, connection pooling with Oracle
+      Universal Connection Pool for Kubernetes pod scaling.
+    terraform: null
+
+  - title: "Establish a multicloud data solution between OCI and Microsoft Azure"
+    url: "https://docs.oracle.com/en/solutions/oci-azure-multicloud-data-solution/index.html"
+    type: reference-architecture
+    date: "2024-08"
+    services: [adb-s, azure, data-integration, object-storage]
+    tags: [data-platform, multicloud, azure]
+    summary: >
+      Cross-cloud data integration between OCI and Azure. OCI Data
+      Integration for ETL between Azure Blob Storage and OCI Object Storage.
+      ADB-S for analytics with data from both clouds.
+    terraform: null
+
+  # ===== DATABASE — MULTICLOUD (Database@Google Cloud) =====
+
+  - title: "Deploy Oracle Autonomous Database on Oracle Database@Google Cloud"
+    url: "https://docs.oracle.com/en/solutions/deploy-adb-db-at-google-cloud/index.html"
+    type: reference-architecture
+    date: "2025-03"
+    services: [adb-s, adg, google-cloud]
+    tags: [database, multicloud, ha-dr, autonomous]
+    summary: >
+      ADB-S on Database@Google Cloud with cross-region ADG. Non-overlapping
+      CIDR between VPC and VCN required. App tier should span 2+ AZs with
+      Google Global Load Balancer for failover.
+    terraform: null
+
+  - title: "Deploy Oracle Database@Google Cloud"
+    url: "https://docs.oracle.com/en/solutions/deploy-oracle-database-at-google-cloud/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [exacs, adb-d, google-cloud]
+    tags: [database, multicloud, autonomous]
+    summary: >
+      ExaCS and ADB-D on Database@Google Cloud. RAC for active-active HA,
+      ASM for storage redundancy. Backups to OCI Object Storage via
+      Autonomous Recovery Service.
+    terraform: null
+
+  - title: "Learn about selecting network topologies for Oracle Database@Google Cloud"
+    url: "https://docs.oracle.com/en/solutions/network-topology-oracle-database-at-google-cloud/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [vcn, drg, google-cloud]
+    tags: [networking, multicloud]
+    summary: >
+      Network topology options for Database@Google Cloud. Covers VPC-to-VCN
+      peering, shared VPC, and Private Service Connect patterns.
+      Guidance on DNS resolution and IP address management.
+    terraform: null
+
+  - title: "Configure DNS resolution in Oracle Database@Google Cloud"
+    url: "https://docs.oracle.com/en/solutions/dns-resolution-oracle-db-at-google-cloud/index.html"
+    type: reference-architecture
+    date: "2025-11"
+    services: [dns, google-cloud, exacs]
+    tags: [networking, multicloud]
+    summary: >
+      DNS configuration for Database@Google Cloud. Cloud DNS forwarding
+      zones for OCI service resolution, private DNS for VCN name resolution
+      from Google Cloud applications.
+    terraform: null
+
+  - title: "Move to Oracle Database@Google Cloud with Oracle Zero Downtime Migration"
+    url: "https://docs.oracle.com/en/solutions/oracle-db-at-google-cloud-migration/index.html"
+    type: reference-architecture
+    date: "2024-11"
+    services: [exacs, google-cloud, goldengate]
+    tags: [database, multicloud, migration]
+    summary: >
+      Zero Downtime Migration to Database@Google Cloud. Physical or logical
+      migration methods with GoldenGate for minimal-downtime cutover.
+      Supports on-premises Oracle DB to ExaCS on Google Cloud.
+    terraform: null
+
+  - title: "Deploy Oracle Key Vault with Oracle Exadata Database Service (Oracle Database@Google Cloud)"
+    url: "https://docs.oracle.com/en/solutions/deploy-key-vault-database-at-google/index.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [exacs, vault, google-cloud]
+    tags: [database, multicloud, security]
+    summary: >
+      Oracle Key Vault deployment for TDE key management on ExaCS in
+      Database@Google Cloud. Centralized encryption key lifecycle management
+      across multiple database deployments.
+    terraform: null
+
+  # ===== DATABASE — MULTICLOUD (Database@AWS) =====
+
+  - title: "Deploy Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/deploy-oracle-db-aws/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [exacs, adb-d, aws]
+    tags: [database, multicloud, aws]
+    summary: >
+      ExaCS and ADB-D colocated in AWS data centers. ODB peering between
+      VPC and ODB network in same AZ. Default limit of 2 DB servers and
+      3 storage servers — request increase early.
+    terraform: null
+
+  - title: "Learn about network topologies for Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/network-topology-oracle-database-at-aws/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [vcn, drg, aws]
+    tags: [networking, multicloud, aws]
+    summary: >
+      Network topology patterns for Database@AWS. VPC-to-ODB network
+      peering, Transit Gateway integration, and on-premises connectivity
+      via AWS Direct Connect alongside OCI FastConnect.
+    terraform: null
+
+  - title: "Deploy Active Data Guard Far Sync to protect data across Oracle Database@AWS regions"
+    url: "https://docs.oracle.com/en/solutions/dr-active-dg-farsync-db-at-aws/index.html"
+    type: reference-architecture
+    date: "2025-09"
+    services: [exacs, adg, aws]
+    tags: [database, multicloud, aws, ha-dr]
+    summary: >
+      Far Sync instance for zero data loss protection across AWS regions.
+      Synchronous redo to local Far Sync, asynchronous to remote standby.
+      Requires cross-region AWS networking for redo transport.
+    terraform: null
+
+  - title: "Implement disaster recovery with local and regional standbys on Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/dr-local-regional-standby-db-at-aws/index.html"
+    type: reference-architecture
+    date: "2025-09"
+    services: [exacs, adg, aws, fsdr]
+    tags: [database, multicloud, aws, ha-dr]
+    summary: >
+      Local standby for HA within same AWS region, regional standby for DR.
+      Active Data Guard with Fast-Start Failover for automated failover.
+      Full Stack DR service for cross-service failover orchestration.
+    terraform: null
+
+  - title: "Implement disaster recovery with cross-zonal Data Guard on Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/cross-zone-dr-db-at-aws/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [exacs, adg, aws]
+    tags: [database, multicloud, aws, ha-dr]
+    summary: >
+      Cross-AZ Data Guard on Database@AWS for HA. Synchronous redo
+      transport between AZs for zero data loss. Fast-Start Failover
+      for automatic database switchover on failure.
+    terraform: null
+
+  - title: "Implement disaster recovery with cross-regional Data Guard on Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/implement-dr-cross-region-dg-odb-aws/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [exacs, adg, aws]
+    tags: [database, multicloud, aws, ha-dr]
+    summary: >
+      Cross-region Data Guard on Database@AWS for DR. Asynchronous redo
+      transport for cross-region replication. Planned switchover for
+      maintenance, forced failover for disaster scenarios.
+    terraform: null
+
+  - title: "Deploy Oracle E-Business Suite on Oracle Database@AWS"
+    url: "https://docs.oracle.com/en/solutions/ebs-on-db-at-aws/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [exacs, aws, compute, load-balancer]
+    tags: [application, multicloud, aws, ebs]
+    summary: >
+      EBS application tier on AWS EC2 with database on ExaCS via
+      Database@AWS. App-to-DB connectivity through VPC-ODB peering.
+      AWS ALB for web tier high availability.
+    terraform: null
+
+  # ===== DATABASE — MIGRATION =====
+
+  - title: "Migrate on-premises Oracle Database to Autonomous Database"
+    url: "https://docs.oracle.com/en/solutions/migrate-to-atp/index.html"
+    type: reference-architecture
+    date: "2024-01"
+    services: [adb-s, object-storage, compute, vpn]
+    tags: [database, migration, autonomous]
+    summary: >
+      MV2ADB tool for on-prem EE to ADB-S migration using Data Pump.
+      Requires HTTP to Object Storage + SQL*Net to ADB. Terraform code
+      available on GitHub for networking + compute + ADB provisioning.
+    terraform: "https://github.com/oracle-quickstart/oci-arch-atp"
+
+  - title: "Migrate Oracle RAC Databases to OCI"
+    url: "https://docs.oracle.com/en/solutions/ensure-ha-migrate-vmware-workloads-to-oci/migrate-oracle-rac-databases1.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [exacs, exascale, adb-d, base-db]
+    tags: [database, migration, ha-dr]
+    summary: >
+      Compares 4 RAC migration targets: ExaCS Dedicated, Exascale, ADB-D,
+      and 2-node RAC on Base DB. ExaCS recommended for full RAC feature
+      parity. Exascale for 23ai-only without dedicated infra commitment.
+    terraform: null
+
+  - title: "Migrate an on-premises database to the cloud with zero downtime"
+    url: "https://docs.oracle.com/en/solutions/migrate-database-with-zdm/index.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [base-db, exacs, goldengate]
+    tags: [database, migration]
+    summary: >
+      Oracle Zero Downtime Migration for on-premises to OCI. Physical
+      migration for same-version moves, logical for cross-version/platform.
+      GoldenGate for continuous replication during extended cutover windows.
+    terraform: null
+
+  - title: "Migrate a PeopleSoft database to Oracle Autonomous Database"
+    url: "https://docs.oracle.com/en/solutions/migrate-peoplesoft-db-autonomous-db-zdm/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [adb-s, compute]
+    tags: [database, migration, autonomous, peoplesoft]
+    summary: >
+      PeopleSoft database migration to ADB-S using Zero Downtime Migration.
+      Logical migration with Data Pump, ZDM for orchestration. PeopleTools
+      compatibility verification required before migration.
+    terraform: null
+
+  - title: "Deploy a migrated MongoDB workload to Oracle Autonomous Transaction Processing Serverless"
+    url: "https://docs.oracle.com/en/solutions/mongodb-to-atp/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [adb-s, compute]
+    tags: [database, migration, autonomous]
+    summary: >
+      MongoDB to ADB-S migration using Oracle Database API for MongoDB.
+      Applications use MongoDB wire protocol against ADB-S JSON collections.
+      No application code changes required for basic CRUD operations.
+    terraform: null
+
+  - title: "Deploy a migrated MongoDB workload to Oracle Autonomous Transaction Processing Serverless@Azure"
+    url: "https://docs.oracle.com/en/solutions/mongodb-to-atp-azure/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [adb-s, azure]
+    tags: [database, migration, multicloud, azure, autonomous]
+    summary: >
+      MongoDB to ADB-S migration on Database@Azure. Uses Oracle Database
+      API for MongoDB for wire protocol compatibility. Applications connect
+      via Azure VNet peering to ADB-S private endpoint.
+    terraform: null
+
+  - title: "Deploy a migrated MongoDB workload to Oracle Autonomous Transaction Processing Serverless@Google Cloud"
+    url: "https://docs.oracle.com/en/solutions/mongodb-to-atp-google/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [adb-s, google-cloud]
+    tags: [database, migration, multicloud, autonomous]
+    summary: >
+      MongoDB to ADB-S migration on Database@Google Cloud. MongoDB API
+      compatibility for transparent application migration. Google Cloud
+      VPC peering for private database connectivity.
+    terraform: null
+
+  - title: "Deploy a migrated MongoDB workload to Oracle Autonomous JSON Database"
+    url: "https://docs.oracle.com/en/solutions/mongodb-to-auto-json-db/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [adb-s]
+    tags: [database, migration, autonomous]
+    summary: >
+      MongoDB to Autonomous JSON Database migration. JSON-centric workloads
+      with document model support. SODA API and MongoDB API for application
+      compatibility.
+    terraform: null
+
+  - title: "Deploy a migrated MongoDB workload to Oracle Exadata Database Machine"
+    url: "https://docs.oracle.com/en/solutions/mongodb-to-exadata-machine/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [exacs]
+    tags: [database, migration]
+    summary: >
+      MongoDB to Exadata migration for high-performance workloads.
+      Oracle Database API for MongoDB on Exadata infrastructure.
+      Suitable when performance requirements exceed ADB-S capabilities.
+    terraform: null
+
+  # ===== DATABASE — HA/DR =====
+
+  - title: "Deploy ORDS with High Availability on OCI"
+    url: "https://docs.oracle.com/en/solutions/deploy-ords-ha-oci/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [compute, load-balancer, adb-s, bastion]
+    tags: [database, application, ha-dr]
+    summary: >
+      Multi-instance ORDS behind OCI Load Balancer for HA REST access to
+      Oracle DB. Works with ADB-S, DBCS, or ExaCS. Recommends DB in
+      private subnet, ORDS in public with granular NSG rules.
+    terraform: null
+
+  - title: "Deploy secure ADB and APEX application"
+    url: "https://docs.oracle.com/en/solutions/deploy-autonomous-database-and-app/index.html"
+    type: reference-architecture
+    date: "2024-06"
+    services: [adb-s, apex, load-balancer, bastion, cloud-guard]
+    tags: [database, application, security, autonomous]
+    summary: >
+      APEX on ADB-S with private endpoint behind Load Balancer. OCI
+      Landing Zone via Terraform provisions in minutes. Recommends NSGs
+      over Security Lists, Cloud Guard with custom detector recipes.
+    terraform: "https://github.com/oracle-quickstart/oci-arch-apex-atp"
+
+  - title: "Configure Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [exacs, adg]
+    tags: [database, ha-dr]
+    summary: >
+      Data Guard configuration for ExaCS Dedicated. Active Data Guard for
+      read offload and automatic failover. Cross-region standby for DR
+      with Fast-Start Failover for automated switchover.
+    terraform: null
+
+  - title: "Back up from Oracle Base Database Service to Zero Data Loss Autonomous Recovery"
+    url: "https://docs.oracle.com/en/solutions/back-up-base-database-zero-data-loss-recovery/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [base-db]
+    tags: [database, ha-dr]
+    summary: >
+      Autonomous Recovery Service for Base DB backups. Real-time protection
+      with continuous redo log shipping. Point-in-time recovery with
+      sub-second RPO for mission-critical workloads.
+    terraform: null
+
+  - title: "Back up from Exadata on Dedicated Infrastructure to Zero Data Loss Autonomous Recovery"
+    url: "https://docs.oracle.com/en/solutions/back-up-exadata-dedicated-zero-data-loss-recovery/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [exacs]
+    tags: [database, ha-dr]
+    summary: >
+      Autonomous Recovery Service for ExaCS backups. Automated backup
+      management with real-time redo protection. Validates backup
+      recoverability automatically.
+    terraform: null
+
+  - title: "Configure a standby database for disaster recovery using Oracle Exadata Database Service on Cloud@Customer"
+    url: "https://docs.oracle.com/en/solutions/exadata-cloud-at-customer-standby/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [exacs, adg]
+    tags: [database, ha-dr]
+    summary: >
+      Data Guard standby on ExaCS Cloud@Customer for hybrid DR.
+      On-premises primary with cloud standby, or cloud primary with
+      on-premises standby for data sovereignty requirements.
+    terraform: null
+
+  - title: "Use remote synchronous block replication on Oracle Cloud Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/remote-synchronous-block-replication-oci/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [block-storage, compute]
+    tags: [ha-dr]
+    summary: >
+      Block volume cross-region replication for non-database workloads.
+      Synchronous replication for RPO=0 within same metro, asynchronous
+      for cross-region DR with configurable RPO.
+    terraform: null
+
+  # ===== DATABASE — OTHER =====
+
+  - title: "Move Oracle Forms applications to Oracle APEX on an Oracle Autonomous Database"
+    url: "https://docs.oracle.com/en/solutions/migrate-apps-to-apex/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [adb-s, apex]
+    tags: [application, migration, autonomous]
+    summary: >
+      Oracle Forms to APEX modernization on ADB-S. Automated conversion
+      tools for Forms modules to APEX pages. Manual refinement needed for
+      complex Forms triggers and PL/SQL logic.
+    terraform: null
+
+  - title: "Stream Kafka topics to Oracle Autonomous Database using Oracle Integration 3"
+    url: "https://docs.oracle.com/en/solutions/oci-oad-kafka-oi/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [adb-s, oic3, streaming]
+    tags: [database, integration, autonomous]
+    summary: >
+      Kafka to ADB-S streaming ingestion via OIC3. Oracle Integration
+      adapter for Kafka topics with schema mapping to ADB-S tables.
+      Near-real-time data pipeline for analytics workloads.
+    terraform: null
+
+  # ===== NETWORKING =====
+
+  - title: "Design network architecture for data and application integration workloads on OCI"
+    url: "https://docs.oracle.com/en/solutions/data-application-integration-workloads/index.html"
+    type: reference-architecture
+    date: "2025-11"
+    services: [vcn, drg, fastconnect, oic, data-integration, adb-s]
+    tags: [networking, integration, multicloud, data-platform]
+    summary: >
+      4 integration patterns: single VCN, cross-VCN, cross-region, and
+      multicloud. FastConnect+DRG for on-prem, RPC for cross-region.
+      Multicloud via FastConnect+ExpressRoute/DirectConnect/PartnerInterconnect.
+    terraform: null
+
+  - title: "Best practices for hybrid and multicloud OCI networking design"
+    url: "https://docs.oracle.com/en/solutions/oci-best-practices-networking/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [vcn, drg, fastconnect, load-balancer, waf]
+    tags: [networking, multicloud, security]
+    summary: >
+      Comprehensive OCI networking best practices. Hub-spoke with DRG,
+      network segmentation with NSGs, FastConnect for hybrid connectivity.
+      WAF and DDoS protection for internet-facing workloads.
+    terraform: null
+
+  - title: "Set up a hub-and-spoke network topology using dynamic routing gateway"
+    url: "https://docs.oracle.com/en/solutions/hub-spoke-network-drg/index.html"
+    type: reference-architecture
+    date: "2025-09"
+    services: [vcn, drg, fastconnect]
+    tags: [networking]
+    summary: >
+      Hub-spoke topology using DRG as central router. Spoke VCNs attached
+      to DRG with route tables for inter-spoke and on-premises routing.
+      Centralized network security appliances in hub VCN.
+    terraform: null
+
+  - title: "Set up a hub-and-spoke network topology by using local peering gateways"
+    url: "https://docs.oracle.com/en/solutions/hub-spoke-network/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [vcn]
+    tags: [networking]
+    summary: >
+      Hub-spoke topology using Local Peering Gateways. Simpler than DRG
+      for same-region peering. Limited to 10 LPGs per VCN. Suitable for
+      smaller deployments without cross-region requirements.
+    terraform: null
+
+  - title: "Learn about dynamic routing gateway solutions"
+    url: "https://docs.oracle.com/en/solutions/learn-about-drg-solutions/index.html"
+    type: reference-architecture
+    date: "2024-09"
+    services: [drg, vcn, fastconnect]
+    tags: [networking]
+    summary: >
+      DRG v2 capabilities overview. Transit routing, cross-tenancy peering,
+      route distribution policies, and ECMP for link aggregation.
+      Foundation for enterprise-grade OCI network architectures.
+    terraform: null
+
+  - title: "Use private DNS in interconnected VCNs and on-premises"
+    url: "https://docs.oracle.com/en/solutions/private-dns/index.html"
+    type: reference-architecture
+    date: "2024-11"
+    services: [vcn, dns, drg]
+    tags: [networking]
+    summary: >
+      Private DNS configuration for hybrid and multi-VCN environments.
+      DNS forwarding between on-premises and OCI, conditional forwarding
+      for split-horizon DNS, and cross-VCN name resolution via DRG.
+    terraform: null
+
+  - title: "Deploy Palo Alto firewall in Active/Active mode with OCI Flexible Network Load Balancer"
+    url: "https://docs.oracle.com/en/solutions/oci-nlb-palo-alto-active-active/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [load-balancer, vcn, compute]
+    tags: [networking, security]
+    summary: >
+      Active/Active Palo Alto VM-Series behind OCI Flexible NLB. Symmetric
+      routing with NLB for ingress, route table rules for egress. Health
+      checks for automatic failover on firewall failure.
+    terraform: null
+
+  # ===== SECURITY & COMPLIANCE =====
+
+  - title: "Deploy a secure landing zone that meets the CIS OCI Foundations Benchmark"
+    url: "https://docs.oracle.com/en/solutions/cis-oci-benchmark/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [cloud-guard, vault, vcn, bastion]
+    tags: [security]
+    summary: >
+      CIS-compliant OCI landing zone with compartment-based organization,
+      segregation of duties through IAM groups/policies. Supports standalone,
+      hub-spoke, and DMZ VCN patterns. Zero Trust Packet Routing enabled.
+    terraform: "https://github.com/oracle-quickstart/oci-landing-zone-core"
+
+  - title: "Incorporate Cyber-Resilience Capabilities Into Your OCI Tenancy"
+    url: "https://docs.oracle.com/en/solutions/oci-tenancy-cyber-resilience-architecture/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [cloud-guard, vault, data-safe]
+    tags: [security]
+    summary: >
+      Cyber-resilience architecture for OCI tenancies. Immutable backups,
+      isolated recovery environments, threat detection with Cloud Guard,
+      and database activity monitoring with Data Safe.
+    terraform: null
+
+  - title: "Protect your workloads in the cloud using security zones"
+    url: "https://docs.oracle.com/en/solutions/oci-security-zones/index.html"
+    type: reference-architecture
+    date: "2024-11"
+    services: [cloud-guard]
+    tags: [security]
+    summary: >
+      Security Zones for preventive policy enforcement. Prevents creation
+      of non-compliant resources (public buckets, unencrypted volumes).
+      Combines with Cloud Guard for detective + preventive controls.
+    terraform: null
+
+  - title: "Secure TLS certificate deployment using OCI CA for OCI services and hybrid architectures"
+    url: "https://docs.oracle.com/en/solutions/secure-tls-oci-ca/index.html"
+    type: reference-architecture
+    date: "2025-11"
+    services: [vault, load-balancer]
+    tags: [security, networking]
+    summary: >
+      OCI Certificate Authority for TLS certificate lifecycle management.
+      Automated certificate rotation for Load Balancers, API Gateways,
+      and custom applications. Hybrid CA trust chain with on-premises PKI.
+    terraform: null
+
+  - title: "Connect Oracle Data Safe to Oracle databases on multicloud and hybrid cloud environments"
+    url: "https://docs.oracle.com/en/solutions/data-safe-multicloud-ods-hybrid/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [data-safe, exacs, adb-s]
+    tags: [security, database, multicloud]
+    summary: >
+      Data Safe for database security assessment across multicloud and
+      hybrid deployments. Covers Database@Azure, Database@AWS, on-premises,
+      and OCI-native databases.
+    terraform: null
+
+  - title: "Implement Oracle Data Safe for Exadata and Autonomous Databases"
+    url: "https://docs.oracle.com/en/solutions/data-safe-exadata-adb/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [data-safe, exacs, adb-s]
+    tags: [security, database]
+    summary: >
+      Data Safe deployment for ExaCS and ADB. Security assessment, user
+      assessment, activity auditing, data masking, and data discovery.
+      Private endpoint connectivity for databases in private subnets.
+    terraform: null
+
+  - title: "Deploy Oracle Key Vault for Oracle Database@Azure"
+    url: "https://docs.oracle.com/en/solutions/deploy-key-vault-database-at-azure/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [vault, exacs, azure]
+    tags: [security, database, multicloud, azure]
+    summary: >
+      Key Vault for TDE key management on Database@Azure. Centralized
+      encryption key lifecycle with multi-master replication for HA.
+      Supports PKCS#11, REST API, and Oracle-native key management.
+    terraform: null
+
+  - title: "Secure network architecture for on-premises database backups to OCI Object Storage with Private Endpoint"
+    url: "https://docs.oracle.com/en/solutions/secure-backup-oci-object-storage/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [object-storage, fastconnect, vcn]
+    tags: [security, networking, ha-dr]
+    summary: >
+      Private endpoint for Object Storage backup from on-premises. No
+      internet exposure — traffic stays on FastConnect/VPN. Granular IAM
+      policies for backup write access without delete permissions.
+    terraform: null
+
+  # ===== DR & BUSINESS CONTINUITY =====
+
+  - title: "Implement mid-tier replication in an OCI disaster recovery architecture"
+    url: "https://docs.oracle.com/en/solutions/mid-tier-replication-oci-dr-arch/index.html"
+    type: reference-architecture
+    date: "2025-11"
+    services: [compute, fsdr, load-balancer]
+    tags: [ha-dr, application]
+    summary: >
+      Mid-tier replication patterns for OCI DR. Application server state
+      replication across regions using rsync, block volume replication,
+      or container image promotion. FSDR for automated failover.
+    terraform: null
+
+  - title: "Deploy a hybrid DR solution on OCI for Oracle WebLogic or Fusion Middleware domain environments"
+    url: "https://docs.oracle.com/en/solutions/deploy-hybrid-dr-wls-fmw/index.html"
+    type: reference-architecture
+    date: "2025-03"
+    services: [wls, compute, fsdr, load-balancer, base-db, adg]
+    tags: [ha-dr, application]
+    summary: >
+      Hybrid DR for WebLogic/FMW with on-premises primary and OCI standby.
+      Greatest automation when primary follows Oracle EDG best practices.
+      Continuous replication via Data Guard, WLS HYDR Framework for mid-tier.
+    terraform: "https://github.com/oracle-samples/maa/tree/main/wls-hydr"
+
+  - title: "Configure JD Edwards Disaster Recovery by using OCI Full Stack Disaster Recovery"
+    url: "https://docs.oracle.com/en/solutions/config-jde-dr-fsdr/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [compute, fsdr, base-db]
+    tags: [ha-dr, application]
+    summary: >
+      JD Edwards DR with Full Stack DR service. Automated failover of
+      application tier, batch servers, and database. Cross-region block
+      volume replication for JDE binary and config files.
+    terraform: null
+
+  - title: "Perform cross-region disaster recovery for Oracle Essbase on OCI"
+    url: "https://docs.oracle.com/en/solutions/cross-region-dr-essbase-oci/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [compute, fsdr, base-db]
+    tags: [ha-dr, application]
+    summary: >
+      Cross-region DR for Essbase on OCI. Full Stack DR for orchestrated
+      failover of Essbase compute, database, and storage components.
+      Block volume replication for Essbase data and configuration.
+    terraform: null
+
+  - title: "Deploy a disaster recovery solution for OCI API Gateway"
+    url: "https://docs.oracle.com/en/solutions/deploy-data-rcvy-oci-api-gateway/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [api-gateway, dns, load-balancer]
+    tags: [ha-dr, networking]
+    summary: >
+      Active-passive DR for API Gateway using DNS failover. Traffic Manager
+      for health-check-based routing. API deployment replication across
+      regions using Terraform or Resource Manager stacks.
+    terraform: null
+
+  - title: "Use artifact snapshots to protect your OCI Kubernetes Engine clusters from disaster"
+    url: "https://docs.oracle.com/en/solutions/kubernetes-artifact-snapshot-dr/index.html"
+    type: reference-architecture
+    date: "2025-01"
+    services: [oke, object-storage]
+    tags: [ha-dr, application]
+    summary: >
+      OKE DR using etcd snapshots and artifact replication. Cross-region
+      backup of Kubernetes state, container images, and persistent volumes.
+      Velero for workload backup and restore.
+    terraform: null
+
+  # ===== DATA PLATFORM =====
+
+  - title: "Data platform - decentralized data platform"
+    url: "https://docs.oracle.com/en/solutions/data-platform-decentralized/index.html"
+    type: reference-architecture
+    date: "2025-03"
+    services: [adw, data-catalog, data-integration, object-storage]
+    tags: [data-platform, autonomous]
+    summary: >
+      Decentralized data lakehouse with domain-level ADB-S instances
+      sharing data via Cloud Links or Delta Sharing. Centralized catalog,
+      IaC onboarding per domain. Hub-spoke model with OCI backbone routing.
+    terraform: null
+
+  - title: "Cloud data lake house - process enterprise and streaming data"
+    url: "https://docs.oracle.com/en/solutions/oci-curated-analysis/index.html"
+    type: reference-architecture
+    date: "2024-02"
+    services: [adw, streaming, goldengate, data-integration, object-storage]
+    tags: [data-platform, integration]
+    summary: >
+      Full data lakehouse with batch and streaming ingestion. ADW with
+      auto-scaling for curated layer. Hybrid partitioned tables to move
+      cold data to Object Storage transparently. GoldenGate Stream Analytics
+      for real-time event processing.
+    terraform: null
+
+  - title: "Multicloud data lake integration"
+    url: "https://docs.oracle.com/en/solutions/oci-multicloud-datalake/index.html"
+    type: reference-architecture
+    date: "2024-03"
+    services: [data-integration, oic, object-storage, adw, streaming]
+    tags: [data-platform, multicloud, integration]
+    summary: >
+      Bring data from AWS/Azure/on-prem into OCI data lake. OCI Data
+      Integration for batch ETL, OIC for app integration with pre-built
+      adapters. Read-only credentials for source systems recommended.
+    terraform: null
+
+  - title: "Data platform - data lakehouse"
+    url: "https://docs.oracle.com/en/solutions/data-platform-lakehouse/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [adw, object-storage, data-integration, data-catalog, streaming, goldengate]
+    tags: [data-platform, autonomous, ai-ml]
+    summary: >
+      Full data lakehouse with ADW + autoscaling, hybrid partitioned tables,
+      Object Storage medallion architecture. Data Integration/Data Flow for
+      ETL, GoldenGate Stream Analytics for real-time, AI/ML with Data Science.
+    terraform: "https://github.com/oracle-quickstart/oci-data-lakehouse"
+
+  - title: "Replicate Oracle Fusion SaaS data to a third-party data warehouse"
+    url: "https://docs.oracle.com/en/solutions/rep-fusion-saas-third-party-dw/index.html"
+    type: reference-architecture
+    date: "2024-05"
+    services: [oic, data-integration]
+    tags: [data-platform, integration]
+    summary: >
+      Fusion SaaS data replication to third-party data warehouses (Snowflake,
+      Databricks, BigQuery). OIC for extraction, OCI Data Integration for
+      transformation and loading to target platforms.
+    terraform: null
+
+  - title: "Load Oracle Fusion Cloud ERP data into Snowflake"
+    url: "https://docs.oracle.com/en/solutions/load-fusion-erp-data-snowflake/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [oic, object-storage]
+    tags: [data-platform, integration, multicloud]
+    summary: >
+      Fusion ERP to Snowflake data pipeline. OIC adapter for Fusion data
+      extraction, Object Storage as staging area, Snowflake COPY INTO for
+      loading. Incremental extraction for ongoing synchronization.
+    terraform: null
+
+  # ===== AI & MACHINE LEARNING =====
+
+  - title: "Deploy agentic AI with Oracle Cloud Infrastructure AI Agent Platform"
+    url: "https://docs.oracle.com/en/solutions/deploy-agentic-ai-agent-platform/index.html"
+    type: reference-architecture
+    date: "2025-12"
+    services: [genai, adb-s, functions]
+    tags: [ai-ml, autonomous]
+    summary: >
+      Enterprise AI chatbot integrating Visual Builder, Digital Assistant, and
+      OCI AI Agent Platform. RAG from unstructured data, structured queries
+      via ADB-S, custom business logic through serverless Functions.
+    terraform: null
+
+  - title: "Build an agentic, high-fidelity, conversational AI framework with Select AI and Oracle APEX"
+    url: "https://docs.oracle.com/en/solutions/select-ai-apex-framework/index.html"
+    type: reference-architecture
+    date: "2025-12"
+    services: [adb-s, apex, genai]
+    tags: [ai-ml, application, autonomous]
+    summary: >
+      Select AI with APEX for natural language to SQL. Conversational
+      interface for database queries using LLMs. ADB-S profiles map
+      natural language to schema metadata for accurate SQL generation.
+    terraform: null
+
+  - title: "Get actionable meeting insights with Oracle Autonomous AI Database and GenAI"
+    url: "https://docs.oracle.com/en/solutions/oci-speech-meeting-insights-genai/index.html"
+    type: reference-architecture
+    date: "2025-12"
+    services: [genai, adb-s, ai-services]
+    tags: [ai-ml, autonomous]
+    summary: >
+      Meeting transcription and insights using OCI Speech + GenAI.
+      Audio processing with OCI Speech service, summarization and action
+      item extraction with GenAI, storage in ADB-S for analytics.
+    terraform: null
+
+  - title: "Enable secure and scalable self-service platforms for generative AI and LLMs within OCI"
+    url: "https://docs.oracle.com/en/solutions/oci-generative-ai-llm-platforms/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [genai, oke, compute, api-gateway, data-science]
+    tags: [ai-ml, security]
+    summary: >
+      Enterprise GenAI platform with AI CoE governance. NVIDIA MIG for
+      fractional GPU allocation, OCI DevOps for CI/CD, Oracle Database 23ai
+      for vector storage. IAM-based environment segmentation per team.
+    terraform: "https://github.com/oracle-quickstart/oci-hpc-oke"
+
+  - title: "Build an enterprise level Generative AI stack on Oracle Cloud Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/oci-genai-enterprise/index.html"
+    type: reference-architecture
+    date: "2024-09"
+    services: [genai, oke, object-storage]
+    tags: [ai-ml]
+    summary: >
+      Enterprise GenAI stack with model fine-tuning, RAG, and inference.
+      OCI AI Infrastructure for GPU compute, Object Storage for model
+      artifacts, OKE for scalable inference serving.
+    terraform: null
+
+  - title: "Deploy multicloud generative AI retrieval augmented generation (RAG)"
+    url: "https://docs.oracle.com/en/solutions/oci-multicloud-genai-rag/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [genai, adb-s, object-storage]
+    tags: [ai-ml, multicloud, autonomous]
+    summary: >
+      Multicloud RAG architecture with OCI GenAI. Document ingestion to
+      ADB-S vector store, embedding generation with OCI GenAI, retrieval
+      and generation pipeline. Cross-cloud connectivity for data sources.
+    terraform: null
+
+  - title: "Deploy an AI-powered chatbot"
+    url: "https://docs.oracle.com/en/solutions/deploy-ai-powered-chatbot/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [genai, functions, adb-s]
+    tags: [ai-ml, application, autonomous]
+    summary: >
+      AI chatbot with OCI GenAI and Functions. RAG for knowledge-grounded
+      responses, ADB-S for conversation history and vector search.
+      Serverless architecture with OCI Functions for cost efficiency.
+    terraform: null
+
+  - title: "Deploy a multi-agent AI fraud detection system on OCI"
+    url: "https://docs.oracle.com/en/solutions/ai-fraud-detection/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [genai, streaming, adb-s]
+    tags: [ai-ml, autonomous]
+    summary: >
+      Multi-agent AI system for real-time fraud detection. Streaming
+      ingestion of transaction data, ML models for anomaly detection,
+      GenAI agents for investigation and decision support.
+    terraform: null
+
+  - title: "Improve search results with Oracle Generative AI Agents, Vector Search, and OCI OpenSearch"
+    url: "https://docs.oracle.com/en/solutions/genai-vector-opensearch/index.html"
+    type: reference-architecture
+    date: "2024-12"
+    services: [genai, opensearch, adb-s]
+    tags: [ai-ml, autonomous]
+    summary: >
+      Hybrid search combining vector similarity (ADB-S) with keyword search
+      (OpenSearch). GenAI for query understanding and result re-ranking.
+      Suitable for enterprise knowledge bases and document search.
+    terraform: null
+
+  - title: "Implement retrieval augmented generation by using Oracle Integration"
+    url: "https://docs.oracle.com/en/solutions/implement-rag-oci/index.html"
+    type: reference-architecture
+    date: "2024-09"
+    services: [genai, oic, adb-s]
+    tags: [ai-ml, integration, autonomous]
+    summary: >
+      RAG implementation using OIC for document ingestion pipeline.
+      Pre-built OIC adapters for SaaS data sources, ADB-S for vector
+      storage, GenAI for embedding and generation.
+    terraform: null
+
+  - title: "Deploy LLM using AMD Instinct accelerators in OCI"
+    url: "https://docs.oracle.com/en/solutions/deploy-llm-amd-instinct-oci/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [compute]
+    tags: [ai-ml, hpc]
+    summary: >
+      LLM inference on AMD Instinct MI300X GPUs in OCI. ROCm software
+      stack for model serving. Cost-effective alternative to NVIDIA for
+      specific model architectures.
+    terraform: null
+
+  - title: "Run a quantized GGUF large language model on an Ampere A2 cluster"
+    url: "https://docs.oracle.com/en/solutions/run-quantized-gguf-llm-ampere-cluster/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [compute]
+    tags: [ai-ml]
+    summary: >
+      CPU-based LLM inference on Ampere A2 shapes using quantized GGUF
+      models. Cost-efficient for moderate throughput requirements.
+      llama.cpp for model serving without GPU dependency.
+    terraform: null
+
+  - title: "Deploy the CPU Inference blueprint with Ollama in OCI AI Blueprints"
+    url: "https://docs.oracle.com/en/solutions/oci-cpu-inference-ollama/index.html"
+    type: reference-architecture
+    date: "2025-09"
+    services: [compute, oke]
+    tags: [ai-ml]
+    summary: >
+      Ollama-based CPU inference on OKE using OCI AI Blueprints.
+      Pre-configured Kubernetes deployment for local LLM serving.
+      Suitable for development, testing, and low-throughput inference.
+    terraform: null
+
+  # ===== APPLICATION MODERNIZATION =====
+
+  - title: "Deploy a microservices-based application in Kubernetes connected to an autonomous database"
+    url: "https://docs.oracle.com/en/solutions/cloud-native-ecommerce/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [oke, adb-s, api-gateway, streaming, waf, vault, functions]
+    tags: [application, autonomous]
+    summary: >
+      Cloud-native e-commerce on OKE with ADB-S. Regional VCN subnets,
+      VM.Standard2.1 shapes, up to 1000 nodes. API Gateway for ingress,
+      WAF + Vault for security, Streaming for event-driven microservices.
+    terraform: "https://github.com/oracle-quickstart/oci-cloudnative-mushop"
+
+  - title: "Deploy Oracle WebLogic Server in a Kubernetes cluster"
+    url: "https://docs.oracle.com/en/solutions/deploy-wls-on-oke/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [oke, wls, load-balancer]
+    tags: [application]
+    summary: >
+      WebLogic on OKE using WebLogic Kubernetes Operator. Automated domain
+      lifecycle management, rolling upgrades, and scaling. Load Balancer
+      for external traffic, Traefik for internal routing.
+    terraform: null
+
+  - title: "Deploy Oracle WebLogic Server for OKE using a marketplace stack"
+    url: "https://docs.oracle.com/en/solutions/wls-on-oke-marketplace/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [oke, wls, load-balancer]
+    tags: [application]
+    summary: >
+      One-click WebLogic on OKE via OCI Marketplace. Resource Manager stack
+      provisions OKE cluster, WebLogic domain, and networking. Simplified
+      deployment for standard WebLogic topologies.
+    terraform: null
+
+  - title: "Multi-tenant application deployment model on OCI"
+    url: "https://docs.oracle.com/en/solutions/multi-tenant-app-deploy/index.html"
+    type: reference-architecture
+    date: "2025-11"
+    services: [oke, adb-s, load-balancer, api-gateway, functions, mysql, nosql]
+    tags: [application, autonomous, security]
+    summary: >
+      Three-layer security: IAM auth with JWTs, per-request middleware with
+      tenant context, ORM-based data isolation. Tiered strategies: discriminator
+      columns (standard), dedicated schemas (premium), separate DBs (enterprise).
+    terraform: null
+
+  - title: "Modernize your application development with OCI-managed PostgreSQL, Redis, and OpenSearch"
+    url: "https://docs.oracle.com/en/solutions/modernize-app-dev-oci-postgresql-redis-opensearch/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: [postgresql, redis, opensearch, oke]
+    tags: [application]
+    summary: >
+      Open-source database services on OCI for cloud-native apps.
+      PostgreSQL for relational, Redis for caching, OpenSearch for
+      full-text search. OKE for application tier deployment.
+    terraform: null
+
+  - title: "Implement an Oracle Retail Xstore Point of Service on Oracle Cloud Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/deploy-xstore-oci/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [compute, base-db, load-balancer]
+    tags: [application]
+    summary: >
+      Oracle Retail Xstore POS on OCI. Compute instances for Xstore
+      application, Base DB for central office database. Load Balancer
+      for HA across multiple Xstore instances.
+    terraform: null
+
+  # ===== APPLICATION — EBS / PEOPLESOFT / JDE =====
+
+  - title: "Migrate an Oracle E-Business Suite environment to Oracle Cloud"
+    url: "https://docs.oracle.com/en/solutions/migrate-ebs-with-cloudmanager/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [compute, base-db, load-balancer]
+    tags: [application, migration, ebs]
+    summary: >
+      EBS lift-and-shift to OCI using EBS Cloud Manager. Automated
+      provisioning of app and DB tiers. Supports EBS 12.2 with
+      Base DB or ExaCS for database tier.
+    terraform: null
+
+  - title: "Deploy JD Edwards EnterpriseOne with Oracle Autonomous Database on Dedicated Exadata Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/oracle-adb-jde-exadata/index.html"
+    type: reference-architecture
+    date: "2025-03"
+    services: [adb-d, exacs, compute]
+    tags: [application, database]
+    summary: >
+      JDE on ADB-D for maximum database performance and isolation.
+      Dedicated Exadata infrastructure for JDE database, compute
+      instances for JDE application and batch servers.
+    terraform: null
+
+  - title: "Learn about maximum availability architecture for PeopleSoft"
+    url: "https://docs.oracle.com/en/solutions/learn-about-maa-for-peoplesoft/index.html"
+    type: reference-architecture
+    date: "2024-08"
+    services: [exacs, adg, load-balancer, compute]
+    tags: [application, ha-dr, peoplesoft]
+    summary: >
+      MAA for PeopleSoft on OCI. Active Data Guard for database HA/DR,
+      multi-instance PIA behind Load Balancer, Process Scheduler on
+      multiple nodes for batch processing resilience.
+    terraform: null
+
+  - title: "Provision and deploy a maximum availability solution for PeopleSoft on Oracle Cloud"
+    url: "https://docs.oracle.com/en/solutions/deploy-maa-for-peoplesoft-on-oci/index.html"
+    type: reference-architecture
+    date: "2024-08"
+    services: [exacs, adg, load-balancer, compute]
+    tags: [application, ha-dr, peoplesoft]
+    summary: >
+      Step-by-step PeopleSoft MAA deployment on OCI. Terraform stacks
+      for infrastructure provisioning, Data Guard configuration, and
+      PeopleSoft application tier setup.
+    terraform: null
+
+  - title: "Run PeopleSoft ERP and Autonomous Database in an HA multicloud deployment"
+    url: "https://docs.oracle.com/en/solutions/bread-multicloud-on-oci/index.html"
+    type: reference-architecture
+    date: "2025-02"
+    services: [adb-s, compute, load-balancer]
+    tags: [application, ha-dr, multicloud, peoplesoft, autonomous]
+    summary: >
+      PeopleSoft HA with ADB-S across cloud providers. Application tier
+      on OCI compute with database on ADB-S. Multi-AZ deployment for
+      high availability with automatic failover.
+    terraform: null
+
+  # ===== OBSERVABILITY & MONITORING =====
+
+  - title: "Monitor a Kubernetes cluster with OCI Logging Analytics"
+    url: "https://docs.oracle.com/en/solutions/kubernetes-oke-logging-analytics/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [oke, logging]
+    tags: [observability, application]
+    summary: >
+      Logging Analytics for OKE cluster monitoring. Automated log collection
+      from pods, nodes, and control plane. Pre-built dashboards for
+      cluster health, resource utilization, and application logs.
+    terraform: null
+
+  - title: "Integrate, manage and secure E-Business Suite applications using Logging Analytics"
+    url: "https://docs.oracle.com/en/solutions/ebs-logging-analytics-oci/index.html"
+    type: reference-architecture
+    date: "2025-10"
+    services: [logging, compute]
+    tags: [observability, ebs, security]
+    summary: >
+      Logging Analytics for EBS log management. Centralized collection
+      of Apache, WebLogic, and Concurrent Manager logs. Security
+      analytics for unauthorized access detection.
+    terraform: null
+
+  - title: "Enable observability and management stack monitoring for Oracle E-Business Suite"
+    url: "https://docs.oracle.com/en/solutions/enable-om-stack-monitoring-ebs/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [monitoring, compute]
+    tags: [observability, ebs]
+    summary: >
+      Stack Monitoring for EBS infrastructure and application health.
+      Automatic discovery of EBS components, pre-built metrics and
+      alarms for proactive monitoring.
+    terraform: null
+
+  - title: "Enable Observability and Management Stack Monitoring for PeopleSoft"
+    url: "https://docs.oracle.com/en/solutions/enable-om-stack-monitoring-psft/index.html"
+    type: reference-architecture
+    date: "2024-12"
+    services: [monitoring, compute]
+    tags: [observability, peoplesoft]
+    summary: >
+      Stack Monitoring for PeopleSoft. Automatic discovery of PIA,
+      App Server, Process Scheduler, and database components. Metrics
+      and alarms for performance and availability monitoring.
+    terraform: null
+
+  - title: "Uncover performance issues, forecast consumption, and plan capacity with OCI Ops Insights"
+    url: "https://docs.oracle.com/en/solutions/oci-ops-insights-and-em-bridge/index.html"
+    type: reference-architecture
+    date: "2024-03"
+    services: [ops-insights, exacs, adb-s]
+    tags: [observability, database]
+    summary: >
+      Ops Insights for database performance analysis and capacity planning.
+      SQL analytics for query optimization, AWR data integration from
+      Enterprise Manager, cross-database performance comparison.
+    terraform: null
+
+  - title: "Well-architected framework for Oracle Cloud Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
+    type: reference-architecture
+    date: "2025-05"
+    services: []
+    tags: [security, ha-dr, observability]
+    summary: >
+      OCI Well-Architected Framework covering 5 pillars: security,
+      reliability, performance, cost optimization, and operational
+      excellence. Best practices and review checklists for each pillar.
+    terraform: null
+
+  # ===== INTEGRATION =====
+
+  - title: "Implement fine-grained access control on Oracle Integration"
+    url: "https://docs.oracle.com/en/solutions/integration-access-control/index.html"
+    type: reference-architecture
+    date: "2025-06"
+    services: [oic]
+    tags: [integration, security]
+    summary: >
+      Fine-grained RBAC for Oracle Integration flows. Project-level access
+      control with custom roles. Separation of duties between integration
+      developers and administrators.
+    terraform: null
+
+  - title: "Configure single sign-on between Oracle Integration and Oracle Fusion Applications"
+    url: "https://docs.oracle.com/en/solutions/sso-between-process-fusion-applications/index.html"
+    type: reference-architecture
+    date: "2025-08"
+    services: [oic]
+    tags: [integration, security]
+    summary: >
+      SSO configuration between OIC and Fusion Applications. SAML-based
+      federation for seamless user experience across integration and
+      application platforms.
+    terraform: null
+
+  # ===== VMWARE =====
+
+  - title: "Deploy a VMware vSAN Stretched Cluster across OCI Regions with Oracle Cloud VMware Solution"
+    url: "https://docs.oracle.com/en/solutions/ocvs-vsan-stretched-cluster/index.html"
+    type: reference-architecture
+    date: "2025-07"
+    services: [ocvs]
+    tags: [vmware, ha-dr]
+    summary: >
+      vSAN Stretched Cluster across OCI regions for VMware HA/DR.
+      Synchronous storage replication between sites, automatic VM
+      restart on site failure. Witness host in third location.
+    terraform: null
+
+  # ===== HEALTHCARE =====
+
+  - title: "Implement a cloud-native DICOM store on Oracle Cloud Infrastructure"
+    url: "https://docs.oracle.com/en/solutions/cloud-native-dicom-on-oci/index.html"
+    type: reference-architecture
+    date: "2025-12"
+    services: [oke, object-storage, adb-s]
+    tags: [healthcare, application, autonomous]
+    summary: >
+      Cloud-native DICOM store on OKE with Object Storage for medical
+      images and ADB-S for metadata. DICOMweb API compliance for
+      interoperability with medical imaging systems.
+    terraform: null
+
+  - title: "Analyze and visualize healthcare data and apply AI on OCI to solve real-world challenges"
+    url: "https://docs.oracle.com/en/solutions/oci-ai-healthcare/index.html"
+    type: reference-architecture
+    date: "2024-12"
+    services: [genai, adb-s, data-integration]
+    tags: [healthcare, ai-ml, data-platform]
+    summary: >
+      Healthcare analytics platform with AI on OCI. FHIR data ingestion,
+      clinical NLP with GenAI, predictive analytics for patient outcomes.
+      ADB-S for structured clinical data, Object Storage for imaging.
+    terraform: null
+
+  # ===== DEVOPS =====
+
+  - title: "Build a CI/CD pipeline for OCI Functions deployment using GitHub Action"
+    url: "https://docs.oracle.com/en/solutions/cicd-pipeline-oci-functions/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [functions]
+    tags: [devops]
+    summary: >
+      GitHub Actions workflow for OCI Functions deployment. Automated
+      build, test, and deploy pipeline. Container image build and push
+      to OCI Container Registry, function deployment via OCI CLI.
+    terraform: null
+
+  - title: "Deploy applications on a private OKE cluster using OCI Bastion and GitHub Actions"
+    url: "https://docs.oracle.com/en/solutions/deploy-oke-with-bastion-and-github/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [oke, bastion]
+    tags: [devops, application]
+    summary: >
+      GitHub Actions deployment to private OKE clusters via Bastion.
+      SSH tunnel through Bastion for kubectl access from CI/CD.
+      Eliminates need for public OKE API endpoint.
+    terraform: null
+
+  - title: "Deploy GitOps with Argo CD and Oracle Container Engine for Kubernetes"
+    url: "https://docs.oracle.com/en/solutions/deploy-gitops-argocd-oke/index.html"
+    type: reference-architecture
+    date: "2024-10"
+    services: [oke]
+    tags: [devops, application]
+    summary: >
+      GitOps with Argo CD on OKE. Declarative application deployment
+      from Git repositories. Automated sync, drift detection, and
+      rollback capabilities for Kubernetes workloads.
+    terraform: null
+
+  # ===== STORAGE =====
+
+  - title: "Learn About Storage Modernization with Oracle Cloud Infrastructure Object Storage"
+    url: "https://docs.oracle.com/en/solutions/oci-object-storage-modernization/index.html"
+    type: reference-architecture
+    date: "2024-11"
+    services: [object-storage]
+    tags: [data-platform]
+    summary: >
+      Object Storage modernization patterns. Tiered storage (Standard,
+      Infrequent Access, Archive), lifecycle policies for cost optimization,
+      and data lake integration with ADB and Data Integration.
+    terraform: null
+
+  - title: "Deploy Lustre file systems in Oracle Cloud"
+    url: "https://docs.oracle.com/en/solutions/deploy-lustre-file-systems/index.html"
+    type: reference-architecture
+    date: "2025-04"
+    services: [compute, file-storage]
+    tags: [hpc]
+    summary: >
+      Lustre parallel file system on OCI for HPC workloads. High-throughput
+      storage for compute-intensive applications. Bare metal instances
+      for Lustre servers, RDMA networking for low-latency I/O.
+    terraform: null
+
+  # ===== BUILT & DEPLOYED =====
+
+  - title: "Tharseo IT: Deploy a multicloud public health data management platform on Oracle Cloud"
+    url: "https://docs.oracle.com/en/solutions/tharseo-data-platform-on-oci/index.html"
+    type: built-deployed
+    date: "2025-11"
+    services: [oke, adb-s, object-storage]
+    tags: [healthcare, application, multicloud]
+    summary: >
+      Public health data platform on OKE with ADB-S. Multi-tenant SaaS
+      architecture for health data management across cloud providers.
+    terraform: null
+
+  - title: "Takamol: Deploy Kubernetes and microservices for a government HR platform on Oracle Cloud"
+    url: "https://docs.oracle.com/en/solutions/takamol-on-oci/index.html"
+    type: built-deployed
+    date: "2024-11"
+    services: [oke, adb-s]
+    tags: [application]
+    summary: >
+      Government HR platform on OKE. Microservices architecture with
+      ADB-S for data persistence. Container-based deployment for
+      scalability and operational efficiency.
+    terraform: null
+
+  - title: "Stream fraud detection with NVIDIA Morpheus on Oracle Compute Cloud@Customer"
+    url: "https://docs.oracle.com/en/solutions/fraud-detection-nvidia-morpheus-compute-cloud/index.html"
+    type: built-deployed
+    date: "2025-08"
+    services: [compute]
+    tags: [ai-ml, security]
+    summary: >
+      Real-time fraud detection with NVIDIA Morpheus on Compute Cloud@Customer.
+      GPU-accelerated ML pipeline for transaction monitoring. On-premises
+      deployment for data sovereignty requirements.
+    terraform: null
+
+  - title: "Deploy TCS BaNCS on Oracle Cloud Infrastructure with Exadata Cloud Service"
+    url: "https://docs.oracle.com/en/solutions/deploy-tcs-banc-oci-exa/index.html"
+    type: built-deployed
+    date: "2024-08"
+    services: [exacs, compute, load-balancer]
+    tags: [application, database]
+    summary: >
+      TCS BaNCS banking platform on OCI with ExaCS. High-performance
+      database for core banking transactions, compute instances for
+      application tier with Load Balancer for HA.
+    terraform: null
+
+  - title: "Deploy Oracle Banking Suite using OCI Dedicated Region"
+    url: "https://docs.oracle.com/en/solutions/oracle-banking-suite-oci-dedicated-region/index.html"
+    type: built-deployed
+    date: "2025-01"
+    services: [exacs, oke, compute]
+    tags: [application, database]
+    summary: >
+      Oracle Banking Suite on OCI Dedicated Region for data sovereignty.
+      ExaCS for database tier, OKE for microservices-based banking
+      applications. Dedicated Region for regulatory compliance.
+    terraform: null
