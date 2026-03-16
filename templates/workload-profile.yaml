@@ -63,6 +63,21 @@ workload_profile:
     existing_tools: []  # e.g., [terraform, ansible, jenkins, datadog]
     managed_services_preference: ""  # self_managed, managed, fully_managed
 
+  # --- People (ECAL Current State: who operates the solution?) ---
+  people:
+    team_size: ""  # e.g., "5 IT staff"
+    roles: []  # e.g., [dba, cloud_engineer, devops, security]
+    skill_gaps: []  # e.g., [kubernetes, terraform, oci_console]
+    managed_services_preference: ""  # self_managed, co_managed, fully_managed
+    change_readiness: ""  # resistant, cautious, open, eager
+
+  # --- Process (ECAL Current State: how do they operate today?) ---
+  process:
+    deployment_process: ""  # manual, scripted, ci_cd_basic, ci_cd_advanced, gitops
+    change_management: ""  # none, informal, cab_based, automated
+    incident_response: ""  # none, ad_hoc, on_call_rotation, noc_24x7, outsourced
+    backup_testing_frequency: ""  # never, annually, quarterly, monthly
+
   # --- Decision Drivers ---
   decision_drivers:
     technical:

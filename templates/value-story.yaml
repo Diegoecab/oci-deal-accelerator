@@ -1,0 +1,54 @@
+# Value Story Template — DEFINE Phase
+# Captures the value hypothesis linking business drivers to OCI outcomes
+
+value_story:
+  # --- Customer Context ---
+  customer_name: ""
+  industry: ""
+  engagement_date: ""
+  architect: ""
+
+  # --- Business Driver ---
+  # What is pushing the customer to act NOW?
+  business_driver:
+    primary: ""  # cost_reduction, modernization, performance, compliance, hardware_eol, contract_expiry, consolidation, competitive_pressure
+    urgency: ""  # Why now? e.g., "Hardware EOL in 6 months", "PCI audit in Q3"
+    quantified_impact: ""  # e.g., "$2M/year in legacy maintenance", "4h monthly downtime"
+
+  # --- Current Pain ---
+  # What specific problem does the customer experience?
+  current_pain:
+    summary: ""  # 1-2 sentences describing the problem in customer's terms
+    affected_stakeholders: []  # e.g., [CTO, DBA team, end users, compliance officer]
+    business_cost: ""  # Quantified cost of inaction: dollars, hours, risk
+
+  # --- Value Hypothesis ---
+  # "If we [action], the customer achieves [outcome]"
+  hypothesis:
+    action: ""  # e.g., "Migrate 3 Oracle databases from on-prem Exadata to ADB-S"
+    outcome: ""  # e.g., "60% reduction in DB admin effort, 99.995% availability, PCI compliance"
+    evidence: ""  # What supports this? e.g., "ADB-S automates patching, backups, tuning"
+
+  # --- SMART Validation ---
+  smart:
+    specific: ""  # What exactly will be done?
+    measurable: ""  # How will success be measured?
+    attainable: ""  # Is this technically feasible? (reference feature matrix, field findings)
+    relevant: ""  # How does this connect to the business driver?
+    time_based: ""  # When will this be delivered?
+
+  # --- Competitive Context ---
+  competitive:
+    incumbent: ""  # aws, azure, gcp, on_prem, none
+    why_oci: []  # e.g., ["BYOL cost advantage", "ADB-S unique capabilities", "FastConnect latency"]
+    honest_gaps: []  # e.g., ["Smaller marketplace", "Fewer regions in LATAM"]
+
+  # --- Confidence Assessment ---
+  confidence:
+    data_quality: ""  # high (AWR/metrics available), medium (estimates), low (guesses)
+    assumptions: []  # List key assumptions made
+    gaps_to_fill: []  # What information is still missing?
+
+  # --- Next Step ---
+  recommendation: ""  # proceed_to_design, iterate_hypothesis, insufficient_data
+  next_action: ""  # e.g., "Schedule design workshop", "Request AWR reports"

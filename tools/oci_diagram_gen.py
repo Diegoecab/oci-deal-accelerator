@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-OCI Architecture Diagram Generator
-Produces .drawio files with Oracle official container styles.
+OCI Architecture Diagram Generator — Hybrid drawpyo + Custom Icon Injection
+Produces .drawio files with Oracle official container styles and OCI Library icons.
+
+HYBRID APPROACH:
+- drawpyo handles: File, Page, Object (containers/groups), Edge (connections), save
+- Custom icon extractor (kb/diagram/oci-icons.json) handles: multi-cell OCI stencil icons
+  injected as raw XML into drawpyo's output
 
 Styles extracted from:
 - OCI Library.xml — 224 official OCI service icons
@@ -9,7 +14,7 @@ Styles extracted from:
 - Reference architectures: select-ai-apex, exadb-dr-on-db-at-azure
 
 Usage:
-    python oci_diagram_gen.py --spec architecture-spec.yaml --output diagram.drawio
+    python3.12 oci_diagram_gen.py --spec architecture-spec.yaml --output diagram.drawio
 
 Or import and use programmatically:
     from oci_diagram_gen import OCIDiagramGenerator
@@ -18,10 +23,17 @@ Or import and use programmatically:
     gen.save("output.drawio")
 """
 
+import json
+import os
+import re
 import yaml
 import argparse
 import sys
+import xml.etree.ElementTree as ET
 from typing import Optional
+
+import drawpyo
+import drawpyo.diagram
 
 # ============================================================
 # OCI OFFICIAL STYLES (from OCI Style Guide for Draw.io v24.2)
@@ -30,7 +42,7 @@ from typing import Optional
 STYLES = {
     # --- Container styles ---
     "tenancy": (
-        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
         "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
         "spacingTop=5;"
@@ -64,7 +76,7 @@ STYLES = {
         "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
     ),
 
-    # --- Service block styles ---
+    # --- Service block styles (fallback when no icon available) ---
     "svc_infra": (
         "rounded=1;whiteSpace=wrap;html=1;fillColor=#2d5967;"
         "strokeColor=none;fontColor=#FFFFFF;fontSize=8;"
@@ -96,40 +108,60 @@ STYLES = {
         "fontFamily=Oracle Sans;arcSize=10;"
     ),
 
-    # --- Connection styles ---
-    "conn_standard": (
-        "endArrow=block;endFill=1;html=1;strokeColor=#706e6f;"
-        "strokeWidth=1;fontFamily=Oracle Sans;"
-    ),
-    "conn_db": (
-        "endArrow=block;endFill=1;html=1;strokeColor=#aa643b;"
-        "strokeWidth=1.5;fontSize=8;fontColor=#312D2A;fontFamily=Oracle Sans;"
-    ),
-    "conn_adg": (
-        "endArrow=block;endFill=1;html=1;strokeColor=#AE562C;"
-        "strokeWidth=2;fontSize=8;fontColor=#312D2A;"
-        "fontFamily=Oracle Sans;dashed=1;dashPattern=10 6;"
-    ),
-    "conn_fastconnect": (
-        "endArrow=block;endFill=1;startArrow=block;startFill=1;"
-        "html=1;strokeColor=#804998;strokeWidth=2;fontSize=8;"
-        "fontColor=#312D2A;fontFamily=Oracle Sans;"
-    ),
-    "conn_migration": (
-        "endArrow=block;endFill=1;html=1;strokeColor=#706e6f;"
-        "strokeWidth=1.5;fontSize=8;fontColor=#312D2A;"
-        "fontFamily=Oracle Sans;dashed=1;dashPattern=12 6;"
-    ),
-    "conn_etl": (
-        "endArrow=block;endFill=1;html=1;strokeColor=#804998;"
-        "strokeWidth=1;fontSize=8;fontColor=#312D2A;"
-        "fontFamily=Oracle Sans;dashed=1;"
-    ),
-
     # --- Title ---
     "title": (
         "text;html=1;fontSize=10;fontColor=#70665E;"
         "fontFamily=Oracle Sans;align=right;verticalAlign=bottom;fontStyle=2;"
+    ),
+}
+
+# Connection style strings — used ONLY for raw XML fallback summary stats.
+# Actual edge styling is done via drawpyo Edge attributes.
+CONN_STYLES = {
+    "conn_standard": (
+        "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
+    ),
+    "conn_db": (
+        "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
+    ),
+    "conn_adg": (
+        "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "dashed=1;dashPattern=8 4;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
+    ),
+    "conn_fastconnect": (
+        "endArrow=open;endFill=0;startArrow=open;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
+    ),
+    "conn_migration": (
+        "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "dashed=1;dashPattern=10 6;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
+    ),
+    "conn_etl": (
+        "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
+        "dashed=1;dashPattern=6 4;"
+        "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        "labelBackgroundColor=none;"
     ),
 }
 
@@ -192,12 +224,62 @@ SVC_CATEGORY = {
 }
 
 
+# Map observability bar labels to icon service types
+OBS_TYPE_MAP = {
+    "monitoring": "monitoring",
+    "logging": "logging",
+    "logging analytics": "logging_analytics",
+    "apm": "apm",
+    "db management": "db_management",
+    "ops insights": "ops_insights",
+    "notifications": "notifications",
+    "events": "events",
+    "auditing": "monitoring",  # uses monitoring icon as closest match
+}
+
+
 class OCIDiagramGenerator:
-    """Generate .drawio files with OCI official styles."""
+    """Generate .drawio files using drawpyo for structure + custom icon injection.
+
+    drawpyo handles: File, Page, Object (containers/groups), Edge (connections).
+    Custom code handles: injecting multi-cell OCI stencil icons from oci-icons.json.
+    """
+
+    # Lazily loaded icon cache from kb/diagram/oci-icons.json
+    ICON_CACHE = None
+
+    @classmethod
+    def _load_icon_cache(cls):
+        """Load icon data from oci-icons.json if available."""
+        if cls.ICON_CACHE is not None:
+            return
+        # Try multiple paths: relative to this script, then cwd
+        candidates = [
+            os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "..", "kb", "diagram", "oci-icons.json"),
+            os.path.join("kb", "diagram", "oci-icons.json"),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    cls.ICON_CACHE = json.load(f)
+                return
+        # Not found — fall back to empty dict (colored rectangles)
+        cls.ICON_CACHE = {}
 
     def __init__(self):
-        self.cells = []
-        self._id_counter = 100
+        self._load_icon_cache()
+        self.file = drawpyo.File()
+        self.page = drawpyo.Page(file=self.file)
+        self._objects = {}        # cell_id (str) -> drawpyo Object
+        self._abs_positions = {}  # cell_id -> (abs_x, abs_y) for relative→absolute conversion
+        self._raw_cells = []      # raw mxCell XML strings for icon stencil cells
+        self._edge_extras = {}    # drawpyo edge id -> extra style attrs string
+        self._id_counter = 1000   # counter for auto-generated cell IDs
+        # Track counts for summary
+        self._container_count = 0
+        self._service_count = 0
+        self._connection_count = 0
 
     def _next_id(self) -> str:
         self._id_counter += 1
@@ -215,51 +297,6 @@ class OCIDiagramGenerator:
                 .replace('"', "&quot;")
                 .replace("\n", "&#xa;"))
 
-    def _make_cell(
-        self,
-        cell_id: str,
-        value: str,
-        style: str,
-        parent: str,
-        x: int,
-        y: int,
-        w: int,
-        h: int,
-        vertex: bool = True,
-        edge: bool = False,
-        source: Optional[str] = None,
-        target: Optional[str] = None,
-        waypoints: Optional[list] = None,
-    ) -> str:
-        """Create an mxCell and append it to the cells list."""
-        attrs = f'id="{cell_id}" value="{self._escape(value)}" style="{style}"'
-        if vertex:
-            attrs += ' vertex="1"'
-        if edge:
-            attrs += ' edge="1"'
-        if source:
-            attrs += f' source="{source}"'
-        if target:
-            attrs += f' target="{target}"'
-        attrs += f' parent="{parent}"'
-
-        if edge and waypoints:
-            geo = '<mxGeometry relative="1" as="geometry"><Array as="points">'
-            for wx, wy in waypoints:
-                geo += f'<mxPoint x="{wx}" y="{wy}"/>'
-            geo += '</Array></mxGeometry>'
-        elif edge:
-            geo = '<mxGeometry relative="1" as="geometry"/>'
-        else:
-            geo = (
-                f'<mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" '
-                f'as="geometry"/>'
-            )
-
-        cell = f'<mxCell {attrs}>{geo}</mxCell>'
-        self.cells.append(cell)
-        return cell_id
-
     def _get_svc_style(self, service_type: str, font_size: Optional[int] = None) -> str:
         """Get the style string for a service type."""
         category = SVC_CATEGORY.get(service_type, "svc_infra")
@@ -268,6 +305,40 @@ class OCIDiagramGenerator:
             style = style.replace("fontSize=8", f"fontSize={font_size}")
             style = style.replace("fontSize=9", f"fontSize={font_size}")
         return style
+
+    def _create_object(
+        self, cell_id: str, label: str, style_str: str,
+        parent_id: Optional[str], x: int, y: int, w: int, h: int,
+    ) -> "drawpyo.diagram.Object":
+        """Create a drawpyo Object with OCI style, register it, and return it.
+
+        drawpyo uses ABSOLUTE coordinates for children, but our specs use
+        RELATIVE coords (relative to parent). We convert by adding the
+        parent's absolute position to the child's relative offset.
+        """
+        parent_obj = self._objects.get(parent_id) if parent_id else None
+
+        # Convert relative (x, y) to absolute by adding parent's absolute position
+        abs_x, abs_y = x, y
+        if parent_obj:
+            parent_abs = self._abs_positions.get(parent_id, (0, 0))
+            abs_x = parent_abs[0] + x
+            abs_y = parent_abs[1] + y
+
+        if parent_obj:
+            obj = drawpyo.diagram.Object(
+                page=self.page, value=label, parent=parent_obj,
+            )
+        else:
+            obj = drawpyo.diagram.Object(page=self.page, value=label)
+        obj.apply_style_string(style_str)
+        obj.position = (abs_x, abs_y)
+        obj.width = w
+        obj.height = h
+        self._objects[cell_id] = obj
+        # Store the absolute position for children to reference
+        self._abs_positions[cell_id] = (abs_x, abs_y)
+        return obj
 
     # ================================================================
     # Container methods
@@ -278,49 +349,63 @@ class OCIDiagramGenerator:
         x: int = 30, y: int = 80, w: int = 1850, h: int = 720,
     ) -> str:
         """Add the outermost Tenancy container (dashed gray, no fill)."""
-        return self._make_cell(cell_id, label, STYLES["tenancy"], "1", x, y, w, h)
+        self._create_object(cell_id, label, STYLES["tenancy"], None, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_region(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 1140, h: int = 670,
     ) -> str:
         """Add a Region container (solid warm gray fill, rounded)."""
-        return self._make_cell(cell_id, label, STYLES["region"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["region"], parent, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_ad(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 1100, h: int = 640,
     ) -> str:
         """Add an Availability Domain container (darker gray fill)."""
-        return self._make_cell(cell_id, label, STYLES["ad"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["ad"], parent, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_vcn(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 1100, h: int = 600,
     ) -> str:
         """Add a VCN container (dashed burnt orange, thick, no fill)."""
-        return self._make_cell(cell_id, label, STYLES["vcn"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["vcn"], parent, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_subnet(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 280, h: int = 400,
     ) -> str:
         """Add a Subnet container (dashed burnt orange, thin, near-white fill)."""
-        return self._make_cell(cell_id, label, STYLES["subnet"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["subnet"], parent, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_compartment(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 400, h: int = 300,
     ) -> str:
         """Add a Compartment / Fault Domain / Tier container (dashed gray)."""
-        return self._make_cell(cell_id, label, STYLES["compartment"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["compartment"], parent, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_onprem(
         self, cell_id: str, label: str,
         x: int = 30, y: int = 850, w: int = 650, h: int = 120,
     ) -> str:
         """Add an On-Premises container (outside tenancy, dashed gray)."""
-        return self._make_cell(cell_id, label, STYLES["compartment"], "1", x, y, w, h)
+        self._create_object(cell_id, label, STYLES["compartment"], None, x, y, w, h)
+        self._container_count += 1
+        return cell_id
 
     def add_external(
         self, cell_id: str, label: str,
@@ -332,27 +417,155 @@ class OCIDiagramGenerator:
             "strokeColor=none;fontColor=#FFFFFF;fontSize=9;"
             "fontFamily=Oracle Sans;arcSize=12;verticalAlign=middle;align=center;"
         )
-        return self._make_cell(cell_id, label, style, "1", x, y, w, h)
+        self._create_object(cell_id, label, style, None, x, y, w, h)
+        return cell_id
 
     # ================================================================
     # Service block methods
     # ================================================================
+
+    @staticmethod
+    def _is_icon_label_cell(style: str) -> bool:
+        """Detect the label cell within an OCI Library icon."""
+        return ("verticalAlign=middle" in style
+                and ("align=center" in style or "align=left" in style)
+                and "shape=stencil(" in style
+                and "fillColor=none" in style)
 
     def add_service(
         self, cell_id: str, label: str, service_type: str, parent: str,
         x: int = 20, y: int = 35, w: int = 150, h: int = 50,
         font_size: Optional[int] = None,
     ) -> str:
-        """Add a service block with color based on category."""
+        """Add a service block with icon (if available) or colored rectangle fallback."""
+        icon_entry = self.ICON_CACHE.get(service_type) if self.ICON_CACHE else None
+        if icon_entry:
+            return self._add_service_with_icon(
+                cell_id, label, service_type, parent, icon_entry,
+                x, y, w, h, font_size,
+            )
+        # Fallback: colored rectangle via drawpyo Object
         style = self._get_svc_style(service_type, font_size)
-        return self._make_cell(cell_id, label, style, parent, x, y, w, h)
+        self._create_object(cell_id, label, style, parent, x, y, w, h)
+        self._service_count += 1
+        return cell_id
+
+    def _add_service_with_icon(
+        self, cell_id: str, label: str, service_type: str, parent: str,
+        icon_entry: dict,
+        x: int, y: int, w: int, h: int,
+        font_size: Optional[int] = None,
+    ) -> str:
+        """Embed official OCI icon cells inside a drawpyo group Object.
+
+        The group Object is created via drawpyo (so edges can connect to it).
+        Icon stencil cells are injected as raw XML with parent references
+        remapped to the group's drawpyo-assigned ID using a placeholder.
+        """
+        icon_w = icon_entry["w"]
+        icon_h = icon_entry["h"]
+        icon_cells = icon_entry["cells"]
+
+        # Layout: icon on top, custom label text below
+        label_h = max(20, h * 0.3)
+        icon_area_h = h - label_h
+
+        # Scale icon to fit the icon area
+        scale = min(w / icon_w, icon_area_h / icon_h, 1.0)
+        scaled_w = icon_w * scale
+        scaled_h = icon_h * scale
+
+        # Create an invisible group Object via drawpyo (for connections)
+        group_style = (
+            "group;fillColor=none;strokeColor=none;pointerEvents=1;"
+            "connectable=1;"
+        )
+        self._create_object(cell_id, "", group_style, parent, x, y, w, h)
+
+        # Build ID mapping: original cell id -> unique cell id
+        original_ids = set()
+        for cell_xml in icon_cells:
+            cell_elem = ET.fromstring(cell_xml)
+            original_ids.add(cell_elem.get("id"))
+
+        id_map = {}
+        for orig_id in sorted(original_ids,
+                              key=lambda x_: int(x_) if x_.isdigit() else 0):
+            id_map[orig_id] = f"{cell_id}_i{orig_id}"
+
+        # Center the icon horizontally within the group
+        icon_offset_x = (w - scaled_w) / 2
+
+        # Use a placeholder for the group's drawpyo ID — replaced in to_xml()
+        group_placeholder = f"__DRAWPYO_{cell_id}__"
+
+        # Emit icon cells (skip the library's built-in label cell)
+        for cell_xml in icon_cells:
+            cell_elem = ET.fromstring(cell_xml)
+            orig_id = cell_elem.get("id")
+            orig_parent = cell_elem.get("parent", "1")
+            style = cell_elem.get("style", "")
+
+            # Skip the icon's built-in label cell — we replace with our own
+            if self._is_icon_label_cell(style):
+                continue
+
+            new_id = id_map[orig_id]
+
+            # Remap parent
+            if orig_parent == "1":
+                new_parent = group_placeholder
+            elif orig_parent in id_map:
+                new_parent = id_map[orig_parent]
+            else:
+                new_parent = group_placeholder
+
+            cell_elem.set("id", new_id)
+            cell_elem.set("parent", new_parent)
+
+            # Scale and offset geometry
+            geo = cell_elem.find("mxGeometry")
+            if geo is not None:
+                for attr in ("x", "y", "width", "height"):
+                    val = geo.get(attr)
+                    if val is not None:
+                        try:
+                            geo.set(attr, str(float(val) * scale))
+                        except ValueError:
+                            pass
+                # Offset x for centering (only top-level icon cells parented to group)
+                if orig_parent == "1":
+                    cur_x = float(geo.get("x", "0"))
+                    geo.set("x", str(cur_x + icon_offset_x))
+
+            cell_str = ET.tostring(cell_elem, encoding="unicode")
+            self._raw_cells.append(cell_str)
+
+        # Add our custom label below the icon as a drawpyo Object
+        fs = font_size or 10
+        label_style = (
+            f"text;html=1;whiteSpace=wrap;overflow=fill;align=center;verticalAlign=top;"
+            f"fontFamily=Oracle Sans;fontSize={fs};fontColor=#312D2A;"
+            f"strokeColor=none;fillColor=none;spacingTop=2;"
+        )
+        label_w = max(w, 120)
+        label_x = int((w - label_w) / 2)
+        label_id = f"{cell_id}_label"
+        self._create_object(
+            label_id, label, label_style, cell_id,
+            label_x, int(scaled_h + 2), int(label_w), int(label_h),
+        )
+
+        self._service_count += 1
+        return cell_id
 
     def add_obs_bar(
         self, cell_id: str, label: str, parent: str,
         x: int = 20, y: int = 640, w: int = 78, h: int = 22,
     ) -> str:
         """Add an observability bar element (small teal pill)."""
-        return self._make_cell(cell_id, label, STYLES["obs_bar"], parent, x, y, w, h)
+        self._create_object(cell_id, label, STYLES["obs_bar"], parent, x, y, w, h)
+        return cell_id
 
     # ================================================================
     # Connection methods
@@ -363,15 +576,66 @@ class OCIDiagramGenerator:
         source: str, target: str,
         waypoints: Optional[list] = None,
     ) -> str:
-        """Add a connection arrow between two elements."""
-        style = STYLES.get(f"conn_{conn_type}", STYLES["conn_standard"])
-        if label:
-            style += "fontSize=8;fontColor=#312D2A;"
-        return self._make_cell(
-            cell_id, label or "", style, "1", 0, 0, 0, 0,
-            vertex=False, edge=True, source=source, target=target,
-            waypoints=waypoints,
+        """Add a connection arrow between two elements using drawpyo Edge."""
+        src_obj = self._objects.get(source)
+        tgt_obj = self._objects.get(target)
+        if not src_obj or not tgt_obj:
+            # Source or target not found — skip silently
+            return cell_id
+
+        edge = drawpyo.diagram.Edge(
+            page=self.page, source=src_obj, target=tgt_obj,
+            label=label or "",
         )
+
+        # Base OCI style: open arrows, charcoal color, orthogonal routing
+        edge.line_end_target = "open"
+        edge.line_end_source = "none"
+        edge.strokeColor = "#312D2A"
+        edge.strokeWidth = 1
+        edge.rounded = False
+        edge.endSize = 6
+        edge.waypoints = "orthogonal"
+
+        # Font styling via text_format (drawpyo's supported approach)
+        edge.text_format.fontFamily = "Oracle Sans"
+        edge.text_format.fontSize = 10
+        edge.text_format.fontColor = "#312D2A"
+        edge.text_format.labelBackgroundColor = "none"
+
+        # Extra style attributes that drawpyo Edge doesn't support natively.
+        # These are injected via XML post-processing in to_xml().
+        extra_style = "elbow=vertical;endFill=0;startFill=0;"
+
+        # Customize per connection type
+        if conn_type == "fastconnect":
+            # Bidirectional
+            edge.line_end_source = "open"
+        elif conn_type == "adg":
+            # Dashed (ADG replication)
+            edge.pattern = "dashed_small"
+            extra_style += "dashPattern=8 4;"
+        elif conn_type == "migration":
+            # Dashed (migration)
+            edge.pattern = "dashed_medium"
+            extra_style += "dashPattern=10 6;"
+        elif conn_type == "etl":
+            # Dashed (ETL/streaming)
+            edge.pattern = "dashed_small"
+            extra_style += "dashPattern=6 4;"
+        # "standard" and "db" use solid line defaults — no changes needed
+
+        # Add waypoints if provided
+        if waypoints:
+            for wx, wy in waypoints:
+                edge.add_point(wx, wy)
+
+        # Store extra style for post-processing (keyed by drawpyo's edge id)
+        self._edge_extras[str(edge.id)] = extra_style
+
+        self._objects[cell_id] = src_obj  # register for potential referencing
+        self._connection_count += 1
+        return cell_id
 
     # ================================================================
     # Title
@@ -382,42 +646,74 @@ class OCIDiagramGenerator:
         x: int = 1400, y: int = 990, w: int = 470, h: int = 35,
     ) -> str:
         """Add an italic title label."""
-        return self._make_cell("title", text, STYLES["title"], "1", x, y, w, h)
+        self._create_object("title", text, STYLES["title"], None, x, y, w, h)
+        return "title"
 
     # ================================================================
-    # Output
+    # Output — merge drawpyo XML + injected raw icon cells
     # ================================================================
 
     def to_xml(self) -> str:
-        """Generate the complete .drawio XML."""
-        header = (
+        """Generate the complete .drawio XML.
+
+        1. Get drawpyo's XML via file.xml property
+        2. Replace drawpyo's default mxfile/diagram attributes with OCI ones
+        3. Inject extra style attributes into edge cells
+        4. Inject raw icon stencil cells before </root>
+        5. Replace group parent placeholders with actual drawpyo IDs
+        """
+        xml = self.file.xml
+
+        # Replace drawpyo's default mxfile attributes with OCI-branded ones
+        xml = re.sub(
+            r'<mxfile[^>]*>',
             '<mxfile host="app.diagrams.net" '
-            'agent="OCI Deal Accelerator" version="24.0.0" type="device">\n'
-            '  <diagram name="OCI Architecture" id="oci-arch">\n'
-            '    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" '
+            'agent="OCI Deal Accelerator" version="24.0.0" type="device">',
+            xml,
+        )
+
+        # Replace drawpyo's default diagram attributes
+        xml = re.sub(
+            r'<diagram[^>]*>',
+            '<diagram name="OCI Architecture" id="oci-arch">',
+            xml,
+        )
+
+        # Replace drawpyo's default mxGraphModel attributes with OCI page size
+        xml = re.sub(
+            r'<mxGraphModel[^>]*>',
+            '<mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" '
             'guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
             'page="1" pageScale="1" pageWidth="1920" pageHeight="1100" '
-            'math="0" shadow="0">\n'
-            '      <root>\n'
-            '        <mxCell id="0"/>\n'
-            '        <mxCell id="1" parent="0"/>\n'
+            'math="0" shadow="0">',
+            xml,
         )
 
-        body = "\n".join(f"        {c}" for c in self.cells)
+        # Inject extra style attributes into edge cells (e.g., elbow, dashPattern)
+        for edge_id, extra_style in self._edge_extras.items():
+            # Find the edge cell by its drawpyo ID and append extra styles
+            pattern = f'id="{edge_id}" style="'
+            if pattern in xml:
+                xml = xml.replace(pattern, f'id="{edge_id}" style="{extra_style}')
 
-        footer = (
-            '\n      </root>\n'
-            '    </mxGraphModel>\n'
-            '  </diagram>\n'
-            '</mxfile>'
-        )
+        # Inject raw icon stencil cells before </root>
+        if self._raw_cells:
+            inject = "\n".join(f"        {c}" for c in self._raw_cells)
+            xml = xml.replace("</root>", inject + "\n      </root>")
 
-        return header + body + footer
+        # Replace placeholder parent references with actual drawpyo IDs
+        for cell_id, obj in self._objects.items():
+            placeholder = f"__DRAWPYO_{cell_id}__"
+            if placeholder in xml:
+                xml = xml.replace(placeholder, str(obj.id))
+
+        return xml
 
     def save(self, filepath: str):
         """Save to a .drawio file."""
+        xml = self.to_xml()
         with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(self.to_xml())
+            f.write(xml)
 
     # ================================================================
     # High-level: build from YAML spec
@@ -429,7 +725,7 @@ class OCIDiagramGenerator:
 
         The spec follows the OCI visual hierarchy:
 
-            tenancy → region(s) → vcn(s) → subnet(s) → service(s)
+            tenancy -> region(s) -> vcn(s) -> subnet(s) -> service(s)
 
         Plus optional on-premises, external actors, and connections.
         See examples/diagram-spec.yaml for the full format.
@@ -533,14 +829,27 @@ class OCIDiagramGenerator:
                     )
                     gx += gw_w + 10
 
-            # Observability row at bottom of region
+            # Observability row at bottom of region — uses icons
             if region.get("observability"):
+                obs_icon_w = 90
+                obs_icon_h = 80
                 ox = 25
-                oy = rh - 32
+                oy = rh - obs_icon_h - 10
                 for obs_label in region["observability"]:
                     obs_id = gen._next_id()
-                    gen.add_obs_bar(obs_id, obs_label, region["id"], ox, oy, 80, 22)
-                    ox += 88
+                    obs_type = OBS_TYPE_MAP.get(obs_label.lower(), None)
+                    if obs_type:
+                        gen.add_service(
+                            obs_id, obs_label, obs_type,
+                            region["id"], ox, oy, obs_icon_w, obs_icon_h,
+                            font_size=8,
+                        )
+                    else:
+                        gen.add_obs_bar(
+                            obs_id, obs_label, region["id"],
+                            ox, oy + obs_icon_h - 22, 80, 22,
+                        )
+                    ox += obs_icon_w + 10
 
         # On-premises
         if spec.get("onprem"):
@@ -604,18 +913,12 @@ def main():
     gen.save(args.output)
 
     # Print summary
-    containers = sum(1 for c in gen.cells if 'vertex="1"' in c and
-                     any(s in c for s in ['dashed=1', 'fillColor=#F5F4F2',
-                                          'fillColor=#DFDCD8']))
-    services = sum(1 for c in gen.cells if 'vertex="1"' in c and
-                   'arcSize=8' in c)
-    connections = sum(1 for c in gen.cells if 'edge="1"' in c)
-
     print(f"Generated: {args.output}")
-    print(f"  Containers: {containers}")
-    print(f"  Service blocks: {services}")
-    print(f"  Connections: {connections}")
-    print(f"  Total cells: {len(gen.cells)}")
+    print(f"  Containers: {gen._container_count}")
+    print(f"  Service blocks: {gen._service_count}")
+    print(f"  Connections: {gen._connection_count}")
+    print(f"  Raw icon cells: {len(gen._raw_cells)}")
+    print(f"  Registered objects: {len(gen._objects)}")
 
 
 if __name__ == "__main__":

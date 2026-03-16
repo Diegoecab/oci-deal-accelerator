@@ -1,0 +1,128 @@
+# Business Patterns Library
+# Proven business-level patterns that map customer drivers to OCI solution strategies
+# Referenced during DEFINE/Ideate to formulate value hypotheses
+
+patterns:
+
+  # --- Cost Optimization Patterns ---
+  - id: biz_cost_reduction_db
+    name: "Database Cost Reduction"
+    business_driver: cost_reduction
+    hypothesis_template: "Migrate {n} Oracle databases from {current_platform} to ADB-S, reducing total DB cost by {pct}% through autonomous operations and BYOL/ULA leverage"
+    applicable_when:
+      - "Customer runs Oracle databases on-prem or in AWS/Azure"
+      - "Existing ULA or BYOL licenses available"
+      - "DBA team spends >50% time on maintenance tasks"
+    typical_outcome:
+      cost_savings: "40-70% vs on-prem, 30-50% vs AWS RDS Oracle"
+      operational_savings: "50-80% reduction in DBA administrative effort"
+    evidence:
+      - "ADB-S automates patching, tuning, backups"
+      - "BYOL cost advantage vs AWS License Included"
+    technology_patterns: [database_ha_adb_s, database_dr_cross_region]
+    risks: ["Feature compatibility gaps", "Migration complexity for customized DBs"]
+
+  - id: biz_cost_reduction_compute
+    name: "Compute Cost Optimization"
+    business_driver: cost_reduction
+    hypothesis_template: "Right-size and modernize {n} compute workloads to OCI Flex shapes with auto-scaling, reducing compute spend by {pct}%"
+    applicable_when:
+      - "Over-provisioned VMs on-prem or in another cloud"
+      - "Variable workload patterns with steady-state over-provisioning"
+    typical_outcome:
+      cost_savings: "30-50% through right-sizing + auto-scaling"
+    technology_patterns: [compute_scaling]
+
+  # --- Modernization Patterns ---
+  - id: biz_app_modernization
+    name: "Application Modernization"
+    business_driver: modernization
+    hypothesis_template: "Modernize {app_name} from {current_stack} to cloud-native on OKE, improving deployment frequency from {current_freq} to {target_freq}"
+    applicable_when:
+      - "Monolithic application limiting agility"
+      - "Slow deployment cycles (monthly or longer)"
+      - "Team has or is building container/K8s skills"
+    typical_outcome:
+      deployment_frequency: "From monthly to daily/weekly"
+      scalability: "Horizontal auto-scaling vs vertical only"
+    technology_patterns: [compute_scaling]
+    risks: ["Requires significant app refactoring", "Team skill gap"]
+
+  - id: biz_db_modernization
+    name: "Database Modernization (non-Oracle)"
+    business_driver: modernization
+    hypothesis_template: "Migrate {db_engine} to OCI-managed {target_service}, eliminating operational overhead while maintaining application compatibility"
+    applicable_when:
+      - "Running self-managed MySQL, PostgreSQL, or MongoDB"
+      - "Want to reduce operational burden without app rewrite"
+    typical_outcome:
+      operational_savings: "Automated backups, patching, HA"
+    technology_patterns: [database_ha_adb_s]
+
+  # --- Compliance Patterns ---
+  - id: biz_compliance_driven
+    name: "Compliance-Driven Migration"
+    business_driver: compliance
+    hypothesis_template: "Migrate {scope} to OCI to meet {compliance_framework} requirements by {deadline}, leveraging OCI's built-in compliance controls"
+    applicable_when:
+      - "Upcoming compliance audit or certification deadline"
+      - "Current infrastructure doesn't meet regulatory requirements"
+      - "Data residency or sovereignty requirements"
+    typical_outcome:
+      compliance: "Certification-ready infrastructure"
+      timeline: "Typically 8-16 weeks for standard compliance scope"
+    technology_patterns: [security_baseline, compliance_pci]
+    risks: ["Compliance scope creep", "Shared responsibility model gaps"]
+
+  # --- Hardware EOL / Contract Expiry Patterns ---
+  - id: biz_hardware_eol
+    name: "Hardware End-of-Life Migration"
+    business_driver: hardware_eol
+    hypothesis_template: "Migrate {n} workloads from EOL {hardware} to OCI before {eol_date}, avoiding {cost} hardware refresh while gaining cloud elasticity"
+    applicable_when:
+      - "On-prem hardware approaching end of support"
+      - "Capital expenditure avoidance is a driver"
+      - "Timeline is fixed by hardware support dates"
+    typical_outcome:
+      capex_avoidance: "Avoid $X hardware refresh"
+      opex_model: "Shift to predictable OpEx"
+    technology_patterns: [database_ha_adb_s, compute_scaling, networking_basic]
+
+  - id: biz_contract_expiry
+    name: "Cloud Contract Expiry / Repatriation"
+    business_driver: contract_expiry
+    hypothesis_template: "Migrate {n} workloads from {incumbent_cloud} to OCI before contract renewal, reducing cloud spend by {pct}% with better Oracle licensing economics"
+    applicable_when:
+      - "AWS/Azure contract up for renewal"
+      - "Running Oracle workloads on non-Oracle cloud"
+      - "Significant Oracle license cost on AWS/Azure"
+    typical_outcome:
+      cost_savings: "30-60% for Oracle DB workloads (BYOL advantage)"
+    technology_patterns: [database_ha_adb_s, networking_hub_spoke]
+
+  # --- Performance Patterns ---
+  - id: biz_performance_improvement
+    name: "Performance Improvement"
+    business_driver: performance
+    hypothesis_template: "Migrate {workload} to OCI {target_service} to achieve {target_metric}, resolving current {pain_point}"
+    applicable_when:
+      - "Current platform cannot meet performance SLAs"
+      - "Latency or throughput is a business-impacting issue"
+      - "Exadata-class performance needed without Exadata cost"
+    typical_outcome:
+      performance: "2-5x improvement typical with ADB-S/ExaCS"
+    technology_patterns: [database_ha_adb_s]
+
+  # --- Consolidation Patterns ---
+  - id: biz_consolidation
+    name: "Database Consolidation"
+    business_driver: consolidation
+    hypothesis_template: "Consolidate {n} Oracle databases into {target_n} ADB-S instances, reducing management complexity and licensing footprint"
+    applicable_when:
+      - "Many small Oracle databases (sprawl)"
+      - "Under-utilized database instances"
+      - "License optimization opportunity"
+    typical_outcome:
+      license_reduction: "40-60% fewer required OCPUs"
+      operational_reduction: "Manage N instead of N*10 instances"
+    technology_patterns: [database_ha_adb_s]

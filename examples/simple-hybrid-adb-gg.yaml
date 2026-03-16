@@ -1,0 +1,167 @@
+# Simple Hybrid Architecture: AWS App + ADB-S HA/DR + GoldenGate to BigData
+#
+# Layout (left to right):
+#   AWS Cloud → OCI Region 1 (ADB-S primary + GoldenGate) → OCI Region 2 (ADB-S standby)
+#                                    ↓
+#                              BigData / Analytics
+
+title: "Hybrid Architecture — AWS App + OCI ADB-S with ADG + GoldenGate\nExtraction to BigData"
+
+external:
+  - id: aws-app
+    label: "AWS\nApplication\n(EC2 / EKS)"
+    x: 30
+    y: 280
+    w: 150
+    h: 80
+
+tenancy:
+  label: "Oracle Cloud Infrastructure"
+  x: 230
+  y: 30
+  w: 1350
+  h: 780
+
+  regions:
+    # ---- Primary Region: Ashburn ----
+    - id: region1
+      label: "US East (Ashburn)"
+      primary: true
+      x: 15
+      y: 30
+      w: 700
+      h: 730
+
+      vcns:
+        - id: vcn1
+          label: "prod-vcn 10.0.0.0/16"
+          x: 15
+          y: 30
+          w: 670
+          h: 520
+
+          subnets:
+            - id: sub-db
+              label: "Private Subnet — Data Tier\n10.0.20.0/24"
+              w: 310
+              h: 420
+              services:
+                - id: adb-primary
+                  label: "ADB-S Primary\nOLTP 23ai\n8 OCPU / 4 TB\nBYOL — Private EP"
+                  type: adb
+                  w: 200
+                  h: 150
+                  fontSize: 8
+                - id: gg
+                  label: "GoldenGate\nCapture + Pump"
+                  type: goldengate
+                  w: 180
+                  h: 130
+
+            - id: sub-analytics
+              label: "Private Subnet — Analytics\n10.0.30.0/24"
+              w: 310
+              h: 420
+              services:
+                - id: adw
+                  label: "ADB-S Data Warehouse\n4 OCPU / 2 TB"
+                  type: adw
+                  w: 200
+                  h: 140
+                - id: obj-storage
+                  label: "Object Storage\nData Lake"
+                  type: object_storage
+                  w: 160
+                  h: 120
+
+          gateways:
+            - {id: sgw1, label: "Service\nGateway", type: sgw, w: 100, h: 60}
+            - {id: drg1, label: "DRG", type: drg, w: 80, h: 60}
+
+      observability:
+        - Monitoring
+        - Logging
+
+    # ---- DR Region: Phoenix ----
+    - id: region2
+      label: "US West (Phoenix) — DR"
+      primary: false
+      x: 750
+      y: 30
+      w: 570
+      h: 500
+
+      vcns:
+        - id: vcn-dr
+          label: "dr-vcn 10.1.0.0/16"
+          x: 15
+          y: 30
+          w: 540
+          h: 370
+
+          subnets:
+            - id: sub-dr-db
+              label: "Private Subnet — DR Data Tier\n10.1.20.0/24"
+              w: 260
+              h: 280
+              services:
+                - id: adb-standby
+                  label: "ADB-S Standby\nCross-Region ADG\n8 OCPU / 4 TB"
+                  type: adb
+                  w: 200
+                  h: 150
+                  fontSize: 8
+
+            - id: sub-dr-app
+              label: "Private Subnet — DR App\n10.1.10.0/24"
+              w: 230
+              h: 120
+              services:
+                - id: dr-app
+                  label: "App Tier (Dormant)\nTerraform on failover"
+                  type: dormant
+                  w: 200
+                  h: 50
+
+          gateways:
+            - {id: drg-dr, label: "DRG", type: drg, w: 80, h: 60}
+
+      observability:
+        - Monitoring
+
+# Connections
+connections:
+  # AWS App to ADB-S via FastConnect/VPN
+  - id: c1
+    from: aws-app
+    to: drg1
+    type: fastconnect
+    label: "FastConnect\n1 Gbps"
+
+  # GoldenGate extract from primary
+  - id: c2
+    from: adb-primary
+    to: gg
+    type: db
+    label: "CDC Extract"
+
+  # GoldenGate replicate to Data Warehouse
+  - id: c3
+    from: gg
+    to: adw
+    type: etl
+    label: "Apply"
+
+  # Cross-region ADG
+  - id: c4
+    from: adb-primary
+    to: adb-standby
+    type: adg
+    label: "Autonomous Data Guard\nAsync — RPO ≈ seconds"
+
+  # DRG peering between regions
+  - id: c5
+    from: drg1
+    to: drg-dr
+    type: standard
+    label: "Remote Peering"

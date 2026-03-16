@@ -12,6 +12,8 @@ output_selection:
       doc only          ← technical document without deck
     If not specified, produce "deck" only.
 
+      deliver         ← handover + go-live checklist + success criteria
+
   default: "deck"
 
   formats:
@@ -35,6 +37,15 @@ output_selection:
       generator: "tools/oci_cost_gen.py"
       description: "Detailed cost spreadsheet with tabs"
 
+    deliver:
+      extension: ".yaml"
+      generator: "manual"
+      description: "DELIVER phase artifacts: handover, go-live checklist, success criteria"
+      artifacts:
+        - "templates/handover-document.yaml"
+        - "templates/go-live-checklist.yaml"
+        - "templates/success-criteria.yaml"
+
 # Slide Deck Structure (10-12 slides)
 deck_structure:
   slides:
@@ -44,8 +55,8 @@ deck_structure:
       style: "Dark background (#312D2A), white text"
 
     - number: 2
-      type: summary
-      content: "Why, current state, target state, timeline"
+      type: value_story
+      content: "Business driver, value hypothesis, desired outcomes (SMART)"
       style: "Light background, left-aligned"
 
     - number: 3
@@ -85,18 +96,23 @@ deck_structure:
       style: "Timeline visual, colored phases"
 
     - number: 10
+      type: operations_summary
+      content: "Monitoring, patching, incident response, ops model highlights"
+      style: "Icon grid, clean layout"
+
+    - number: 11
       type: risks
       content: "Top 5-6 risks with severity and mitigation"
       style: "Table with color-coded severity"
 
-    - number: 11
+    - number: 12
       type: scorecard
       content: "5-pillar WA scorecard + recommendations"
       style: "Horizontal bars, traffic-light colors"
 
-    - number: 12
+    - number: 13
       type: next_steps
-      content: "3-5 concrete next steps with dates"
+      content: "3-5 concrete SMART next steps with dates"
       style: "Numbered list, forward-looking"
 
 # Design Standards

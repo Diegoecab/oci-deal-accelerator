@@ -1,8 +1,8 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons
 
-PYTHON ?= python3
+PYTHON ?= python3.12
 SPEC_DIR = examples
 OUTPUT_DIR = examples/sample-output
 
@@ -51,6 +51,10 @@ codex-package: ## Package as Codex skill
 	cp -r kb codex/
 	cp -r config codex/
 	@echo "Codex skill package ready in codex/"
+
+update-icons: ## Re-extract OCI icons after updating OCI Library.xml
+	$(PYTHON) tools/oci_icon_extractor.py
+	@echo "Updated kb/diagram/oci-icons.json from OCI Library.xml"
 
 clean: ## Remove generated output files
 	rm -f examples/sample-output/*.drawio

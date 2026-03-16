@@ -1,0 +1,109 @@
+# Operations Model Template — DESIGN Phase
+# Defines how the solution will be operated day-to-day after go-live
+
+operations_model:
+  # --- Header ---
+  customer_name: ""
+  project_name: ""
+  date: ""
+  architect: ""
+
+  # --- Operational Responsibility ---
+  # Who operates what?
+  responsibility_model:
+    type: ""  # self_managed, co_managed, fully_managed
+    oracle_managed: []  # e.g., ["ADB-S infrastructure", "Exadata patching"]
+    customer_managed: []  # e.g., ["Application deployment", "Schema changes", "User management"]
+    partner_managed: []  # e.g., ["24x7 NOC monitoring"]
+
+  # --- Monitoring & Alerting ---
+  monitoring:
+    platform: ""  # OCI Monitoring, OCI Logging Analytics, Datadog, Grafana, etc.
+    dashboards:
+      - name: ""  # e.g., "Infrastructure Health"
+        scope: ""  # e.g., "Compute, networking, storage metrics"
+      - name: ""
+        scope: ""
+    alerting:
+      channels: []  # e.g., [email, PagerDuty, Slack, OCI Notifications]
+      critical_alerts:
+        - condition: ""  # e.g., "CPU > 90% for 5 min"
+          action: ""  # e.g., "Page on-call DBA"
+        - condition: ""
+          action: ""
+    log_retention: ""  # e.g., "90 days hot, 1 year archive"
+
+  # --- Patching & Maintenance ---
+  patching:
+    os_patching:
+      frequency: ""  # e.g., "Monthly, third Saturday"
+      method: ""  # e.g., "OS Management Service, rolling updates"
+      downtime: ""  # e.g., "Zero downtime (rolling)"
+    database_patching:
+      frequency: ""  # e.g., "Quarterly RU"
+      method: ""  # e.g., "ADB-S auto-patching with maintenance window"
+      downtime: ""  # e.g., "< 2 min with auto-patching"
+    application_patching:
+      frequency: ""
+      method: ""
+
+  # --- Backup & Recovery ---
+  backup:
+    strategy:
+      - component: ""  # e.g., "ADB-S"
+        method: ""  # e.g., "Automatic daily backup to Object Storage"
+        retention: ""  # e.g., "60 days"
+        rpo: ""  # e.g., "< 1 hour (continuous archive log backup)"
+      - component: ""
+        method: ""
+        retention: ""
+        rpo: ""
+    recovery_testing:
+      frequency: ""  # e.g., "Quarterly"
+      last_test: ""
+      next_test: ""
+
+  # --- Incident Response ---
+  incident_response:
+    severity_levels:
+      - level: "P1 — Critical"
+        definition: ""  # e.g., "Production down, data loss risk"
+        response_time: ""  # e.g., "15 minutes"
+        escalation: ""  # e.g., "On-call DBA → SA → Oracle Support"
+      - level: "P2 — High"
+        definition: ""
+        response_time: ""
+        escalation: ""
+      - level: "P3 — Medium"
+        definition: ""
+        response_time: ""
+        escalation: ""
+    runbooks:
+      - scenario: ""  # e.g., "ADB-S failover"
+        location: ""  # e.g., "Confluence/wiki link"
+      - scenario: ""
+        location: ""
+
+  # --- Capacity Management ---
+  capacity:
+    review_cadence: ""  # e.g., "Monthly"
+    scaling_triggers:
+      - metric: ""  # e.g., "CPU utilization"
+        threshold: ""  # e.g., "> 70% sustained for 1 hour"
+        action: ""  # e.g., "Auto-scale OCPUs (ADB-S) or add instance (OKE HPA)"
+    growth_forecast: ""  # e.g., "15% annual data growth, 10% compute growth"
+
+  # --- Security Operations ---
+  security_ops:
+    vulnerability_scanning: ""  # e.g., "Cloud Guard + quarterly pen test"
+    access_review_cadence: ""  # e.g., "Quarterly IAM review"
+    key_rotation: ""  # e.g., "Annual for Vault master keys"
+    compliance_audit_schedule: ""  # e.g., "Annual SOC2 Type II"
+
+  # --- Cost Management ---
+  cost_management:
+    budget_alerts:
+      - threshold: ""  # e.g., "80% of monthly budget"
+        action: ""  # e.g., "Email to finance + architect"
+    optimization_cadence: ""  # e.g., "Monthly review of unused resources"
+    reserved_capacity_review: ""  # e.g., "Annual review of reserved vs. PAYG"

@@ -1,0 +1,104 @@
+# Handover Document Template — DELIVER/Adopt Phase
+# Single-source summary for implementation team handover
+
+handover:
+  # --- Header ---
+  customer_name: ""
+  project_name: ""
+  date: ""
+  architect: ""
+  implementation_partner: ""  # Oracle Consulting, partner name, customer self-implement
+
+  # --- Value Story Summary ---
+  business_driver: ""
+  desired_outcome: ""
+  success_criteria_reference: ""  # pointer to success-criteria artifact
+
+  # --- Scope ---
+  scope:
+    in_scope:
+      - ""
+    out_of_scope:
+      - ""
+    mvp_scope:
+      - ""  # What ships in Phase 1
+
+  # --- Architecture Summary ---
+  architecture:
+    diagram_reference: ""  # path to .drawio file
+    key_decisions:
+      - decision: ""
+        rationale: ""
+        adr_reference: ""  # e.g., "ADR-001"
+    services_used:
+      - service: ""
+        purpose: ""
+        configuration: ""  # e.g., "ADB-S, 4 base OCPU, auto-scaling to 12"
+
+  # --- Environment Strategy ---
+  environments:
+    - name: "Production"
+      region: ""
+      sizing: ""  # e.g., "Full sizing per proposal"
+    - name: "UAT/Staging"
+      region: ""
+      sizing: ""  # e.g., "50% of production"
+    - name: "Development"
+      region: ""
+      sizing: ""  # e.g., "25% of production"
+
+  # --- Migration Plan Summary ---
+  migration:
+    strategy: ""  # e.g., "Phased migration over 8 weeks"
+    phases:
+      - phase: 1
+        description: ""
+        duration: ""
+        components: []
+        dependencies: []
+      - phase: 2
+        description: ""
+        duration: ""
+        components: []
+        dependencies: []
+    tooling: []  # e.g., [DMS, GoldenGate, Data Pump]
+    rollback_plan: ""
+
+  # --- Open Items ---
+  open_items:
+    - item: ""
+      owner: ""
+      due_date: ""
+      impact_if_unresolved: ""  # e.g., "Cannot proceed with Phase 2"
+
+  # --- Assumptions to Verify ---
+  assumptions:
+    - assumption: ""  # e.g., "AWR data represents typical workload"
+      status: ""  # confirmed, pending, at_risk
+      verification_method: ""
+
+  # --- Risk Register Reference ---
+  top_risks:
+    - risk: ""
+      severity: ""  # critical, high, medium
+      mitigation: ""
+      owner: ""
+
+  # --- Contacts ---
+  contacts:
+    oracle:
+      - role: ""
+        name: ""
+        availability: ""  # e.g., "Available for questions during implementation"
+    customer:
+      - role: ""
+        name: ""
+    partner:
+      - role: ""
+        name: ""
+
+  # --- Governance ---
+  governance:
+    steering_cadence: ""  # e.g., "Bi-weekly"
+    escalation_path: ""
+    change_control: ""  # e.g., "Changes via JIRA, approved by steering committee"

@@ -355,6 +355,63 @@ fields:
         default: false
         description: "Whether old and new systems must run in parallel during cutover"
 
+  # --- People & Process (ECAL Current State expansion) ---
+  people:
+    team_size:
+      type: integer
+      required: false
+      description: "Total IT team size relevant to the engagement"
+    roles:
+      type: list
+      item_type: string
+      required: false
+      default: []
+      description: "Team roles (e.g., ['dba', 'cloud_engineer', 'devops', 'security', 'network'])"
+    skill_gaps:
+      type: list
+      item_type: string
+      required: false
+      default: []
+      description: "Skills the team lacks for the proposed solution (e.g., ['kubernetes', 'terraform', 'oci_console'])"
+    managed_services_preference:
+      type: enum
+      values: [self_managed, co_managed, fully_managed]
+      required: false
+      default: "co_managed"
+      description: "How much operational responsibility the customer wants to retain"
+    change_readiness:
+      type: enum
+      values: [resistant, cautious, open, eager]
+      required: false
+      default: "cautious"
+      description: "Organizational readiness for change"
+
+  process:
+    deployment_process:
+      type: enum
+      values: [manual, scripted, ci_cd_basic, ci_cd_advanced, gitops]
+      required: false
+      default: "manual"
+      description: "Current deployment maturity"
+    change_management:
+      type: enum
+      values: [none, informal, cab_based, automated]
+      required: false
+      default: "informal"
+      description: "Change approval process"
+    incident_response:
+      type: enum
+      values: [none, ad_hoc, on_call_rotation, noc_24x7, outsourced]
+      required: false
+      default: "ad_hoc"
+      description: "Current incident response model"
+    backup_testing_frequency:
+      type: enum
+      values: [never, annually, quarterly, monthly]
+      required: false
+      default: "never"
+      description: "How often backup/recovery is tested"
+
   decision_drivers:
     primary:
       type: enum

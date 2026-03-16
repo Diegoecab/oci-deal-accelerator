@@ -1,6 +1,6 @@
 # OCI Deal Accelerator
 
-AI skill that compresses the OCI Solutions Architect's cycle from customer discovery to architecture proposal — from days to hours.
+AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that compresses the OCI SA's cycle from customer discovery to architecture proposal and delivery handover — from days to hours.
 
 ## Project Structure
 
@@ -9,25 +9,25 @@ AI skill that compresses the OCI Solutions Architect's cycle from customer disco
 ├── README.md                   # Project overview and quick start
 ├── CLAUDE.md                   # This file (dev guide)
 ├── Makefile                    # Build automation (make help for commands)
+├── docs/                       # ECAL phase guides (progressive disclosure from SKILL.md)
+│   ├── define-phase.md         # DEFINE phase detailed guide
+│   ├── design-phase.md         # DESIGN phase detailed guide
+│   ├── deliver-phase.md        # DELIVER phase detailed guide
+│   └── engagement-tiers.md     # Tier definitions and artifact matrix
 ├── kb/                         # Knowledge Base
 │   ├── services/               # One YAML per OCI service (what, when, gotchas)
-│   │   ├── adb-serverless.yaml
-│   │   ├── exadata-cloud.yaml
-│   │   ├── oke.yaml
-│   │   └── oci-networking-core.yaml
 │   ├── patterns/               # Composable architecture blocks
+│   │   ├── business-patterns.yaml    # Business-level patterns (DEFINE)
+│   │   ├── application-patterns.yaml # Application architecture patterns (DESIGN)
 │   │   ├── database-ha-adb-s.yaml
 │   │   ├── database-dr-cross-region.yaml
 │   │   ├── networking-basic.yaml
-│   │   └── (legacy dirs: database-ha/, database-dr/, etc.)
+│   │   └── (dirs: database-ha/, database-dr/, networking-hub-spoke/, etc.)
 │   ├── sizing/                 # CPU conversion ratios, IOPS, scaling rules
-│   │   ├── cpu-conversion-ratios.yaml
-│   │   └── storage-iops.yaml
 │   ├── pricing/                # Simplified pricing for estimation
-│   │   └── database.yaml
 │   ├── competitive/            # AWS/Azure/GCP service mapping
-│   │   └── aws-mapping.yaml
 │   ├── well-architected/       # 5-pillar WA Framework checklists
+│   ├── compatibility/          # Feature matrices (ADB, etc.)
 │   ├── diagram/                # Diagram styles (OCI Toolkit v24.2)
 │   └── field-knowledge/        # Real-world gotchas and lessons learned
 ├── tools/                      # Python tooling
@@ -39,29 +39,38 @@ AI skill that compresses the OCI Solutions Architect's cycle from customer disco
 ├── config/
 │   ├── service-categories.yaml # Service → color/category mapping
 │   ├── output-formats.yaml     # Output format specs and design standards
+│   ├── engagement-tiers.yaml   # Tier definitions (small/standard/complex)
 │   └── workload-profile-schema.yaml # Workload profile field definitions
-├── templates/                  # Output templates (workload profile, scorecard, ADR)
+├── templates/                  # ECAL phase templates
+│   ├── workload-profile.yaml   # DEFINE: Discovery capture
+│   ├── value-story.yaml        # DEFINE: Business value hypothesis
+│   ├── joint-engagement-plan.yaml # DEFINE: Engagement scoping
+│   ├── scorecard.yaml          # DESIGN: WA validation results
+│   ├── adr-template.md         # DESIGN: Architecture Decision Records
+│   ├── operations-model.yaml   # DESIGN: Day-2 operations design
+│   ├── handover-document.yaml  # DELIVER: Implementation handover
+│   ├── go-live-checklist.yaml  # DELIVER: Pre-cutover verification
+│   ├── success-criteria.yaml   # DELIVER: Post go-live metrics
+│   └── lessons-learned.yaml    # DELIVER: Engagement retrospective
 ├── codex/                      # Codex skill packaging
-│   ├── skill.json
-│   ├── SKILL.md
-│   └── README.md
 └── examples/                   # Example specs and generated outputs
 ```
 
-## Workflow
+## ECAL-Aligned Workflow
 
 ```
-Discovery Notes → Workload Profile → Architecture Composition → WA Validation → Outputs
+DEFINE (Ideate → Validate → Plan)  →  DESIGN (Current → Future → Confirm)  →  DELIVER (Adopt → Operate → Improve)
 ```
 
-1. **Discovery**: Unstructured notes parsed into structured Workload Profile (YAML)
-2. **Composition**: Services selected from `kb/services/`, composed from `kb/patterns/`, sized from `kb/sizing/`
-3. **Validation**: Auto-validated against 5 WA pillars (`kb/well-architected/`)
-4. **Outputs**: Slide deck (.pptx) by default + optional .drawio, .docx, .xlsx
+1. **DEFINE**: Discovery notes → Workload Profile + Value Story + Joint Engagement Plan
+2. **DESIGN**: Current state (people/process/tech) → Architecture + Operations Model → Solution Proposal
+3. **DELIVER**: Handover Document → Go-Live Checklist + Success Criteria → Lessons Learned
+
+Phase details in `docs/` — SKILL.md references them via progressive disclosure.
 
 ## Output Formats
 
-Default output is a **slide deck (.pptx)** — 10-12 slides ready for customer meeting.
+Default output is a **slide deck (.pptx)** — adapts to engagement tier (6-8 / 10-12 / 12-15 slides).
 
 ```
 deck              ← default
@@ -70,6 +79,7 @@ deck + doc        ← + technical document
 deck + xlsx       ← + cost spreadsheet
 full              ← everything
 doc only          ← technical doc without slides
+deliver           ← handover + go-live checklist + success criteria
 ```
 
 ## Running Tools
@@ -104,3 +114,4 @@ make lint           # check YAML syntax
 - **Honest about limitations** — acknowledge OCI gaps
 - **Composable** — patterns combine, not monolithic templates
 - **KB is the moat** — field experience, not documentation regurgitation
+- **ECAL-aligned** — Define → Design → Deliver with iterative checkpoints
