@@ -15,6 +15,8 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── deliver-phase.md        # DELIVER phase detailed guide
 │   └── engagement-tiers.md     # Tier definitions and artifact matrix
 ├── kb/                         # Knowledge Base
+│   ├── architecture-center/    # Oracle Architecture Center reference catalog
+│   │   └── catalog.yaml        # 123 curated reference architectures
 │   ├── services/               # One YAML per OCI service (what, when, gotchas)
 │   ├── patterns/               # Composable architecture blocks
 │   │   ├── business-patterns.yaml    # Business-level patterns (DEFINE)
@@ -33,7 +35,8 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 ├── tools/                      # Python tooling
 │   ├── oci_deck_gen.py         # .pptx slide deck generator (DEFAULT output)
 │   ├── oci_diagram_gen.py      # .drawio diagram generator
-│   └── oci_output.py           # Output orchestrator
+│   ├── oci_output.py           # Output orchestrator
+│   └── refresh_arch_catalog.py # Architecture Center catalog refresh tool
 ├── scripts/                    # Validation and utilities
 │   └── validate-architecture.py # WA validation engine
 ├── config/
@@ -99,6 +102,11 @@ python scripts/validate-architecture.py \
 
 # Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
+
+# Refresh Architecture Center catalog
+python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
+python tools/refresh_arch_catalog.py --url <url>       # add single entry
+python tools/refresh_arch_catalog.py --validate        # validate catalog
 
 # Build automation
 make help           # show all commands
