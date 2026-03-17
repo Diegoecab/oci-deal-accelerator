@@ -38,79 +38,134 @@ import drawpyo.diagram
 # ============================================================
 # OCI OFFICIAL STYLES (from OCI Style Guide for Draw.io v24.2)
 # ============================================================
+#
+# Color palette (no #FFFFFF — use #FCFBFA near-white instead):
+#   Charcoal  #312D2A   — text, connectors
+#   Warm Gray #9E9892   — container borders
+#   Light     #F5F4F2   — region/subnet fill
+#   Medium    #E4E1DD   — AD fill
+#   Near-White#FCFBFA   — background elements
+#   Teal      #2D5967   — infrastructure services
+#   Copper    #AA643B   — database services (NOT #AE562C)
+#   Burnt-Org #AE562C   — VCN/subnet borders ONLY
+#   Purple    #804998   — integration services
+#   Muted     #70665E   — legacy, external actors
 
 STYLES = {
-    # --- Container styles ---
+    # --- Container styles (OCI Architecture Diagram Toolkit v24.2) ---
     "tenancy": (
-        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=1;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
         "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
-        "spacingTop=5;"
+        "spacingTop=5;rounded=1;arcSize=1;"
     ),
     "region": (
         "whiteSpace=wrap;html=1;align=center;fontFamily=Oracle Sans;"
-        "verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=10;"
-        "strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;spacingTop=5;"
+        "verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=1;"
+        "strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;fontStyle=1;spacingTop=5;"
     ),
     "ad": (
         "whiteSpace=wrap;html=1;strokeWidth=1;align=center;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=#DFDCD8;"
         "fontColor=#312D2A;strokeColor=#9E9892;rounded=1;arcSize=1;"
-        "fontStyle=1;"
+        "fontSize=12;fontStyle=1;"
+    ),
+    "fault_domain": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;align=center;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=#FCFBFA;"
+        "fontColor=#312D2A;strokeColor=#9E9892;rounded=1;arcSize=3;"
+        "fontSize=11;"
     ),
     "vcn": (
-        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
         "fontColor=#AE562C;strokeColor=#AE562C;perimeterSpacing=0;"
-        "fontSize=12;spacingLeft=5;spacingTop=5;"
+        "fontSize=12;fontStyle=1;spacingLeft=5;spacingTop=5;"
     ),
     "subnet": (
-        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
-        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=#FCFBFA;"
-        "fontColor=#AE562C;strokeColor=#AE562C;fontSize=11;"
-        "spacingLeft=5;spacingTop=5;rounded=1;arcSize=3;"
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
+        "fontColor=#AE562C;strokeColor=#AE562C;fontSize=12;fontStyle=1;"
+        "spacingLeft=5;spacingTop=5;"
     ),
     "compartment": (
-        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;fontStyle=1;spacingLeft=5;"
+        "rounded=1;arcSize=1;"
+    ),
+    # --- External cloud containers (AWS, Azure, GCP) ---
+    "cloud_container": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=6 4;align=left;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
+        "fontColor=#70665E;strokeColor=#70665E;fontSize=12;spacingLeft=5;"
+        "spacingTop=5;rounded=1;arcSize=6;"
     ),
 
     # --- Service block styles (fallback when no icon available) ---
     "svc_infra": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#2d5967;"
-        "strokeColor=none;fontColor=#FFFFFF;fontSize=8;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#2D5967;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_database": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#aa643b;"
-        "strokeColor=none;fontColor=#FFFFFF;fontSize=8;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#AA643B;"
+        "strokeColor=#AA643B;fontColor=#FCFBFA;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_integration": (
         "rounded=1;whiteSpace=wrap;html=1;fillColor=#804998;"
-        "strokeColor=none;fontColor=#FFFFFF;fontSize=8;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_dormant": (
         "rounded=1;whiteSpace=wrap;html=1;fillColor=#DFDCD8;"
-        "strokeColor=#9E9892;fontColor=#70665E;fontSize=8;"
+        "strokeColor=#9E9892;fontColor=#70665E;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;fontStyle=2;verticalAlign=middle;align=center;"
     ),
     "svc_legacy": (
         "rounded=1;whiteSpace=wrap;html=1;fillColor=#70665E;"
-        "strokeColor=none;fontColor=#FFFFFF;fontSize=8;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "obs_bar": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#2d5967;"
-        "strokeColor=none;fontColor=#FFFFFF;fontSize=7;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#2D5967;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=10;"
         "fontFamily=Oracle Sans;arcSize=10;"
+    ),
+
+    # --- External actor: person silhouette (head circle + body arc) ---
+    # Rendered as raw SVG in to_xml() post-processing, not as a drawpyo stencil.
+    # This style is for the invisible connectable group + label below the icon.
+    "external_user": (
+        "group;fillColor=none;strokeColor=none;connectable=1;pointerEvents=1;"
+    ),
+    # --- External actor: cloud (internet) ---
+    "external_internet": (
+        "shape=mxgraph.cisco.clouds.cloud;"
+        "sketch=0;fillColor=#2D5967;strokeColor=none;"
+        "fontColor=#312D2A;fontSize=12;fontFamily=Oracle Sans;"
+        "verticalLabelPosition=bottom;verticalAlign=top;"
+        "align=center;html=1;"
+    ),
+    # --- External actor: generic box ---
+    "external_generic": (
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#70665E;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=12;"
+        "fontFamily=Oracle Sans;arcSize=12;verticalAlign=middle;align=center;"
+    ),
+
+    # --- Flow number badge (gray circle with white number) ---
+    "flow_badge": (
+        "ellipse;whiteSpace=wrap;html=1;fillColor=#70665E;"
+        "strokeColor=none;fontColor=#FCFBFA;fontSize=10;"
+        "fontFamily=Oracle Sans;fontStyle=1;"
+        "verticalAlign=middle;align=center;"
     ),
 
     # --- Title ---
     "title": (
-        "text;html=1;fontSize=10;fontColor=#70665E;"
+        "text;html=1;fontSize=12;fontColor=#70665E;"
         "fontFamily=Oracle Sans;align=right;verticalAlign=bottom;fontStyle=2;"
     ),
 }
@@ -151,7 +206,7 @@ CONN_STYLES = {
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
         "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
-        "dashed=1;dashPattern=10 6;"
+        "dashed=1;dashPattern=8 4;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
         "labelBackgroundColor=none;"
     ),
@@ -181,8 +236,8 @@ SVC_CATEGORY = {
     "monitoring": "svc_infra", "logging": "svc_infra",
     "db_management": "svc_infra", "ops_insights": "svc_infra",
     "notifications": "svc_infra", "events": "svc_infra",
-    "cloud_guard": "svc_infra", "data_safe": "svc_infra",
-    "vault": "svc_infra", "security_zone": "svc_infra",
+    "cloud_guard": "svc_infra",
+    "security_zone": "svc_infra",
     "vulnerability_scanning": "svc_infra",
     "object_storage": "svc_infra", "block_storage": "svc_infra",
     "file_storage": "svc_infra",
@@ -205,6 +260,9 @@ SVC_CATEGORY = {
     "cache": "svc_database", "redis": "svc_database",
     "goldengate": "svc_database",
     "data_catalog": "svc_database",
+    # Security services that touch data tier use database copper
+    "data_safe": "svc_database",
+    "vault": "svc_database",
 
     # Integration (purple #804998)
     "drg": "svc_integration",
@@ -223,6 +281,84 @@ SVC_CATEGORY = {
     "external": "svc_legacy",
 }
 
+# ============================================================
+# AWS / GCP / AZURE ICON STYLES (mxgraph stencil libraries)
+# ============================================================
+# draw.io includes official cloud provider shape libraries:
+#   AWS:   mxgraph.aws4.*  (orange #ED7100, dark text #232F3E)
+#   GCP:   mxgraph.gcp2.*  (blue #4285F4)
+#   Azure: mxgraph.azure.* (blue #0078D4)
+#
+# These are used when a service inside a cloud container specifies
+# a cloud_icon field (e.g., cloud_icon: "aws4.ec2").
+
+# AWS service type → (resIcon stencil path, fillColor)
+AWS_ICONS = {
+    "ec2":           ("mxgraph.aws4.ec2", "#ED7100"),
+    "eks":           ("mxgraph.aws4.eks", "#ED7100"),
+    "ecs":           ("mxgraph.aws4.ecs", "#ED7100"),
+    "lambda":        ("mxgraph.aws4.lambda_function", "#ED7100"),
+    "rds":           ("mxgraph.aws4.rds", "#C925D1"),
+    "aurora":        ("mxgraph.aws4.aurora", "#C925D1"),
+    "dynamodb":      ("mxgraph.aws4.dynamodb", "#C925D1"),
+    "s3":            ("mxgraph.aws4.s3", "#3F8624"),
+    "elb":           ("mxgraph.aws4.elb", "#8C4FFF"),
+    "alb":           ("mxgraph.aws4.application_load_balancer", "#8C4FFF"),
+    "cloudfront":    ("mxgraph.aws4.cloudfront", "#8C4FFF"),
+    "vpc":           ("mxgraph.aws4.vpc", "#8C4FFF"),
+    "direct_connect":("mxgraph.aws4.direct_connect", "#8C4FFF"),
+    "route53":       ("mxgraph.aws4.route_53", "#8C4FFF"),
+    "sqs":           ("mxgraph.aws4.sqs", "#E7157B"),
+    "sns":           ("mxgraph.aws4.sns", "#E7157B"),
+    "kinesis":       ("mxgraph.aws4.kinesis", "#8C4FFF"),
+    "api_gateway":   ("mxgraph.aws4.api_gateway", "#E7157B"),
+    "cognito":       ("mxgraph.aws4.cognito", "#DD344C"),
+    "iam":           ("mxgraph.aws4.iam", "#DD344C"),
+    "cloudwatch":    ("mxgraph.aws4.cloudwatch_2", "#E7157B"),
+    "sagemaker":     ("mxgraph.aws4.sagemaker", "#01A88D"),
+    "bedrock":       ("mxgraph.aws4.bedrock", "#01A88D"),
+}
+
+# GCP service type → (shape path, fillColor)
+GCP_ICONS = {
+    "gce":           ("mxgraph.gcp2.compute_engine", "#4285F4"),
+    "gke":           ("mxgraph.gcp2.google_kubernetes_engine", "#4285F4"),
+    "cloud_sql":     ("mxgraph.gcp2.cloud_sql", "#4285F4"),
+    "bigquery":      ("mxgraph.gcp2.bigquery", "#4285F4"),
+    "cloud_storage": ("mxgraph.gcp2.cloud_storage", "#4285F4"),
+    "cloud_run":     ("mxgraph.gcp2.cloud_run", "#4285F4"),
+    "cloud_functions":("mxgraph.gcp2.cloud_functions", "#4285F4"),
+    "pub_sub":       ("mxgraph.gcp2.cloud_pubsub", "#4285F4"),
+}
+
+def _aws_icon_style(service_type: str) -> Optional[str]:
+    """Return draw.io style string for an AWS service icon, or None."""
+    entry = AWS_ICONS.get(service_type)
+    if not entry:
+        return None
+    stencil, fill = entry
+    return (
+        f"outlineConnect=0;fontColor=#232F3E;gradientColor=none;"
+        f"fillColor={fill};strokeColor=none;dashed=0;"
+        f"verticalLabelPosition=bottom;verticalAlign=top;"
+        f"align=center;html=1;fontSize=11;fontStyle=0;"
+        f"shape=mxgraph.aws4.resourceIcon;resIcon={stencil};"
+    )
+
+def _gcp_icon_style(service_type: str) -> Optional[str]:
+    """Return draw.io style string for a GCP service icon, or None."""
+    entry = GCP_ICONS.get(service_type)
+    if not entry:
+        return None
+    stencil, fill = entry
+    return (
+        f"outlineConnect=0;fontColor=#232F3E;gradientColor=none;"
+        f"fillColor={fill};strokeColor=none;dashed=0;"
+        f"verticalLabelPosition=bottom;verticalAlign=top;"
+        f"align=center;html=1;fontSize=11;fontStyle=0;"
+        f"shape={stencil};"
+    )
+
 
 # Map observability bar labels to icon service types
 OBS_TYPE_MAP = {
@@ -236,6 +372,9 @@ OBS_TYPE_MAP = {
     "events": "events",
     "auditing": "monitoring",  # uses monitoring icon as closest match
 }
+
+# Unicode circled numbers for flow badges ① ② ③ ... ⑳
+_CIRCLED_NUMS = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"
 
 
 class OCIDiagramGenerator:
@@ -275,6 +414,8 @@ class OCIDiagramGenerator:
         self._abs_positions = {}  # cell_id -> (abs_x, abs_y) for relative→absolute conversion
         self._raw_cells = []      # raw mxCell XML strings for icon stencil cells
         self._edge_extras = {}    # drawpyo edge id -> extra style attrs string
+        self._edge_objects = {}   # drawpyo edge id -> (source_id, target_id) for badge placement
+        self._flow_badges = []    # list of (flow_order, edge_id) for deferred badge creation
         self._id_counter = 1000   # counter for auto-generated cell IDs
         # Track counts for summary
         self._container_count = 0
@@ -302,8 +443,7 @@ class OCIDiagramGenerator:
         category = SVC_CATEGORY.get(service_type, "svc_infra")
         style = STYLES[category]
         if font_size:
-            style = style.replace("fontSize=8", f"fontSize={font_size}")
-            style = style.replace("fontSize=9", f"fontSize={font_size}")
+            style = re.sub(r"fontSize=\d+", f"fontSize={font_size}", style)
         return style
 
     def _create_object(
@@ -366,7 +506,7 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 1100, h: int = 640,
     ) -> str:
-        """Add an Availability Domain container (darker gray fill)."""
+        """Add an Availability Domain container (medium gray fill)."""
         self._create_object(cell_id, label, STYLES["ad"], parent, x, y, w, h)
         self._container_count += 1
         return cell_id
@@ -375,7 +515,7 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 1100, h: int = 600,
     ) -> str:
-        """Add a VCN container (dashed burnt orange, thick, no fill)."""
+        """Add a VCN container (dashed burnt orange border, no fill)."""
         self._create_object(cell_id, label, STYLES["vcn"], parent, x, y, w, h)
         self._container_count += 1
         return cell_id
@@ -384,7 +524,7 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 280, h: int = 400,
     ) -> str:
-        """Add a Subnet container (dashed burnt orange, thin, near-white fill)."""
+        """Add a Subnet container (solid gray border, light fill)."""
         self._create_object(cell_id, label, STYLES["subnet"], parent, x, y, w, h)
         self._container_count += 1
         return cell_id
@@ -407,17 +547,74 @@ class OCIDiagramGenerator:
         self._container_count += 1
         return cell_id
 
+    def add_cloud(
+        self, cell_id: str, label: str,
+        x: int = 10, y: int = 80, w: int = 200, h: int = 300,
+    ) -> str:
+        """Add an external cloud container (AWS, Azure, GCP) — dashed muted border."""
+        self._create_object(cell_id, label, STYLES["cloud_container"], None, x, y, w, h)
+        self._container_count += 1
+        return cell_id
+
     def add_external(
         self, cell_id: str, label: str,
-        x: int = 30, y: int = 30, w: int = 180, h: int = 60,
+        x: int = 30, y: int = 30, w: int = 50, h: int = 80,
+        icon: str = "user",
     ) -> str:
-        """Add an external actor (users, internet, 3rd party)."""
-        style = (
-            "rounded=1;whiteSpace=wrap;html=1;fillColor=#70665E;"
-            "strokeColor=none;fontColor=#FFFFFF;fontSize=9;"
-            "fontFamily=Oracle Sans;arcSize=12;verticalAlign=middle;align=center;"
-        )
-        self._create_object(cell_id, label, style, None, x, y, w, h)
+        """Add an external actor with icon.
+
+        icon: "user" — person silhouette (circle head + body arc) in teal,
+                        rendered as raw XML cells injected into the .drawio.
+              "internet" — cloud stencil
+              "generic"  — colored rectangle
+        """
+        if icon == "user":
+            # Create an invisible group for connectivity + label
+            self._create_object(cell_id, "", STYLES["external_user"], None, x, y, w, h)
+
+            # Inject raw mxCell XML for circle (head) and path (body)
+            # Coordinates relative to the group's position
+            cx = w // 2
+            cy = 14  # head center near top
+            group_placeholder = f"__DRAWPYO_{cell_id}__"
+
+            # Head circle
+            head_id = self._next_id()
+            head_xml = (
+                f'<mxCell id="{head_id}" value="" '
+                f'style="ellipse;fillColor=none;strokeColor=#2D5967;strokeWidth=2;" '
+                f'vertex="1" parent="{group_placeholder}">'
+                f'<mxGeometry x="{cx - 11}" y="0" width="22" height="22" as="geometry"/>'
+                f'</mxCell>'
+            )
+            self._raw_cells.append(head_xml)
+
+            # Body arc (approximated as an ellipse arc)
+            body_id = self._next_id()
+            body_xml = (
+                f'<mxCell id="{body_id}" value="" '
+                f'style="shape=mxgraph.basic.arc;dx=0.5;fillColor=none;'
+                f'strokeColor=#2D5967;strokeWidth=2;rotation=180;" '
+                f'vertex="1" parent="{group_placeholder}">'
+                f'<mxGeometry x="{cx - 16}" y="24" width="32" height="22" as="geometry"/>'
+                f'</mxCell>'
+            )
+            self._raw_cells.append(body_xml)
+
+            # Label below the icon
+            label_id = f"{cell_id}_label"
+            label_style = (
+                "text;html=1;whiteSpace=wrap;align=center;verticalAlign=top;"
+                "fontFamily=Oracle Sans;fontSize=11;fontColor=#312D2A;"
+                "strokeColor=none;fillColor=none;"
+            )
+            self._create_object(
+                label_id, label, label_style, cell_id,
+                -10, 48, w + 20, 20,
+            )
+        else:
+            style_key = f"external_{icon}" if f"external_{icon}" in STYLES else "external_generic"
+            self._create_object(cell_id, label, STYLES[style_key], None, x, y, w, h)
         return cell_id
 
     # ================================================================
@@ -523,6 +720,9 @@ class OCIDiagramGenerator:
             cell_elem.set("id", new_id)
             cell_elem.set("parent", new_parent)
 
+            # NOTE: Stencil icons are ALWAYS teal (#2D5967) per OCI visual style.
+            # Copper (#AA643B) is only for fallback rectangles (no icon available).
+
             # Scale and offset geometry
             geo = cell_elem.find("mxGeometry")
             if geo is not None:
@@ -542,14 +742,15 @@ class OCIDiagramGenerator:
             self._raw_cells.append(cell_str)
 
         # Add our custom label below the icon as a drawpyo Object
-        fs = font_size or 10
+        fs = font_size or 14
         label_style = (
-            f"text;html=1;whiteSpace=wrap;overflow=fill;align=center;verticalAlign=top;"
+            f"text;html=1;whiteSpace=wrap;overflow=visible;align=center;verticalAlign=top;"
             f"fontFamily=Oracle Sans;fontSize={fs};fontColor=#312D2A;"
             f"strokeColor=none;fillColor=none;spacingTop=2;"
         )
-        label_w = max(w, 120)
+        label_w = max(w, 140)
         label_x = int((w - label_w) / 2)
+        label_h = max(label_h, 40)
         label_id = f"{cell_id}_label"
         self._create_object(
             label_id, label, label_style, cell_id,
@@ -575,8 +776,13 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: Optional[str], conn_type: str,
         source: str, target: str,
         waypoints: Optional[list] = None,
+        flow_order: Optional[int] = None,
     ) -> str:
-        """Add a connection arrow between two elements using drawpyo Edge."""
+        """Add a connection arrow between two elements using drawpyo Edge.
+
+        flow_order: if set (1-20), renders a teal circle badge with the number
+        on the midpoint of the edge for visual storytelling.
+        """
         src_obj = self._objects.get(source)
         tgt_obj = self._objects.get(target)
         if not src_obj or not tgt_obj:
@@ -612,15 +818,15 @@ class OCIDiagramGenerator:
             # Bidirectional
             edge.line_end_source = "open"
         elif conn_type == "adg":
-            # Dashed (ADG replication)
+            # Dashed (ADG replication) — toolkit pattern: 8 4
             edge.pattern = "dashed_small"
             extra_style += "dashPattern=8 4;"
         elif conn_type == "migration":
-            # Dashed (migration)
+            # Dashed (migration) — toolkit pattern: 8 4
             edge.pattern = "dashed_medium"
-            extra_style += "dashPattern=10 6;"
+            extra_style += "dashPattern=8 4;"
         elif conn_type == "etl":
-            # Dashed (ETL/streaming)
+            # Dashed (ETL/streaming) — toolkit pattern: 6 4
             edge.pattern = "dashed_small"
             extra_style += "dashPattern=6 4;"
         # "standard" and "db" use solid line defaults — no changes needed
@@ -633,9 +839,61 @@ class OCIDiagramGenerator:
         # Store extra style for post-processing (keyed by drawpyo's edge id)
         self._edge_extras[str(edge.id)] = extra_style
 
+        # Track edge endpoints for flow badge placement
+        self._edge_objects[str(edge.id)] = (source, target)
+
+        # Queue flow badge if requested
+        if flow_order is not None and 1 <= flow_order <= 20:
+            self._flow_badges.append((flow_order, source, target))
+
         self._objects[cell_id] = src_obj  # register for potential referencing
         self._connection_count += 1
         return cell_id
+
+    # ================================================================
+    # Flow badges — numbered circles on connection midpoints
+    # ================================================================
+
+    def _create_flow_badges(self):
+        """Create teal circle badges with flow numbers at edge midpoints.
+
+        Called after all objects and connections are registered, before save.
+        The badge is positioned at the midpoint between source and target
+        absolute centers.
+        """
+        badge_size = 22
+        for flow_order, source_id, target_id in self._flow_badges:
+            src_pos = self._abs_positions.get(source_id)
+            tgt_pos = self._abs_positions.get(target_id)
+            if not src_pos or not tgt_pos:
+                continue
+
+            src_obj = self._objects.get(source_id)
+            tgt_obj = self._objects.get(target_id)
+            if not src_obj or not tgt_obj:
+                continue
+
+            # Compute center of source and target
+            src_cx = src_pos[0] + src_obj.width / 2
+            src_cy = src_pos[1] + src_obj.height / 2
+            tgt_cx = tgt_pos[0] + tgt_obj.width / 2
+            tgt_cy = tgt_pos[1] + tgt_obj.height / 2
+
+            # Midpoint
+            mid_x = int((src_cx + tgt_cx) / 2 - badge_size / 2)
+            mid_y = int((src_cy + tgt_cy) / 2 - badge_size / 2)
+
+            # Use circled number character or plain number
+            if flow_order <= len(_CIRCLED_NUMS):
+                badge_label = str(flow_order)
+            else:
+                badge_label = str(flow_order)
+
+            badge_id = f"flow_{flow_order}"
+            self._create_object(
+                badge_id, badge_label, STYLES["flow_badge"],
+                None, mid_x, mid_y, badge_size, badge_size,
+            )
 
     # ================================================================
     # Title
@@ -661,6 +919,7 @@ class OCIDiagramGenerator:
         3. Inject extra style attributes into edge cells
         4. Inject raw icon stencil cells before </root>
         5. Replace group parent placeholders with actual drawpyo IDs
+        6. Sanitize: replace #ffffff with #FCFBFA (no pure white in OCI palette)
         """
         xml = self.file.xml
 
@@ -679,12 +938,12 @@ class OCIDiagramGenerator:
             xml,
         )
 
-        # Replace drawpyo's default mxGraphModel attributes with OCI page size
+        # Compact canvas: 1400x800 page (vs previous 1920x1100)
         xml = re.sub(
             r'<mxGraphModel[^>]*>',
-            '<mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" '
+            '<mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" '
             'guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
-            'page="1" pageScale="1" pageWidth="1920" pageHeight="1100" '
+            'page="1" pageScale="1" pageWidth="1400" pageHeight="800" '
             'math="0" shadow="0">',
             xml,
         )
@@ -707,10 +966,23 @@ class OCIDiagramGenerator:
             if placeholder in xml:
                 xml = xml.replace(placeholder, str(obj.id))
 
+        # Sanitize: no pure white in OCI palette
+        xml = xml.replace('fill="#ffffff"', 'fill="#FCFBFA"')
+        xml = xml.replace('fill="#FFFFFF"', 'fill="#FCFBFA"')
+        xml = xml.replace("fillColor=#ffffff", "fillColor=#FCFBFA")
+        xml = xml.replace("fillColor=#FFFFFF", "fillColor=#FCFBFA")
+
+        # Fix drawpyo's default dash patterns to match OCI toolkit
+        # drawpyo emits dashed=1 without dashPattern → draw.io defaults to 3 3
+        # We ensure all dashed containers get 6 4 and dashed edges get 8 4
+        # (Edge dashPatterns are already injected via _edge_extras above)
+
         return xml
 
     def save(self, filepath: str):
         """Save to a .drawio file."""
+        # Create flow badges before generating XML
+        self._create_flow_badges()
         xml = self.to_xml()
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(xml)
@@ -739,8 +1011,44 @@ class OCIDiagramGenerator:
                 ext_id,
                 ext["label"].replace("\\n", "\n"),
                 x=ext.get("x", 30), y=ext.get("y", 30),
-                w=ext.get("w", 180), h=ext.get("h", 60),
+                w=ext.get("w", 50), h=ext.get("h", 60),
+                icon=ext.get("icon", "user"),
             )
+
+        # External cloud containers (AWS, Azure, GCP)
+        for cloud in spec.get("clouds", []):
+            cloud_id = cloud.get("id", gen._next_id())
+            gen.add_cloud(
+                cloud_id,
+                cloud["label"].replace("\\n", "\n"),
+                x=cloud.get("x", 10), y=cloud.get("y", 80),
+                w=cloud.get("w", 200), h=cloud.get("h", 300),
+            )
+            # Services inside the cloud container
+            cx = 15
+            cy = 30
+            for svc in cloud.get("services", []):
+                svc_id = svc.get("id", gen._next_id())
+                svc_w = svc.get("w", 130)
+                svc_h = svc.get("h", 60)
+                label = svc["label"].replace("\\n", "\n")
+                cloud_icon = svc.get("cloud_icon")
+                if cloud_icon:
+                    # Use cloud provider icon (AWS/GCP) via stencil style
+                    style = _aws_icon_style(cloud_icon) or _gcp_icon_style(cloud_icon)
+                    if style:
+                        gen._create_object(
+                            svc_id, label, style, cloud_id,
+                            cx, cy, svc_w, svc_h,
+                        )
+                        gen._service_count += 1
+                    else:
+                        gen.add_service(svc_id, label, svc.get("type", "compute"),
+                                        cloud_id, cx, cy, svc_w, svc_h)
+                else:
+                    gen.add_service(svc_id, label, svc.get("type", "compute"),
+                                    cloud_id, cx, cy, svc_w, svc_h)
+                cy += svc_h + 10
 
         # Tenancy
         tenancy_spec = spec.get("tenancy", {})
@@ -790,34 +1098,34 @@ class OCIDiagramGenerator:
                 )
 
                 # Auto-layout subnets side by side
-                sx = 15
+                sx = 8
                 for subnet in vcn.get("subnets", []):
                     sw = subnet.get("w", 280)
                     sh = subnet.get("h", 420)
                     gen.add_subnet(
                         subnet["id"], subnet["label"],
-                        vcn["id"], sx, 30, sw, sh,
+                        vcn["id"], sx, 26, sw, sh,
                     )
 
-                    # Auto-layout services vertically inside subnet
-                    sy = 35
+                    # Auto-layout services vertically inside subnet (15px padding)
+                    sy = 28
                     for svc in subnet.get("services", []):
                         svc_id = svc.get("id", gen._next_id())
-                        svc_w = svc.get("w", sw - 50)
+                        svc_w = svc.get("w", sw - 30)
                         svc_h = svc.get("h", 45)
                         label = svc["label"].replace("\\n", "\n")
                         gen.add_service(
                             svc_id, label, svc["type"],
-                            subnet["id"], 25, sy, svc_w, svc_h,
+                            subnet["id"], 15, sy, svc_w, svc_h,
                             font_size=svc.get("fontSize"),
                         )
-                        sy += svc_h + 10
+                        sy += svc_h + 6
 
-                    sx += sw + 15
+                    sx += sw + 20
 
                 # Gateways row at bottom of VCN
-                gx = 20
-                gy = vcn_h - 55
+                gx = 10
+                gy = vcn_h - 48
                 for gw in vcn.get("gateways", []):
                     gw_id = gw.get("id", gen._next_id())
                     gw_w = gw.get("w", 95)
@@ -827,14 +1135,72 @@ class OCIDiagramGenerator:
                         gw_id, label, gw["type"],
                         vcn["id"], gx, gy, gw_w, gw_h,
                     )
-                    gx += gw_w + 10
+                    gx += gw_w + 8
 
-            # Observability row at bottom of region — uses icons
+            # Compartments inside region — can contain VCNs
+            for comp in region.get("compartments", []):
+                comp_id = comp.get("id", gen._next_id())
+                comp_w = comp.get("w", rw - 20)
+                comp_h = comp.get("h", 60)
+                gen.add_compartment(
+                    comp_id, comp["label"],
+                    region["id"],
+                    x=comp.get("x", 10), y=comp.get("y", rh - 80),
+                    w=comp_w, h=comp_h,
+                )
+                # VCNs inside compartment
+                for vcn in comp.get("vcns", []):
+                    vcn_parent = comp_id
+                    vcn_w = vcn.get("w", comp_w - 20)
+                    vcn_h = vcn.get("h", comp_h - 50)
+                    gen.add_vcn(
+                        vcn["id"],
+                        f"VCN {vcn['label']}",
+                        vcn_parent,
+                        x=vcn.get("x", 10), y=vcn.get("y", 25),
+                        w=vcn_w, h=vcn_h,
+                    )
+                    sx = 8
+                    for subnet in vcn.get("subnets", []):
+                        sw = subnet.get("w", 280)
+                        sh = subnet.get("h", 420)
+                        gen.add_subnet(
+                            subnet["id"], subnet["label"],
+                            vcn["id"], sx, 26, sw, sh,
+                        )
+                        sy = 28
+                        for svc in subnet.get("services", []):
+                            svc_id = svc.get("id", gen._next_id())
+                            svc_w = svc.get("w", sw - 30)
+                            svc_h = svc.get("h", 45)
+                            label = svc["label"].replace("\\n", "\n")
+                            gen.add_service(
+                                svc_id, label, svc["type"],
+                                subnet["id"], 15, sy, svc_w, svc_h,
+                                font_size=svc.get("fontSize"),
+                            )
+                            sy += svc_h + 6
+                        sx += sw + 20
+                    # Gateways in compartment VCN
+                    gx = 10
+                    gy = vcn_h - 48
+                    for gw in vcn.get("gateways", []):
+                        gw_id = gw.get("id", gen._next_id())
+                        gw_w = gw.get("w", 95)
+                        gw_h = gw.get("h", 38)
+                        label = gw["label"].replace("\\n", "\n")
+                        gen.add_service(
+                            gw_id, label, gw["type"],
+                            vcn["id"], gx, gy, gw_w, gw_h,
+                        )
+                        gx += gw_w + 8
+
+            # Observability row at bottom of region — uses icons (only if explicitly requested)
             if region.get("observability"):
                 obs_icon_w = 90
                 obs_icon_h = 80
-                ox = 25
-                oy = rh - obs_icon_h - 10
+                ox = 20
+                oy = rh - obs_icon_h - 8
                 for obs_label in region["observability"]:
                     obs_id = gen._next_id()
                     obs_type = OBS_TYPE_MAP.get(obs_label.lower(), None)
@@ -842,25 +1208,25 @@ class OCIDiagramGenerator:
                         gen.add_service(
                             obs_id, obs_label, obs_type,
                             region["id"], ox, oy, obs_icon_w, obs_icon_h,
-                            font_size=8,
+                            font_size=10,
                         )
                     else:
                         gen.add_obs_bar(
                             obs_id, obs_label, region["id"],
                             ox, oy + obs_icon_h - 22, 80, 22,
                         )
-                    ox += obs_icon_w + 10
+                    ox += obs_icon_w + 8
 
         # On-premises
         if spec.get("onprem"):
             op = spec["onprem"]
             op_x = op.get("x", 30)
-            op_y = op.get("y", tenancy_y + tenancy_h + 30)
+            op_y = op.get("y", tenancy_y + tenancy_h + 20)
             op_w = op.get("w", 750)
             op_h = op.get("h", 120)
             gen.add_onprem("onprem", op.get("label", "On-Premises Data Center"),
                            x=op_x, y=op_y, w=op_w, h=op_h)
-            opx = 25
+            opx = 20
             for svc in op.get("services", []):
                 svc_id = svc.get("id", gen._next_id())
                 svc_w = svc.get("w", 180)
@@ -868,9 +1234,9 @@ class OCIDiagramGenerator:
                 label = svc["label"].replace("\\n", "\n")
                 gen.add_service(
                     svc_id, label, svc["type"],
-                    "onprem", opx, 35, svc_w, svc_h,
+                    "onprem", opx, 30, svc_w, svc_h,
                 )
-                opx += svc_w + 15
+                opx += svc_w + 12
 
         # Connections
         for conn in spec.get("connections", []):
@@ -879,6 +1245,7 @@ class OCIDiagramGenerator:
                 conn_id, conn.get("label"), conn["type"],
                 conn["from"], conn["to"],
                 waypoints=conn.get("waypoints"),
+                flow_order=conn.get("flow_order"),
             )
 
         # Title
@@ -917,6 +1284,7 @@ def main():
     print(f"  Containers: {gen._container_count}")
     print(f"  Service blocks: {gen._service_count}")
     print(f"  Connections: {gen._connection_count}")
+    print(f"  Flow badges: {len(gen._flow_badges)}")
     print(f"  Raw icon cells: {len(gen._raw_cells)}")
     print(f"  Registered objects: {len(gen._objects)}")
 

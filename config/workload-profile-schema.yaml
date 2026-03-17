@@ -103,6 +103,11 @@ fields:
           required: false
           default: []
           description: "Oracle features in active use — affects service selection and compatibility"
+        tier:
+          type: enum
+          values: [platinum, gold, silver, bronze]
+          required: false
+          description: "Service tier assignment (Platinum/Gold/Silver/Bronze). Auto-assigned from SLA and compliance requirements using kb/patterns/service-tiering.yaml rules, then confirmed by architect."
 
     compute:
       type: list

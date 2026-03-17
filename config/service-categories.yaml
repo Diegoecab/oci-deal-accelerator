@@ -1,17 +1,31 @@
 # Service → Category/Color Mapping
 # Used by diagram generator and for consistent grouping across outputs
+# last_verified: 2025-09-11
 
 categories:
-  infrastructure:
+  compute:
     color: "#2D5967"
-    label: "Infrastructure"
+    label: "Compute"
     services:
-      # Compute
       - compute
       - vm
       - bare_metal
+      - gpu
+      - secure_desktops
+      - batch
+
+  containers:
+    color: "#2D5967"
+    label: "Containers & Serverless"
+    services:
       - oke
+      - container_instances
       - functions
+
+  networking:
+    color: "#2D5967"
+    label: "Networking"
+    services:
       # Load Balancing
       - load_balancer
       - flexible_lb
@@ -23,7 +37,19 @@ categories:
       - natgw
       - service_gateway
       - sgw
-      # Security
+      - drg
+      - dynamic_routing_gateway
+      # Connectivity
+      - fastconnect
+      - vpn
+      # DNS
+      - dns
+      - traffic_management
+
+  security:
+    color: "#2D5967"
+    label: "Security"
+    services:
       - waf
       - bastion
       - network_firewall
@@ -33,14 +59,95 @@ categories:
       - security_zone
       - vulnerability_scanning
       - certificates
-      # API
-      - api_gateway
-      - apigw
-      # Storage
+      - access_governance
+
+  storage:
+    color: "#2D5967"
+    label: "Storage"
+    services:
       - object_storage
       - block_storage
       - file_storage
-      # Observability
+
+  database:
+    color: "#AA643B"
+    label: "Database"
+    services:
+      # Oracle
+      - adb
+      - adb_s
+      - adb_d
+      - autonomous_db
+      - autonomous_json
+      - atp
+      - adw
+      - dbcs
+      - db_system
+      - exadata
+      - exacs
+      - exadata_exascale
+      - exadata_c_at_c
+      - timesten
+      # Open Source
+      - mysql
+      - mysql_heatwave
+      - postgresql
+      - opensearch
+      - nosql
+      - cache
+      - redis
+      # Replication & Management
+      - goldengate
+      - data_catalog
+      - database_migration
+      - database_autonomous_recovery
+
+  integration:
+    color: "#804998"
+    label: "Integration"
+    services:
+      - streaming
+      - kafka
+      - queue
+      - oci_queue
+      - oic
+      - integration_cloud
+      - api_gateway
+      - apigw
+      - api_management
+      - data_integration
+      - data_integrator
+      - service_connector_hub
+      - soa_suite
+
+  ai_ml:
+    color: "#1A8A72"
+    label: "AI & Machine Learning"
+    services:
+      - generative_ai
+      - generative_ai_agents
+      - data_science
+      - anomaly_detection
+      - document_understanding
+      - language
+      - vision
+      - speech
+      - digital_assistant
+
+  analytics:
+    color: "#1A8A72"
+    label: "Analytics & Data"
+    services:
+      - oracle_analytics_cloud
+      - essbase
+      - big_data_service
+      - data_flow
+      - ai_data_platform
+
+  observability:
+    color: "#2D5967"
+    label: "Observability"
+    services:
       - monitoring
       - logging
       - logging_analytics
@@ -49,53 +156,37 @@ categories:
       - ops_insights
       - notifications
       - events
-      # Operations
+      - email_delivery
+      - full_stack_dr
+      - fleet_app_management
       - os_management
+      - os_management_hub
+      - java_management
+      - resource_analytics
       - resource_manager
+
+  developer:
+    color: "#2D5967"
+    label: "Developer Services"
+    services:
+      - apex
+      - visual_builder
       - devops
-      # DNS
-      - dns
-      - traffic_management
+      - blockchain
+      - iot
+      - media_flow
+      - media_streams
+      - tuxedo
+      - webcenter
 
-  database:
-    color: "#AA643B"
-    label: "Database"
+  hybrid:
+    color: "#2D5967"
+    label: "Hybrid Cloud"
     services:
-      - adb
-      - adb_s
-      - adb_d
-      - autonomous_db
-      - atp
-      - adw
-      - dbcs
-      - db_system
-      - exadata
-      - exacs
-      - nosql
-      - mysql
-      - mysql_heatwave
-      - postgresql
-      - opensearch
-      - cache
-      - redis
-      - goldengate
-      - data_catalog
-
-  integration:
-    color: "#804998"
-    label: "Integration"
-    services:
-      - drg
-      - dynamic_routing_gateway
-      - streaming
-      - kafka
-      - queue
-      - oci_queue
-      - oic
-      - integration_cloud
-      - fastconnect
-      - vpn
-      - service_connector_hub
+      - vmware_solution
+      - compute_cloud_at_customer
+      - managed_mac
+      - roving_edge
 
   dormant:
     color: "#DFDCD8"

@@ -1,36 +1,53 @@
-# OCI Database Service Pricing — For Estimation Only
-# last_verified: 2026-03-14
-
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI Database Service pricing for estimation purposes.
+currency: USD
 disclaimer: |
   Approximate pricing for estimation (within ~15%). Actual pricing varies by
   region, commitment level, and negotiated discounts. Always verify against
   https://www.oracle.com/cloud/pricing/
+---
 
-# OCI Database Service Pricing — For Estimation Only
+# ── Autonomous AI Database (Serverless) ───────────────────────────
+# NOTE: ADB now uses ECPU billing model (not OCPU)
 
 autonomous_database_serverless:
+  billing_unit: ECPU
   license_included:
-    ocpu_per_hour: 1.3441
-    storage_tb_per_month: 118.40
+    ecpu_per_hour: 0.0420
   byol:
-    ocpu_per_hour: 0.3360
-    storage_tb_per_month: 118.40
+    ecpu_per_hour: 0.0168
+  storage:
+    per_gb_month: 0.0850
+    per_tb_month: 87.04
   auto_scaling:
-    notes: "Billed per OCPU-second for additional OCPUs above base. Same rate as base."
+    notes: "Billed per ECPU-second for additional ECPUs above base. Same rate."
   adg_standby:
-    notes: "Standby OCPU cost at same rate as primary. Storage shared (no extra)."
+    notes: "Standby ECPU cost at same rate as primary. Storage shared (no extra)."
   backup:
     notes: "Automated backups included in storage cost. Manual backups use Object Storage rates."
   examples:
-    8_ocpu_2tb_payg:
-      monthly_li: "$7,850"
-      monthly_byol: "$2,200"
-      breakdown: "8 OCPU × $1.3441/hr × 730hr + 2TB × $118.40"
-    8_ocpu_2tb_byol_with_adg:
-      monthly: "$4,400"
-      breakdown: "2 × (8 OCPU × $0.3360/hr × 730hr) + 2TB × $118.40"
+    8_ecpu_2tb_payg:
+      monthly_li: "$2,699"
+      monthly_byol: "$1,150"
+      breakdown: "8 ECPU × $0.0420/hr × 730hr + 2048GB × $0.0850"
+    8_ecpu_2tb_byol_with_adg:
+      monthly: "$2,300"
+      breakdown: "2 × (8 ECPU × $0.0168/hr × 730hr) + 2048GB × $0.0850"
+
+# ── Autonomous AI JSON Database ────────────────────────────────────
+
+autonomous_json_database:
+  billing_unit: ECPU
+  ecpu_per_hour: 0.0420
+  storage_per_gb_month: 0.0850
+  notes: "Same pricing as ADB-S, optimized for JSON document workloads"
+
+# ── Autonomous Database Dedicated ──────────────────────────────────
 
 autonomous_database_dedicated:
+  billing_unit: ECPU
   infrastructure:
     quarter_rack:
       base_per_hour: "~$10.50"
@@ -44,59 +61,55 @@ autonomous_database_dedicated:
       base_per_hour: "~$42.00"
       monthly_estimate: "$30,000–$32,000"
       included: "8 DB servers, 12 storage servers, 400TB usable"
-  ocpu_pricing:
-    license_included_per_hour: 1.3441
-    byol_per_hour: 0.3360
-    notes: "OCPUs provisioned on top of infrastructure. Minimum varies by rack size."
+  ecpu_pricing:
+    license_included_per_hour: 0.0672
+    byol_per_hour: 0.0504
   notes: |
-    Infrastructure cost is fixed (rack size). OCPU cost is on top.
+    Infrastructure cost is fixed (rack size). ECPU cost is on top.
     DEP (Database Enterprise Patching) co-location is at next maintenance window.
     Billing starts only at AVAILABLE state.
     Provisioning takes days to weeks depending on capacity.
 
-dbcs:
-  vm_standard:
-    license_included:
-      ocpu_per_hour_se: 0.2277
-      ocpu_per_hour_ee: 0.4554
-      ocpu_per_hour_ee_hp: 0.5693
-      ocpu_per_hour_ee_ep: 0.6831
-    byol:
-      ocpu_per_hour: 0.1139
-    storage_per_gb_month: 0.0255
-    notes: |
-      SE = Standard Edition, EE = Enterprise Edition,
-      HP = High Performance (includes partitioning, advanced compression, etc.),
-      EP = Extreme Performance (includes RAC, Active Data Guard, In-Memory).
-      Backup storage charged separately at Object Storage rates.
-  bm_standard:
-    notes: "Bare metal pricing similar per-OCPU but fixed shape. Contact Oracle for quotes."
-  examples:
-    4_ocpu_ee_hp_500gb:
-      monthly_li: "$3,350"
-      breakdown: "4 OCPU × $0.5693/hr × 730hr + 500GB × $0.0255 + backup"
+# ── Base Database Service (DBCS) ──────────────────────────────────
 
-exacs:
+dbcs:
+  billing_unit: ECPU
+  license_included:
+    ecpu_per_hour_se: 0.0336   # Standard Edition
+    ecpu_per_hour_ee: 0.0420   # Enterprise Edition
+    ecpu_per_hour_ee_hp: 0.0504 # High Performance
+    ecpu_per_hour_ee_ep: 0.0672 # Extreme Performance — BYOL only on newer docs
+  byol:
+    ecpu_per_hour: 0.0168
+  storage_per_gb_month: 0.0255
+  notes: |
+    SE = Standard Edition, EE = Enterprise Edition,
+    HP = High Performance (partitioning, advanced compression, etc.),
+    EP = Extreme Performance (RAC, Active Data Guard, In-Memory).
+    Backup storage charged separately at Object Storage rates.
+  examples:
+    4_ecpu_ee_hp_500gb:
+      monthly_li: "$160"
+      breakdown: "4 ECPU × $0.0504/hr × 730hr + 500GB × $0.0255"
+
+# ── Exadata Database Service Dedicated ─────────────────────────────
+
+exadata_dedicated:
+  billing_unit: ECPU
   infrastructure:
     quarter_rack_x9m:
-      per_hour: "~$24.00"
-      monthly_estimate: "$17,500–$18,500"
-      included: "2 DB servers, 3 storage servers, 50TB usable raw"
+      per_hour: 2.10
+      monthly_estimate: "$1,533"
       ocpu_max: 100
     half_rack_x9m:
-      per_hour: "~$48.00"
-      monthly_estimate: "$35,000–$37,000"
-      included: "4 DB servers, 6 storage servers, 100TB usable raw"
-      ocpu_max: 200
+      per_hour: 6.30
+      monthly_estimate: "$4,599"
     full_rack_x9m:
-      per_hour: "~$96.00"
-      monthly_estimate: "$70,000–$74,000"
-      included: "8 DB servers, 12 storage servers, 200TB usable raw"
-      ocpu_max: 400
-  ocpu_pricing:
-    license_included_per_hour: 0.6831
-    byol_per_hour: 0.1139
-    notes: "OCPUs enabled on top of infrastructure cost."
+      per_hour: 12.60
+      monthly_estimate: "$9,198"
+  ecpu_pricing:
+    license_included_per_hour: 0.0504
+    byol_per_hour: 0.0420
   what_is_included:
     - "Exadata smart storage (flash cache, storage indexes)"
     - "Automated patching (GI + DB separate schedules)"
@@ -107,27 +120,131 @@ exacs:
     - "Additional storage beyond rack capacity"
     - "Object Storage for long-term backup retention"
   gotchas:
-    - "Minimum commitment is quarter rack (~$17K/month). No smaller option."
-    - "Infrastructure cost is fixed regardless of OCPU utilization."
-    - "Provisioning takes 4-8 hours (faster than ADB-D but still significant)."
-    - "X8M vs X9M: X9M has better storage density and newer CPUs."
-  examples:
-    quarter_rack_100_ocpu_byol:
-      monthly: "$26,000"
-      breakdown: "$17,500 infra + 100 OCPU × $0.1139/hr × 730hr"
+    - "Infrastructure cost is fixed regardless of ECPU utilization."
+    - "Provisioning takes 4-8 hours."
+    - "X9M has better storage density and newer CPUs than X8M."
 
-reserved_discounts:
-  one_year: "~35-40% vs PAYG"
-  three_year: "~55-65% vs PAYG"
-  notes: "Available for all database services. Commitment is per-region."
+# ── Exadata Exascale ───────────────────────────────────────────────
+
+exadata_exascale:
+  billing_unit: ECPU
+  ecpu_per_hour: 0.0504
+  storage:
+    notes: "Storage priced separately per Exascale vault capacity"
+  notes: "Elastic scaling of compute and storage independently. Next-gen Exadata."
+
+# ── Exadata Cloud@Customer ─────────────────────────────────────────
+
+exadata_cloud_at_customer:
+  billing_unit: ECPU
+  ecpu_pricing:
+    license_included_per_hour: 0.0504
+    byol_per_hour: 0.0420
+  infrastructure:
+    base_per_hour: 7.35
+    monthly_estimate: "$5,365"
+  notes: "Exadata infrastructure in customer datacenter, managed by Oracle"
+
+# ── MySQL HeatWave ─────────────────────────────────────────────────
+
+mysql_heatwave:
+  billing_unit: ECPU
+  ecpu_per_hour: 0.0180
+  storage_per_gb_month: 0.0085
+  heatwave_cluster:
+    notes: "Additional capacity pricing for HeatWave in-memory acceleration"
+  free_tier:
+    notes: "MySQL HeatWave Free Tier available with limits"
+  mysql_heatwave_on_aws:
+    ecpu_per_hour: 0.0180
+    notes: "Cross-cloud deployment, same base pricing"
+
+# ── PostgreSQL ─────────────────────────────────────────────────────
+
+postgresql:
+  ocpu_per_hour: 0.0168
+  storage_per_gb_month: 0.0850
+  notes: "Managed PostgreSQL, includes HA options"
+
+# ── Cache with Redis ───────────────────────────────────────────────
+
+cache_redis:
+  up_to_10gb:
+    per_gb_hour: 0.0194
+    monthly_per_gb: 14.16
+  above_10gb:
+    per_gb_hour: 0.0136
+    monthly_per_gb: 9.93
+
+# ── OpenSearch ─────────────────────────────────────────────────────
+
+opensearch:
+  per_node_hour: 0.0252
+  notes: "HA configuration, pricing per node"
+
+# ── NoSQL Database ─────────────────────────────────────────────────
+
+nosql:
+  provisioned:
+    storage_per_gb_month: 0.0085
+    write_unit_per_month: 0.0001
+    read_unit_per_month: 0.000020
+  on_demand:
+    storage_per_gb_month: 0.0085
+    notes: "Auto-scaled read/write units"
+  free_tier:
+    storage_gb: 25
+    write_units: 50
+    read_units: 50
+    max_tables: 3
+
+# ── TimesTen for OKE ──────────────────────────────────────────────
+
+timesten:
+  x86_ocpu_per_hour: 0.0252
+  arm_ocpu_per_hour: 0.0168
+  notes: "In-memory relational database deployed on Kubernetes"
+
+# ── Data Safe ──────────────────────────────────────────────────────
+
+data_safe:
+  per_target_month: 0.0150
+  audit_records_per_10k_month: 0.0001
+
+# ── Database Migration ─────────────────────────────────────────────
+
+database_migration:
+  per_migration_hour: 0.0420
+  notes: "First 183 days free if migration is active"
+
+# ── Database Autonomous Recovery ───────────────────────────────────
+
+database_autonomous_recovery:
+  per_gb_virtualized_month: 0.0085
+  notes: "Autonomous backup recovery service"
+
+# ── GoldenGate ─────────────────────────────────────────────────────
+
+goldengate:
+  ocpu_per_hour: 0.0252
+  byol_available: true
+  notes: "Real-time data integration and replication"
+
+# ── Estimation Helpers ─────────────────────────────────────────────
 
 estimation_helpers:
   monthly_hours: 730
-  byol_savings: "50-75% on OCPU cost for Oracle Database products"
-  adb_s_sweet_spot: "4-32 OCPUs with auto-scaling. Below 4, consider Always Free. Above 128, consider ADB-D or ExaCS."
+  byol_savings: "50-60% on ECPU cost for Oracle Database products"
+  adb_s_sweet_spot: "4-32 ECPUs with auto-scaling. Below 4, consider Always Free. Above 128, consider ADB-D or ExaCS."
   cost_comparison_tip: |
     When comparing with AWS RDS or Azure SQL MI, include:
     - OCI inbound data transfer is free
     - OCI outbound is ~80% cheaper than AWS
     - OCI BYOL discount is deeper than AWS BYOL
     - ADB-S includes patching, tuning, indexing — RDS does not
+    - ADB now uses ECPU (not OCPU) — 1 ECPU ≈ fraction of an OCPU
+
+reserved_discounts:
+  one_year: "~35-40% vs PAYG"
+  three_year: "~55-65% vs PAYG"
+  notes: "Available for all database services. Commitment is per-region."

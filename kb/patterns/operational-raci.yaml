@@ -1,0 +1,70 @@
+---
+last_verified: 2026-03-16
+pattern:
+  id: operational-raci
+  name: "Operational RACI Matrix"
+  category: operations
+---
+
+description: >
+  Defines responsibilities across customer and Oracle/partner teams for
+  ongoing operations. R=Responsible (does the work), A=Accountable (owns
+  the outcome), C=Consulted, I=Informed. Generated from the engagement
+  model (fully managed, co-managed, or self-managed).
+
+# Three operational models — the skill selects based on discovery
+models:
+
+  fully_managed:
+    description: "Oracle/partner manages everything. Customer consumes DB as a service."
+    trigger: "Customer says 'DBA-less', 'no DBA team', 'fully managed', or team_skills is low"
+    raci:
+      - { activity: "DB provisioning",           customer: "I", oracle: "R/A" }
+      - { activity: "DB patching & upgrades",    customer: "I", oracle: "R/A" }
+      - { activity: "Backup & recovery",         customer: "I", oracle: "R/A" }
+      - { activity: "Performance monitoring",    customer: "I", oracle: "R/A" }
+      - { activity: "Performance tuning",        customer: "C", oracle: "R/A" }
+      - { activity: "Security configuration",    customer: "A", oracle: "R" }
+      - { activity: "Access control (IAM)",      customer: "R/A", oracle: "C" }
+      - { activity: "Data Safe / audit review",  customer: "A", oracle: "R" }
+      - { activity: "Incident response (DB)",    customer: "I", oracle: "R/A" }
+      - { activity: "Incident response (app)",   customer: "R/A", oracle: "C" }
+      - { activity: "Capacity planning",         customer: "C", oracle: "R/A" }
+      - { activity: "DR testing",                customer: "A", oracle: "R" }
+      - { activity: "Schema changes",            customer: "R/A", oracle: "I" }
+      - { activity: "App deployment",            customer: "R/A", oracle: "I" }
+      - { activity: "Network changes",           customer: "R/A", oracle: "C" }
+      - { activity: "Cost optimization review",  customer: "A", oracle: "R" }
+      - { activity: "Oracle SR escalation",      customer: "C", oracle: "R/A" }
+      - { activity: "Compliance reporting",      customer: "A", oracle: "R" }
+
+  co_managed:
+    description: "Customer has DBAs but wants Oracle/partner for complex ops."
+    trigger: "Customer says 'we have DBAs but no cloud experience', or team exists but is small"
+    raci:
+      - { activity: "DB provisioning",           customer: "R", oracle: "C" }
+      - { activity: "DB patching & upgrades",    customer: "R", oracle: "C" }
+      - { activity: "Backup & recovery",         customer: "R/A", oracle: "C" }
+      - { activity: "Performance monitoring",    customer: "R", oracle: "I" }
+      - { activity: "Performance tuning",        customer: "R", oracle: "C" }
+      - { activity: "Security configuration",    customer: "R/A", oracle: "C" }
+      - { activity: "Access control (IAM)",      customer: "R/A", oracle: "I" }
+      - { activity: "Incident response (DB)",    customer: "R", oracle: "C" }
+      - { activity: "Incident response (app)",   customer: "R/A", oracle: "I" }
+      - { activity: "Capacity planning",         customer: "R", oracle: "C" }
+      - { activity: "DR testing",                customer: "R", oracle: "C" }
+      - { activity: "Schema changes",            customer: "R/A", oracle: "I" }
+      - { activity: "Oracle SR escalation",      customer: "R", oracle: "C" }
+
+  self_managed:
+    description: "Customer manages everything. Oracle provides platform only."
+    trigger: "Customer has strong DBA team with cloud experience, or explicitly says 'we manage'"
+    raci:
+      - { activity: "DB provisioning",           customer: "R/A", oracle: "I" }
+      - { activity: "DB patching & upgrades",    customer: "R/A", oracle: "I" }
+      - { activity: "Backup & recovery",         customer: "R/A", oracle: "I" }
+      - { activity: "Performance monitoring",    customer: "R/A", oracle: "I" }
+      - { activity: "Security configuration",    customer: "R/A", oracle: "I" }
+      - { activity: "Incident response",         customer: "R/A", oracle: "I" }
+      - { activity: "DR testing",                customer: "R/A", oracle: "I" }
+      - { activity: "Oracle SR escalation",      customer: "R/A", oracle: "C" }

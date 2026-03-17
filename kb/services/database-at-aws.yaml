@@ -1,0 +1,186 @@
+# Oracle Database@AWS — KB Service Card
+# Last verified: 2026-03-17
+# Sources:
+#   - https://www.oracle.com/cloud/aws/
+#   - https://docs.oracle.com/en-us/iaas/Content/database-at-aws/oaaws.htm
+#   - https://docs.oracle.com/en/solutions/network-topology-oracle-database-at-aws/
+#   - https://aws.amazon.com/about-aws/whats-new/2025/12/oracle-database-aws-available-three-additional-regions/
+#   - https://www.oracle.com/news/announcement/oracle-database-at-aws-now-generally-available-2025-07-08/
+
+service:
+  name: "Oracle Database@AWS"
+  also_known_as:
+    - "ADB Multicloud (AWS)"
+    - "ODB@AWS"
+    - "Oracle Database Service for AWS (legacy name)"
+  category: "Multicloud Database"
+  ga_date: "2025-07-08"
+
+  what: |
+    Oracle Database running on OCI Exadata infrastructure co-located inside
+    AWS datacenters. AWS apps connect via ODB peering (private, low-latency
+    network bridging AWS VPC to OCI infrastructure in the same AZ).
+    Control plane runs in OCI; data plane is physically in the AWS region.
+    Single invoice through AWS Marketplace. Usage counts toward AWS commitments.
+
+  services_available:
+    - name: "OCI Exadata Database Service on Dedicated Infrastructure"
+      versions: ["19c", "26ai"]
+      notes: "Full Exadata performance, RAC, Data Guard"
+    - name: "OCI Autonomous AI Database on Dedicated Exadata Infrastructure (ADB-D)"
+      versions: ["19c", "26ai"]
+      notes: "Autonomous Database on dedicated Exadata — NOT serverless"
+    - name: "OCI Autonomous Recovery Service"
+      notes: "Automated backup and recovery"
+
+  services_NOT_available:
+    - name: "Autonomous Database Serverless (ADB-S)"
+      reason: |
+        ADB-S is NOT available on Database@AWS. Only ADB on Dedicated
+        Exadata Infrastructure (ADB-D) is supported. This is a critical
+        distinction when designing architectures — if the customer
+        specifically needs ADB-S serverless, they must use native OCI
+        or connect via FastConnect/VPN.
+
+  # --- Regions ---
+  regions_ga:
+    - {aws_region: "us-east-1",      name: "US East (N. Virginia)", ga_date: "2025-07-08"}
+    - {aws_region: "us-west-2",      name: "US West (Oregon)",      ga_date: "2025-07-08"}
+    - {aws_region: "us-east-2",      name: "US East (Ohio)",        ga_date: "2025-12-23"}
+    - {aws_region: "eu-central-1",   name: "Europe (Frankfurt)",    ga_date: "2025-12-23"}
+    - {aws_region: "ap-northeast-1", name: "Asia Pacific (Tokyo)",  ga_date: "2025-12-23"}
+    - {aws_region: "ca-central-1",   name: "Canada (Central)",      ga_date: "2026-Q1"}
+    - {aws_region: "eu-west-1",      name: "Europe (Ireland)",      ga_date: "2026-Q1"}
+    - {aws_region: "ap-southeast-2", name: "Asia Pacific (Sydney)", ga_date: "2026-Q1"}
+
+  regions_planned:
+    - "US West (N. California)"
+    - "South America (São Paulo)"
+    - "Europe (London)"
+    - "Europe (Milan)"
+    - "Europe (Paris)"
+    - "Europe (Spain)"
+    - "Europe (Stockholm)"
+    - "Europe (Zurich)"
+    - "Asia Pacific (Hyderabad)"
+    - "Asia Pacific (Melbourne)"
+    - "Asia Pacific (Mumbai)"
+    - "Asia Pacific (Osaka)"
+    - "Asia Pacific (Seoul)"
+    - "Asia Pacific (Singapore)"
+  regions_planned_notes: "Oracle and AWS announced plans to expand to 20+ total regions"
+
+  # --- Network Architecture ---
+  network:
+    connectivity: "ODB Peering"
+    description: |
+      ODB peering creates a private, direct connection between an AWS VPC
+      and the OCI-managed ODB network inside the same AWS AZ. Traffic never
+      traverses the public internet. This is NOT a standard FastConnect —
+      it's a co-located, same-datacenter interconnect.
+
+    latency:
+      same_az: "~200-400 microseconds RTT (extrapolated from Database@Azure benchmarks)"
+      cross_az: "~1 ms+ (variable, must validate)"
+      cross_region: "Variable, depends on distance"
+      notes: |
+        Oracle does not publish official RTT benchmarks for Database@AWS.
+        Database@Azure (same architecture pattern) shows 200-400μs same-AZ
+        and ~1.5ms cross-AZ per Accenture testing (32,000+ tests, 2 weeks).
+        Database@AWS should be comparable since the architecture is identical
+        (co-located OCI infra inside cloud provider datacenter).
+
+    best_practices:
+      - "Deploy app EC2 and ODB network in the SAME Availability Zone"
+      - "Use Transit Gateway with attachment in same AZ as ODB network"
+      - "CIDR blocks must not overlap with AWS VPC subnets or OCI VCNs"
+      - "Client subnet minimum /27, recommended /24 for expansion"
+      - "Backup subnet minimum /28 (optional for ADB-D)"
+      - "Use Direct Connect for hybrid (on-premises) connectivity"
+
+    topologies:
+      - name: "Same-AZ Direct Peering"
+        use_case: "Latency-sensitive apps"
+        path: "App VPC → ODB Peering → ODB Network → Oracle DB"
+        recommendation: "Primary topology for low-latency workloads"
+      - name: "Hub-and-Spoke via Transit Gateway"
+        use_case: "Multi-VPC architectures"
+        path: "Spoke VPCs → Transit Gateway → ODB Network → Oracle DB"
+        caveat: "Cross-VPC latency varies — must validate"
+      - name: "Cross-Region via Transit Gateway Peering"
+        use_case: "Multi-region apps"
+        caveat: "Significant latency increase — not for latency-sensitive"
+
+  # --- Pricing ---
+  pricing:
+    model: |
+      Single invoice through AWS Marketplace.
+      - Exadata: Upfront subscription for infrastructure + pay-per-use for CPUs
+      - ADB-D: Upfront subscription + pay-per-use for active CPUs
+    aws_commitment: "Oracle Database@AWS usage counts toward AWS spending commitments"
+
+  # --- When to use vs alternatives ---
+  when_to_use:
+    - "App runs on AWS and needs Oracle Database with Exadata performance"
+    - "Customer wants single AWS bill (Marketplace billing)"
+    - "Low-latency (<1ms) app-to-DB connectivity required without migrating app"
+    - "Customer has AWS spending commitments to burn down"
+    - "Data residency requires DB to be in same region as app"
+
+  when_NOT_to_use:
+    - "Need ADB-S Serverless — use native OCI + FastConnect instead"
+    - "Target AWS region not yet GA — check availability"
+    - "Workload fits RDS Oracle or doesn't need Exadata performance"
+    - "Budget-sensitive: minimum Exadata infra commitment applies"
+    - "Need full OCI service breadth beyond database (OKE, Functions, etc.)"
+
+  # --- Gotchas ---
+  gotchas:
+    - id: "DBAWS-001"
+      severity: HIGH
+      issue: "ADB-S Serverless NOT available — only ADB-D Dedicated"
+      impact: |
+        Customers expecting serverless auto-scaling and pay-per-query will
+        need to use ADB-D with manual OCPU scaling, or use native OCI ADB-S
+        with FastConnect from AWS.
+      recommendation: |
+        If the customer specifically needs serverless, design with native
+        OCI ADB-S + FastConnect. If they need co-located low latency,
+        use ADB-D on Database@AWS and size Exadata appropriately.
+
+    - id: "DBAWS-002"
+      severity: MEDIUM
+      issue: "Minimum Exadata infrastructure commitment"
+      impact: |
+        Database@AWS requires dedicated Exadata infrastructure.
+        Minimum quarter-rack equivalent — not suitable for small workloads.
+      recommendation: |
+        For workloads < 16 OCPUs, evaluate if the latency benefit of
+        co-location justifies the Exadata minimum vs FastConnect to
+        native OCI ADB-S.
+
+    - id: "DBAWS-003"
+      severity: MEDIUM
+      issue: "VM clusters cannot be moved between ODB networks"
+      impact: "Once deployed in an AZ, the cluster stays there."
+      recommendation: "Choose the AZ carefully — align with app tier AZ placement."
+
+    - id: "DBAWS-004"
+      severity: LOW
+      issue: "Control plane runs in OCI region, not in AWS"
+      impact: |
+        Management operations (provisioning, patching, scaling) go through
+        OCI control plane. If OCI region has issues, management is affected
+        but data plane continues to serve queries.
+      recommendation: "Monitor both OCI and AWS health dashboards."
+
+  # --- Integration with AWS services ---
+  aws_integrations:
+    - "Amazon VPC (ODB peering)"
+    - "AWS IAM (federated access)"
+    - "Amazon CloudWatch (monitoring)"
+    - "Amazon EventBridge (events)"
+    - "Amazon S3 (data integration)"
+    - "AWS SageMaker / Bedrock (AI/ML via zero-ETL)"
+    - "AWS Transit Gateway / Cloud WAN (networking)"
+    - "AWS Direct Connect (hybrid connectivity)"

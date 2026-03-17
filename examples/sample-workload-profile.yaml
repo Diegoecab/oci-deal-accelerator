@@ -15,6 +15,7 @@ workload_profile:
         version: "19c"
         size_gb: 4096
         type: OLTP
+        tier: gold
         current_platform: on_prem
         ha_current: "RAC 2-node on Exadata X8M"
         replication: "Data Guard to DR site"
@@ -41,6 +42,7 @@ workload_profile:
         version: "19c"
         size_gb: 2048
         type: OLAP
+        tier: silver
         current_platform: on_prem
         ha_current: "none"
         replication: "GoldenGate from Main OLTP"
@@ -58,6 +60,7 @@ workload_profile:
         version: "19c"
         size_gb: 200
         type: mixed
+        tier: bronze
         current_platform: on_prem
         ha_current: "none"
         replication: "none"

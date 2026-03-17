@@ -177,6 +177,33 @@ gotchas:
     recommendation: "Don't rely on LIST immediately after PUT; use specific GET for confirmation"
 
   - id: FK-020
+    area: "Database@AWS — ADB-S NOT available"
+    severity: HIGH
+    description: |
+      Oracle Database@AWS only supports ADB on Dedicated Exadata Infrastructure
+      (ADB-D), NOT ADB-S Serverless. Customers expecting serverless auto-scaling
+      and pay-per-query pricing will be disappointed. If ADB-S is required,
+      the architecture must use native OCI with FastConnect from AWS — which
+      adds ~1-2ms RTT vs the ~0.2-0.4ms of Database@AWS co-located infra.
+    recommendation: |
+      Clarify ADB-S vs ADB-D early in discovery. If P95 <1ms AND serverless
+      are both hard requirements, they are mutually exclusive with current
+      Database@AWS offering. Trade-off: co-located ADB-D (low latency) vs
+      native OCI ADB-S (serverless) via FastConnect (higher latency).
+
+  - id: FK-021
+    area: "Database@AWS — Same-AZ placement is critical"
+    severity: HIGH
+    description: |
+      Database@AWS latency drops from ~0.2-0.4ms (same AZ) to ~1ms+ (cross-AZ).
+      If app EC2 and ODB network are in different AZs, you lose the latency
+      benefit that justifies co-location. Transit Gateway attachment must also
+      be in the same AZ as the ODB network.
+    recommendation: |
+      Always deploy app and ODB network in the same AZ. Document AZ choice
+      early — VM clusters cannot be moved between ODB networks after creation.
+
+  - id: FK-022
     area: "Flex Shape Memory Ratio"
     severity: LOW
     description: |

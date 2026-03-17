@@ -1,0 +1,59 @@
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI Developer Services pricing.
+currency: USD
+---
+
+# ── APEX Application Development ──────────────────────────────────
+
+apex:
+  ecpu_per_hour: 0.36
+  free_tier: true
+  notes: "Low-code development platform, free tier available"
+
+# ── Visual Builder ─────────────────────────────────────────────────
+
+visual_builder:
+  ocpu_per_hour: 0.0252
+  notes: "Low-code app builder with storage"
+
+# ── DevOps ─────────────────────────────────────────────────────────
+
+devops:
+  pipeline_execution: "Free"
+  notes: "No charge for pipeline execution; compute/memory billed separately"
+
+# ── Blockchain Platform ───────────────────────────────────────────
+
+blockchain:
+  ocpu_per_hour: 0.0252 - 0.0504
+  notes: "Plus storage costs"
+
+# ── IoT Platform ──────────────────────────────────────────────────
+
+iot:
+  ecpu_per_hour: 0.0360
+  notes: "Plus storage costs"
+
+# ── Media Flow ─────────────────────────────────────────────────────
+
+media_flow:
+  per_minute: 0.005 - 0.120
+  notes: "Varies by codec, resolution, and fps"
+
+# ── Media Streams ──────────────────────────────────────────────────
+
+media_streams:
+  per_gb_packaged: 0.015
+
+# ── Tuxedo ─────────────────────────────────────────────────────────
+
+tuxedo:
+  ocpu_per_hour: 0.0252 - 0.0504
+  notes: "For legacy Tuxedo workload migration"
+
+# ── WebCenter ──────────────────────────────────────────────────────
+
+webcenter:
+  ocpu_per_hour: 0.0252 - 0.0504

@@ -107,3 +107,6 @@ competitive_positioning:
     - "Enterprise support: Oracle Premier Support is equivalent to AWS Enterprise"
     - "Terraform support: full parity via OCI Terraform provider"
     - "Multi-cloud: OCI Multicloud with Azure (Oracle Database@Azure)"
+    - "Multi-cloud: Oracle Database@AWS (GA in us-east-1, us-west-2, us-east-2, eu-central-1, ap-northeast-1 + expanding to 20+ regions)"
+    - "Database@AWS: co-located Exadata in AWS AZ, ~200-400μs same-AZ latency, single AWS bill"
+    - "Database@AWS limitation: ADB-D only, no ADB-S Serverless — requires Exadata dedicated infra"

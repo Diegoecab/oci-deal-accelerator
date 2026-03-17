@@ -1,0 +1,69 @@
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI AI and Machine Learning service pricing.
+currency: USD
+---
+
+# ── OCI Generative AI ─────────────────────────────────────────────
+
+generative_ai:
+  cohere_models:
+    per_10k_transactions: 0.0001 - 0.0003
+    notes: "Command, Embed models"
+  meta_llama:
+    per_10k_transactions: 0.0001 - 0.0004
+  xai_grok:
+    per_1m_tokens_range: "$0.00015 – $0.0018"
+  google_gemini:
+    per_1m_tokens_range: "$0.000075 – $0.0006"
+
+generative_ai_agents:
+  per_10k_transactions: 0.0001
+  notes: "Plus storage and ingestion fees"
+
+# ── Anomaly Detection ─────────────────────────────────────────────
+
+anomaly_detection:
+  training: "Free up to 100M data points/month per region"
+
+# ── Data Science ───────────────────────────────────────────────────
+
+data_science:
+  notebook_sessions:
+    notes: "Billed at compute shape rates (OCPU/hour + GB memory/hour + GPU options)"
+  jobs:
+    notes: "Same compute pricing as notebook sessions"
+  model_deployment:
+    notes: "Compute + networking + storage combined pricing"
+  model_catalog_storage:
+    notes: "Object Storage rates"
+
+# ── Document Understanding ─────────────────────────────────────────
+
+document_understanding:
+  training_per_hour: 0.50 - 1.00
+  ocr_per_1k_transactions: 0.025 - 0.050
+
+# ── Language Services ──────────────────────────────────────────────
+
+language:
+  pretrained_per_transaction: 0.0001 - 0.0003
+  custom_training: "Available at additional cost"
+
+# ── Vision ─────────────────────────────────────────────────────────
+
+vision:
+  image_analysis_per_1k: 0.0001 - 0.0003
+  custom_training_per_hour: 0.50 - 1.00
+
+# ── Speech ─────────────────────────────────────────────────────────
+
+speech:
+  per_transcription_hour: 0.0025 - 0.005
+
+# ── Digital Assistant ──────────────────────────────────────────────
+
+digital_assistant:
+  per_request: 0.009
+  minimum: "250 requests/hour"

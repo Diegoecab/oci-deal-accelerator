@@ -648,6 +648,108 @@ class OCIDeckGenerator:
                 alignment=PP_ALIGN.LEFT,
             )
 
+    def add_service_tiering_slide(self, workloads: list):
+        """Service Tiering slide — maps workloads to Platinum/Gold/Silver/Bronze.
+
+        workloads: list of {"name": str, "tier": str, "uptime": str,
+                           "rto": str, "rpo": str}
+        """
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, "Service Tiering")
+
+        # Subtitle
+        self._add_textbox(
+            slide, self.MARGIN, Inches(1.1),
+            Inches(12), Inches(0.4),
+            text="Each tier drives: HA/DR topology, backup strategy, isolation model, support level.",
+            font_size=11, italic=True, color=Colors.SECONDARY_TEXT,
+        )
+
+        rows = len(workloads) + 1
+        table = self._add_table(
+            slide, rows, 5,
+            self.MARGIN, Inches(1.7),
+            Inches(12), Inches(0.45 * rows),
+        )
+
+        table.columns[0].width = Inches(3.0)
+        table.columns[1].width = Inches(2.5)
+        table.columns[2].width = Inches(2.0)
+        table.columns[3].width = Inches(2.25)
+        table.columns[4].width = Inches(2.25)
+
+        headers = ["Workload", "Tier", "Uptime", "RTO", "RPO"]
+        for j, h in enumerate(headers):
+            self._style_table_cell(
+                table.cell(0, j), h, font_size=11, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        tier_colors = {
+            "platinum": Colors.ORACLE_RED,
+            "gold": Colors.BURNT_ORANGE,
+            "silver": Colors.SECONDARY_TEXT,
+            "bronze": Colors.MUTED_TEAL,
+        }
+
+        for i, wl in enumerate(workloads):
+            row_idx = i + 1
+            bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+            self._style_table_cell(table.cell(row_idx, 0), wl["name"], font_size=10, bold=True, bg_color=bg)
+            tier_label = wl.get("tier", "Silver")
+            tier_color = tier_colors.get(tier_label.lower(), Colors.SECONDARY_TEXT)
+            self._style_table_cell(
+                table.cell(row_idx, 1), tier_label.title(),
+                font_size=10, bold=True, color=tier_color, bg_color=bg,
+                alignment=PP_ALIGN.CENTER,
+            )
+            self._style_table_cell(table.cell(row_idx, 2), wl.get("uptime", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 3), wl.get("rto", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 4), wl.get("rpo", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+
+    def add_architecture_principles_slide(self, principles: dict):
+        """Architecture Principles slide — ECAL Design/Deployment/Service categories.
+
+        principles: {"design": [{"id": str, "name": str, "summary": str}],
+                     "deployment": [...], "service": [...]}
+        """
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, "Architecture Principles")
+
+        y = Inches(1.2)
+        col_x = self.MARGIN
+        col_width = Inches(4)
+
+        for category in ["design", "deployment", "service"]:
+            items = principles.get(category, [])
+            if not items:
+                continue
+
+            # Category heading
+            self._add_textbox(
+                slide, col_x, y, col_width, Inches(0.35),
+                text=category.upper(), font_size=13, bold=True,
+                color=Colors.TEAL,
+            )
+
+            item_y = y + Inches(0.4)
+            for item in items:
+                pid = item.get("id", "")
+                name = item.get("name", "")
+                summary = item.get("summary", "")
+                label = f"{pid}  {name}" if pid else name
+                if summary:
+                    label += f" — {summary}"
+                self._add_textbox(
+                    slide, col_x + Inches(0.1), item_y,
+                    col_width - Inches(0.1), Inches(0.3),
+                    text=f"• {label}", font_size=9,
+                )
+                item_y += Inches(0.3)
+
+            col_x += Inches(4.2)
+
     def add_decisions_slide(self, decisions: list):
         """Slide 4: Architecture Decisions table.
 
@@ -780,6 +882,64 @@ class OCIDeckGenerator:
                 )
                 item_y += Inches(0.3)
             col_x += Inches(3.2)
+
+    def add_environment_catalogue_slide(self, environments: list,
+                                       cost_notes: list = None):
+        """Environment Catalogue slide — Prod/Pre-Prod/Dev-Test/DR per workload.
+
+        environments: list of {"environment": str, "tier": str,
+                              "databases": str, "ocpus": str, "isolation": str}
+        cost_notes: optional list of cost optimization notes
+        """
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, "Environment Catalogue")
+
+        rows = len(environments) + 1
+        table = self._add_table(
+            slide, rows, 5,
+            self.MARGIN, Inches(1.2),
+            Inches(12), Inches(0.4 * rows),
+        )
+
+        table.columns[0].width = Inches(2.2)
+        table.columns[1].width = Inches(1.8)
+        table.columns[2].width = Inches(2.5)
+        table.columns[3].width = Inches(1.5)
+        table.columns[4].width = Inches(4.0)
+
+        headers = ["Environment", "Tier", "Databases", "OCPUs", "Isolation"]
+        for j, h in enumerate(headers):
+            self._style_table_cell(
+                table.cell(0, j), h, font_size=11, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        for i, env in enumerate(environments):
+            row_idx = i + 1
+            bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+            self._style_table_cell(table.cell(row_idx, 0), env.get("environment", ""), font_size=10, bold=True, bg_color=bg)
+            self._style_table_cell(table.cell(row_idx, 1), env.get("tier", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 2), env.get("databases", ""), font_size=10, bg_color=bg)
+            self._style_table_cell(table.cell(row_idx, 3), env.get("ocpus", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 4), env.get("isolation", ""), font_size=10, bg_color=bg)
+
+        if cost_notes:
+            notes_y = Inches(1.2) + Inches(0.4 * rows) + Inches(0.3)
+            self._add_textbox(
+                slide, self.MARGIN, notes_y,
+                Inches(12), Inches(0.35),
+                text="Cost Optimization", font_size=12, bold=True,
+                color=Colors.TEAL,
+            )
+            note_y = notes_y + Inches(0.35)
+            for note in cost_notes:
+                self._add_textbox(
+                    slide, self.MARGIN + Inches(0.1), note_y,
+                    Inches(11.5), Inches(0.25),
+                    text=f"• {note}", font_size=9,
+                )
+                note_y += Inches(0.25)
 
     def add_cost_slide(self, line_items: list, assumptions: list = None,
                        show_byol: bool = True):
@@ -999,6 +1159,52 @@ class OCIDeckGenerator:
                 font_size=11, color=Colors.PRIMARY_TEXT,
             )
 
+    def add_operational_raci_slide(self, raci_items: list,
+                                   model: str = "co_managed"):
+        """Operational RACI slide — responsibility matrix.
+
+        raci_items: list of {"activity": str, "customer": str, "oracle": str}
+        model: "fully_managed", "co_managed", or "self_managed"
+        """
+        slide = self._add_blank_slide()
+        model_label = model.replace("_", "-").title()
+        self._add_title_bar(slide, f"Operational Responsibilities ({model_label})")
+
+        rows = len(raci_items) + 1
+        table = self._add_table(
+            slide, rows, 3,
+            self.MARGIN, Inches(1.2),
+            Inches(10), Inches(0.38 * rows),
+        )
+
+        table.columns[0].width = Inches(5.0)
+        table.columns[1].width = Inches(2.5)
+        table.columns[2].width = Inches(2.5)
+
+        headers = ["Activity", "Customer", "Oracle / Partner"]
+        for j, h in enumerate(headers):
+            self._style_table_cell(
+                table.cell(0, j), h, font_size=11, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        for i, item in enumerate(raci_items):
+            row_idx = i + 1
+            bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+            self._style_table_cell(table.cell(row_idx, 0), item.get("activity", ""), font_size=10, bg_color=bg)
+            self._style_table_cell(table.cell(row_idx, 1), item.get("customer", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 2), item.get("oracle", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+
+        # Legend
+        legend_y = Inches(1.2) + Inches(0.38 * rows) + Inches(0.2)
+        self._add_textbox(
+            slide, self.MARGIN, legend_y,
+            Inches(10), Inches(0.3),
+            text="R = Responsible    A = Accountable    C = Consulted    I = Informed",
+            font_size=9, italic=True, color=Colors.SECONDARY_TEXT,
+        )
+
     def add_risk_slide(self, risks: list):
         """Slide 10: Risk Register.
 
@@ -1201,7 +1407,15 @@ class OCIDeckGenerator:
                 timeline=s.get("timeline", ""),
             )
 
-        # Slide 3: Architecture
+        # Slide 3: Service Tiering (NEW — ECAL)
+        if "service_tiering" in spec:
+            gen.add_service_tiering_slide(spec["service_tiering"])
+
+        # Slide 4: Architecture Principles (NEW — ECAL)
+        if "architecture_principles" in spec:
+            gen.add_architecture_principles_slide(spec["architecture_principles"])
+
+        # Slide 5: Architecture
         if "architecture" in spec:
             a = spec["architecture"]
             gen.add_architecture_slide(
@@ -1210,11 +1424,11 @@ class OCIDeckGenerator:
                 visual=a.get("visual"),
             )
 
-        # Slide 4: Decisions
+        # Slide 6: Decisions
         if "decisions" in spec:
             gen.add_decisions_slide(spec["decisions"])
 
-        # Slide 5: HA/DR
+        # Slide 7: HA/DR
         if "ha_dr" in spec:
             h = spec["ha_dr"]
             gen.add_ha_dr_slide(
@@ -1222,7 +1436,7 @@ class OCIDeckGenerator:
                 description=h.get("description", ""),
             )
 
-        # Slide 6: Security
+        # Slide 8: Security
         if "security" in spec:
             s = spec["security"]
             gen.add_security_slide(
@@ -1230,7 +1444,15 @@ class OCIDeckGenerator:
                 compliance=s.get("compliance", []),
             )
 
-        # Slide 7: Cost
+        # Slide 9: Environment Catalogue (NEW — ECAL)
+        if "environment_catalogue" in spec:
+            ec = spec["environment_catalogue"]
+            gen.add_environment_catalogue_slide(
+                environments=ec.get("environments", []),
+                cost_notes=ec.get("cost_notes"),
+            )
+
+        # Slide 10: Cost
         if "cost" in spec:
             c = spec["cost"]
             gen.add_cost_slide(
@@ -1239,7 +1461,7 @@ class OCIDeckGenerator:
                 show_byol=c.get("show_byol", True),
             )
 
-        # Slide 8: Cost Comparison (optional)
+        # Slide 11: Cost Comparison (optional)
         if "cost_comparison" in spec:
             cc = spec["cost_comparison"]
             gen.add_cost_comparison_slide(
@@ -1248,7 +1470,7 @@ class OCIDeckGenerator:
                 col_headers=cc.get("col_headers"),
             )
 
-        # Slide 9: Migration
+        # Slide 12: Migration
         if "migration" in spec:
             m = spec["migration"]
             gen.add_migration_slide(
@@ -1257,11 +1479,19 @@ class OCIDeckGenerator:
                 downtime=m.get("downtime", ""),
             )
 
-        # Slide 10: Risks
+        # Slide 13: Operational RACI (NEW — ECAL)
+        if "operational_raci" in spec:
+            r = spec["operational_raci"]
+            gen.add_operational_raci_slide(
+                raci_items=r.get("raci_items", []),
+                model=r.get("model", "co_managed"),
+            )
+
+        # Slide 14: Risks
         if "risks" in spec:
             gen.add_risk_slide(spec["risks"])
 
-        # Slide 11: WA Scorecard
+        # Slide 15: WA Scorecard
         if "scorecard" in spec:
             sc = spec["scorecard"]
             gen.add_scorecard_slide(
@@ -1269,7 +1499,7 @@ class OCIDeckGenerator:
                 recommendations=sc.get("recommendations", []),
             )
 
-        # Slide 12: Next Steps
+        # Slide 16: Next Steps
         if "next_steps" in spec:
             ns = spec["next_steps"]
             gen.add_next_steps_slide(

@@ -1,0 +1,53 @@
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI Hybrid Cloud and VMware Solution pricing.
+currency: USD
+---
+
+# ── Oracle Cloud VMware Solution (OCVS) ───────────────────────────
+
+vmware_solution:
+  base_nodes:
+    BM.Standard2.12:
+      per_node_hour: 2.10 - 4.20
+      notes: "Hourly to 3-year commitment range"
+    BM.Standard3.16:
+      per_node_hour: 3.03 - 6.06
+    BM.Standard.E4.32:
+      per_node_hour: 4.20 - 8.40
+    BM.Standard.E5.48:
+      per_node_hour: 4.99 - 9.98
+  expansion:
+    ocpu_per_hour: 0.0168 - 0.0420
+    notes: "Commitment-based pricing"
+  hcx_enterprise:
+    ocpu_per_hour: 0.0084
+    minimum_commitment: "1 month"
+  gpu_storage_nodes:
+    per_node_hour: 2.10 - 4.20
+    notes: "Commitment-based pricing"
+
+# ── Compute Cloud@Customer ─────────────────────────────────────────
+
+compute_cloud_at_customer:
+  e6_compute:
+    ocpu_per_hour: 0.0336 - 0.0504
+  storage:
+    per_gb_month: 0.0085 - 0.0170
+  load_balancer:
+    per_hour: 0.10
+
+# ── Managed Service for Mac ────────────────────────────────────────
+
+managed_mac:
+  per_server_hour:
+    m2_pro: 1.20
+    m4_pro: 4.20
+  notes: "Range depends on Mac model (M2 Pro to M4 Pro)"
+
+# ── Roving Edge Infrastructure ─────────────────────────────────────
+
+roving_edge:
+  per_device_day: 300 - 1000
+  notes: "Portable compute/GPU/storage for edge and disconnected scenarios"

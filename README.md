@@ -8,6 +8,7 @@ Takes unstructured discovery notes and produces a complete OCI architecture pack
 
 - **Workload Profile** — structured from messy notes (YAML)
 - **Value Story** — business hypothesis linked to OCI outcomes
+- **Business Case** — TCO comparison, ROI analysis, value drivers, risk assessment (.pptx)
 - **Architecture Diagram** — `.drawio` with official Oracle visual style
 - **Slide Deck** — 6-15 slides scaled to engagement complexity (.pptx)
 - **Cost Estimate** — BYOL vs PAYG breakdown with assumptions
@@ -41,22 +42,53 @@ deck              ← default (.pptx)
 deck + drawio     ← + editable diagram
 deck + doc        ← + technical document
 deck + xlsx       ← + cost spreadsheet
+bizcase           ← business case deck for customer approval
 full              ← everything
 deliver           ← handover + go-live checklist + success criteria
 ```
 
-## Architecture Center Catalog
+## Knowledge Base
 
-The skill includes a curated catalog of **123 Oracle Architecture Center reference architectures** (`kb/architecture-center/catalog.yaml`) covering Database@Azure/AWS/Google Cloud, networking, security, AI/ML, migration, HA/DR, and more.
+The KB is the moat — field experience, not documentation regurgitation.
+
+### OCI Pricing (13 categories)
+
+Comprehensive pricing from the [OCI Price List](https://www.oracle.com/cloud/price-list/) covering compute, database, storage, networking, AI/ML, containers, integration, observability, developer, analytics, hybrid/VMware, and security services. Source date: 2025-09-11.
+
+```
+kb/pricing/
+├── compute.yaml            # VMs, bare metal, GPU (B200/B300/H200/H100/A100/L40S)
+├── database.yaml           # ADB (ECPU), DBCS, ExaCS, MySQL, PostgreSQL, NoSQL, Redis
+├── storage.yaml            # Block, object, file, data transfer
+├── networking.yaml         # LB, NLB, FastConnect, DNS, egress
+├── ai-ml.yaml              # GenAI, Data Science, Vision, Speech, Digital Assistant
+├── containers-serverless.yaml  # OKE, Functions, Container Instances
+├── integration.yaml        # OIC, API Mgmt, Streaming, Queue, GoldenGate
+├── observability.yaml      # Monitoring, Logging, APM, DR, Email
+├── developer.yaml          # APEX, Visual Builder, DevOps, Blockchain
+├── analytics.yaml          # OAC, Essbase, Big Data, Data Flow
+├── hybrid-vmware.yaml      # OCVS, Compute C@C, Managed Mac, Roving Edge
+├── security.yaml           # Access Governance, Vault, Cloud Guard
+└── pricing-models.yaml     # PAYG, UCM, Reserved, BYOL
+```
+
+### DBExpert Database Services Catalog
+
+35 Oracle Database services with full capabilities, multicloud availability (Azure/GCP/AWS locations), SLAs, MAA medals, compliance certifications, and certified Oracle applications. Sourced from the [Oracle DBExpert API](https://oracle-dbexpert.github.io/swagger/).
+
+```
+kb/services/dbexpert-catalog.yaml        # 35 services, queryable by capability
+kb/services/dbexpert-api-reference.yaml  # API endpoints and refresh procedure
+```
+
+### Architecture Center Catalog
+
+**123 Oracle Architecture Center reference architectures** (`kb/architecture-center/catalog.yaml`) covering Database@Azure/AWS/Google Cloud, networking, security, AI/ML, migration, HA/DR, and more.
 
 During **Phase 2 (DESIGN)**, the skill automatically matches the proposed architecture against the catalog:
 
 - **STRONG MATCH** (≥2 service + ≥1 tag) — cited in the Architecture Decisions slide
 - **MODERATE MATCH** (≥1 service + ≥2 tag) — referenced in the technical document
-
-This adds credibility: *"Your architecture aligns with Oracle Reference Architecture: Deploy Oracle Database@Azure — [link]"*.
-
-### Refresh the catalog
 
 ```bash
 python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
@@ -64,186 +96,76 @@ python tools/refresh_arch_catalog.py --url <url>       # add a single entry
 python tools/refresh_arch_catalog.py --validate        # validate catalog integrity
 ```
 
-Recommended cadence: monthly, or after major Oracle releases.
-
-## Field Intelligence
-
-Internal knowledge base built from real customer engagements. Two systems work together:
-
 ### Feature Compatibility Matrix
 
 Before recommending a deployment type, the skill checks `kb/compatibility/adb-feature-matrix.yaml` — a field-verified matrix of what works, what doesn't, and what has caveats the docs don't mention.
 
 ```bash
-# Quick check
 python tools/feature_matrix_cli.py check "Auto Scaling" adb_s 23ai
-# → GA_CAVEAT: Activation takes 2-3 min. Size base for P75.
-
-# Compare deployment options side-by-side
 python tools/feature_matrix_cli.py compare adb_s exacs 23ai
-
-# Find deal-breakers for a deployment type
 python tools/feature_matrix_cli.py gaps dbcs_ee 23ai
-
-# Export for Confluence/wiki
-python tools/feature_matrix_cli.py export --format markdown
 ```
-
-Status values: `GA` · `GA_CAVEAT` · `LIMITED` · `NOT_AVAIL` · `BROKEN` · `UNTESTED`
-
-Every cell has a confidence level (`validated` / `observed` / `reported` / `inferred`) and the name of who verified it.
 
 ### Field Findings Tracker
 
-Real issues, limitations, and workarounds encountered during customer engagements (`kb/field-findings/tracker.yaml`). Each finding has: date, who reported it, client, severity, workaround, Oracle SR# if filed, and status.
+Real issues, limitations, and workarounds encountered during customer engagements.
 
 ```bash
-# Search for known issues
 python tools/findings_cli.py search "maintenance window"
-
-# Add a finding (interactive)
 python tools/findings_cli.py add
-
-# Add a finding (one-liner)
-python tools/findings_cli.py add \
-    --name "Your Name" \
-    --team "Field Architecture" \
-    --client "Client Name" \
-    --product "ADB-S" \
-    --severity HIGH \
-    --category limitation \
-    --summary "Description of what you found" \
-    --tags "adb-s,dep,gotcha"
-
-# Another architect validates a finding
-python tools/findings_cli.py confirm FF-202603-008 \
-    --name "María García" \
-    --team "Database Specialists" \
-    --note "Confirmed same behavior on ADB-D with 80M vectors"
-
-# Post-engagement review (3 questions, auto-generates findings)
-python tools/findings_cli.py aer
-
-# Stats
 python tools/findings_cli.py stats
 ```
 
-The skill uses findings automatically: referenced in ADRs, risk registers, and WA scorecards by finding ID.
+### Competitive Positioning
 
-### How It Works in Practice
+Honest AWS/Azure/GCP comparisons (`kb/competitive/`) that cover genuine advantages AND genuine gaps. No marketing — only field-verified facts.
 
-1. Architect hits a wall with a client → adds a finding in 30 seconds
-2. Another architect 3 months later searches the KB → finds the workaround instantly
-3. Oracle fixes the issue → finding updated to `resolved`
-4. Skill checks findings during composition → flags known risks automatically
+## Business Case Builder
 
-Example finding:
-```
-FF-202603-008 [HIGH] — Distributed HNSW indexes not available at 100M+ scale
-  Product: ADB-S 23ai
-  Reported by: Diego Cabrera (Field Architecture)
-  Client: Vector Search Customer
-  Workaround: Hash-partition vector table + LOCAL HNSW index.
-              Validated at 120M vectors, 64 ECPU, P95 = 38ms.
-  Status: acknowledged
-```
+Option 8 in the menu generates a business case deck for customer internal approval:
 
-## Competitive Positioning
+| Slide | Layout | Content |
+|-------|--------|---------|
+| Cover | Dark - Title_Pillar | Customer name + subtitle |
+| Executive Summary | Impact Statement | Bold 1-sentence opportunity |
+| Business Drivers | Multi Statement | 3 key drivers: Why now |
+| TCO Comparison | Blank + Table | Current vs OCI (3-5 year) |
+| ROI Headline | Blank + Metric | Big number (e.g., "2080% ROI") |
+| Value Drivers | Blank + Cards | 4 categories: Cost, Risk, Agility, Innovation |
+| Risk Assessment | Blank + 2-Column | Migration risks vs Do-nothing risks |
+| Roadmap | Blank + Timeline | Implementation phases |
+| Recommendation | Dark Impact | Clear ask with next steps |
 
-The skill includes honest AWS/Azure/GCP comparisons (`kb/competitive/aws-mapping.yaml`, `azure-mapping.yaml`, `common-objections.yaml`) that cover **genuine advantages AND genuine gaps**. No marketing — only field-verified facts.
-
-When a competitive situation is identified in the workload profile, the skill produces a balanced comparison in the deck and technical document.
-
-## KB Governance
-
-Every contribution to the KB requires attribution:
-
-```yaml
-contributor:
-  name: "Diego Cabrera"        # Required
-  team: "Field Architecture"   # Required
-  client: "Acme Corp"          # Optional
-  date: "2026-03-14"           # Required
-  confidence: "validated"       # validated / observed / reported / inferred
-```
-
-Domain owners, freshness tracking (180-day warning), confidence decay, and standardized tags ensure the KB stays accurate over time.
+Uses the **Oracle FY26 official PowerPoint template** with Redwood design system.
 
 ```bash
-# KB health dashboard
-python tools/kb_cli.py health
-
-# Who's contributing
-python tools/kb_cli.py stats contributors
-
-# What's stale
-python tools/kb_cli.py stats stale
+python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case.pptx
 ```
 
-## Example Output
+## Welcome Flow
 
-Feed the skill your discovery notes and specify an output format:
+When you start a conversation without discovery notes, the skill presents an interactive menu:
 
 ```
-> Here are my notes from the Acme Corp discovery call: [notes]
-> Output: deck + drawio
+🏗️ OCI Deal Accelerator
+━━━━━━━━━━━━━━━━━━━━━━━
+
+ DESIGN & PROPOSE:      1-4 (proposal, diagram, deck, cost)
+ VALIDATE & CHECK:      5-7 (WA review, compatibility, competitive)
+ STRATEGY & BUSINESS:   8   (business case builder)
+ KNOWLEDGE BASE:        9-11 (field findings, ref arch, report finding)
 ```
 
-**Phase 1 — DEFINE:**
-```
-Parsed workload profile: 3 databases, 6 app servers, MQ Series messaging.
-Gaps detected:
-  - Missing P95 CPU → assuming 85% based on 70% avg
-  - PCI scope unclear → assuming OLTP DB + app tier
-```
-
-**Phase 2 — DESIGN:**
-```
-Target: ADB-S Serverless with cross-region HA/DR
-
-  ADB-S OLTP         8 OCPU (auto-scale 16) / 4 TB / BYOL
-  ADB-S DR Standby   Cross-region ADG (async, RPO ≈ seconds)
-  Compute            2x VM.Standard.E5.Flex 4 OCPU
-  Networking         VCN + FastConnect 10 Gbps (redundant)
-
-Feature matrix check: ✓ All required features GA on ADB-S 23ai
-  ⚠ TAC replay: audit app code for UTL_HTTP/DBMS_PIPE calls
-
-Field findings check:
-  ⚠ FF-202603-004: DEP provisioning takes days-weeks
-
-Reference architecture match:
-  ✅ "Deploy secure ADB and APEX application" (STRONG)
-  ✅ "Migrate on-premises Oracle Database to ADB" (MODERATE)
-
-Cost: $13,560/mo PAYG → $8,410/mo BYOL (vs $2M/year current = 95% savings)
-
-WA Scorecard: Security ✅ | Reliability ⚠️ | Performance ✅ | Ops ❌ | Distributed ➖
-```
-
-**Phase 3 — DELIVER:**
-```
-Generated:
-  📊 acme-corp-proposal.pptx (12 slides)
-  📐 acme-corp-architecture.drawio
-```
-
-## Multi-LLM Support
-
-The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
-
-| Platform | How to use |
-|----------|-----------|
-| **Claude Code** | Load SKILL.md as system prompt, tools run natively |
-| **OpenAI Codex** | Use `codex/` packaging with `skill.json` manifest |
-| **ChatGPT / GPT-4o** | Paste SKILL.md as system prompt |
-| **Gemini Pro** | Paste SKILL.md as system instruction |
+If you paste discovery notes directly, the skill skips the menu and goes straight to the full proposal flow.
 
 ## Tools
 
 ```bash
-# Slide deck generation
+# Slide deck generation (technical proposal)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
+
+# Business case deck
+python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case.pptx
 
 # Architecture diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
@@ -264,16 +186,39 @@ python tools/findings_cli.py stats
 python tools/kb_cli.py health
 
 # WA validation
-python scripts/validate-architecture.py --profile examples/sample-workload-profile.yaml --architecture examples/sample-architecture.yaml --output scorecard.yaml
+python scripts/validate-architecture.py \
+  --profile examples/sample-workload-profile.yaml \
+  --architecture examples/sample-architecture.yaml \
+  --output scorecard.yaml
 
 # Build automation
 make help
 ```
 
+## Multi-LLM Support
+
+The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
+
+| Platform | How to use |
+|----------|-----------|
+| **Claude Code** | Load SKILL.md as system prompt, tools run natively |
+| **OpenAI Codex** | Use `codex/` packaging with `skill.json` manifest |
+| **ChatGPT / GPT-4o** | Paste SKILL.md as system prompt |
+| **Gemini Pro** | Paste SKILL.md as system instruction |
+
+## Roadmap
+
+- Interactive what-if cost simulator (adjust ECPU/storage/commitment live)
+- Automated migration complexity scoring from discovery notes
+- Customer-facing PDF export (branded, no internal KB references)
+- Multi-region DR cost optimizer
+- Engagement timeline generator (Gantt-style from Joint Engagement Plan)
+- DBExpert API auto-refresh for database service catalog
+
 ## Requirements
 
 - Python 3.8+
-- `pip install pyyaml python-pptx requests beautifulsoup4`
+- `pip install pyyaml python-pptx requests beautifulsoup4 lxml`
 - No OCI CLI or SDK needed (the skill designs, it doesn't deploy)
 
 ## License

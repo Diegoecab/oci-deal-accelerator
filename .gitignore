@@ -16,3 +16,13 @@ examples/farma-sa-*
 
 # Exported screenshots (temporary)
 examples/*.png
+
+# Exported ppts 
+examples/*.ppts
+
+# Exported diagrams 
+examples/*.drawio
+
+# Exported YAML files  
+examples/*.yaml
+

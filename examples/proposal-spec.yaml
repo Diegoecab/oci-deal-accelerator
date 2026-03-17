@@ -19,6 +19,55 @@ summary:
   target_state: "Migrate to OCI Autonomous Database (ADB-S) with OKE for application tier, full HA/DR"
   timeline: "6-month migration, Q3 2026 go-live"
 
+service_tiering:
+  - name: "Main OLTP (4 TB)"
+    tier: "Gold"
+    uptime: "99.99%"
+    rto: "< 4 hrs"
+    rpo: "15 min"
+  - name: "Reporting DB (2 TB)"
+    tier: "Silver"
+    uptime: "99.5%"
+    rto: "1 day"
+    rpo: "1 day"
+  - name: "APEX App DB (200 GB)"
+    tier: "Bronze"
+    uptime: "98%"
+    rto: "Best effort"
+    rpo: "Best effort"
+
+architecture_principles:
+  design:
+    - id: "D-01"
+      name: "Operational Simplicity"
+      summary: "keep it simple, simplify again"
+    - id: "D-02"
+      name: "Application First"
+      summary: "SaaS > PaaS > IaaS"
+    - id: "D-05"
+      name: "HA for Business Continuity"
+      summary: "built-in, not bolted-on"
+    - id: "D-06"
+      name: "Compliance by Design"
+      summary: "PCI baked in from day 1"
+  deployment:
+    - id: "P-01"
+      name: "Automation First"
+      summary: "Terraform for all infrastructure"
+    - id: "P-02"
+      name: "Environment Separation"
+      summary: "Prod / Pre-Prod / Dev isolated"
+    - id: "P-04"
+      name: "Data Security"
+      summary: "TDE + Key Vault from day 1"
+  service:
+    - id: "S-01"
+      name: "Cloud Monitoring"
+      summary: "OCI native tools (Monitoring, Logging, Ops Insights)"
+    - id: "S-04"
+      name: "Cloud Onboarding"
+      summary: "PoC before full migration"
+
 architecture:
   description: |
     [Insert diagram — export from examples/ecommerce-architecture.drawio]
@@ -94,6 +143,43 @@ security:
       - "VCN Flow Logs"
       - "Vulnerability Scanning on OKE nodes"
 
+environment_catalogue:
+  environments:
+    - environment: "Production"
+      tier: "Gold"
+      databases: "OLTP (4 TB)"
+      ocpus: "8"
+      isolation: "Dedicated CDB, private endpoint"
+    - environment: "Production"
+      tier: "Silver"
+      databases: "Reporting (2 TB)"
+      ocpus: "4"
+      isolation: "Shared CDB OK"
+    - environment: "Production"
+      tier: "Bronze"
+      databases: "APEX (200 GB)"
+      ocpus: "2"
+      isolation: "Shared CDB OK"
+    - environment: "Pre-Prod"
+      tier: "Silver"
+      databases: "OLTP copy"
+      ocpus: "4"
+      isolation: "Refreshable clone from Prod"
+    - environment: "Dev/Test"
+      tier: "Bronze"
+      databases: "OLTP copy"
+      ocpus: "2"
+      isolation: "Full clone, auto-stop nights/wknd"
+    - environment: "DR"
+      tier: "Gold"
+      databases: "OLTP standby"
+      ocpus: "8"
+      isolation: "Cross-region ADG, dedicated"
+  cost_notes:
+    - "Pre-Prod uses Refreshable Clones (read-only, no OCPU when paused)"
+    - "Dev/Test auto-stops nights and weekends (saves ~65%)"
+    - "DR standby billed at same OCPU rate as primary"
+
 cost:
   show_byol: true
   line_items:
@@ -155,6 +241,20 @@ migration:
       tasks: ["Final sync", "DNS cutover", "Post-migration validation", "Decommission on-prem"]
   tools: ["OCI Zero Downtime Migration (ZDM)", "OCI Database Migration Service", "Data Pump"]
   downtime: "Zero downtime via ZDM with GoldenGate-based replication"
+
+operational_raci:
+  model: "co_managed"
+  raci_items:
+    - { activity: "DB provisioning",        customer: "R",   oracle: "C" }
+    - { activity: "Patching & upgrades",    customer: "R",   oracle: "C" }
+    - { activity: "Backup & recovery",      customer: "R/A", oracle: "C" }
+    - { activity: "Performance monitoring",  customer: "R",   oracle: "I" }
+    - { activity: "Security configuration",  customer: "R/A", oracle: "C" }
+    - { activity: "Incident response (DB)",  customer: "R",   oracle: "C" }
+    - { activity: "DR testing",             customer: "R",   oracle: "C" }
+    - { activity: "Access control (IAM)",    customer: "R/A", oracle: "I" }
+    - { activity: "Schema changes",          customer: "R/A", oracle: "I" }
+    - { activity: "Oracle SR escalation",    customer: "R",   oracle: "C" }
 
 risks:
   - risk: "Application compatibility with ADB-S restrictions"

@@ -1,0 +1,55 @@
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI Integration and Middleware pricing.
+currency: USD
+---
+
+# ── Integration Cloud ─────────────────────────────────────────────
+
+integration_cloud:
+  per_5k_messages_hour: 0.36 - 0.72
+  notes: "Standard and Enterprise editions"
+
+# ── API Management ─────────────────────────────────────────────────
+
+api_management:
+  per_api_call: 0.0000005
+  monthly_1m_calls: 0.50
+  notes: "Very low cost per call"
+
+# ── Data Integration ───────────────────────────────────────────────
+
+data_integration:
+  workspace_per_hour: 0.0252
+  data_processed_per_gb_hour: 0.0252
+
+# ── Data Integrator ────────────────────────────────────────────────
+
+data_integrator:
+  ocpu_per_hour: 0.0252
+
+# ── Streaming (Kafka compatible) ──────────────────────────────────
+
+streaming:
+  storage_per_gb_hour: 0.025
+  data_transfer_per_gb: 0.025
+
+streaming_with_kafka:
+  ocpu_per_hour: 0.0252
+
+# ── Queue ──────────────────────────────────────────────────────────
+
+queue:
+  free_per_month: 1000000  # requests
+  per_request_beyond: 0.0000005
+  notes: "1M free requests/month, very cost-effective for decoupling"
+
+# ── SOA Suite ──────────────────────────────────────────────────────
+
+soa_suite:
+  ocpu_per_hour: 0.0504 - 0.0672
+  notes: "For legacy SOA workload migration"
+
+# ── GoldenGate ─────────────────────────────────────────────────────
+# See database.yaml for GoldenGate pricing

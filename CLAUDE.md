@@ -21,6 +21,10 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── patterns/               # Composable architecture blocks
 │   │   ├── business-patterns.yaml    # Business-level patterns (DEFINE)
 │   │   ├── application-patterns.yaml # Application architecture patterns (DESIGN)
+│   │   ├── service-tiering.yaml      # Service tier model (Platinum/Gold/Silver/Bronze)
+│   │   ├── architecture-principles.yaml # ECAL principles (Design/Deployment/Service)
+│   │   ├── operational-raci.yaml     # RACI matrix templates (3 operational models)
+│   │   ├── environment-catalogue.yaml # Environment templates per tier
 │   │   ├── database-ha-adb-s.yaml
 │   │   ├── database-dr-cross-region.yaml
 │   │   ├── networking-basic.yaml
@@ -43,9 +47,12 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── service-categories.yaml # Service → color/category mapping
 │   ├── output-formats.yaml     # Output format specs and design standards
 │   ├── engagement-tiers.yaml   # Tier definitions (small/standard/complex)
-│   └── workload-profile-schema.yaml # Workload profile field definitions
+│   ├── workload-profile-schema.yaml # Workload profile field definitions
+│   └── oracle-pptx-layouts.yaml # Oracle FY26 POTX layout mapping for deck generation
 ├── templates/                  # ECAL phase templates
+│   ├── Oracle_PPT-template_FY26.pptx # Official Oracle FY26 PowerPoint template
 │   ├── workload-profile.yaml   # DEFINE: Discovery capture
+│   ├── business-case.yaml      # DEFINE: Business case for customer approval
 │   ├── value-story.yaml        # DEFINE: Business value hypothesis
 │   ├── joint-engagement-plan.yaml # DEFINE: Engagement scoping
 │   ├── scorecard.yaml          # DESIGN: WA validation results
@@ -73,7 +80,7 @@ Phase details in `docs/` — SKILL.md references them via progressive disclosure
 
 ## Output Formats
 
-Default output is a **slide deck (.pptx)** — adapts to engagement tier (6-8 / 10-12 / 12-15 slides).
+Default output is a **slide deck (.pptx)** — adapts to engagement tier (6-8 / 10-12 / 12-16 slides).
 
 ```
 deck              ← default
@@ -123,3 +130,13 @@ make lint           # check YAML syntax
 - **Composable** — patterns combine, not monolithic templates
 - **KB is the moat** — field experience, not documentation regurgitation
 - **ECAL-aligned** — Define → Design → Deliver with iterative checkpoints
+
+## Welcome Flow
+
+When the user starts a conversation without providing discovery notes or a specific request (e.g., a greeting like "hola", "hey", or empty context), present the welcome message and capability menu defined in `SKILL.md` § Welcome Flow. Specifically:
+
+1. Show the welcome banner and numbered capability menu from SKILL.md
+2. Follow the behavior rules for each option (1-10)
+3. After completing any task, offer the next-step menu (A-E)
+4. If the user sends discovery notes directly, skip the menu and go straight to full proposal flow
+5. If the user asks a specific question, skip the menu and answer directly
