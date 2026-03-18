@@ -83,7 +83,6 @@ Pick a number, or just describe what you need.
   **WA Review Output Format:**
 
   The WA review MUST produce **two layers of output**: (a) the formatted terminal scorecard shown to the user, and (b) the structured YAML files saved to disk. The terminal output is the primary deliverable — the YAML is the backing data. Never produce YAML-only output without the formatted scorecard.
-
   ```
   ══════════════════════════════════════════════════════
   ✅ OCI WELL-ARCHITECTED REVIEW — [Customer Name]
@@ -122,15 +121,6 @@ Pick a number, or just describe what you need.
 
   **Recommended Path Forward:**
   3-5 numbered, actionable recommendations that directly map to closing the highest-impact gaps. Reference skill options where applicable (e.g., "Generate the architecture — option 1 or 2").
-
-  **Files Generated:**
-  Always list the files saved at the end of the review:
-  ```
-  📁 Files saved:
-  - examples/<customer>-wa-scorecard.yaml
-  - examples/<customer>-wa-architecture.yaml
-  - examples/<customer>-wa-workload-profile.yaml
-  ```
 
   **After WA Review Menu:**
   ```
@@ -248,19 +238,12 @@ Pick a number, or just describe what you need.
   ══════════════════════════════════════════
   ```
 
-  **Files Generated:**
-  Always list the files saved at the end of the scorecard:
-  ```
-  📁 Files saved:
-  - examples/<customer>-ecal-scorecard.yaml
-  ```
-
   After showing the scorecard, offer:
   ```
   What do you want to do?
   → [A] Fix the top gap now (I'll generate the missing artefact)
   → [B] Generate all missing artefacts for current phase
-  → [C] Export scorecard as a slide (.pptx)
+  → [C] Export scorecard as a slide
   → [D] Re-score after updates
   ```
 
@@ -435,7 +418,6 @@ Every skill option that produces output MUST generate **readable, human-consumab
 - **Options 1-4, 8:** Primary output is `.pptx` (slide deck) and/or `.drawio` (diagram). YAML specs are saved alongside but never presented as the deliverable.
 - **Option 5 (WA Review):** Primary output is the **formatted terminal scorecard** (banner + pillar bars + gap tables + recommendations). YAML scorecard saved to `examples/` as backing data.
 - **Option 12 (ECAL Readiness):** Primary output is the **formatted terminal scorecard** (phase scores + artefact checklist + gap analysis). YAML scorecard saved to `examples/` as backing data.
-- **After any review/score:** When the user picks [C] "Export as slide", generate a 1-2 slide `.pptx` with the scorecard visualization using `tools/oci_deck_gen.py`.
 
 If a tool or agent generates YAML without the corresponding readable output, the task is **incomplete**. Always present the formatted result, then list the files saved.
 
@@ -466,7 +448,7 @@ Default output is a **slide deck (.pptx)**. The architect can specify:
 | `deck + xlsx` | + cost spreadsheet with formulas |
 | `deck + pdf` | + customer-facing PDF (branded, no internal refs) |
 | `pdf` | Customer PDF only |
-| `full` | Everything (pptx + drawio + docx + xlsx + pdf) |
+| `full` | All of the above |
 | `doc only` | Technical document without slides |
 | `deliver` | Handover + go-live checklist + success criteria |
 
@@ -499,6 +481,53 @@ Use `tools/oci_diagram_gen.py` with OCI official styles from `kb/diagram/oci-too
 
 ---
 
+## Available Tools
+
+You have access to these command-line tools for generating outputs:
+
+### generate_diagram
+Generate an OCI architecture diagram (.drawio) from a YAML spec.
+```bash
+python tools/oci_diagram_gen.py --spec <spec_file> --output <output_file>
+```
+
+### generate_deck
+Generate an architecture proposal slide deck (.pptx) from a YAML spec.
+```bash
+python tools/oci_deck_gen.py --spec <spec_file> --output <output_file>
+```
+
+### generate_pdf
+Generate a customer-facing PDF document (branded, no internal KB references).
+```bash
+python tools/oci_pdf_gen.py --spec <spec_file> --output <output_file>
+# With embedded diagram:
+python tools/oci_pdf_gen.py --spec <spec_file> --output <output_file> --diagram <diagram_image>
+```
+
+### generate_output
+Generate complete architecture proposal outputs (deck, diagram, cost spreadsheet, PDF).
+```bash
+python tools/oci_output.py --spec <spec_file> --output-dir <output_dir> --format <format>
+# Formats: deck, drawio, doc, xlsx, pdf, full
+```
+
+### validate_architecture
+Run Well-Architected Framework validation on an architecture.
+```bash
+python scripts/validate-architecture.py --profile <workload_profile> --architecture <architecture> --output <scorecard>
+```
+
+### refresh_catalog
+Refresh the Architecture Center catalog.
+```bash
+python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
+python tools/refresh_arch_catalog.py --url <url>       # add single entry
+python tools/refresh_arch_catalog.py --validate        # validate catalog
+```
+
+---
+
 ## Service Categorization
 
 | Category | Color | Use |
@@ -521,9 +550,12 @@ kb/
 ├── patterns/          # Composable blocks
 │   ├── business-patterns.yaml      # Business-level patterns (DEFINE)
 │   ├── application-patterns.yaml   # Application architecture patterns (DESIGN)
-│   ├── service-tiering.yaml        # Service tier definitions (Platinum/Gold/Silver/Bronze)
-│   ├── architecture-principles.yaml # ECAL architecture principles (Design/Deployment/Service)
-│   ├── operational-raci.yaml       # RACI matrix templates (fully/co/self-managed)
+│   ├── service-tiering.yaml        # Service tier definitions
+│   ├── architecture-principles.yaml # ECAL architecture principles
+│   ├── operational-raci.yaml       # RACI matrix templates
+│   ├── engagement-raci.yaml        # ECAL engagement RACI (10 roles)
+│   ├── business-drivers.yaml       # 4-pillar business drivers
+│   ├── ecal-artefacts-catalog.yaml # Complete ECAL 3.1 artefacts (60 items)
 │   ├── environment-catalogue.yaml  # Environment templates per tier
 │   ├── database-ha/                # Database HA patterns
 │   ├── database-dr/                # Database DR patterns
@@ -547,8 +579,12 @@ kb/
 | Template | Phase | Purpose |
 |----------|-------|---------|
 | `workload-profile.yaml` | DEFINE | Discovery capture |
+| `customer-profile.yaml` | DEFINE | Strategic customer profiling |
+| `strategy-map.yaml` | DEFINE | Goals→Strategies→Capabilities→Enablers |
 | `value-story.yaml` | DEFINE | Business value hypothesis |
 | `joint-engagement-plan.yaml` | DEFINE | Engagement scoping |
+| `business-case.yaml` | DEFINE | Business case for approval |
+| `discovery-questionnaire.yaml` | DESIGN | Structured IT collection |
 | `operations-model.yaml` | DESIGN | Day-2 operations design |
 | `scorecard.yaml` | DESIGN | WA validation results |
 | `adr-template.md` | DESIGN | Architecture Decision Records |
@@ -599,3 +635,17 @@ kb/
 - You do NOT claim features exist if you're unsure. Check the KB first.
 - You do NOT do detailed project management. DELIVER artifacts are lightweight handover aids.
 - You do NOT add services or components the user did not request.
+
+---
+
+## Multi-Agent Mode (Codex)
+
+When running in Codex with multiple agents, this skill can be split:
+
+- **Agent 1 (Architect)**: Runs Phase 1 (DEFINE — discovery capture) and Phase 2 (DESIGN — composition)
+- **Agent 2 (Validator)**: Runs WA validation on the composed architecture
+- **Agent 3 (Renderer)**: Generates diagram + deck + PDF + any other outputs
+
+The Architect agent produces the structured YAML spec. The Validator annotates it with WA findings. The Renderer consumes the annotated spec and produces files.
+
+Each agent reads the same KB but focuses on its phase. The orchestrating agent (or the user) coordinates handoffs.

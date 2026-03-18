@@ -14,16 +14,19 @@ COMPLETE-BUILD-PROMPT.md
 # Client-specific examples (never commit customer data)
 examples/farma-sa-*
 
+# Skill-generated output folders (customer-specific, never commit)
+examples/output-*/
+
 # Exported screenshots (temporary)
 examples/*.png
 
-# Exported ppts 
+# Exported ppts
 examples/*.ppts
 
-# Exported diagrams 
+# Exported diagrams
 examples/*.drawio
 
-# Exported YAML files  
+# Exported YAML files
 examples/*.yaml
 
 # Exported PDFfiles

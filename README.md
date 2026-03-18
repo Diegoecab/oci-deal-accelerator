@@ -9,7 +9,7 @@ What normally takes an SA days of work (structuring notes, designing architectur
 ### Key differentiators
 
 - **ECAL 3.1 native** — engagement RACI, artefact catalog, readiness scoring, and lessons learned per step baked into the workflow
-- **Field knowledge, not docs regurgitation** — built-in KB with real gotchas, workarounds, and sizing lessons from production OCI deployments
+- **Field knowledge, beyond the docs** — built-in KB with real gotchas, workarounds, and sizing lessons from production OCI deployments
 - **Honest about trade-offs** — flags OCI limitations and competitive gaps instead of overselling
 - **Multi-cloud aware** — supports hybrid/multi-cloud diagrams (AWS, Azure, GCP icons) and considers options like ADB Multicloud before recommending full migration
 - **End-to-end coverage** — from discovery notes to go-live checklist, not just the architecture slide
@@ -246,11 +246,40 @@ When you start a conversation without discovery notes, the skill presents an int
 🏗️ OCI Deal Accelerator
 ━━━━━━━━━━━━━━━━━━━━━━━
 
- DESIGN & PROPOSE:      1-4  (proposal, diagram, deck, cost)
- VALIDATE & CHECK:      5-7  (WA review, compatibility, competitive)
- STRATEGY & BUSINESS:   8    (business case builder)
- KNOWLEDGE BASE:        9-11 (field findings, ref arch, report finding)
- ECAL GOVERNANCE:       12   (ECAL readiness score)
+Compresses your SA cycle from discovery to proposal — days to hours.
+Aligned with Oracle's ECAL framework (Define → Design → Deliver).
+
+What do you want to do?
+
+ DESIGN & PROPOSE
+ ─────────────────
+ 1. 📋 Full proposal — notes → architecture + deck + diagram + costs
+ 2. 📐 Architecture diagram — YAML or description → .drawio
+ 3. 📊 Slide deck — architecture → .pptx
+ 4. 💰 Cost estimate — services + sizing → PAYG vs BYOL
+
+ VALIDATE & CHECK
+ ─────────────────
+ 5. ✅ Well-Architected review — 5-pillar scoring + gaps
+ 6. 🔍 Feature compatibility — "does ADB-S support X?"
+ 7. 🆚 Competitive comparison — honest pros & cons vs AWS/Azure/GCP
+
+ STRATEGY & BUSINESS
+ ─────────────────
+ 8. 💼 Business case — TCO, ROI, value drivers → exec deck
+
+ KNOWLEDGE BASE
+ ─────────────────
+  9. 🔎 Field findings — real issues + workarounds
+ 10. 📚 Reference architecture — Architecture Center lookup
+ 11. ➕ Report finding — log a gotcha from your engagement
+
+ ECAL GOVERNANCE
+ ─────────────────
+ 12. 📊 ECAL readiness score — 60-artefact gap analysis
+
+━━━━━━━━━━━━━━━━━━━━━━━
+Pick a number, or just describe what you need.
 ```
 
 If you paste discovery notes directly, the skill skips the menu and goes straight to the full proposal flow.
@@ -301,14 +330,39 @@ make help
 
 ## Multi-LLM Support
 
-The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
+The skill is LLM-agnostic. The same KB and templates work across platforms:
 
 | Platform | How to use |
 |----------|-----------|
-| **Claude Code** | Load SKILL.md as system prompt, tools run natively |
-| **OpenAI Codex** | Use `codex/` packaging with `skill.json` manifest |
+| **Claude Code** | Uses `SKILL.md` + `CLAUDE.md` natively |
+| **OpenAI Codex** | Uses `AGENTS.md` + `.agents/skills/` (see below) |
 | **ChatGPT / GPT-4o** | Paste SKILL.md as system prompt |
 | **Gemini Pro** | Paste SKILL.md as system instruction |
+
+### OpenAI Codex Setup
+
+The repo is 100% compatible with [Codex CLI](https://github.com/openai/codex). Codex auto-discovers the skill on startup:
+
+```
+├── AGENTS.md                                        # Project instructions (Codex reads automatically)
+├── .agents/skills/oci-deal-accelerator/
+│   └── SKILL.md                                     # Full skill definition (YAML frontmatter + instructions)
+└── codex/
+    └── README.md                                    # Detailed setup guide
+```
+
+```bash
+# Just run Codex from the project root — auto-discovers everything
+cd oci-deal-accelerator
+codex
+
+# Or load the skill explicitly
+codex --skill oci-deal-accelerator
+```
+
+For temporary overrides (e.g., focusing on a specific customer), create `AGENTS.override.md` at the project root — it takes highest priority.
+
+Full setup details: [`codex/README.md`](codex/README.md)
 
 ## Roadmap
 

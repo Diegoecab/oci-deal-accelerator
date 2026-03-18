@@ -18,7 +18,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 
 # Pillar YAML files
@@ -106,7 +106,7 @@ def evaluate_check(check: dict, architecture: dict, flags: dict) -> dict:
         }
 
 
-def _extract_keywords(text: str) -> list[str]:
+def _extract_keywords(text: str) -> List[str]:
     """Extract searchable keywords from auto_detect conditions."""
     if not text:
         return []
