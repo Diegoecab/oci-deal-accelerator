@@ -26,3 +26,5 @@ examples/*.drawio
 # Exported YAML files  
 examples/*.yaml
 
+# Exported PDFfiles
+examples/*.pdf
