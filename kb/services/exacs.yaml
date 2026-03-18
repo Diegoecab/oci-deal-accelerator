@@ -1,0 +1,102 @@
+---
+last_verified: 2026-03-14
+service: Exadata Cloud Service (ExaCS)
+category: database
+oci_color: "#AA643B"
+---
+
+what: Full Oracle Exadata system in OCI. Provides OS access, RAC, full DBA control
+  with cloud elasticity. Runs the same Exadata software as on-prem.
+
+when_to_use:
+  - Need OS-level access for custom agents, scripts, or compliance tools
+  - RAC required for application architecture
+  - Sustained high OCPU workloads (>128 OCPUs)
+  - Lift-and-shift from on-prem Exadata with minimal changes
+  - Need custom database parameters not available in ADB
+  - Applications that use features incompatible with ADB (e.g., dblinks to non-Oracle)
+
+when_NOT_to_use:
+  - Small/medium workloads (over-provisioned)
+  - No DBA team (ExaCS requires database administration)
+  - Variable workloads that benefit from ADB auto-scaling
+  - Budget-constrained (high minimum commitment)
+
+limits:
+  shapes:
+    - name: "Exadata.Quarter3.100"
+      base_ocpu: 100
+      max_ocpu: 100
+      storage_tb: 49.5
+    - name: "Exadata.Half3.200"
+      base_ocpu: 200
+      max_ocpu: 200
+      storage_tb: 99
+    - name: "Exadata.Full3.400"
+      base_ocpu: 400
+      max_ocpu: 400
+      storage_tb: 198
+  max_vm_clusters: 8
+  max_databases_per_cluster: "Limited by resources"
+  max_pdb_per_cdb: 252
+
+features:
+  os_access: true
+  rac: true
+  data_guard: true
+  cross_region_data_guard: true
+  custom_db_home: true
+  custom_patches: true
+  grid_infrastructure: true
+  flash_cache: true
+  smart_scan: true
+  storage_compression: true
+  hybrid_columnar_compression: true
+
+ha_dr:
+  local_ha: "RAC across Exadata nodes, automatic failover"
+  data_guard:
+    same_region: "Synchronous, automatic failover with FSFO"
+    cross_region: "Asynchronous or far-sync, manual or automatic failover"
+
+sizing_rules:
+  minimum: "Quarter rack (100 OCPUs base)"
+  scaling: "Can enable additional OCPUs in increments"
+  storage: "Comes with infrastructure, expandable"
+
+pricing:
+  model: infrastructure_plus_ocpu
+  infrastructure_monthly: "Fixed per shape"
+  enabled_ocpu_per_hour: 0.336  # approximate
+  byol_ocpu_per_hour: 0.168
+  notes:
+    - "Infrastructure cost is fixed per shape"
+    - "Only enabled OCPUs are billed"
+    - "BYOL provides ~50% discount on OCPU portion"
+    - "Storage included with infrastructure"
+
+gotchas:
+  - id: EXACS-001
+    issue: "Provisioning takes hours to days"
+    impact: "Cannot provision on-demand like ADB-S"
+    recommendation: "Plan capacity well in advance"
+  - id: EXACS-002
+    issue: "Minimum quarter rack commitment"
+    impact: "Significant base cost even at low utilization"
+    recommendation: "Ensure sustained usage justifies the infrastructure cost"
+  - id: EXACS-003
+    issue: "DBA team required for ongoing operations"
+    impact: "Patching, tuning, and maintenance are customer responsibility"
+    recommendation: "Ensure DBA team capacity before choosing ExaCS over ADB"
+  - id: EXACS-004
+    issue: "Scale-down requires VM cluster modification"
+    impact: "Not as elastic as ADB-S for variable workloads"
+    recommendation: "Right-size for steady-state, not peak"
+
+migration_tools:
+  - name: Oracle Data Guard
+    use_for: "On-prem Exadata to ExaCS with minimal downtime"
+  - name: RMAN Restore
+    use_for: "Backup-based migration with planned downtime"
+  - name: Zero Downtime Migration (ZDM)
+    use_for: "Automated physical migration"

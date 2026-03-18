@@ -1,0 +1,74 @@
+# OCI Storage IOPS and Throughput Reference
+# Used for right-sizing block and file storage
+
+block_volume:
+  description: "OCI Block Volume performance tiers"
+  tiers:
+    - name: "Lower Cost"
+      iops_per_gb: 2
+      max_iops: 3000
+      throughput_mbps_per_gb: 0.024
+      max_throughput_mbps: 480
+      use_when: "Archive, cold data, infrequent access"
+
+    - name: "Balanced"
+      iops_per_gb: 60
+      max_iops: 25000
+      throughput_mbps_per_gb: 0.48
+      max_throughput_mbps: 480
+      use_when: "General purpose, boot volumes, typical workloads"
+      default: true
+
+    - name: "Higher Performance"
+      iops_per_gb: 75
+      max_iops: 35000
+      throughput_mbps_per_gb: 0.6
+      max_throughput_mbps: 480
+      use_when: "Database data files, high-throughput applications"
+
+    - name: "Ultra High Performance"
+      iops_per_gb: 90
+      max_iops: 120000
+      throughput_mbps_per_gb: 0.72
+      max_throughput_mbps: 2680
+      use_when: "Extreme IOPS requirements, OLTP databases"
+      notes: "Only available with certain compute shapes"
+
+  sizing_guidance: |
+    1. Determine required IOPS (from AWR, CloudWatch, or application benchmarks)
+    2. Select tier that provides needed IOPS/GB ratio
+    3. Calculate minimum volume size: required_iops / iops_per_gb
+    4. Ensure volume size also covers storage capacity needs
+    5. If capacity-driven size exceeds IOPS needs, lower tier may suffice
+
+object_storage:
+  tiers:
+    - name: "Standard"
+      use_when: "Frequently accessed data"
+      first_10tb_per_month: "$0.0255/GB"
+
+    - name: "Infrequent Access"
+      use_when: "Accessed < once per month"
+      retrieval_fee: true
+      min_retention: "31 days"
+
+    - name: "Archive"
+      use_when: "Rarely accessed, long-term retention"
+      restore_time: "1 hour"
+      min_retention: "90 days"
+
+  auto_tiering: |
+    Enable auto-tiering to automatically move objects between Standard and
+    Infrequent Access based on access patterns. No retrieval fee when
+    auto-tiering moves data back to Standard.
+
+file_storage:
+  description: "OCI File Storage Service (NFS)"
+  performance: "Scales with file system size — larger = more IOPS/throughput"
+  iops_baseline: "Up to 50,000 IOPS"
+  throughput: "Up to 1.2 GB/s"
+  use_when:
+    - "Shared file system across multiple compute instances"
+    - "NFS-compatible workloads"
+    - "Kubernetes ReadWriteMany persistent volumes"
+  pricing: "$0.30/GB/month"

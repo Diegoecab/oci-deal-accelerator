@@ -1,0 +1,160 @@
+# Oracle FY26 POTX Template — Layout Mapping
+# Source: templates/Oracle_PPT-template_FY26.potx (104 layouts)
+# Slide size: 13.333 x 7.500 inches (16:9 widescreen)
+#
+# NOTE: .potx requires content-type patch to load with python-pptx.
+# The deck generator handles this automatically.
+#
+# Each layout has Dark/Light variants. Convention:
+#   - Cover slides: Dark
+#   - Content slides: Light
+#   - Section dividers: Dark
+#   - Closing/CTA slides: Dark
+
+template_file: templates/Oracle_PPT-template_FY26.pptx
+slide_size:
+  width_inches: 13.333
+  height_inches: 7.500
+
+# ── Layout Index Reference ─────────────────────────────────────────
+
+layouts:
+  # --- Cover / Title ---
+  cover_pillar_dark:       { index: 0,  name: "Dark - Title_Pillar" }
+  cover_pillar_light:      { index: 1,  name: "Light - Title_Pillar" }
+  cover_2_dark:            { index: 2,  name: "Dark - Title_2" }
+  cover_2_light:           { index: 3,  name: "Light - Title_2" }
+  cover_full_image:        { index: 4,  name: "Title-full-image" }
+
+  # --- Section Dividers ---
+  divider_image_light:     { index: 14, name: "Light - Divider_Image" }
+  divider_image_dark:      { index: 15, name: "Dark- Divider_Image" }
+  divider_light:           { index: 16, name: "Light - Divider" }
+  divider_dark:            { index: 17, name: "Dark - Divider" }
+
+  # --- Impact / Statement ---
+  impact_dark:             { index: 26, name: "Dark - Impact Statement" }
+  impact_light:            { index: 27, name: "Light - Impact Statement" }
+
+  # --- Quote ---
+  quote_data_dark:         { index: 28, name: "Dark - Quote with Data Texture Background" }
+  quote_data_light:        { index: 29, name: "Light - Quote with Data Texture Background" }
+
+  # --- Single Metric ---
+  metric_dark:             { index: 32, name: "Dark - Single metric" }
+  metric_light:            { index: 33, name: "Light - Single metric" }
+
+  # --- Agenda / Table ---
+  agenda_dark:             { index: 45, name: "Dark - Agenda Table" }
+  agenda_light:            { index: 46, name: "Light - Agenda Table" }
+
+  # --- Multi Statement (3 blocks) ---
+  multi_statement_dark:    { index: 47, name: "Multi Statement – Dark" }
+  multi_statement_light:   { index: 48, name: "Multi Statement – Light" }
+
+  # --- 2 Column ---
+  two_col_light:           { index: 66, name: "Light - Title/Subtitle 2 Column" }
+  two_col_dark:            { index: 67, name: "Dark - Title/Subtitle 2 Column" }
+
+  # --- Content + Illustration (half image) ---
+  content_illust_light:    { index: 78, name: "Content + Illustration_Light" }
+  content_illust_dark:     { index: 79, name: "Content + Illustration_Dark" }
+
+  # --- Icons with text (3 or 4) ---
+  three_icons_light:       { index: 80, name: "Light - 3 Icons, Subhead and text" }
+  three_icons_dark:        { index: 81, name: "Dark - 3 Icons, Subhead and text" }
+  four_icons_light:        { index: 82, name: "Light - 4 Icons, Subhead and text" }
+  four_icons_dark:         { index: 83, name: "Dark - 4 Icons, Subhead and text" }
+
+  # --- Blank ---
+  blank_dark:              { index: 84, name: "Dark - Blank" }
+  blank_light:             { index: 85, name: "Light - Blank" }
+
+  # --- Split Content ---
+  split_dark:              { index: 86, name: "Dark - Split content with line" }
+  split_light:             { index: 87, name: "Light - Split content with line" }
+
+  # --- Content + Photo ---
+  content_photo_light:     { index: 72, name: "Light - Title, Content and 1/3 Photo" }
+  content_photo_dark:      { index: 73, name: "Dark - Title, Content and 1/3 Photo" }
+
+  # --- Safe Harbor ---
+  safe_harbor_dark:        { index: 95, name: "Dark - Safe harbor - short" }
+  safe_harbor_light:       { index: 96, name: "Light - Safe harbor - short" }
+
+# ── Deck Type → Slide Mapping ──────────────────────────────────────
+
+deck_types:
+  business_case:
+    description: "Business case for customer internal approval (CxO audience)"
+    slides:
+      - slide: cover
+        layout: cover_pillar_dark
+        content: "Customer Name — Business Case for OCI Migration"
+      - slide: executive_summary
+        layout: impact_light
+        content: "1-sentence bold statement of the opportunity"
+      - slide: business_drivers
+        layout: multi_statement_light
+        content: "3 key drivers: Why now, Cost of inaction, Strategic imperative"
+      - slide: tco_comparison
+        layout: two_col_light
+        content: "Current State vs OCI — 3-year TCO side by side"
+      - slide: roi_headline
+        layout: metric_light
+        content: "Key ROI number (e.g., '47% cost reduction over 3 years')"
+      - slide: value_drivers
+        layout: four_icons_light
+        content: "4 value categories: Cost, Risk, Agility, Innovation"
+      - slide: risk_assessment
+        layout: two_col_light
+        content: "Migration risks vs Do-nothing risks"
+      - slide: roadmap
+        layout: blank_light
+        content: "Implementation phases with timeline (custom shapes)"
+      - slide: recommendation
+        layout: impact_dark
+        content: "Clear ask: commitment amount, next steps"
+      - slide: safe_harbor
+        layout: safe_harbor_light
+        content: "Oracle safe harbor statement"
+
+  proposal:
+    description: "Technical architecture proposal (SA/technical audience)"
+    slides:
+      - slide: cover
+        layout: cover_pillar_dark
+        content: "Customer Name — OCI Architecture Proposal"
+      - slide: agenda
+        layout: agenda_light
+        content: "Agenda items"
+      - slide: executive_summary
+        layout: impact_light
+        content: "Value hypothesis statement"
+      - slide: current_state
+        layout: two_col_light
+        content: "Current architecture vs target"
+      - slide: architecture
+        layout: blank_light
+        content: "Architecture diagram (inserted as image)"
+      - slide: service_details
+        layout: content_illust_light
+        content: "Key services with descriptions"
+      - slide: environment_catalogue
+        layout: blank_light
+        content: "Environment matrix table (Prod/PreProd/Dev/DR)"
+      - slide: cost_estimate
+        layout: two_col_light
+        content: "PAYG vs BYOL, monthly breakdown"
+      - slide: wa_scorecard
+        layout: blank_light
+        content: "Well-Architected review results table"
+      - slide: operations_raci
+        layout: blank_light
+        content: "RACI matrix for operational model"
+      - slide: roadmap
+        layout: blank_light
+        content: "Migration phases with timeline"
+      - slide: next_steps
+        layout: impact_dark
+        content: "Next steps and ask"

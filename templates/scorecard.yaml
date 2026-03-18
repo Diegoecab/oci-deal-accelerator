@@ -1,0 +1,173 @@
+# OCI Well-Architected Scorecard — Output Template
+# Generated automatically by the Deal Accelerator after architecture composition
+
+well_architected_scorecard:
+  # Overall assessment
+  overall_status: ""  # PASS | PASS_WITH_RECOMMENDATIONS | GAPS_IDENTIFIED
+  generated_date: ""
+  architecture_name: ""
+  customer: ""
+
+  # Summary metrics
+  summary:
+    total_checks: 0
+    total_passed: 0
+    total_gaps: 0
+    high_severity_gaps: 0
+    medium_severity_gaps: 0
+    low_severity_gaps: 0
+
+  # Per-pillar results
+  pillars:
+    security_compliance:
+      status: ""  # PASS | PASS_WITH_RECOMMENDATIONS | GAPS_IDENTIFIED | NOT_APPLICABLE
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        identity_access:
+          passed: 0
+          total: 0
+          gaps: []
+        resource_isolation:
+          passed: 0
+          total: 0
+          gaps: []
+        database_security:
+          passed: 0
+          total: 0
+          gaps: []
+        data_protection:
+          passed: 0
+          total: 0
+          gaps: []
+        network_security:
+          passed: 0
+          total: 0
+          gaps: []
+        monitoring_audit:
+          passed: 0
+          total: 0
+          gaps: []
+
+    reliability_resilience:
+      status: ""
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        scalability:
+          passed: 0
+          total: 0
+          gaps: []
+        fault_tolerant_networking:
+          passed: 0
+          total: 0
+          gaps: []
+        data_backup:
+          passed: 0
+          total: 0
+          gaps: []
+        data_replication:
+          passed: 0
+          total: 0
+          gaps: []
+        disaster_recovery:
+          passed: 0
+          total: 0
+          gaps: []
+
+    performance_cost:
+      status: ""
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        compute_sizing:
+          passed: 0
+          total: 0
+          gaps: []
+        storage_strategy:
+          passed: 0
+          total: 0
+          gaps: []
+        network_tuning:
+          passed: 0
+          total: 0
+          gaps: []
+        cost_management:
+          passed: 0
+          total: 0
+          gaps: []
+
+    operational_efficiency:
+      status: ""
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        deployment_strategy:
+          passed: 0
+          total: 0
+          gaps: []
+        workload_monitoring:
+          passed: 0
+          total: 0
+          gaps: []
+        os_management:
+          passed: 0
+          total: 0
+          gaps: []
+        operations_support:
+          passed: 0
+          total: 0
+          gaps: []
+
+    distributed_cloud:
+      status: ""  # Often NOT_APPLICABLE
+      reason: ""  # e.g., "Single public cloud deployment"
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        dc_deployment_strategy:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_integration:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_compliance:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_operations:
+          passed: 0
+          total: 0
+          gaps: []
+
+  # Gap detail format
+  # Each gap entry follows this structure:
+  #   - check_id: "SEC-IAM-001"
+  #     area: "Identity & Access"
+  #     finding: "Description of what's missing"
+  #     severity: "HIGH | MEDIUM | LOW"
+  #     recommendation: "What to do about it"
+  #     wa_reference: "URL or doc reference"
+
+  # Prioritized action items (generated from gaps, sorted by severity)
+  action_items:
+    high_priority: []
+    # - check_id: ""
+    #   pillar: ""
+    #   finding: ""
+    #   recommendation: ""
+    #   effort: ""  # quick_win, moderate, significant
+
+    medium_priority: []
+    low_priority: []
+
+  # References
+  references:
+    framework: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
+    security: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html"
+    reliability: "https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html"
+    performance: "https://docs.oracle.com/en/solutions/oci-best-practices/index.html"
+    operations: "https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html"
+    distributed: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html"

@@ -1,0 +1,191 @@
+---
+last_verified: 2025-09-11
+source: https://www.oracle.com/cloud/price-list/
+description: OCI Compute pricing for estimation purposes.
+  Prices are approximate and subject to change. Always verify with
+  OCI pricing calculator for final quotes.
+currency: USD
+---
+
+# ── Virtual Machine Instances ──────────────────────────────────────
+
+flexible_shapes:
+  VM.Standard.E6.Flex:
+    ocpu_per_hour: 0.0168
+    memory_per_gb_hour: 0.0011
+    monthly_730h:
+      ocpu: 12.26
+      memory_per_gb: 0.80
+    notes: "AMD EPYC (latest gen), best price/performance for general workloads"
+
+  VM.Standard.E5.Flex:
+    ocpu_per_hour: 0.0210
+    memory_per_gb_hour: 0.0014
+    monthly_730h:
+      ocpu: 15.33
+      memory_per_gb: 1.02
+    notes: "AMD EPYC, general-purpose workloads"
+
+  VM.Standard.E4.Flex:
+    ocpu_per_hour: 0.0252
+    memory_per_gb_hour: 0.0017
+    monthly_730h:
+      ocpu: 18.40
+      memory_per_gb: 1.24
+    notes: "AMD EPYC (previous gen)"
+
+  VM.Standard.E3.Flex:
+    ocpu_per_hour: 0.0252
+    memory_per_gb_hour: 0.0017
+    monthly_730h:
+      ocpu: 18.40
+      memory_per_gb: 1.24
+    notes: "AMD EPYC (older gen)"
+
+  VM.Standard3.Flex:
+    ocpu_per_hour: 0.0336
+    memory_per_gb_hour: 0.0022
+    monthly_730h:
+      ocpu: 24.53
+      memory_per_gb: 1.61
+    notes: "Intel Xeon, for Intel-optimized workloads"
+
+  VM.Standard.A2.Flex:
+    ocpu_per_hour: 0.0254
+    memory_per_gb_hour: 0.0017
+    monthly_730h:
+      ocpu: 18.54
+      memory_per_gb: 1.24
+    notes: "Ampere Arm (latest A2), best cost for Arm-compatible workloads"
+
+  VM.Standard.A1.Flex:
+    ocpu_per_hour: 0.0127
+    memory_per_gb_hour: 0.0008
+    monthly_730h:
+      ocpu: 9.27
+      memory_per_gb: 0.58
+    free_tier: "3,000 OCPU-hours + 18,000 GB-hours per month"
+    notes: "Ampere Arm A1, eligible for Always Free tier"
+
+  VM.Standard.x86.Generic:
+    ocpu_per_hour: 0.0252
+    memory_per_gb_hour: 0.0017
+    notes: "Generic x86 pricing when specific shape not yet selected"
+
+  VM.Optimized3.Flex:
+    ocpu_per_hour: 0.0504
+    memory_per_gb_hour: 0.0034
+    monthly_730h:
+      ocpu: 36.79
+      memory_per_gb: 2.48
+    notes: "Highest single-thread performance"
+
+# ── Bare Metal Instances ───────────────────────────────────────────
+
+bare_metal_shapes:
+  BM.Standard.E5:
+    ocpu_per_hour: 0.0168
+    notes: "AMD EPYC bare metal"
+  BM.Standard.E4:
+    ocpu_per_hour: 0.0210
+    notes: "AMD EPYC bare metal (previous gen)"
+  BM.Standard.E3:
+    ocpu_per_hour: 0.0420
+    notes: "AMD EPYC bare metal (older gen)"
+  BM.Standard3:
+    ocpu_per_hour: 0.0504
+    notes: "Intel Xeon bare metal"
+  BM.Standard.A1:
+    ocpu_per_hour: 0.0127
+    notes: "Ampere Arm bare metal"
+  BM.Standard.x9:
+    ocpu_per_hour: 0.0672
+    notes: "Intel Xeon x9 bare metal"
+
+# ── GPU Accelerated Compute ────────────────────────────────────────
+
+gpu_shapes:
+  # NVIDIA Blackwell (latest)
+  BM.GPU.B300:
+    per_gpu_hour: 26.88
+    gpu_count: 8
+    gpu_model: "NVIDIA B300"
+    notes: "Blackwell latest, HPC/AI training"
+  BM.GPU.B200:
+    per_gpu_hour: 20.16
+    gpu_count: 8
+    gpu_model: "NVIDIA B200"
+    notes: "Blackwell, large-scale training"
+
+  # NVIDIA Hopper
+  BM.GPU.H200:
+    per_gpu_hour: 18.54
+    gpu_count: 8
+    gpu_model: "NVIDIA H200"
+    notes: "Hopper H200, large model training"
+  BM.GPU.H100:
+    per_gpu_hour: 12.96
+    gpu_count: 8
+    gpu_model: "NVIDIA H100"
+    notes: "Hopper H100, training workloads"
+
+  # NVIDIA Ampere / Ada
+  BM.GPU.A100:
+    per_gpu_hour: 6.72
+    gpu_count: 8
+    gpu_model: "NVIDIA A100 40GB/80GB"
+    notes: "Training and inference, 40GB or 80GB HBM2e"
+  VM.GPU.A10.1:
+    per_gpu_hour: 0.72
+    gpu_count: 1
+    gpu_model: "NVIDIA A10"
+    notes: "Inference workloads, cost-effective"
+  VM.GPU.A10.2:
+    per_gpu_hour: 0.72
+    gpu_count: 2
+    gpu_model: "NVIDIA A10"
+    notes: "Inference workloads"
+  BM.GPU.L40S:
+    per_gpu_hour: 2.42
+    gpu_count: 4
+    gpu_model: "NVIDIA L40S"
+    notes: "Ada Lovelace, inference and graphics"
+
+# ── Secure Desktops ───────────────────────────────────────────────
+
+secure_desktops:
+  per_desktop_month: 1750.00
+  notes: "Managed virtual desktop infrastructure"
+
+# ── Estimation Helpers ─────────────────────────────────────────────
+
+estimation_helpers:
+  typical_app_server:
+    config: "VM.Standard.E5.Flex, 4 OCPU, 64 GB"
+    monthly: 126.60  # (4 * 15.33) + (64 * 1.02)
+  typical_web_server:
+    config: "VM.Standard.E5.Flex, 2 OCPU, 16 GB"
+    monthly: 46.98   # (2 * 15.33) + (16 * 1.02)
+  typical_bastion:
+    config: "VM.Standard.E5.Flex, 1 OCPU, 8 GB"
+    monthly: 23.49   # (1 * 15.33) + (8 * 1.02)
+  typical_arm_app_server:
+    config: "VM.Standard.A1.Flex, 4 OCPU, 24 GB"
+    monthly: 50.96   # (4 * 9.27) + (24 * 0.58)
+
+discounts:
+  preemptible: "~50% off on-demand"
+  capacity_reservation: "~15% off on-demand (85% of list)"
+  reserved_1yr: "~35% off on-demand"
+  reserved_3yr: "~55% off on-demand"
+  universal_credits: "Volume discounts on committed spend"
+
+os_pricing:
+  free:
+    - "Oracle Linux"
+    - "CentOS"
+    - "Ubuntu"
+    - "Oracle Autonomous Linux"
+  paid:
+    windows_server:
+      notes: "Pricing varies by edition, added to compute cost"

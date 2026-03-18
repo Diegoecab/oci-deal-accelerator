@@ -1,0 +1,72 @@
+# CPU Conversion Ratios: vCPU → OCPU
+# Used for right-sizing when migrating from other platforms
+
+conversion_ratios:
+  description: |
+    OCI uses OCPUs (Oracle Compute Units). 1 OCPU = 1 physical core = 2 vCPUs.
+    When migrating from AWS/Azure/GCP, convert vCPUs to OCPUs using these ratios.
+
+  # Source → OCI OCPU conversion
+  aws:
+    general:
+      ratio: "2 AWS vCPUs = 1 OCI OCPU"
+      notes: "AWS vCPU = 1 hyperthread. OCI OCPU = 1 physical core (2 threads)."
+    by_processor:
+      intel_xeon_2nd_gen:  # m5, c5, r5
+        vcpu_to_ocpu: 2.0
+      intel_xeon_3rd_gen:  # m6i, c6i, r6i
+        vcpu_to_ocpu: 2.0
+      amd_epyc_2nd_gen:   # m5a, c5a, r5a
+        vcpu_to_ocpu: 2.0
+        notes: "OCI E4 (AMD EPYC 3rd gen) is typically faster per core"
+      graviton2:           # m6g, c6g, r6g
+        vcpu_to_ocpu: 1.0
+        notes: "Graviton2 vCPU = 1 physical core. Map 1:1 to Ampere A1."
+      graviton3:           # m7g, c7g, r7g
+        vcpu_to_ocpu: 1.0
+        notes: "Map to Ampere A2 for comparable performance."
+
+  azure:
+    general:
+      ratio: "2 Azure vCores = 1 OCI OCPU (for Intel/AMD)"
+    by_processor:
+      intel_dv5:
+        vcpu_to_ocpu: 2.0
+      amd_dv5a:
+        vcpu_to_ocpu: 2.0
+
+  on_prem:
+    oracle_database:
+      description: "Use AWR Top Activity to determine actual core utilization"
+      approach: |
+        1. Get AWR "DB Time per second" for P75 interval
+        2. Divide by number of available cores
+        3. Result = core utilization ratio
+        4. Multiply by source cores to get required OCPUs
+        5. Apply 1.2x headroom factor
+      fallback: "If no AWR data: 1 on-prem core = 1 OCPU (conservative)"
+    vmware:
+      ratio: "2 VMware vCPUs = 1 OCI OCPU"
+      notes: "VMware vCPU is a hyperthread equivalent"
+
+adb_s_sizing:
+  description: |
+    For ADB-S, size base OCPUs for P75 sustained load:
+    - Auto-scaling can go up to 3x base OCPUs
+    - Auto-scaling activation takes 2-3 minutes
+    - If P95 spikes are short (< 2 min), they may hit before scale-out
+    - Size base for P75 to ensure good baseline performance
+
+  formula: |
+    base_ocpus = ceil(p75_cpu_usage / cores_per_ocpu * headroom_factor)
+    headroom_factor = 1.2 (default)
+    auto_scale_max = base_ocpus * 3
+
+memory_sizing:
+  oci_shapes:
+    standard_e4: "16 GB per OCPU (VM.Standard.E4.Flex)"
+    standard_e5: "16 GB per OCPU (VM.Standard.E5.Flex)"
+    standard_a1: "6 GB per OCPU (VM.Standard.A1.Flex / Ampere)"
+    standard_a2: "8 GB per OCPU (VM.Standard.A2.Flex / Ampere)"
+    optimized3: "14 GB per OCPU (VM.Optimized3.Flex)"
+    dense_io_e4: "32 GB per OCPU + local NVMe (VM.DenseIO.E4.Flex)"

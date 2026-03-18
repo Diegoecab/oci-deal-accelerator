@@ -1,0 +1,90 @@
+# Pattern: Cross-Region Database DR
+# Composable architecture block for cross-region disaster recovery
+
+pattern:
+  name: "Cross-Region Database DR"
+  id: database_dr_cross_region
+  category: database-dr
+
+description: |
+  Cross-region disaster recovery using Autonomous Data Guard or Active Data Guard to
+  maintain an asynchronous standby database in a remote OCI region. Provides protection
+  against full-region outages with RPO measured in seconds and RTO in minutes. Applicable
+  to ADB-S, DBCS, and ExaCS deployments.
+
+variants:
+  - id: adb_s_cross_region
+    name: "ADB-S Cross-Region Autonomous Data Guard"
+    topology: "ADB-S primary in Region A, Autonomous Data Guard standby in Region B"
+    rpo: "Seconds (asynchronous replication)"
+    rto: "< 15 minutes (automated switchover/failover)"
+    use_when:
+      - "ADB-S workload requires regional DR"
+      - "RPO of seconds is acceptable"
+      - "Fully managed DR with minimal operational overhead"
+
+  - id: dbcs_cross_region
+    name: "DBCS Cross-Region Active Data Guard"
+    topology: "DBCS primary in Region A, ADG standby in Region B"
+    rpo: "Seconds to minutes (asynchronous)"
+    rto: "Minutes to 1 hour depending on automation"
+    use_when:
+      - "DBCS workload requires regional DR"
+      - "Custom database configuration needed"
+      - "Manual or scripted failover acceptable"
+
+  - id: exacs_cross_region
+    name: "ExaCS Cross-Region Active Data Guard"
+    topology: "ExaCS primary in Region A, ADG standby in Region B"
+    rpo: "Seconds to minutes (asynchronous)"
+    rto: "Minutes to 1 hour depending on automation"
+    use_when:
+      - "ExaCS workload requires regional DR"
+      - "High-performance database with regional protection"
+      - "Consolidated databases on Exadata with cross-region standby"
+
+preconditions:
+  - "Primary database provisioned and operational"
+  - "DR region selected with matching service availability"
+  - "Network connectivity between regions (remote VCN peering via DRG or dedicated infrastructure)"
+  - "Sufficient quota in DR region for standby compute and storage"
+  - "For DBCS/ExaCS: Active Data Guard license (EE-HP or EE-EP, or BYOL with ADG option)"
+
+implied_services:
+  - service: dns_traffic_management
+    reason: "Automated DNS failover to redirect application traffic to DR region"
+  - service: oci_notifications
+    reason: "Alerting on replication lag, failover events, and switchover status"
+  - service: monitoring
+    reason: "Track replication lag, standby apply rate, and DR readiness"
+
+conflicts:
+  - pattern: "sync_data_guard_cross_region"
+    reason: "Synchronous Data Guard is not supported cross-region due to latency; only asynchronous replication is available"
+
+gotchas:
+  - "Cross-region Active/Autonomous Data Guard is asynchronous only — RPO is always > 0"
+  - "Cross-region data transfer costs apply for redo log transport between regions"
+  - "Switchover is planned (zero data loss, brief outage) vs. failover is unplanned (potential data loss up to RPO)"
+  - "After failover, old primary must be reinstated or re-created — not automatic for DBCS/ExaCS"
+  - "Application connection strings must be updated or use DNS-based failover"
+  - "ADB-S cross-region DR requires both regions to support ADB-S"
+  - "DR readiness should be validated with periodic switchover drills"
+
+cost_impact:
+  - "Full standby compute and storage cost in DR region (same as primary)"
+  - "Cross-region network egress charges for redo transport"
+  - "For ADB-S: standby OCPU/ECPU billed at same rate as primary"
+  - "DNS Traffic Management: per-zone and per-query charges"
+  - "Consider reserved capacity in DR region for cost optimization"
+
+sizing_rules:
+  - "Standby must be same shape and size as primary to ensure failover performance"
+  - "Network bandwidth: estimate redo generation rate (typically 10-50 Mbps per 10K TPS)"
+  - "Storage in DR region must match primary storage allocation"
+  - "For ExaCS: same Exadata infrastructure shape required in DR region"
+
+references:
+  - "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-data-guard.html"
+  - "https://docs.oracle.com/en/cloud/paas/base-database/index.html"
+  - "https://docs.oracle.com/en/database/oracle/oracle-database/19/sbydb/"

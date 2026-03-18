@@ -1,0 +1,98 @@
+# Pattern: Basic VCN Networking
+# Composable architecture block for single-VCN 3-tier network layout
+
+pattern:
+  name: "Basic VCN Networking"
+  id: networking_basic
+  category: networking
+
+description: |
+  Single VCN with a 3-tier subnet layout providing public, application, and data
+  tiers. Suitable for standalone workloads, small-to-medium deployments, and as a
+  starting point before evolving to hub-spoke topology. Public subnet hosts load
+  balancers and bastion, private app subnet hosts compute/containers, and private
+  data subnet hosts databases and storage.
+
+topology:
+  vcn:
+    cidr: "10.0.0.0/16"
+    dns_label: "vcnmain"
+  subnets:
+    - name: "Public Subnet"
+      cidr: "10.0.0.0/24"
+      type: public
+      purpose: "Load balancers, bastion host, WAF endpoints"
+      usable_ips: 251
+    - name: "App Private Subnet"
+      cidr: "10.0.1.0/24"
+      type: private
+      purpose: "Compute instances, OKE worker nodes, application servers"
+      usable_ips: 251
+    - name: "Data Private Subnet"
+      cidr: "10.0.2.0/24"
+      type: private
+      purpose: "Databases (ADB-S, DBCS), file storage, object storage private endpoints"
+      usable_ips: 251
+
+components:
+  - name: "VCN"
+    purpose: "Virtual Cloud Network — isolated network boundary"
+  - name: "Public Subnet"
+    purpose: "Internet-facing resources (LBaaS, Bastion)"
+  - name: "App Private Subnet"
+    purpose: "Application tier — no direct internet access"
+  - name: "Data Private Subnet"
+    purpose: "Database tier — no direct internet access"
+  - name: "Internet Gateway (IGW)"
+    purpose: "Inbound and outbound internet access for public subnet"
+  - name: "NAT Gateway"
+    purpose: "Outbound-only internet access for private subnets (patches, APIs)"
+  - name: "Service Gateway"
+    purpose: "Private access to OCI services (Object Storage, ADB-S) without internet"
+  - name: "Route Tables"
+    purpose: "Per-subnet routing rules for IGW, NAT GW, and Service GW"
+  - name: "Network Security Groups (NSGs)"
+    purpose: "Stateful firewall rules applied per VNIC for fine-grained access control"
+
+preconditions:
+  - "Compartment created for the workload"
+  - "CIDR ranges planned and non-overlapping with other VCNs or on-premises networks"
+  - "Region and availability domain selected"
+
+implied_services:
+  - service: igw
+    reason: "Internet access for public subnet resources"
+  - service: nat_gateway
+    reason: "Outbound internet for private subnets without exposing inbound"
+  - service: service_gateway
+    reason: "Private connectivity to OCI services (Object Storage, Autonomous DB)"
+
+design_rules:
+  - "Place application and database resources in private subnets — never expose directly to internet"
+  - "Use Network Security Groups (NSGs) instead of Security Lists for per-resource granularity"
+  - "Use Service Gateway for all OCI service access to avoid internet routing and egress costs"
+  - "Assign one route table per subnet for clarity and maintainability"
+  - "Use DNS hostnames within the VCN for service discovery"
+  - "Enable VCN Flow Logs on all subnets for security auditing"
+  - "Place load balancers in the public subnet; backends in the app private subnet"
+
+gotchas:
+  - "VCN CIDR blocks are immutable after creation — plan address space carefully before provisioning"
+  - "NSG rules are limited to 120 rules per NSG (60 ingress + 60 egress by default)"
+  - "Security Lists are stateful by default but have a 5-tuple limit; prefer NSGs for complex rule sets"
+  - "NAT Gateway is regional and supports up to 20 Gbps; may need multiple for high-throughput workloads"
+  - "Service Gateway only routes to OCI services — not a general-purpose private link"
+  - "Subnet size cannot be changed after creation; plan for growth"
+  - "Default security list allows all egress; tighten for production"
+
+cost_impact:
+  - "VCN: free (no charge for the VCN itself)"
+  - "Subnets: free"
+  - "Internet Gateway: free"
+  - "NAT Gateway: per-hour charge + per-GB data processing"
+  - "Service Gateway: free"
+  - "VCN Flow Logs: charged via Logging service ingestion rates"
+
+references:
+  - "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm"
+  - "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/bestpractices.htm"

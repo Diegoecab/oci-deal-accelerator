@@ -1,0 +1,106 @@
+---
+last_verified: 2026-03-16
+pattern:
+  id: service-tiering
+  name: "Database Service Tiering Model"
+  category: operations
+---
+
+description: >
+  Maps customer workloads to standardized service tiers based on business
+  criticality, availability requirements, and compliance needs. Each tier
+  defines the HA/DR topology, support model, backup strategy, and operational
+  responsibilities. Derived from Oracle's ECAL transformational framework.
+
+tiers:
+
+  platinum:
+    label: "Platinum"
+    description: "Mission-critical, zero tolerance for downtime"
+    example_workloads: ["Core banking", "Payment processing", "Trading systems", "Telco network"]
+    sla:
+      uptime: "99.999%"
+      rto: "0 (near-zero with TAC + RAC)"
+      rpo: "0 (synchronous replication)"
+      planned_downtime: "0 (even for upgrades — edition-based redefinition)"
+      support: "24x7, 10 min response"
+    architecture:
+      ha: "RAC (multi-node) + TAC/AC"
+      dr: "Synchronous ADG + GoldenGate active-active (optional)"
+      backup: "ZDLRA or Autonomous Recovery Service, continuous"
+      isolation: "Full physical isolation — dedicated CDB, dedicated infrastructure"
+      encryption: "TDE + DB Vault + Key Vault + SQL*Net encryption"
+    oci_mapping:
+      primary: "ExaCS or ADB-D (for RAC + full control)"
+      alternative: "ADB-S only if application is TAC-compatible and RPO=0 is met by local ADG"
+    cost_impact: "Highest — dedicated infra, dual-site, 24x7 support"
+
+  gold:
+    label: "Gold"
+    description: "Business-critical, tolerable brief outage"
+    example_workloads: ["CRM", "ERP", "eCommerce", "Risk analytics"]
+    sla:
+      uptime: "99.99%"
+      rto: "1-4 hours"
+      rpo: "5-15 minutes"
+      planned_downtime: "4x 4hr/year maintenance windows"
+      support: "24x7, 4 hour response"
+    architecture:
+      ha: "TAC + local ADG (auto-failover)"
+      dr: "Asynchronous cross-region ADG"
+      backup: "Autonomous Recovery Service, incremental forever"
+      isolation: "Dedicated CDB (dedicated home), instance caged (not oversubscribed)"
+      encryption: "TDE + Key Vault"
+    oci_mapping:
+      primary: "ADB-S Serverless (with TAC + ADG)"
+      alternative: "ExaCS if RAC explicitly needed or >128 OCPU sustained"
+    cost_impact: "High — primary + standby OCPU cost, cross-region DR"
+
+  silver:
+    label: "Silver"
+    description: "Important but recoverable from backup"
+    example_workloads: ["HR systems", "Financials", "Internal portals", "Reporting"]
+    sla:
+      uptime: "99.5%"
+      rto: "1 day"
+      rpo: "1 day"
+      planned_downtime: "4x 4hr/year maintenance windows"
+      support: "24x7, 8 hour response"
+    architecture:
+      ha: "Single instance or RAC optional"
+      dr: "Offsite backup only — no real-time replication"
+      backup: "Automated daily backup, 30-day retention"
+      isolation: "Shared CDB (shared binaries) acceptable"
+      encryption: "TDE recommended, DB Vault optional"
+    oci_mapping:
+      primary: "ADB-S Serverless (no ADG needed)"
+      alternative: "Base DB Service for legacy compatibility"
+    cost_impact: "Medium — no standby cost, shared infrastructure"
+
+  bronze:
+    label: "Bronze"
+    description: "Non-critical, best-effort recovery"
+    example_workloads: ["Dev/Test", "Room booking", "Internal tools", "Sandbox"]
+    sla:
+      uptime: "98%"
+      rto: "Best effort"
+      rpo: "Best effort"
+      planned_downtime: "Flexible"
+      support: "Business hours, 2 day response"
+    architecture:
+      ha: "None — single instance"
+      dr: "Database export or backup to Object Storage"
+      backup: "Weekly backup, 7-day retention"
+      isolation: "Shared CDB, oversubscribed OK"
+      encryption: "TDE optional"
+    oci_mapping:
+      primary: "ADB-S Serverless (minimum OCPU, auto-scaling off)"
+      alternative: "VM DB Standard Edition for cost"
+    cost_impact: "Lowest — minimal resources, no redundancy"
+
+auto_assignment_rules:
+  - "If customer says '99.99%' or 'zero downtime' → Platinum or Gold (ask which)"
+  - "If customer says 'PCI' or 'banking regulations' → minimum Gold"
+  - "If workload type is 'dev/test' → Bronze unless explicitly stated otherwise"
+  - "If customer says 'reporting' or 'read-only' → Silver unless SLA says otherwise"
+  - "If no SLA stated → assign Silver and flag for confirmation"

@@ -1,0 +1,70 @@
+---
+last_verified: 2026-03-14
+service: OCI Storage Services
+category: storage
+oci_color: "#4F7B6E"
+---
+
+what: OCI storage services including Block Volume, Object Storage, File Storage,
+  and Archive Storage.
+
+services:
+  block_volume:
+    what: "Network-attached block storage for compute instances"
+    performance_tiers:
+      - name: Lower Cost
+        iops_per_gb: 2
+        throughput_kbps_per_gb: 240
+      - name: Balanced
+        iops_per_gb: 60
+        throughput_kbps_per_gb: 480
+      - name: Higher Performance
+        iops_per_gb: 75
+        throughput_kbps_per_gb: 600
+      - name: Ultra High Performance
+        max_iops: 450000
+        max_throughput_mbps: 2680
+    max_volume_size_tb: 32
+    max_volumes_per_instance: 32
+
+  object_storage:
+    what: "S3-compatible object storage"
+    tiers:
+      - name: Standard
+        use_for: "Frequently accessed data"
+      - name: Infrequent Access
+        use_for: "Data accessed less than once per month"
+      - name: Archive
+        use_for: "Long-term retention, compliance"
+        retrieval_time: "1 hour (standard), 1 minute (expedited)"
+    features:
+      - "S3-compatible API"
+      - "Versioning"
+      - "Lifecycle policies"
+      - "Server-side encryption (SSE)"
+      - "Replication (same-region and cross-region)"
+    max_object_size_tb: 10
+
+  file_storage:
+    what: "NFSv3-compatible managed file system"
+    use_for: "Shared file access across multiple compute instances"
+    max_size: "8 EB (exabytes)"
+    iops: "Up to 25,000 IOPS per file system"
+    throughput: "Up to 1.2 GB/s per mount target"
+
+pricing:
+  block_volume:
+    balanced_per_gb_month: 0.0255
+    higher_performance_per_gb_month: 0.0340
+    uhp_per_gb_month: "Varies by VPU"
+  object_storage:
+    standard_per_gb_month: 0.0255
+    infrequent_per_gb_month: 0.0100
+    archive_per_gb_month: 0.0026
+    api_per_10k_requests: 0.0034
+  file_storage:
+    per_gb_month: 0.0340
+  notes:
+    - "Block Volume: first 200 GB free (boot volume)"
+    - "Object Storage: first 10 GB free, 50k API requests free"
+    - "Data transfer to Object Storage: free (within region)"

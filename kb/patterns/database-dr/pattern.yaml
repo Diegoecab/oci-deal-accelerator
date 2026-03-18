@@ -1,0 +1,97 @@
+---
+last_verified: 2026-03-14
+pattern: Database Disaster Recovery
+category: database
+---
+
+description: |
+  DR patterns for Oracle databases on OCI. Covers active-passive,
+  active-active, and pilot light approaches.
+
+tiers:
+  tier_1_mission_critical:
+    name: "Mission Critical"
+    rto: "<15 minutes"
+    rpo: "<1 minute"
+    pattern: "Active-passive with automatic failover"
+    implementation:
+      adb_s: "Cross-region ADG with auto-failover"
+      exacs: "Cross-region Data Guard with FSFO + Observer"
+    cost_multiplier: "2x (full standby)"
+    testing: "Quarterly automated DR drill"
+
+  tier_2_business_critical:
+    name: "Business Critical"
+    rto: "<1 hour"
+    rpo: "<15 minutes"
+    pattern: "Active-passive with manual failover"
+    implementation:
+      adb_s: "Cross-region ADG with manual switchover"
+      exacs: "Cross-region Data Guard without FSFO"
+    cost_multiplier: "2x (full standby) or 1.5x (scaled-down standby)"
+    testing: "Semi-annual DR drill"
+
+  tier_3_standard:
+    name: "Standard"
+    rto: "<4 hours"
+    rpo: "<1 hour"
+    pattern: "Pilot light or backup-restore"
+    implementation:
+      adb_s: "Cross-region backup with restore-on-demand"
+      exacs: "RMAN backups to Object Storage, cross-region replicated"
+    cost_multiplier: "1.1x (backup storage only)"
+    testing: "Annual DR drill"
+
+dr_regions:
+  recommended_pairs:
+    - primary: "US East (Ashburn)"
+      dr: "US West (Phoenix)"
+      latency_ms: "~60"
+    - primary: "UK South (London)"
+      dr: "Germany Central (Frankfurt)"
+      latency_ms: "~15"
+    - primary: "Japan East (Tokyo)"
+      dr: "Japan Central (Osaka)"
+      latency_ms: "~10"
+    - primary: "Brazil East (Sao Paulo)"
+      dr: "Brazil Southeast (Vinhedo)"
+      latency_ms: "~5"
+
+migration_cutover:
+  zero_downtime:
+    tools: ["ZDM with GoldenGate", "Data Guard switchover"]
+    prerequisites:
+      - "GoldenGate configured and replicating"
+      - "Application connection strings use TNS aliases"
+      - "DNS TTL reduced before cutover"
+    steps:
+      - "Verify replication lag is zero"
+      - "Stop writes to source"
+      - "Verify final sync"
+      - "Switch application connection strings"
+      - "Validate application functionality"
+      - "Decommission source (after bake period)"
+
+  planned_downtime:
+    tools: ["Data Pump", "RMAN restore", "ZDM physical"]
+    typical_downtime: "2-8 hours depending on database size"
+    steps:
+      - "Announce maintenance window"
+      - "Take final backup/export"
+      - "Restore/import to target"
+      - "Switch application connections"
+      - "Validate"
+
+gotchas:
+  - id: DR-001
+    issue: "Cross-region ADG network latency affects commit performance"
+    impact: "Synchronous mode adds latency to every commit"
+    recommendation: "Use asynchronous for cross-region (default), accept seconds of RPO"
+  - id: DR-002
+    issue: "DR standby compute may not be available during regional disaster"
+    impact: "If DR region is also impacted, compute capacity may be limited"
+    recommendation: "Use capacity reservations in DR region for critical workloads"
+  - id: DR-003
+    issue: "Application tier DR often forgotten"
+    impact: "Database fails over but app tier is not available"
+    recommendation: "Include app tier in DR plan — Terraform for on-demand provisioning"

@@ -1,0 +1,96 @@
+---
+last_verified: 2026-03-14
+description: |
+  Lessons learned from real OCI deployments. Anonymized but based on
+  actual customer experiences.
+---
+
+lessons:
+  - id: LL-001
+    category: migration
+    title: "Always test GoldenGate replication before cutover"
+    context: |
+      Customer planned zero-downtime migration using GoldenGate replication
+      from on-prem Exadata to ADB-S. During cutover rehearsal, discovered
+      that several PL/SQL packages used database links that didn't work with
+      ADB-S private endpoints.
+    lesson: |
+      Run full regression testing with GoldenGate replication active for
+      at least 2 weeks before cutover. Test all database links, PL/SQL
+      packages, and application connectivity against the target.
+    recommendation: "Add 2-week parallel-run phase to every migration plan"
+
+  - id: LL-002
+    category: sizing
+    title: "P95 is not enough for seasonal workloads"
+    context: |
+      Retail customer sized ADB-S for P95 utilization from normal months.
+      During Black Friday, actual peak was 4x normal (well above P95).
+      Auto-scaling helped but wasn't fast enough for the initial surge.
+    lesson: |
+      For seasonal workloads, get metrics from the peak period specifically.
+      Generic P95 from normal months underestimates seasonal peaks.
+    recommendation: "Ask for peak-period metrics separately, size auto-scale max for peak"
+
+  - id: LL-003
+    category: networking
+    title: "Plan IP addressing before anything else"
+    context: |
+      Customer deployed dev, staging, and production with overlapping CIDR
+      ranges. When they needed VCN peering for shared services, had to
+      re-architect networking — required rebuilding all subnets.
+    lesson: |
+      IP addressing must be planned enterprise-wide before deploying
+      any VCN. Include on-prem ranges, future VCNs, and DR regions.
+    recommendation: "Create IP addressing document as first deliverable"
+
+  - id: LL-004
+    category: operations
+    title: "IaC from day one, not after"
+    context: |
+      Customer built initial infrastructure manually via console, planning
+      to "Terraformify" later. After 6 months, infrastructure had drifted
+      so far that reverse-engineering Terraform was more work than starting over.
+    lesson: |
+      Start with Terraform from the first resource. The cost of IaC on day
+      one is low; the cost of retrofitting is very high.
+    recommendation: "Include OCI Terraform provider setup in project kickoff"
+
+  - id: LL-005
+    category: cost
+    title: "Auto-scaling costs can surprise"
+    context: |
+      Customer enabled ADB-S auto-scaling with 3x maximum. Workload was
+      consistently hitting auto-scale range, resulting in 2x the expected
+      database costs. They were effectively paying for auto-scaled OCPUs
+      most of the time.
+    lesson: |
+      If workload consistently auto-scales, the base OCPU is too low.
+      Right-size base to P75 and use auto-scaling for genuine peaks.
+    recommendation: "Review auto-scaling usage monthly, adjust base OCPUs accordingly"
+
+  - id: LL-006
+    category: dr
+    title: "DR drill found app-tier gap"
+    context: |
+      Customer had cross-region ADG for database DR. During DR drill,
+      database failed over successfully in 3 minutes. But app tier had
+      no DR — compute instances were only in primary region. Recovery
+      took 2 hours to provision app tier in DR region.
+    lesson: |
+      DR must cover all tiers, not just the database. App tier, load
+      balancers, DNS, and certificates all need DR strategy.
+    recommendation: "Include app tier DR in all architecture proposals"
+
+  - id: LL-007
+    category: security
+    title: "Cloud Guard catches what humans miss"
+    context: |
+      Customer deployed without Cloud Guard. 3 months later, security
+      audit found public Object Storage buckets, overly permissive
+      security lists, and an unused API key with admin privileges.
+      Cloud Guard would have flagged all of these on day one.
+    lesson: |
+      Enable Cloud Guard in every deployment. It's free and catches
+      common misconfigurations automatically.
+    recommendation: "Cloud Guard is mandatory in security baseline"

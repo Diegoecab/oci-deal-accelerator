@@ -1,0 +1,100 @@
+# ═══════════════════════════════════════════════════════════════
+# ECAL Customer Profile Template
+# ═══════════════════════════════════════════════════════════════
+# Source: ECAL 3.1 - Ideate Step (Define Phase)
+# Purpose: Strategic profiling of the customer beyond tech details
+# Note: This is an INTERNAL document — not shared directly with customer
+# ═══════════════════════════════════════════════════════════════
+
+metadata:
+  customer: ""
+  account_team: ""
+  date: ""
+  version: "1.0"
+  status: "draft"              # draft → reviewed → validated
+
+# ───────────────────────────────────────────────────────────────
+# 1. COMPANY OVERVIEW
+# ───────────────────────────────────────────────────────────────
+company:
+  name: ""
+  industry: ""
+  sub_industry: ""             # e.g., "retail banking", "life sciences"
+  headquarters: ""
+  annual_revenue: ""
+  employees: ""
+  fiscal_year_end: ""
+  stock_ticker: ""             # if public
+  recent_events: []            # M&A, IPO, restructuring, leadership change
+
+# ───────────────────────────────────────────────────────────────
+# 2. STRATEGIC GOALS & DRIVERS
+# ───────────────────────────────────────────────────────────────
+strategy:
+  published_goals: []          # from annual report, press releases, CEO keynotes
+  # Example:
+  # - "Double digital revenue by 2027"
+  # - "Reduce operating costs by 15% over 3 years"
+  # - "Expand to 3 new APAC markets"
+
+  technology_strategy: ""      # cloud-first? multi-cloud? hybrid? on-prem?
+  digital_transformation: ""   # where are they on the journey?
+  competitive_position: ""     # leader, challenger, follower in their market?
+  competitor_threats: []       # cloud-native disruptors, adjacent players
+
+# ───────────────────────────────────────────────────────────────
+# 3. ORACLE FOOTPRINT
+# ───────────────────────────────────────────────────────────────
+oracle_footprint:
+  products_in_use: []
+  # Example:
+  # - { product: "Oracle Database EE", version: "19c", count: 350, licensing: "Processor" }
+  # - { product: "WebLogic", version: "14c", count: 12, licensing: "NUP" }
+  licensing:
+    type: ""                   # ULA, PULA, Processor, NUP, Named User
+    expiry: ""                 # when does ULA/PULA expire?
+    byol_eligible: ""
+  support_spend: ""            # annual Oracle support spend
+  existing_oci_usage: ""       # any OCI tenancy already? what's running?
+  existing_cloud_usage: []     # AWS, Azure, GCP — what workloads?
+
+# ───────────────────────────────────────────────────────────────
+# 4. INDUSTRY ANALYSIS
+# ───────────────────────────────────────────────────────────────
+industry_context:
+  market_trends: []            # relevant industry trends
+  regulatory_landscape: []     # regulations affecting IT decisions
+  peer_comparison: ""          # how does this customer compare to industry peers?
+  # Example:
+  # market_trends:
+  #   - "Open banking APIs mandated by 2025"
+  #   - "DORA regulation requiring operational resilience testing"
+  # regulatory_landscape:
+  #   - "EBA guidelines on ICT risk management"
+  #   - "GDPR data residency requirements"
+
+# ───────────────────────────────────────────────────────────────
+# 5. RELATIONSHIP CONTEXT
+# ───────────────────────────────────────────────────────────────
+relationship:
+  account_manager: ""
+  current_engagement_status: ""  # active deal, renewal, new, expansion
+  previous_engagements: []       # past ECAL/consulting engagements
+  customer_sentiment: ""         # positive, neutral, at-risk
+  executive_sponsors:
+    oracle: ""                   # Oracle exec sponsor
+    customer: ""                 # Customer exec sponsor
+  key_contacts:
+    - { name: "", role: "", influence: "", relationship: "" }
+
+# ───────────────────────────────────────────────────────────────
+# 6. INITIAL HYPOTHESIS
+# ───────────────────────────────────────────────────────────────
+# Based on the profile, what Point of View could resonate?
+hypotheses:
+  - hypothesis: ""
+    business_driver: ""        # link to strategy.published_goals
+    pillar: ""                 # strategic / financial / business_ops / it_ops
+    confidence: ""             # high / medium / low
+    evidence: ""               # what supports this hypothesis?
+    risks: ""                  # what could invalidate it?

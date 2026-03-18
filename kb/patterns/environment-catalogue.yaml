@@ -1,0 +1,48 @@
+---
+last_verified: 2026-03-16
+pattern:
+  id: environment-catalogue
+  name: "Environment Catalogue"
+  category: operations
+---
+
+description: >
+  Defines the standard environments for each workload tier. The skill
+  generates the catalogue from the workload profile by expanding each
+  database into its required environments based on tier.
+
+environment_templates:
+
+  platinum:
+    environments:
+      - { env: "Production", sizing: "full", isolation: "dedicated CDB, dedicated infra", ha: "RAC + ADG sync" }
+      - { env: "Pre-Production", sizing: "75% of prod", isolation: "dedicated CDB", ha: "optional RAC" }
+      - { env: "Dev/Test", sizing: "25% of prod", isolation: "shared CDB OK", ha: "none" }
+      - { env: "DR", sizing: "100% of prod", isolation: "same as prod", ha: "sync ADG or GG active-active" }
+
+  gold:
+    environments:
+      - { env: "Production", sizing: "full", isolation: "dedicated CDB, private endpoint", ha: "TAC + ADG local" }
+      - { env: "Pre-Production", sizing: "50% of prod", isolation: "refreshable clone OK", ha: "none" }
+      - { env: "Dev/Test", sizing: "25% of prod", isolation: "full clone, auto-stop nights", ha: "none" }
+      - { env: "DR", sizing: "100% of prod", isolation: "cross-region ADG", ha: "async ADG" }
+
+  silver:
+    environments:
+      - { env: "Production", sizing: "full", isolation: "shared CDB OK", ha: "single instance" }
+      - { env: "Pre-Production", sizing: "50% of prod", isolation: "refreshable clone", ha: "none" }
+      - { env: "Dev/Test", sizing: "25% of prod", isolation: "full clone, auto-stop", ha: "none" }
+      - { env: "DR", sizing: "N/A", isolation: "backup to Object Storage", ha: "restore from backup" }
+
+  bronze:
+    environments:
+      - { env: "Production", sizing: "full", isolation: "shared CDB, oversubscribed OK", ha: "none" }
+      - { env: "Dev/Test", sizing: "same as prod", isolation: "shared CDB", ha: "none" }
+      - { env: "DR", sizing: "N/A", isolation: "DB export only", ha: "restore from export" }
+
+cost_optimization_rules:
+  - "Pre-Prod: use Refreshable Clones when read-only testing is sufficient"
+  - "Dev/Test: auto-stop weeknights (7PM-7AM) + weekends = ~65% savings"
+  - "Dev/Test: use minimum OCPU (1-2), no auto-scaling"
+  - "DR standby: consider pilot light (Terraform on-demand) for Silver/Bronze"
+  - "Bronze DR: DB export to Object Storage is cheapest, no standby OCPU"

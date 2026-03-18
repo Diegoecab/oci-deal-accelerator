@@ -1,0 +1,312 @@
+# =============================================================================
+# FIELD FINDINGS TRACKER
+# =============================================================================
+#
+# INTERNAL & CONFIDENTIAL — DO NOT SHARE EXTERNALLY
+#
+# Log of real issues, limitations, bugs, and surprises found during customer
+# engagements. Each entry is a finding that another architect should know about
+# before hitting the same wall.
+#
+# Entry format:
+#   id:             Unique identifier (FF-YYYYMM-NNN)
+#   date:           When discovered (YYYY-MM-DD)
+#   contributor:    Attribution block (replaces flat "reported_by")
+#     name:         Who found it (required)
+#     team:         Team or role (required)
+#     client:       Client name or anonymized reference (optional)
+#     context:      Brief context — PoC, migration, assessment (optional)
+#     confidence:   validated / observed / reported / inferred (required)
+#   product:        OCI product/service affected
+#   version:        Product version if relevant
+#   severity:       CRITICAL / HIGH / MEDIUM / LOW / INFO
+#   category:       bug / limitation / undocumented / gotcha / workaround / performance
+#   summary:        One-line description
+#   detail:         Full description of the finding
+#   workaround:     How to work around it (if known)
+#   oracle_sr:      Oracle SR number (if filed)
+#   status:         open / resolved / wontfix / acknowledged / monitoring
+#   resolved_date:  When resolved (if applicable)
+#   resolution:     How it was resolved
+#   affects_matrix: Feature matrix entry this relates to (if any)
+#   tags:           Searchable tags
+#   confirmations:  List of peer confirmations (optional)
+#
+# HOW TO ADD:
+# 1. Add entry at the TOP of the findings list (newest first)
+# 2. Use next sequential ID: FF-YYYYMM-NNN
+# 3. Be specific — include CLI versions, API errors, exact messages
+# 4. If you filed an SR, include the number
+# 5. Update status when resolved
+# =============================================================================
+
+---
+last_updated: "2026-03-14"
+
+findings:
+
+  - id: "FF-202603-008"
+    date: "2026-03-14"
+    reported_by: "Diego Cabrera"
+    client: "Vector Search Customer"
+    product: "ADB-S"
+    version: "23ai"
+    severity: "HIGH"
+    category: "limitation"
+    summary: "Distributed HNSW indexes not available — 100M+ vector search requires partitioning workaround"
+    detail: |
+      ADB-S AI Vector Search supports HNSW indexes but they are node-local on
+      multi-node RAC (≥64 ECPUs). At 100M+ vectors, queries on a 2-node RAC
+      miss vectors on the other node. Results are either incomplete or require
+      cross-node scan that blows P95 >200ms.
+
+      Workaround from internal DB PM team: hash-partition vector table on
+      vector_id, create partition-local HNSW index. Queries hit single
+      partition on single node, maintaining <50ms at 100M scale.
+
+      Requires table redesign — cannot be applied to existing unpartitioned
+      vector tables without data reload.
+    workaround: |
+      Hash-partition vector table by vector_id. Create HNSW index as LOCAL
+      (partition-level). Ensure partition pruning in queries.
+      Source: internal DB PM team contact [name].
+      Validated on ADB-S 23ai with 120M vectors, P95 = 38ms on 64 ECPU.
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "AI Vector Search (HNSW)"
+    tags: ["vector-search", "hnsw", "distributed", "rac", "partitioning", "100m", "latency", "ai-vector-search"]
+
+  - id: "FF-202603-001"
+    date: "2026-03-10"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
+    product: "OCI CLI"
+    version: "CLI 3.73.1 and 3.75.0"
+    severity: "MEDIUM"
+    category: "bug"
+    summary: "OCI CLI --autonomous-database-maintenance-window has JSON serialization bug"
+    detail: |
+      The --autonomous-database-maintenance-window parameter fails with a JSON
+      serialization error on both OCI CLI 3.73.1 (Cloud Shell) and 3.75.0
+      (VM decabrer-4S46W64). The expected JSON schema is:
+      {"dayOfWeek": {"name": "SATURDAY"}, "hourOfDay": 4}
+      But the CLI cannot serialize this properly. API returns 403 at create time.
+      Tested via dry-run: the 204 response is received but actual creation fails.
+    workaround: "Use OCI Console to set maintenance window. Or set post-creation via API directly (not CLI)."
+    oracle_sr: ""
+    status: "open"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "OCI CLI Management"
+    tags: ["cli", "maintenance-window", "adb", "dep", "json", "serialization"]
+
+  - id: "FF-202603-002"
+    date: "2026-03-08"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
+    product: "ADB-S Dedicated Elastic Pool (DEP)"
+    version: "23ai"
+    severity: "HIGH"
+    category: "limitation"
+    summary: "ADG must be disabled before joining Dedicated Elastic Pool"
+    detail: |
+      When attempting to add an ADB-S instance with active Autonomous Data Guard
+      to a Dedicated Elastic Pool, the operation fails. ADG must be explicitly
+      disabled before the instance can join the DEP. This is a known issue
+      acknowledged by Oracle but not prominently documented.
+
+      Impact: requires a brief HA gap during DEP onboarding. Must coordinate
+      with the customer's change window.
+    workaround: "Disable ADG → join DEP → re-enable ADG. Plan for ~15 min HA gap."
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "Elastic Pool Membership"
+    tags: ["dep", "adg", "elastic-pool", "ha", "limitation"]
+
+  - id: "FF-202603-003"
+    date: "2026-03-05"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
+    product: "ADB-S Dedicated Elastic Pool (DEP)"
+    version: "23ai"
+    severity: "MEDIUM"
+    category: "undocumented"
+    summary: "DEP maintenance window immutable post-creation — change only via SR"
+    detail: |
+      The maintenance window for a Dedicated Elastic Pool cannot be changed
+      after creation via Console, CLI, or API. The only way to change it is
+      by filing a Service Request with Oracle Support.
+
+      Default window is Saturday/Sunday. Other days require specifying at
+      creation time (which itself has the CLI bug — see FF-202603-001) or
+      requesting via SR.
+    workaround: "Set desired window at DEP creation time (via Console, not CLI). If missed, file SR."
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "Auto Patching"
+    tags: ["dep", "maintenance-window", "immutable", "sr-required"]
+
+  - id: "FF-202603-004"
+    date: "2026-03-01"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "validated"
+    product: "ADB-S"
+    version: "23ai"
+    severity: "MEDIUM"
+    category: "gotcha"
+    summary: "DEP provisioning takes days to weeks depending on capacity"
+    detail: |
+      Dedicated Elastic Pool provisioning is NOT instant like ADB-S Serverless.
+      It requires physical Exadata infrastructure allocation. Lead time varies
+      from 3 days (if capacity available in region) to 2-3 weeks (if capacity
+      needs to be provisioned).
+
+      Billing starts only at AVAILABLE state, not at request time.
+      Co-location of existing ADB-S instances happens at the next maintenance
+      window after joining, not immediately.
+    workaround: "Request DEP early in the project timeline. Don't make it a critical-path dependency in week 1."
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "Elastic Pool Membership"
+    tags: ["dep", "provisioning", "lead-time", "capacity", "planning"]
+
+  - id: "FF-202603-005"
+    date: "2026-02-20"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Production migration"
+      confidence: "observed"
+    product: "ADB-S"
+    version: "23ai"
+    severity: "LOW"
+    category: "gotcha"
+    summary: "Refreshable Clone failed refresh leaves clone in AVAILABLE state — detection delay"
+    detail: |
+      When a Refreshable Clone's auto-refresh fails, the clone remains in
+      AVAILABLE state (not DISCONNECTED). The Elastic Pool leader monitors
+      lifecycle state changes, not refresh success/failure.
+
+      This means a failed refresh is NOT immediately detected by the
+      infrastructure. The stale data window equals the ADG RTO for
+      unplanned scenarios.
+    workaround: |
+      Planned switchovers: DBMS_PROXY_SQL.DISABLE_READ_ONLY_OFFLOAD proactively.
+      Unplanned: OCI Events + OCI Function that monitors refresh state and
+      disables read offload automatically. Reduces stale window to ~ADG RTO.
+    oracle_sr: ""
+    status: "monitoring"
+    resolved_date: null
+    resolution: null
+    affects_matrix: "Refreshable Clone"
+    tags: ["refreshable-clone", "stale-reads", "elastic-pool", "detection-delay", "proxysql"]
+
+  - id: "FF-202603-006"
+    date: "2026-02-15"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Strategic Migration Customer"
+      context: "Migration assessment"
+      confidence: "validated"
+    product: "OCI DMS"
+    version: "current"
+    severity: "MEDIUM"
+    category: "limitation"
+    summary: "Bidirectional GoldenGate replication not yet available in DMS"
+    detail: |
+      OCI Database Migration Service does not support bidirectional GoldenGate
+      replication. This is needed for zero-hard-cutover migration workflows
+      where the customer wants to run both source and target in parallel with
+      data flowing both ways during transition.
+
+      Feature request submitted to Oracle DMS PM team. In their pipeline but
+      no committed timeline. Offered beta participation.
+    workaround: "Use standalone GoldenGate deployment (not DMS-managed) for bidirectional replication."
+    oracle_sr: ""
+    status: "open"
+    resolved_date: null
+    resolution: null
+    affects_matrix: null
+    tags: ["dms", "goldengate", "bidirectional", "migration", "zero-downtime"]
+
+  - id: "FF-202603-007"
+    date: "2026-02-10"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Pepe SRL"
+      context: "Discovery engagement"
+      confidence: "validated"
+    product: "ADB-S"
+    version: "23ai"
+    severity: "INFO"
+    category: "gotcha"
+    summary: "ADB-S Serverless RAC node split threshold at 64 ECPUs"
+    detail: |
+      ADB-S Serverless runs on 1 RAC node at ≤24 ECPUs and splits to 2 nodes
+      at 64 ECPUs (16 cpu_count each). The gv$instance view only shows nodes
+      where the PDB is open.
+
+      This affects connection pooling behavior and session distribution.
+      Applications should use UCP or JDBC connection pool with FAN events
+      to handle the multi-node scenario properly.
+    workaround: "Ensure connection pool configuration handles multi-node. Use UCP with FAN."
+    oracle_sr: ""
+    status: "acknowledged"
+    resolved_date: null
+    resolution: null
+    affects_matrix: null
+    tags: ["adb-s", "rac", "ecpu", "node-split", "connection-pooling"]
+
+  # =========================================================================
+  # TEMPLATE — Copy this for new entries:
+  # =========================================================================
+  # - id: "FF-YYYYMM-NNN"
+  #   date: "YYYY-MM-DD"
+  #   contributor:
+  #     name: ""
+  #     team: ""
+  #     client: ""            # Optional — anonymize if sensitive
+  #     context: ""           # Optional — PoC, migration, assessment
+  #     confidence: ""        # validated / observed / reported / inferred
+  #   product: ""
+  #   version: ""
+  #   severity: ""  # CRITICAL / HIGH / MEDIUM / LOW / INFO
+  #   category: ""  # bug / limitation / undocumented / gotcha / workaround / performance
+  #   summary: ""
+  #   detail: |
+  #
+  #   workaround: ""
+  #   oracle_sr: ""
+  #   status: ""  # open / resolved / wontfix / acknowledged / monitoring
+  #   resolved_date: null
+  #   resolution: null
+  #   affects_matrix: null  # Feature matrix entry name, or null
+  #   tags: []
+  #   confirmations: []     # Peer confirmations

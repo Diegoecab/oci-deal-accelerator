@@ -1,0 +1,146 @@
+# OCI Service: Autonomous Database Serverless (ADB-S)
+# Last verified: 2026-03
+
+service:
+  name: "Autonomous Database Serverless (ADB-S)"
+  id: adb_serverless
+  category: database
+  color: "#AA643B"
+
+features:
+  auto_scaling: true
+  auto_indexing: true
+  auto_tuning: true
+  auto_patching: true
+  transparent_application_continuity: true
+  autonomous_data_guard: true
+  private_endpoints: true
+  byol_eligible: true
+
+ha_dr_options:
+  local_ha: "Built-in TAC (Transparent Application Continuity) — ~0 perceived RTO"
+  same_region_adg: "Autonomous Data Guard standby — synchronous, RPO 0"
+  cross_region_adg: "Cross-region ADG — asynchronous only, RPO seconds, RTO < 15 min"
+
+limits:
+  max_ocpu: 128
+  max_storage_tb: 383
+  max_auto_scale: "3x base OCPUs"
+  auto_scale_activation: "2-3 minutes"
+  min_ocpu: 1
+  min_storage_tb: 1
+
+variants:
+  - id: adb_s
+    name: "Autonomous Database Serverless (ADB-S)"
+    description: "Shared Exadata infrastructure, fully managed, auto-scaling"
+    workload_types:
+      - ATP (Transaction Processing / Mixed)
+      - ADW (Data Warehouse / Analytics)
+      - AJD (JSON Document Store)
+      - APEX (Low-code application development)
+
+  - id: adb_d
+    name: "Autonomous Database on Dedicated Exadata (ADB-D)"
+    description: "Dedicated Exadata infrastructure, full isolation"
+    use_when:
+      - "Strict isolation requirements (regulatory, multi-tenant)"
+      - "Predictable performance with no noisy-neighbor risk"
+      - "Need RAC for horizontal compute scaling"
+      - "> 128 OCPUs sustained"
+
+when_to_use:
+  - "Oracle Database workloads migrating to cloud"
+  - "Need automated patching, tuning, and scaling"
+  - "BYOL opportunity with existing Oracle DB licenses"
+  - "JSON document workloads (AJD)"
+  - "Rapid APEX application development"
+  - "Data warehouse / analytics with auto-scaling"
+
+when_not_to_use:
+  - "Non-Oracle database engines (use MySQL HeatWave, PostgreSQL, NoSQL)"
+  - "Need OS-level access or custom DB home configuration → use DBCS"
+  - "Need RAC but not ADB-D budget → use ExaCS or DBCS VM"
+  - "Workloads requiring specific DB patches not yet in ADB"
+  - "Extreme IOPS requirements > what Exadata provides"
+
+sizing:
+  adb_s:
+    min_ocpu: 1
+    max_ocpu: 128
+    auto_scaling: "Up to 3x base OCPUs (takes 2-3 minutes to activate)"
+    sizing_guidance: "Size base OCPUs for P75 sustained load, not P50. Auto-scaling covers peaks but has activation latency."
+    storage_min_tb: 1
+    storage_max_tb: 383
+    iops: "Proportional to OCPU count, Exadata storage servers"
+
+  adb_d:
+    min_ocpu: "2 per VM (minimum 2 VMs for HA)"
+    max_ocpu: "Per Exadata infrastructure shape"
+    rac: true
+    storage: "Exadata storage dependent on infrastructure shape"
+
+gotchas:
+  - id: adb_s_autoscale_latency
+    severity: MEDIUM
+    description: "Auto-scaling activation takes 2-3 minutes. Size base OCPUs for P75, not average."
+
+  - id: adb_s_private_endpoint
+    severity: HIGH
+    description: "Always use private endpoints for production. Public endpoints allow internet access to the DB listener."
+
+  - id: adb_s_service_gateway
+    severity: MEDIUM
+    description: "ADB-S requires a Service Gateway in the VCN for automated backups to Object Storage."
+
+  - id: adb_s_byol_savings
+    severity: LOW
+    description: "BYOL pricing is ~50% cheaper than License Included. Always check if customer has existing Oracle DB licenses."
+
+  - id: adb_d_minimum_infra
+    severity: HIGH
+    description: "ADB-D requires dedicated Exadata infrastructure — minimum cost is significant. Don't recommend for small workloads."
+
+  - id: adb_data_guard_async
+    severity: MEDIUM
+    description: "Cross-region Autonomous Data Guard is async only (RPO > 0). For zero RPO, need same-region standby or ADB-D with local Data Guard."
+
+  - id: adb_19c_only
+    severity: LOW
+    description: "ADB currently runs Oracle 19c. If customer needs 23ai features, verify availability."
+
+implied_dependencies:
+  - service: service_gateway
+    reason: "Required for automated backups to Object Storage"
+  - service: private_endpoint
+    reason: "Production workloads must use private endpoints"
+  - service: oci_vault
+    reason: "Customer-managed encryption keys (recommended for production)"
+  - service: data_safe
+    reason: "Security assessment, audit, and data masking"
+
+competitive:
+  vs_aws_rds:
+    advantages:
+      - "Autonomous operations (auto-patching, auto-tuning, auto-scaling)"
+      - "Dramatically lower DB licensing cost with BYOL"
+      - "Exadata performance for Oracle workloads"
+    disadvantages:
+      - "No multi-engine support (Oracle only)"
+      - "Auto-scaling latency vs. Aurora's faster scale-out"
+  vs_azure_sql:
+    advantages:
+      - "Oracle-native features (RAC, Data Guard, Advanced Compression)"
+      - "BYOL cost advantage"
+    disadvantages:
+      - "Azure has broader SQL Server ecosystem integration"
+
+references:
+  documentation: "https://docs.oracle.com/en/cloud/paas/autonomous-database/"
+  pricing: "https://www.oracle.com/autonomous-database/pricing/"
+  sizing_guide: "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-database-cpu.html"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with sizing rules, gotchas, competitive notes, HA/DR options"

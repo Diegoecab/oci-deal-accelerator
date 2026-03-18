@@ -1,0 +1,56 @@
+# Engagement Tier Configuration
+# Defines how artifact depth scales with engagement complexity
+
+tiers:
+  small:
+    name: "Small (Rapid Innovation)"
+    description: "Single workload, single region, minimal compliance"
+    signals:
+      applications: "1-2"
+      compliance_frameworks: 0
+      regions: 1
+      integration_points: "0-2"
+      budget_monthly: "< $10K"
+      design_timeline: "< 4 weeks"
+    deck_slides: "6-8"
+    examples:
+      - "ADB-S + Analytics Cloud dashboard"
+      - "Single app migration to OKE"
+      - "PoC or pilot deployment"
+
+  standard:
+    name: "Standard (Extend Capabilities)"
+    description: "Multi-component architecture, moderate complexity"
+    signals:
+      applications: "3-10"
+      compliance_frameworks: 1
+      regions: "1-2"
+      integration_points: "3-5"
+      budget_monthly: "$10K-100K"
+      design_timeline: "4-12 weeks"
+    deck_slides: "10-12"
+    examples:
+      - "Oracle DB migration with HA/DR to ADB-S"
+      - "Multi-tier application modernization"
+      - "Hybrid cloud with FastConnect"
+
+  complex:
+    name: "Complex (Business Transformation)"
+    description: "Enterprise-wide transformation, multi-region, multiple compliance"
+    signals:
+      applications: "10+"
+      compliance_frameworks: "2+"
+      regions: "3+"
+      integration_points: "5+"
+      budget_monthly: "> $100K"
+      design_timeline: "12+ weeks"
+    deck_slides: "12-15"
+    examples:
+      - "Full data center migration (50+ workloads)"
+      - "Multi-cloud architecture with OCI primary"
+      - "Regulated industry platform (banking, healthcare)"
+
+# Tier selection logic:
+# If any signal is "complex" AND 2+ signals are "complex" → Complex
+# If any signal is "complex" OR 3+ signals are "standard" → Standard
+# Else → Small

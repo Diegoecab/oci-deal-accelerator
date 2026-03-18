@@ -1,0 +1,112 @@
+# Competitive Mapping: AWS → OCI
+# Honest comparison — advantages AND disadvantages
+
+service_mapping:
+  compute:
+    aws: "EC2"
+    oci: "OCI Compute"
+    oci_advantage:
+      - "Consistent pricing (no per-second billing complexity)"
+      - "Flex shapes — pay for exact OCPUs/memory needed"
+      - "Dense I/O shapes with local NVMe included"
+    aws_advantage:
+      - "Broader instance family selection"
+      - "Spot instances (wider availability than OCI Preemptible)"
+      - "Graviton ecosystem maturity vs Ampere"
+    notes: "OCI compute is generally 30-50% cheaper for equivalent configurations"
+
+  kubernetes:
+    aws: "EKS"
+    oci: "OKE"
+    oci_advantage:
+      - "Free control plane (EKS charges $0.10/hr = ~$73/month)"
+      - "Virtual Nodes (serverless) option"
+    aws_advantage:
+      - "Larger ecosystem (Fargate, App Mesh, more add-ons)"
+      - "More community resources and tooling"
+
+  database_oracle:
+    aws: "RDS Oracle / Oracle on EC2"
+    oci: "ADB-S / DBCS / ExaCS"
+    oci_advantage:
+      - "Autonomous Database — no equivalent in AWS"
+      - "Exadata performance for Oracle workloads"
+      - "BYOL pricing ~50-75% cheaper than AWS RDS Oracle"
+      - "Native Oracle features (RAC, Data Guard, Advanced Compression)"
+      - "Direct migration path with ZDM/DMS"
+    aws_advantage:
+      - "Multi-engine flexibility (same tooling for Oracle, PostgreSQL, MySQL)"
+      - "Aurora for PostgreSQL/MySQL is excellent"
+    notes: "This is OCI's strongest competitive advantage. Lead with database."
+
+  database_mysql:
+    aws: "RDS MySQL / Aurora MySQL"
+    oci: "MySQL HeatWave"
+    oci_advantage:
+      - "HeatWave in-memory query accelerator (up to 400x faster analytics)"
+      - "Combined OLTP + analytics without ETL"
+    aws_advantage:
+      - "Aurora is a mature, battle-tested platform"
+      - "Broader integration with AWS analytics stack"
+
+  object_storage:
+    aws: "S3"
+    oci: "OCI Object Storage"
+    oci_advantage:
+      - "No data retrieval charges for Standard tier"
+      - "Cheaper per-GB pricing"
+    aws_advantage:
+      - "S3 ecosystem is unmatched (integrations, tooling, community)"
+      - "S3 Intelligent Tiering is more mature"
+
+  networking:
+    aws: "VPC / Direct Connect / ALB/NLB"
+    oci: "VCN / FastConnect / Flexible LB"
+    oci_advantage:
+      - "Free inter-AZ data transfer (AWS charges $0.01/GB)"
+      - "Free inter-VCN data transfer within same region via DRG"
+      - "Significantly cheaper outbound data transfer"
+      - "Service Gateway (free access to OCI services without internet)"
+    aws_advantage:
+      - "More load balancer features (ALB path-based routing)"
+      - "Broader Direct Connect partner ecosystem"
+    notes: "Networking cost savings are a major OCI differentiator. Quantify them."
+
+  security:
+    aws: "IAM / GuardDuty / SecurityHub / KMS"
+    oci: "IAM / Cloud Guard / Security Zones / Vault"
+    oci_advantage:
+      - "Cloud Guard is free (GuardDuty is per-event pricing)"
+      - "Security Zones enforce compliance at resource creation"
+      - "Data Safe included free for Autonomous Database"
+    aws_advantage:
+      - "Broader security partner ecosystem"
+      - "More mature SIEM integrations"
+
+  observability:
+    aws: "CloudWatch / X-Ray / CloudTrail"
+    oci: "Monitoring / APM / Audit / Logging Analytics"
+    oci_advantage:
+      - "Generous free tier for monitoring"
+      - "Logging Analytics is powerful for centralized analysis"
+    aws_advantage:
+      - "CloudWatch is deeply integrated with all services"
+      - "More third-party observability integrations"
+
+competitive_positioning:
+  lead_with:
+    - "Oracle Database cost savings (BYOL, Exadata, Autonomous)"
+    - "Network cost savings (free inter-AZ, cheap egress)"
+    - "Overall price/performance for equivalent configurations"
+  honest_gaps:
+    - "Smaller service catalog than AWS"
+    - "Fewer regions (though expanding rapidly)"
+    - "Smaller community and ecosystem"
+    - "Less mature serverless/event-driven offerings"
+  neutralize:
+    - "Enterprise support: Oracle Premier Support is equivalent to AWS Enterprise"
+    - "Terraform support: full parity via OCI Terraform provider"
+    - "Multi-cloud: OCI Multicloud with Azure (Oracle Database@Azure)"
+    - "Multi-cloud: Oracle Database@AWS (GA in us-east-1, us-west-2, us-east-2, eu-central-1, ap-northeast-1 + expanding to 20+ regions)"
+    - "Database@AWS: co-located Exadata in AWS AZ, ~200-400μs same-AZ latency, single AWS bill"
+    - "Database@AWS limitation: ADB-D only, no ADB-S Serverless — requires Exadata dedicated infra"

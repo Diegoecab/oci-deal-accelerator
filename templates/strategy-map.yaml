@@ -1,0 +1,90 @@
+# ═══════════════════════════════════════════════════════════════
+# ECAL Strategy Map Template
+# ═══════════════════════════════════════════════════════════════
+# Source: ECAL 3.1 - Ideate Step (Define Phase)
+# Purpose: Map customer goals → strategies → capabilities → enablers
+# Note: Internal document; key info goes into customer-facing PoV/Value Story
+# "Arguably one of the most important ECAL artifacts" — ECAL 3.1
+# ═══════════════════════════════════════════════════════════════
+
+metadata:
+  customer: ""
+  date: ""
+  version: "1.0"
+  status: "draft"
+
+# ───────────────────────────────────────────────────────────────
+# LAYER 1: BUSINESS GOALS
+# What the customer wants to achieve (from annual reports, CxO statements)
+# ───────────────────────────────────────────────────────────────
+goals:
+  - id: "G1"
+    goal: ""
+    # Example: "Reduce operating costs by 15% over 3 years"
+    source: ""                 # annual report, CEO keynote, customer statement
+    timeframe: ""
+    measurable_target: ""
+
+# ───────────────────────────────────────────────────────────────
+# LAYER 2: STRATEGIES
+# How the customer plans to achieve each goal
+# ───────────────────────────────────────────────────────────────
+strategies:
+  - id: "S1"
+    strategy: ""
+    # Example: "Consolidate data center footprint from 4 to 1"
+    supports_goal: "G1"       # link to goal
+    owner: ""                  # who owns this strategy in the customer org?
+
+# ───────────────────────────────────────────────────────────────
+# LAYER 3: CAPABILITIES NEEDED
+# What capabilities are required to execute each strategy
+# ───────────────────────────────────────────────────────────────
+capabilities:
+  - id: "C1"
+    capability: ""
+    # Example: "Cloud-based database platform with managed operations"
+    supports_strategy: "S1"
+    current_state: ""          # how is this capability met today?
+    gap: ""                    # what's missing?
+
+# ───────────────────────────────────────────────────────────────
+# LAYER 4: ENABLERS (Oracle Products / Solutions)
+# What Oracle can provide to fill the capability gaps
+# ───────────────────────────────────────────────────────────────
+enablers:
+  - id: "E1"
+    enabler: ""
+    # Example: "Autonomous Database on Exadata Cloud@Customer"
+    provides_capability: "C1"
+    oci_services: []           # specific OCI services
+    value_proposition: ""      # why this enabler for this capability?
+    competitive_advantage: ""  # why Oracle vs. alternatives?
+
+# ───────────────────────────────────────────────────────────────
+# LINKAGE SUMMARY
+# Quick view: Goal → Strategy → Capability → Enabler
+# ───────────────────────────────────────────────────────────────
+linkage:
+  - goal: "G1"
+    strategy: "S1"
+    capability: "C1"
+    enabler: "E1"
+    point_of_view: ""          # one-sentence PoV derived from this chain
+    # Example: "By consolidating 3500 databases onto ADB on ExaCC,
+    #           [Customer] achieves 40% OpEx reduction while meeting
+    #           EBA data residency requirements"
+
+# ───────────────────────────────────────────────────────────────
+# SMART EVALUATION OF EACH POINT OF VIEW
+# ───────────────────────────────────────────────────────────────
+pov_evaluation:
+  - pov_id: 1
+    linkage_ref: "G1→S1→C1→E1"
+    specific: ""               # clearly defined scope?
+    measurable: ""             # quantifiable outcome?
+    attainable: ""             # technically feasible? (check feature matrix)
+    relevant: ""               # tied to customer's stated goals?
+    time_based: ""             # achievable timeline?
+    overall_score: ""          # strong / moderate / weak
+    proceed: ""                # yes / iterate / abandon

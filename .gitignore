@@ -1,0 +1,33 @@
+__pycache__/
+*.pyc
+*.pyo
+output/
+*.pptx
+!examples/sample-output/*.pptx
+
+# OCI Toolkit binary (download from Oracle, don't commit)
+kb/diagram/OCI Library.xml
+
+# Build prompt (internal)
+COMPLETE-BUILD-PROMPT.md
+
+# Client-specific examples (never commit customer data)
+examples/farma-sa-*
+
+# Skill-generated output folders (customer-specific, never commit)
+examples/output-*/
+
+# Exported screenshots (temporary)
+examples/*.png
+
+# Exported ppts
+examples/*.ppts
+
+# Exported diagrams
+examples/*.drawio
+
+# Exported YAML files
+examples/*.yaml
+
+# Exported PDFfiles
+examples/*.pdf

@@ -1,0 +1,153 @@
+# Business Case Template — DEFINE Phase
+# Generates the business justification for OCI adoption.
+# Target audience: Customer's internal decision-makers (CxO, finance, procurement).
+# Output: Slide deck (.pptx) + YAML spec for reuse.
+
+business_case:
+  # --- Header ---
+  customer_name: ""
+  prepared_by: ""
+  date: ""
+  version: "1.0"
+  status: draft  # draft | review | approved
+  confidentiality: "Oracle Confidential"
+
+  # --- Executive Summary (1 paragraph for CxO) ---
+  executive_summary: ""
+  # e.g., "Migrating 5 Oracle databases from on-prem to ADB-S reduces
+  #  annual infrastructure costs by 47% ($1.2M/year), eliminates 4h/month
+  #  of unplanned downtime, and positions Acme for PCI compliance by Q3."
+
+  # --- Business Drivers ---
+  drivers:
+    primary: ""        # cost_reduction | modernization | performance | compliance | hw_eol | consolidation | competitive_pressure
+    secondary: []      # Additional drivers
+    urgency: ""        # Why now? e.g., "Hardware EOL in 6 months"
+    cost_of_inaction:
+      financial: ""    # "$X/year in maintenance + $Y risk exposure"
+      operational: ""  # "4h monthly downtime, 3 FTEs on manual patching"
+      strategic: ""    # "Competitor already on cloud, losing talent"
+    urgency_deadline: ""  # Absolute date if applicable (e.g., "2026-09-30")
+
+  # --- Current State Summary ---
+  current_state:
+    infrastructure: ""   # Brief: "3 Exadata racks on-prem, 5 years old"
+    pain_points: []      # ["Manual patching takes 2 weekends/quarter", "No DR tested in 18 months"]
+    annual_spend: 0      # Current total annual IT spend for in-scope workloads
+    team_size: 0         # FTEs dedicated to operations
+
+  # --- TCO Comparison ---
+  tco:
+    horizon_years: 3     # 3 or 5
+    current_state:
+      annual_infrastructure: 0    # HW depreciation, DC, power, cooling, network
+      annual_licensing: 0         # SW licenses + annual support
+      annual_operations: 0        # FTEs × average cost (DBAs, sysadmins, etc.)
+      annual_downtime_cost: 0     # Revenue loss + recovery effort
+      annual_compliance_cost: 0   # Audit prep, remediation, tooling
+      total_annual: 0
+      total_over_horizon: 0
+    proposed_oci:
+      migration_one_time: 0       # Migration effort (consulting, tools, overtime)
+      annual_cloud_consumption: 0 # OCI UCM or PAYG
+      annual_licensing: 0         # BYOL savings or License Included delta
+      annual_operations: 0        # Reduced FTEs (managed services effect)
+      annual_downtime_cost: 0     # Improved SLA
+      annual_compliance_cost: 0   # Automated compliance (Data Safe, etc.)
+      total_annual: 0
+      total_over_horizon: 0       # Includes migration one-time
+    savings:
+      annual: 0
+      over_horizon: 0
+      percentage: 0
+    assumptions:
+      - "730 hours/month for always-on workloads"
+      - "BYOL applied for existing EE licenses with active support"
+      - "Migration duration: X months"
+    notes: ""
+
+  # --- ROI Analysis ---
+  roi:
+    total_investment: 0           # Migration cost + Year 1 cloud premium
+    annual_net_benefit: 0         # Annual savings + quantified value
+    payback_months: 0
+    three_year_roi_pct: 0         # (total_benefit - total_investment) / total_investment × 100
+    five_year_roi_pct: 0          # Optional
+
+  # --- Value Drivers (quantified where possible) ---
+  value_drivers:
+    - category: cost_reduction
+      title: ""
+      description: ""
+      quantified: ""             # "$X/year" or "X% reduction"
+      evidence: ""               # Source: benchmark, customer data, field experience
+    - category: risk_reduction
+      title: ""
+      description: ""
+      quantified: ""
+      evidence: ""
+    - category: agility
+      title: ""
+      description: ""
+      quantified: ""
+      evidence: ""
+    - category: innovation
+      title: ""
+      description: ""
+      quantified: ""
+      evidence: ""
+
+  # --- Risk Assessment ---
+  risks:
+    migration_risks:
+      - risk: ""
+        probability: medium      # low | medium | high
+        impact: high             # low | medium | high
+        mitigation: ""
+        residual_risk: low
+    do_nothing_risks:
+      - risk: ""
+        probability: high
+        impact: ""
+        timeline: ""             # When does this risk materialize?
+
+  # --- Competitive Context ---
+  competitive:
+    alternatives_considered: []  # ["AWS RDS", "Azure SQL MI", "Stay on-prem"]
+    why_oci: []                  # Differentiators for THIS workload
+    honest_gaps: []              # Where competitors have an edge
+    oci_unique: []               # Features only OCI offers (ADB, Exadata, BYOL depth)
+
+  # --- Implementation Roadmap ---
+  roadmap:
+    total_duration: ""           # e.g., "6 months"
+    phases:
+      - name: "Phase 1: Foundation"
+        duration: ""
+        deliverables: []
+        quick_wins: []           # Early visible value
+      - name: "Phase 2: Migration"
+        duration: ""
+        deliverables: []
+      - name: "Phase 3: Optimization"
+        duration: ""
+        deliverables: []
+
+  # --- Success Criteria (post go-live KPIs) ---
+  success_criteria:
+    - metric: ""
+      baseline: ""               # Current value
+      target: ""                 # Expected value post-migration
+      measurement: ""            # How to measure
+      timeline: ""               # When to measure
+
+  # --- The Ask / Recommendation ---
+  recommendation:
+    summary: ""                  # 1-sentence: "We recommend X"
+    commitment_type: ""          # UCM | PAYG | hybrid | PoC_first
+    commitment_amount: ""        # "$X/year for Y years"
+    next_steps:
+      - action: ""
+        owner: ""                # Oracle | Customer | Joint
+        deadline: ""
+    escalation_path: ""          # If no decision by [date], what happens?

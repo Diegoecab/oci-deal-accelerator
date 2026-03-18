@@ -1,0 +1,217 @@
+---
+last_verified: 2026-03-18
+pattern:
+  id: business-drivers
+  name: "Business Drivers Framework"
+  category: define
+---
+
+description: >
+  Categorizes customer business drivers into four pillars (Strategic,
+  Financial, Business Ops, IT Ops) and maps them to cloud value
+  propositions. Used during DEFINE phase to structure the Value Story
+  and during CONFIRM to frame the Solution Proposal. Source: ECAL 3.1.
+
+# ═══════════════════════════════════════════════════════════════
+# The Four Pillars
+# ═══════════════════════════════════════════════════════════════
+
+pillars:
+
+  strategic:
+    label: "Strategic"
+    headline: "Business Transformation to Cloud"
+    description: >
+      Long-term strategic positioning. Cloud as enabler for business
+      model evolution, M&A, market expansion, or competitive defense.
+    common_drivers:
+      - "Cloud-first / cloud-native strategy mandated by CxO"
+      - "Digital transformation initiative"
+      - "Merger or acquisition requiring platform consolidation"
+      - "Geographic expansion requiring global infrastructure"
+      - "Competitive pressure from cloud-native disruptors"
+      - "Board/investor mandate for technology modernization"
+      - "Innovation enablement (AI/ML, IoT, blockchain)"
+    value_propositions:
+      - "Cloud-based solution with enterprise features"
+      - "On-premise security with cloud economics (C@C, dedicated region)"
+      - "Customer-defined security model"
+      - "Data sovereignty and residency guarantees"
+      - "Multi-cloud and hybrid flexibility"
+
+  financial:
+    label: "Financial"
+    headline: "Cost Optimization"
+    description: >
+      Direct financial impact. CAPEX→OPEX shift, license optimization,
+      support cost reduction, consumption-based pricing.
+    common_drivers:
+      - "Reduce total cost of ownership (TCO)"
+      - "Shift from CAPEX to OPEX model"
+      - "Optimize Oracle licensing (ULA wind-down, BYOL)"
+      - "Reduce data center costs (power, cooling, space, staff)"
+      - "Support rebate / simplified licensing"
+      - "Avoid hardware refresh cycle"
+      - "Consumption-based pricing alignment with business cycles"
+    value_propositions:
+      - "Subscription and consumption-based commercials"
+      - "Simplified licensing (BYOL, universal credits)"
+      - "PAYG flexibility for variable workloads"
+      - "Support cost reduction via managed services"
+      - "Elimination of hardware refresh capex"
+    quantification_tips:
+      - "Compare 3-year TCO: current state vs. OCI (include staff, power, space)"
+      - "Factor in support rebate for moving to OCI"
+      - "Account for BYOL savings (if eligible)"
+      - "Include non-prod savings (auto-scaling, auto-stop)"
+
+  business_ops:
+    label: "Business Operations"
+    headline: "Faster Time to Market"
+    description: >
+      Business agility and speed. Faster development cycles, quicker
+      deployment of new capabilities, reduced time-to-value.
+    common_drivers:
+      - "Faster development and deployment of new applications"
+      - "Reduce release cycle from months to weeks"
+      - "Enable self-service provisioning for developers"
+      - "Data platform for analytics and decision-making"
+      - "Support rapid experimentation and A/B testing"
+      - "Enable mobile/digital channels faster"
+      - "Partner and ecosystem integration"
+    value_propositions:
+      - "Faster development of customer-facing and internal apps"
+      - "Data platform implementation (lakehouse, analytics)"
+      - "Self-service database provisioning"
+      - "CI/CD and DevOps enablement"
+      - "Integration with partner ecosystems"
+
+  it_ops:
+    label: "IT Operations"
+    headline: "Operational Efficiency"
+    description: >
+      IT team productivity and operational excellence. Reduce toil,
+      improve reliability, automate operations.
+    common_drivers:
+      - "Reduce DBA / sysadmin toil (patching, backups, monitoring)"
+      - "Improve availability and reduce unplanned downtime"
+      - "Standardize operations across environments"
+      - "Automate provisioning and lifecycle management"
+      - "Improve disaster recovery posture"
+      - "Address skill gaps (hard to hire Oracle DBAs)"
+      - "Consolidate tooling and reduce tool sprawl"
+      - "Performance improvement without hardware throw"
+    value_propositions:
+      - "Oracle Managed Cloud environment"
+      - "Autonomous operations (ADB self-tuning, self-patching)"
+      - "Data platform implementation and consolidation"
+      - "Performance improvement via Exadata architecture"
+      - "Unified monitoring and management (OCI native tools)"
+
+# ═══════════════════════════════════════════════════════════════
+# Mapping: Business Driver → Hypothesis Family
+# ═══════════════════════════════════════════════════════════════
+# Use this to quickly map a customer's stated driver to a
+# hypothesis family for the Value Story
+
+hypothesis_families:
+
+  db_consolidation:
+    triggers:
+      - "Too many databases across too many platforms"
+      - "Hardware refresh coming due"
+      - "DBA team stretched thin"
+      - "License compliance concerns"
+    use_cases:
+      - "Consolidation of N databases to shared platform"
+      - "Transform to fully managed operations"
+      - "Improved elasticity and cost control"
+      - "Standardized backup, HA, and DR"
+    typical_services:
+      - "ADB-S or ADB-D (for consolidation)"
+      - "ExaCS or ExaCC (for large scale)"
+      - "OEM for fleet management"
+    pillar_alignment: ["financial", "it_ops"]
+
+  cloud_migration:
+    triggers:
+      - "Data center lease expiring"
+      - "Cloud-first mandate"
+      - "Competitive pressure"
+      - "EOL hardware or software"
+    use_cases:
+      - "Lift-and-shift existing Oracle workloads"
+      - "Re-platform to managed services"
+      - "Hybrid cloud (keep some on-prem)"
+    typical_services:
+      - "OCI Compute (VM/BM)"
+      - "ExaCS (for Oracle DB workloads)"
+      - "ADB-S (for re-platform)"
+      - "FastConnect + VPN"
+    pillar_alignment: ["strategic", "financial"]
+
+  modernization:
+    triggers:
+      - "Legacy app can't support new business requirements"
+      - "Technical debt is slowing delivery"
+      - "Need for microservices or API-first"
+      - "AI/ML capabilities required"
+    use_cases:
+      - "Re-architect legacy apps to cloud-native"
+      - "Add AI/ML capabilities to existing workflows"
+      - "Microservices decomposition"
+      - "APEX rapid app development"
+    typical_services:
+      - "OKE (Kubernetes)"
+      - "ADB-S + APEX"
+      - "OCI AI Services"
+      - "API Gateway + Functions"
+    pillar_alignment: ["business_ops", "strategic"]
+
+  dr_and_resilience:
+    triggers:
+      - "Recent outage or near-miss"
+      - "Audit finding on DR gaps"
+      - "Insurance or compliance requirement"
+      - "Business continuity plan update"
+    use_cases:
+      - "Cross-region DR for critical workloads"
+      - "Active-active for zero RPO"
+      - "Pilot light DR for cost optimization"
+    typical_services:
+      - "Cross-region ADG"
+      - "Full Stack DR"
+      - "Object Storage for backups"
+    pillar_alignment: ["it_ops", "strategic"]
+
+  compliance_driven:
+    triggers:
+      - "New regulation (DORA, NIS2, GDPR enforcement)"
+      - "Audit finding requiring remediation"
+      - "Data sovereignty requirement"
+      - "Industry-specific mandate (banking, healthcare)"
+    use_cases:
+      - "Data residency with OCI regions or dedicated region"
+      - "Encryption and key management (customer-managed keys)"
+      - "Access controls and audit trail"
+      - "Isolated compute (C@C, dedicated region)"
+    typical_services:
+      - "OCI Vault (KMS)"
+      - "Data Safe"
+      - "Cloud Guard"
+      - "ExaCC or Dedicated Region"
+    pillar_alignment: ["strategic", "it_ops"]
+
+# ═══════════════════════════════════════════════════════════════
+# Usage in the skill
+# ═══════════════════════════════════════════════════════════════
+skill_usage:
+  define_phase:
+    - "Parse discovery notes to identify which pillar(s) are dominant"
+    - "Use pillar alignment to select the right hypothesis family"
+    - "Structure the Value Story around the dominant 1-2 pillars"
+    - "Use value_propositions as talking points for the proposal"
+  confirm_phase:
+    - "Frame the Solution Proposal business case around the identified pillars"
+    - "Use quantification_tips for the financial pillar"
+    - "Map each architecture decision back to the business driver"

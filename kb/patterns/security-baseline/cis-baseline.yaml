@@ -1,0 +1,64 @@
+# Pattern: CIS Security Baseline
+# Composable architecture block for security foundation
+
+pattern:
+  name: "CIS OCI Security Baseline"
+  id: cis_baseline
+  category: security
+
+description: |
+  Security baseline aligned with CIS Oracle Cloud Infrastructure Foundations
+  Benchmark. Provides IAM, network, encryption, monitoring, and governance
+  controls as a foundation for all OCI deployments.
+
+always_include: true
+applies_to: "all_workloads"
+
+controls:
+  identity:
+    - "Least-privilege IAM policies per compartment"
+    - "MFA for all human users"
+    - "Break-glass admin account (not used for daily ops)"
+    - "Instance principals for service-to-service auth"
+    - "Federation with customer IdP (AD, Okta, SAML)"
+    - "No API keys stored in code or config files"
+
+  compartments:
+    - "Hierarchical compartment structure by workload/environment"
+    - "Network, Security, AppDev, Database compartments at minimum"
+    - "Defined tags for cost tracking, environment, owner"
+
+  networking:
+    - "NSGs preferred over Security Lists"
+    - "No SSH from 0.0.0.0/0 — use Bastion Service"
+    - "Service Gateway for OCI service access"
+    - "VCN Flow Logs enabled"
+    - "WAF on all internet-facing endpoints"
+
+  encryption:
+    - "OCI Vault for customer-managed keys"
+    - "TDE with customer-managed keys for databases"
+    - "Encryption at rest for all storage services"
+    - "TLS on all load balancers"
+
+  monitoring:
+    - "Cloud Guard enabled with detector recipes"
+    - "OCI Audit with 365-day retention"
+    - "Vulnerability Scanning for compute instances"
+    - "Security Zones for production compartments"
+
+  governance:
+    - "Budgets and cost alerts per compartment"
+    - "Notification topics for security events"
+    - "Tagging enforcement via tag defaults"
+
+implied_services:
+  - cloud_guard
+  - oci_vault
+  - bastion
+  - vulnerability_scanning
+  - notifications
+
+references:
+  - "https://www.cisecurity.org/benchmark/oracle_cloud"
+  - "https://github.com/oracle-quickstart/oci-cis-landingzone-quickstart"

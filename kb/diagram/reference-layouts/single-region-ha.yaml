@@ -1,0 +1,70 @@
+---
+last_verified: 2026-03-14
+layout: Single Region with HA
+description: |
+  Reference layout for a single-region deployment with high availability.
+  Suitable for most production workloads not requiring cross-region DR.
+---
+
+canvas:
+  width: 1200
+  height: 800
+
+structure:
+  tenancy:
+    x: 0
+    y: 0
+    width: 1200
+    height: 800
+
+  region:
+    x: 20
+    y: 40
+    width: 1160
+    height: 740
+
+  vcn:
+    x: 20
+    y: 40
+    width: 1100
+    height: 680
+
+  subnets:
+    public_web:
+      position: top
+      x: 20
+      y: 30
+      width: 520
+      height: 180
+      purpose: "Load balancers, WAF"
+
+    private_app:
+      position: middle
+      x: 20
+      y: 230
+      width: 520
+      height: 200
+      purpose: "Application servers, OKE workers"
+
+    private_db:
+      position: bottom
+      x: 20
+      y: 450
+      width: 1060
+      height: 200
+      purpose: "Database instances, Data Safe, Vault"
+
+    private_mgmt:
+      position: right
+      x: 560
+      y: 30
+      width: 500
+      height: 400
+      purpose: "Bastion, monitoring, management"
+
+notes: |
+  - Place load balancers in public subnet at top
+  - App tier in private subnet in middle
+  - Database tier in private subnet at bottom (widest)
+  - Management/security services in right column
+  - Services flow top-to-bottom: LB → App → DB

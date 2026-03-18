@@ -1,0 +1,107 @@
+---
+last_verified: 2026-03-16
+pattern:
+  id: architecture-principles
+  name: "Architecture Principles (ECAL)"
+  category: governance
+---
+
+description: >
+  Formalized decision-making principles aligned with Oracle's ECAL framework.
+  The skill selects applicable principles based on the workload profile and
+  presents them in the proposal as the governance framework for the architecture.
+
+principles:
+
+  design:
+    - id: "D-01"
+      name: "Operational Simplicity"
+      principle: "Keep architecture simple. If still complex, simplify again."
+      rationale: "Complex solutions tend to be inflexible, non-agile, and operationally fragile."
+      applies_when: "always"
+
+    - id: "D-02"
+      name: "Application First (SaaS > PaaS > IaaS)"
+      principle: "Always consider application services first, platform services second, infrastructure services as last resort."
+      rationale: "Higher-level services reduce operational burden and accelerate delivery."
+      applies_when: "always"
+
+    - id: "D-03"
+      name: "Use-Case Fit"
+      principle: "Map workloads into applicable use-cases. Architectural simplicity and operational success come from re-use."
+      rationale: "Custom architectures are expensive to build and maintain. Reference architectures exist for a reason."
+      applies_when: "always"
+
+    - id: "D-04"
+      name: "Hybrid-Ready"
+      principle: "Solution should run in hybrid mode, accounting for network bandwidth and latency."
+      rationale: "Most enterprise migrations have a hybrid phase. Architecture must work during transition."
+      applies_when: "on-prem exists or migration is phased"
+
+    - id: "D-05"
+      name: "HA for Business Continuity"
+      principle: "Architect for availability, prepare for disaster, leverage cloud's built-in resilience."
+      rationale: "HA is cheaper to build in from day 1 than to retrofit."
+      applies_when: "always"
+
+    - id: "D-06"
+      name: "Compliance by Design"
+      principle: "Consider required compliance requirements and existing policies from the initial design phase."
+      rationale: "Retrofitting compliance is orders of magnitude more expensive than designing for it."
+      applies_when: "compliance requirements identified (PCI, HIPAA, banking, GDPR)"
+
+  deployment:
+    - id: "P-01"
+      name: "Automation First"
+      principle: "Strive to automate production processes from the beginning — infrastructure as code, seeded features."
+      rationale: "Manual processes don't scale, are error-prone, and create key-person dependencies."
+      applies_when: "always"
+
+    - id: "P-02"
+      name: "Environment Separation"
+      principle: "Production always separated from test and dev. Clear lifecycle policy."
+      rationale: "Prevents accidental data exposure and configuration drift."
+      applies_when: "always"
+
+    - id: "P-03"
+      name: "API-Centric Integration"
+      principle: "Prefer integration via REST APIs over lower-level network protocols."
+      rationale: "APIs are versionable, documentable, and testable. Direct DB links are fragile."
+      applies_when: "integration points exist"
+
+    - id: "P-04"
+      name: "Data Security at Rest and In Transit"
+      principle: "Encrypt data at rest (TDE) and in transit (SQL*Net encryption). Key management from day 1."
+      rationale: "Encryption is a baseline, not an option. Key management complexity grows with scale."
+      applies_when: "always"
+
+    - id: "P-05"
+      name: "Unified Identity Management"
+      principle: "All users managed in central identity system. SSO. Federation where applicable."
+      rationale: "Distributed identity is a security liability."
+      applies_when: "always"
+
+  service:
+    - id: "S-01"
+      name: "Cloud Monitoring & Management"
+      principle: "Map management and monitoring requirements explicitly. Use cloud-native tools first."
+      rationale: "Observability gaps become operational crises during incidents."
+      applies_when: "always"
+
+    - id: "S-02"
+      name: "Issue & Incident Management"
+      principle: "Design for service. Adopt incident management with clear ownership, governance, and SLAs."
+      rationale: "Without defined escalation paths, incidents become crises."
+      applies_when: "always"
+
+    - id: "S-03"
+      name: "Solution Lifecycle"
+      principle: "Map governance for cloud solution lifecycle. Apply ITIL/ITSM frameworks. Readiness for continuous change."
+      rationale: "Cloud evolves constantly. The architecture must evolve with it."
+      applies_when: "always"
+
+    - id: "S-04"
+      name: "Cloud Onboarding"
+      principle: "Setup PoC environment first. Early Customer Success Management involvement."
+      rationale: "Hands-on validation before commitment reduces risk and builds confidence."
+      applies_when: "customer is new to OCI"

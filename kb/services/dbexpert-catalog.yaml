@@ -1,0 +1,679 @@
+---
+last_verified: 2026-03-17
+source: https://apexadb.oracle.com/ords/dbexpert/db-services/v1/all
+swagger: https://oracle-dbexpert.github.io/swagger/
+description: Oracle Database services catalog from DBExpert API. Comprehensive capabilities, multicloud availability, SLAs, workload recommendations, and compliance data.
+refresh_command: "curl -s 'https://apexadb.oracle.com/ords/dbexpert/db-services/v1/all' -H 'accept: application/json'"
+notes: |
+  API may be blocked by Akamai WAF from non-browser clients.
+  Use Swagger UI at https://oracle-dbexpert.github.io/swagger/ to test.
+  (A) = Azure colocated region, (G) = Google Cloud colocated region
+---
+
+# =============================================================================
+# Fully Managed PaaS
+# =============================================================================
+fully_managed_paas:
+
+  - short_name: ATP Dedicated
+    full_name: Autonomous AI Transaction Processing on Dedicated Infrastructure
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, AWS]
+    multicloud: { azure: false, gcp: false, aws: true }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: [Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "2-21504"
+    max_storage_tb: 1572
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [OLTP, Mixed, AI/ML, JSON, Graph, Blockchain, IoT]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: LAK Dedicated
+    full_name: Autonomous AI Lakehouse on Dedicated Infrastructure
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, AWS]
+    multicloud: { azure: false, gcp: false, aws: true }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: [Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "2-21504"
+    max_storage_tb: 1572
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [DW, Analytics, Data Lake, AI/ML, Mixed]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: ATP Serverless
+    full_name: Autonomous AI Transaction Processing Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: true
+    sla: "99.995"
+    sla_note: "with Autonomous Data Guard"
+    maa_medals: [Silver, Gold]
+    cpu_unit: ECPU
+    cpu_range: "2-16128"
+    max_storage_tb: 393
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [OLTP, Mixed, Microservices, AI/ML, JSON, Graph, Blockchain, IoT]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: LAK Serverless
+    full_name: Autonomous AI Lakehouse Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: true
+    sla: "99.995"
+    sla_note: "with Autonomous Data Guard"
+    maa_medals: [Silver, Gold]
+    cpu_unit: ECPU
+    cpu_range: "2-16128"
+    max_storage_tb: 393
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [DW, Analytics, Data Lake, AI/ML, Mixed]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: AJD Serverless
+    full_name: Autonomous AI JSON Database Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: true
+    sla: "99.95"
+    maa_medals: []
+    cpu_unit: ECPU
+    cpu_range: "2-512"
+    max_storage_tb: 10
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [JSON, Document Store, Microservices, IoT]
+    byol_support: false
+    db_versions: ["26ai", "19c"]
+
+  - short_name: ADB-S Elastic Pool
+    full_name: Autonomous AI Database Serverless in an Elastic Pool
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: [Silver, Gold]
+    cpu_unit: ECPU
+    cpu_range: "128-16384"
+    max_storage_tb: 393
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Multi-tenant SaaS, ISV, Consolidated workloads]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: ADB-D Elastic Pool
+    full_name: Autonomous AI Database Dedicated in an Elastic Pool
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI, AWS]
+    multicloud: { azure: false, gcp: false, aws: true }
+    autonomous: true
+    sla: "99.95"
+    maa_medals: [Silver]
+    cpu_unit: ECPU
+    cpu_range: "128-16384"
+    max_storage_tb: 1572
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Multi-tenant SaaS, ISV, Consolidated workloads]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: Globally Distributed ATP-D
+    full_name: Globally Distributed Autonomous AI Transaction Processing
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: []
+    cpu_unit: ECPU
+    cpu_range: "2-16128"
+    max_storage_tb: 393
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Globally distributed OLTP, Sharded databases, Low-latency geo-distributed]
+    byol_support: false
+    db_versions: ["26ai", "19c"]
+
+  - short_name: NoSQL
+    full_name: NoSQL Database Cloud Service
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.995"
+    sla_note: "99.999 with Global Active Tables"
+    maa_medals: []
+    cpu_unit: Serverless
+    cpu_range: serverless
+    max_storage_tb: unlimited
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [IoT, Mobile backend, Gaming, Ad-tech, Key-value, Document]
+    byol_support: false
+    db_versions: []
+
+  - short_name: MySQL HeatWave
+    full_name: MySQL Database Service with HeatWave
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.99"
+    sla_note: "with High Availability"
+    maa_medals: []
+    cpu_unit: OCPU
+    cpu_range: "1-128"
+    max_storage_tb: 64
+    select_ai: false
+    mongo_api: false
+    open_source: true
+    recommended_workloads: [Web applications, SaaS, E-commerce, OLTP+Analytics, HeatWave ML/GenAI]
+    byol_support: false
+    db_versions: ["8.4", "8.0"]
+
+# =============================================================================
+# Co-managed PaaS
+# =============================================================================
+co_managed_paas:
+
+  - short_name: ExaDB-D
+    full_name: Exadata Database Service on Dedicated Infrastructure
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI, Azure, GCP, AWS]
+    multicloud: { azure: true, gcp: true, aws: true }
+    autonomous: false
+    sla: "99.95"
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "16-24320"
+    max_storage_tb: 3924
+    select_ai: false
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Mission-critical OLTP, Large DW, Consolidation, EBS, RAC, Data Guard]
+    byol_support: true
+    db_versions: ["26ai", "19c", "12.2", "12.1", "11.2"]
+
+  - short_name: ExaDB-XS
+    full_name: Exadata Database Service on Exascale Infrastructure (ExaDB-XS)
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: false
+    sla: "99.95"
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "0-2000"
+    max_storage_tb: 300
+    select_ai: false
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Small-to-medium Exadata, Dev/Test on Exadata, Entry-level mission-critical]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: ExaDB-C@C
+    full_name: Exadata Database Service on Cloud@Customer
+    management_model: Co-managed PaaS
+    cloud_environments: [Cloud@Customer]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.95"
+    sla_note: SLO
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "16-24320"
+    max_storage_tb: 3924
+    select_ai: false
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Data sovereignty, Regulated industries, Latency-sensitive on-prem, EBS]
+    byol_support: true
+    db_versions: ["26ai", "19c", "12.1", "11.2"]
+
+  - short_name: BaseDB SE
+    full_name: Base Database Service - Standard Edition - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "1-8"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Small departmental, Dev/Test, Non-critical OLTP]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB EE
+    full_name: Base Database Service - Enterprise Edition - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "1-64"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Enterprise OLTP, Mixed workloads, Moderate DW]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB EE HP
+    full_name: Base Database Service - Enterprise Edition High Performance - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "1-64"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Enterprise OLTP with partitioning, Advanced compression, OLAP]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB EE EP
+    full_name: Base Database Service - Enterprise Edition Extreme Performance - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: OCPU
+    cpu_range: "1-128"
+    cpu_note: "RAC up to 128 OCPUs across 2 nodes"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Mission-critical OLTP, RAC, Data Guard, In-Memory, Active Data Guard]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB SE - ECPU
+    full_name: Base Database Service - Standard Edition - ECPU
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: ECPU
+    cpu_range: "4-32"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Small departmental, Dev/Test, Non-critical OLTP, Multicloud]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB EE - ECPU
+    full_name: Base Database Service - Enterprise Edition - ECPU
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: ECPU
+    cpu_range: "4-256"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Enterprise OLTP, Mixed workloads, Multicloud]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB EE HP - ECPU
+    full_name: Base Database Service - Enterprise Edition High Performance - ECPU
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI, Azure, GCP]
+    multicloud: { azure: true, gcp: true, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: ECPU
+    cpu_range: "4-256"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Enterprise OLTP with partitioning, Advanced compression, Multicloud]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: Globally Distributed ExaDB-XS
+    full_name: Globally Distributed Exadata Database on Exascale Infrastructure
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.95"
+    sla_note: SLO
+    maa_medals: []
+    cpu_unit: ECPU
+    cpu_range: "0-2000"
+    max_storage_tb: 300
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Globally distributed databases, Sharded Exadata, Geo-distributed OLTP]
+    byol_support: true
+    db_versions: ["26ai"]
+
+  - short_name: PostgreSQL
+    full_name: Oracle Cloud Infrastructure Database with PostgreSQL
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.99"
+    sla_note: "with multi-node HA"
+    maa_medals: []
+    cpu_unit: OCPU
+    cpu_range: "2-64"
+    max_storage_tb: 64
+    select_ai: false
+    mongo_api: false
+    open_source: true
+    recommended_workloads: [PostgreSQL workloads, Open source migration, Web applications]
+    byol_support: false
+    db_versions: ["15", "14"]
+
+  - short_name: LAK-ExaC@C
+    full_name: Autonomous AI Lakehouse on Dedicated Infrastructure Cloud@Customer
+    management_model: Co-managed PaaS
+    cloud_environments: [Cloud@Customer]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: [Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "2-21504"
+    max_storage_tb: 1572
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Data sovereignty DW, On-prem analytics, Regulated data lake]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: ATP-ExaC@C
+    full_name: Autonomous AI Transaction Processing on Dedicated Infrastructure Cloud@Customer
+    management_model: Co-managed PaaS
+    cloud_environments: [Cloud@Customer]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: true
+    sla: "99.995"
+    maa_medals: [Silver, Gold, Platinum]
+    cpu_unit: ECPU
+    cpu_range: "2-21504"
+    max_storage_tb: 1572
+    select_ai: true
+    mongo_api: true
+    open_source: false
+    recommended_workloads: [Data sovereignty OLTP, On-prem mission-critical, Regulated workloads]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB Arm EE
+    full_name: Base Database Service Arm - Enterprise Edition - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "2-80"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Cost-optimized Enterprise, Arm-native workloads]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB Arm EE EP
+    full_name: Base Database Service Arm - Enterprise Edition Extreme Performance - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: OCPU
+    cpu_range: "2-160"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Cost-optimized mission-critical, Arm RAC, Arm Data Guard]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+  - short_name: BaseDB Arm EE HP
+    full_name: Base Database Service Arm - Enterprise Edition High Performance - VM
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: "99.9"
+    sla_note: SLO
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "2-80"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Cost-optimized with partitioning, Arm advanced compression]
+    byol_support: true
+    db_versions: ["26ai", "19c"]
+
+# =============================================================================
+# Customer Managed
+# =============================================================================
+customer_managed:
+
+  - short_name: IaaS Bare Metal
+    full_name: OCI Compute - Bare Metal
+    management_model: Customer Managed
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: null
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "64-192"
+    max_storage_tb: unlimited
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Full OS control, Custom RAC, Legacy versions, Bare-metal performance]
+    byol_support: true
+    db_versions: ["26ai", "19c", "12.2", "12.1", "11.2"]
+
+  - short_name: IaaS VM
+    full_name: OCI Compute - Virtual Machine
+    management_model: Customer Managed
+    cloud_environments: [OCI]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: null
+    maa_medals: [Bronze]
+    cpu_unit: OCPU
+    cpu_range: "1-94"
+    cpu_note: "E6.Flex up to 126 OCPUs"
+    max_storage_tb: unlimited
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [Dev/Test, Custom config, Legacy versions, Full OS control]
+    byol_support: true
+    db_versions: ["26ai", "19c", "12.2", "12.1", "11.2"]
+
+  - short_name: Exadata DB Machine
+    full_name: Oracle Database on Exadata Database Machine (on-prem)
+    management_model: Customer Managed
+    cloud_environments: [On-Premises]
+    multicloud: { azure: false, gcp: false, aws: false }
+    autonomous: false
+    sla: null
+    maa_medals: [Bronze, Silver, Gold, Platinum]
+    cpu_unit: Cores
+    cpu_range: "0-2880"
+    max_storage_tb: unlimited
+    select_ai: false
+    mongo_api: false
+    open_source: false
+    recommended_workloads: [On-prem Exadata, Air-gapped, Full hardware control]
+    byol_support: true
+    db_versions: ["26ai", "19c", "12.2", "12.1", "11.2"]
+
+# =============================================================================
+# Always Free & Developer Editions
+# =============================================================================
+always_free_and_developer:
+
+  - short_name: ATP Serverless - Always Free
+    full_name: Autonomous AI Transaction Processing Serverless - Always Free
+    base_service: ATP Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    autonomous: true
+    cpu_unit: ECPU
+    cpu_range: "2"
+    max_storage_tb: 0.02
+    select_ai: true
+    mongo_api: true
+    db_versions: ["26ai", "19c"]
+    notes: "Always Free tier, 20 GB storage, no SLA"
+
+  - short_name: LAK Serverless - Always Free
+    full_name: Autonomous AI Lakehouse Serverless - Always Free
+    base_service: LAK Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    autonomous: true
+    cpu_unit: ECPU
+    cpu_range: "2"
+    max_storage_tb: 0.02
+    select_ai: true
+    mongo_api: true
+    db_versions: ["26ai", "19c"]
+    notes: "Always Free tier, 20 GB storage, no SLA"
+
+  - short_name: AJD Serverless - Always Free
+    full_name: Autonomous AI JSON Database Serverless - Always Free
+    base_service: AJD Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    autonomous: true
+    cpu_unit: ECPU
+    cpu_range: "2"
+    max_storage_tb: 0.02
+    select_ai: true
+    mongo_api: true
+    db_versions: ["26ai", "19c"]
+    notes: "Always Free tier, 20 GB storage, no SLA"
+
+  - short_name: ADB-S Developer
+    full_name: Autonomous AI Database Serverless - Developer
+    base_service: ATP Serverless
+    management_model: Fully Managed PaaS
+    cloud_environments: [OCI]
+    autonomous: true
+    cpu_unit: ECPU
+    cpu_range: "2-512"
+    max_storage_tb: 10
+    select_ai: true
+    mongo_api: true
+    db_versions: ["26ai", "19c"]
+    notes: "Developer edition, reduced cost, non-production use"
+
+  - short_name: BaseDB Arm Developer
+    full_name: Base Database Service Arm - Developer Edition - VM
+    base_service: BaseDB Arm EE
+    management_model: Co-managed PaaS
+    cloud_environments: [OCI]
+    autonomous: false
+    cpu_unit: OCPU
+    cpu_range: "2-80"
+    max_storage_tb: 40
+    select_ai: false
+    mongo_api: false
+    db_versions: ["26ai", "19c"]
+    notes: "Arm Developer edition, non-production use"
+
+# =============================================================================
+# Quick-reference: Multicloud availability matrix
+# =============================================================================
+# Service                  | OCI | Azure | GCP | AWS | C@C
+# -------------------------|-----|-------|-----|-----|----
+# ExaDB-D                  |  Y  |   Y   |  Y  |  Y  |
+# ExaDB-XS                 |  Y  |   Y   |  Y  |     |
+# ATP Dedicated             |  Y  |       |     |  Y  |
+# LAK Dedicated             |  Y  |       |     |  Y  |
+# ATP Serverless            |  Y  |   Y   |  Y  |     |
+# LAK Serverless            |  Y  |   Y   |  Y  |     |
+# AJD Serverless            |  Y  |   Y   |  Y  |     |
+# ADB-S Elastic Pool        |  Y  |   Y   |  Y  |     |
+# ADB-D Elastic Pool        |  Y  |       |     |  Y  |
+# BaseDB SE/EE/HP - ECPU   |  Y  |   Y   |  Y  |     |
+# ExaDB-C@C                |     |       |     |     |  Y
+# LAK-ExaC@C / ATP-ExaC@C  |     |       |     |     |  Y
+# All others                |  Y  |       |     |     |

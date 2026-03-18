@@ -1,0 +1,97 @@
+# OCI Service: OCI Networking Core (VCN, Subnets, Gateways)
+# Last verified: 2026-03
+
+service:
+  name: "OCI Networking Core"
+  id: networking_core
+  category: infrastructure
+
+description: "Foundational networking bundle covering Virtual Cloud Networks (VCN), subnets, and gateways. Every OCI deployment depends on these components for connectivity, segmentation, and traffic routing."
+
+components:
+  - name: "Virtual Cloud Network (VCN)"
+    id: vcn
+    description: "Software-defined private network in OCI. Provides the IP address space, DNS, and route table framework for all attached resources."
+    when_to_use:
+      - "Required for every OCI deployment — compute, database, Kubernetes, and managed services all reside in a VCN"
+
+  - name: "Subnet (Public)"
+    id: public_subnet
+    description: "Subnet where instances can receive public IP addresses and are reachable from the internet via an Internet Gateway."
+    when_to_use:
+      - "Load balancers, bastion hosts, or resources that must accept inbound internet traffic"
+      - "Dev/test instances needing direct internet access"
+
+  - name: "Subnet (Private)"
+    id: private_subnet
+    description: "Subnet with no public IP assignment. Resources communicate outbound via NAT Gateway and access OCI services via Service Gateway."
+    when_to_use:
+      - "Application servers, databases, and backend services that should not be internet-facing"
+      - "Any workload subject to security or compliance restrictions on public exposure"
+
+  - name: "Internet Gateway (IGW)"
+    id: igw
+    description: "Provides a path for inbound and outbound internet traffic to/from resources in public subnets."
+    when_to_use:
+      - "Public-facing load balancers or bastion hosts need internet connectivity"
+
+  - name: "NAT Gateway"
+    id: nat_gateway
+    description: "Enables outbound-only internet access for resources in private subnets. No inbound initiation from the internet."
+    when_to_use:
+      - "Private subnet resources need to pull OS patches, container images, or call external APIs"
+
+  - name: "Service Gateway"
+    id: service_gateway
+    description: "Private pathway from a VCN to supported OCI services (e.g., Object Storage, Autonomous Database) without traffic traversing the internet."
+    when_to_use:
+      - "Any private subnet workload that needs to reach OCI Object Storage, streaming, or other supported services"
+      - "Backup traffic from databases or compute that should stay on the Oracle backbone"
+
+  - name: "Dynamic Routing Gateway (DRG)"
+    id: drg
+    description: "Virtual router that connects a VCN to on-premises networks (via FastConnect or IPSec VPN), other VCNs, or remote regions."
+    when_to_use:
+      - "Hybrid cloud connectivity to on-premises data centers"
+      - "VCN-to-VCN peering across regions or tenancies"
+      - "Hub-and-spoke network topologies"
+
+  - name: "Local Peering Gateway (LPG)"
+    id: lpg
+    description: "Connects two VCNs in the same region for private traffic exchange without traversing the internet or a DRG."
+    when_to_use:
+      - "Intra-region VCN-to-VCN peering when a DRG hub is not needed"
+      - "Simple two-VCN peering scenarios"
+
+design_rules:
+  - "Allocate a /16 CIDR block per VCN to allow room for future subnet expansion"
+  - "Plan CIDR ranges for growth — adding non-overlapping CIDRs later is supported but the original CIDR cannot be changed"
+  - "Avoid CIDR overlap with on-premises networks and other VCNs that will be peered"
+  - "Create separate subnets per tier (web, app, database) and per availability domain when needed for fault isolation"
+  - "Prefer Network Security Groups (NSGs) over Security Lists — NSGs are attached to individual resources and are easier to manage at scale"
+
+gotchas:
+  - id: vcn_cidr_immutable
+    severity: HIGH
+    description: "A VCN's original CIDR block cannot be modified or removed after creation. Additional non-overlapping CIDRs can be added, but plan the initial range carefully."
+
+  - id: security_rule_limit
+    severity: MEDIUM
+    description: "Each security list supports a maximum of 200 rules (ingress + egress combined). For complex environments, use multiple NSGs instead of overloading a single security list."
+
+  - id: service_gateway_required
+    severity: HIGH
+    description: "Resources in private subnets cannot reach OCI services (Object Storage, Autonomous Database, etc.) without a Service Gateway and corresponding route rule. This is a common misconfiguration."
+
+  - id: drg_required_hybrid
+    severity: MEDIUM
+    description: "A DRG is required for FastConnect, IPSec VPN, and cross-VCN peering via transit routing. Plan DRG attachment early — retrofitting routing later adds complexity."
+
+references:
+  documentation: "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm"
+  vcn_best_practices: "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/bestpractices.htm"
+
+changelog:
+  - date: "2026-03-14"
+    contributor: { name: "Diego Cabrera", team: "Field Architecture" }
+    change: "Initial creation with VCN, subnets, gateways, DRG design rules and gotchas"

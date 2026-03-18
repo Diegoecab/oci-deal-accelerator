@@ -1,0 +1,678 @@
+---
+last_verified: 2026-03-18
+pattern:
+  id: ecal-artefacts-catalog
+  name: "ECAL 3.1 Artefacts Catalog"
+  category: governance
+---
+
+description: >
+  Complete catalog of ECAL 3.1 artefacts across all 9 steps.
+  Each entry has: description, purpose, ECAL role, and whether
+  the OCI Deal Accelerator skill can generate it. Source: ECAL 3.1
+  Practitioners Guides (01-09).
+
+# auto_generate: skill produces this artefact
+# assist:        skill provides partial content or structure
+# reference:     skill references this but customer/team produces it
+# out_of_scope:  purely delivery/commercial, skill doesn't touch
+
+# ═══════════════════════════════════════════════════════════════
+# DEFINE PHASE
+# ═══════════════════════════════════════════════════════════════
+
+define:
+  ideate:
+    - id: "DEF-01"
+      name: "Customer Profile"
+      what: "Strategic business goals, Oracle footprint, industry analysis, competitor positioning"
+      why: "Understand what drives the customer so the PoV resonates with their strategic goals"
+      how: "Account team intel, annual reports, web research, Business Model Canvas"
+      skill_support: "assist"
+      skill_notes: "Skill can research public info and structure into profile template"
+      customer_facing: false
+
+    - id: "DEF-02"
+      name: "Strategy Map"
+      what: "Customer goals → strategies → capabilities → enablers mapping"
+      why: "Links Oracle products to business strategy. Arguably most important ECAL artefact"
+      how: "Leverage Customer Profile, annual reports, Value Navigator"
+      skill_support: "assist"
+      skill_notes: "Skill can draft from discovery notes; needs customer validation"
+      customer_facing: false
+
+    - id: "DEF-03"
+      name: "Point of View (PoV)"
+      what: "Hypothesis about customer need, business benefit, SMART-evaluated"
+      why: "Go to customer with validated ideas that have significant business value"
+      how: "Review Pattern Library, Sales Central, quantify with Business Case"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates as 'value hypothesis' in value-story.yaml"
+      customer_facing: false
+
+    - id: "DEF-04"
+      name: "Ideation Workshop"
+      what: "Design Thinking workshop to formulate and validate PoV"
+      why: "Ensure no bias, everyone thinking about customer needs"
+      how: "Brainstorming, group discussion, NEXT/V2V methodology"
+      skill_support: "reference"
+      skill_notes: "Skill can generate agenda and talking points"
+      customer_facing: true
+
+    - id: "DEF-05"
+      name: "Business Case"
+      what: "Executive summary, drivers, recommended solution, benefits, timeline, risks"
+      why: "Communicate business value of cloud adoption"
+      how: "Use Value Navigator, work with customer on the model"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates via business-case.yaml template + deck"
+      customer_facing: true
+
+    - id: "DEF-06"
+      name: "Value Story"
+      what: "Compelling vision of the PoV and why customer should adopt it"
+      why: "Continue discussion with customer, tailor the PoV"
+      how: "External Ideation template, PowerPoint, demo, mockup"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates via value-story.yaml template"
+      customer_facing: true
+
+  validate:
+    - id: "DEF-07"
+      name: "Value Story Delivery"
+      what: "Half-day workshop presenting the Value Story to customer"
+      why: "Validate ideas with customer, do discovery through engagement"
+      how: "Presentations, whiteboards, exercises — be creative"
+      skill_support: "assist"
+      skill_notes: "Skill can generate workshop deck and discussion guide"
+      customer_facing: true
+
+  plan:
+    - id: "DEF-08"
+      name: "Joint Engagement Plan (JEP)"
+      what: "Outline plan for Design phase: activities, resources, timeline, scope"
+      why: "Customer must commit resources; cannot design in isolation"
+      how: "Use ECAL template, be clear on scope and outcomes"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates via joint-engagement-plan.yaml template"
+      customer_facing: true
+
+# ═══════════════════════════════════════════════════════════════
+# DESIGN PHASE — CURRENT STEP
+# ═══════════════════════════════════════════════════════════════
+
+design:
+  current:
+    identify_constraints:
+      - id: "DES-01"
+        name: "Business Constraints"
+        what: "Time, funding, legal, compliance, resource, technology constraints"
+        why: "Constraints impact Future State Architecture, Roadmap, and Proposal"
+        how: "Collect from customer via workshops or Constraints Questionnaire"
+        skill_support: "assist"
+        skill_notes: "Skill captures in workload-profile.yaml constraints section"
+        customer_facing: false
+
+      - id: "DES-02"
+        name: "Security Constraints"
+        what: "Security requirements, GDPR, regulatory needs"
+        why: "Security is major concern in cloud adoption"
+        how: "Security checklist, assess need for Oracle Security team"
+        skill_support: "assist"
+        skill_notes: "Skill flags compliance requirements from discovery notes"
+        customer_facing: true
+
+    capture_current_state:
+      - id: "DES-03"
+        name: "Current State Process & Capability Map"
+        what: "Business processes/capabilities currently in scope, single-slide view"
+        why: "Shows Oracle understands customer business needs"
+        how: "Cloud Notation Business Architecture, neutral language (no Oracle buzzwords)"
+        skill_support: "reference"
+        skill_notes: "Business architecture — needs customer input"
+        customer_facing: true
+
+      - id: "DES-04"
+        name: "Discovery Questionnaire"
+        what: "Structured collection of customer IT landscape"
+        why: "Build/understand current state, validate hypotheses"
+        how: "Send template to customer or fill collaboratively"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates via templates/discovery-questionnaire.yaml"
+        customer_facing: true
+
+      - id: "DES-05"
+        name: "Current State Apps & Tech Portfolio"
+        what: "Systems, assets, integrations, strategy per application"
+        why: "Understand environment, build Current State Architecture"
+        how: "Portfolio Assessment Workbook — Systems, Assets, Integrations tabs"
+        skill_support: "assist"
+        skill_notes: "Skill structures from discovery questionnaire responses"
+        customer_facing: true
+
+      - id: "DES-06"
+        name: "Security Baseline & Guidance"
+        what: "Current security posture and requirements"
+        why: "Baseline for designing security in future state"
+        how: "Security team assessment"
+        skill_support: "reference"
+        skill_notes: "References kb/well-architected/security.yaml"
+        customer_facing: true
+
+      - id: "DES-07"
+        name: "Operational RACI (Current)"
+        what: "How customer currently runs operations — services, SLAs, responsibilities"
+        why: "Understand current ops model to design future ops that fit"
+        how: "Request operational definitions, frameworks (ITIL), service levels"
+        skill_support: "assist"
+        skill_notes: "Skill maps to operational-raci.yaml models"
+        customer_facing: false
+
+      - id: "DES-08"
+        name: "Prioritization Matrix"
+        what: "Applications scored by criticality, fit, potential, risk"
+        why: "Focus on highest-value, lowest-risk initiatives first"
+        how: "Score each app on 5 criteria, weighted calculation"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates from discovery-questionnaire.yaml prioritization section"
+        customer_facing: true
+
+      - id: "DES-09"
+        name: "Current State Architecture"
+        what: "Architecture diagrams of current environment in scope"
+        why: "Baseline for Future State Architecture"
+        how: "Receive from customer or draw using Cloud Notation"
+        skill_support: "assist"
+        skill_notes: "Skill can generate .drawio from description"
+        customer_facing: true
+
+  future:
+    solution_design:
+      - id: "DES-10"
+        name: "Future State Process & Capability Map"
+        what: "Business capabilities covered by proposed solution"
+        why: "Shows Oracle understands and addresses customer needs"
+        how: "Map capabilities to Oracle products, use Cloud Notation"
+        skill_support: "reference"
+        skill_notes: "Business architecture — needs customer validation"
+        customer_facing: true
+
+      - id: "DES-11"
+        name: "Future State Apps & Tech Portfolio"
+        what: "Oracle/3rd party products mapped to business capabilities"
+        why: "Bridges capability map to architecture"
+        how: "List capabilities per product, show integration relationships"
+        skill_support: "assist"
+        skill_notes: "Skill can map from service selection"
+        customer_facing: true
+
+      - id: "DES-12"
+        name: "Future State Architecture"
+        what: "Application + Technology architecture diagrams"
+        why: "Communicates solution vision internally and to customer"
+        how: "Cloud Notation, review with ECAL team, iterate"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates .drawio via oci_diagram_gen.py"
+        customer_facing: true
+
+      - id: "DES-13"
+        name: "Solution Roadmap"
+        what: "Phased implementation plan by value/risk"
+        why: "Complex solutions can't be delivered in one step"
+        how: "Divide by criteria (org, region, risk), prioritize high-value/low-risk"
+        skill_support: "auto_generate"
+        skill_notes: "Skill includes roadmap slide in deck"
+        customer_facing: true
+
+      - id: "DES-14"
+        name: "Extension Catalog"
+        what: "Custom extensions beyond OOTB Oracle products"
+        why: "Highlights gaps requiring custom development"
+        how: "Identify missing capabilities, clarify implementation"
+        skill_support: "reference"
+        skill_notes: "Customer-specific; skill flags potential gaps"
+        customer_facing: true
+
+      - id: "DES-15"
+        name: "Integration Catalog"
+        what: "All non-OOTB integrations with data flows, volumes, frequency"
+        why: "Communicate integration effort and responsibility"
+        how: "Map all inter-component data flows, include volumes"
+        skill_support: "assist"
+        skill_notes: "Skill can list integrations from architecture"
+        customer_facing: true
+
+      - id: "DES-16"
+        name: "Information & BI Model"
+        what: "Data flows, MDM, analytics architecture"
+        why: "Document where data resides and how it's managed"
+        how: "Data Ecosystem reference architecture, Cloud Notation"
+        skill_support: "reference"
+        skill_notes: "Reference patterns in kb/patterns/"
+        customer_facing: true
+
+    deployment_design:
+      - id: "DES-17"
+        name: "Datacentre Design"
+        what: "Which services run in which region/DC for each environment"
+        why: "Data locality, regulatory compliance, HA strategy"
+        how: "Map components to OCI regions, include on-prem/multi-cloud"
+        skill_support: "auto_generate"
+        skill_notes: "Skill includes region mapping in architecture"
+        customer_facing: true
+
+      - id: "DES-18"
+        name: "Lifecycle Management Design"
+        what: "CI/CD, dev-to-prod automation, IaC approach"
+        why: "Automation is critical for cloud operational success"
+        how: "OCI DevOps, Terraform, Resource Manager"
+        skill_support: "assist"
+        skill_notes: "Skill recommends IaC approach in deployment design"
+        customer_facing: true
+
+      - id: "DES-19"
+        name: "Network Design"
+        what: "Connectivity between DCs, within DCs, to users"
+        why: "Well-defined networking is critical for solution success"
+        how: "Cloud Notation, show gateways, protocols, public/private"
+        skill_support: "auto_generate"
+        skill_notes: "Skill includes networking in .drawio diagrams"
+        customer_facing: true
+
+      - id: "DES-20"
+        name: "Identity & Access Design"
+        what: "How users access the system, authentication, authorization"
+        why: "IAM is critical non-functional requirement"
+        how: "End-to-end identity across proposed and existing systems"
+        skill_support: "assist"
+        skill_notes: "Skill recommends IAM approach from patterns"
+        customer_facing: true
+
+      - id: "DES-21"
+        name: "Environment Catalog"
+        what: "List of all environments: prod, dev, test, DR with sizing"
+        why: "Understand total solution size for accurate BoM"
+        how: "Discuss with team and customer, use environment-catalogue.yaml"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates from kb/patterns/environment-catalogue.yaml"
+        customer_facing: true
+
+      - id: "DES-22"
+        name: "Recovery Model"
+        what: "HA/DR architecture for different failure scenarios"
+        why: "Customers need to understand business continuity"
+        how: "Map RTO/RPO requirements to HA/DR patterns"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates from service-tiering.yaml + HA/DR patterns"
+        customer_facing: true
+
+      - id: "DES-23"
+        name: "Management Design"
+        what: "Monitoring tools, alerting, operations management"
+        why: "Operational readiness is critical for customer confidence"
+        how: "Map to OCI native tools or customer's existing tools"
+        skill_support: "assist"
+        skill_notes: "Skill recommends monitoring stack in operations model"
+        customer_facing: true
+
+      - id: "DES-24"
+        name: "Data Locality & Data Security"
+        what: "Where controlled data resides, encryption, key management"
+        why: "Data security is highest customer concern"
+        how: "Map data locations, encryption methods, key management"
+        skill_support: "assist"
+        skill_notes: "Skill flags data residency and encryption in architecture"
+        customer_facing: true
+
+    transition_design:
+      - id: "DES-25"
+        name: "Implementation Plan"
+        what: "Prioritized implementation/migration of capabilities"
+        why: "Most organizations can't change architecture in one phase"
+        how: "Implementation partner responsibility; SA validates compatibility"
+        skill_support: "assist"
+        skill_notes: "Skill generates high-level migration plan slides"
+        customer_facing: true
+
+      - id: "DES-26"
+        name: "Implementation RACI"
+        what: "Who does what during implementation"
+        why: "Clear roles prevent rework and delays"
+        how: "High-level tasks with R/A/C/I per role"
+        skill_support: "assist"
+        skill_notes: "Skill can draft from engagement-raci.yaml adopt section"
+        customer_facing: true
+
+      - id: "DES-27"
+        name: "Provisioning Plan / Map"
+        what: "How each component gets provisioned and brought into service"
+        why: "Basis for actual provisioning of services"
+        how: "Map BoM components to provisioning steps"
+        skill_support: "reference"
+        skill_notes: "Delivery partner responsibility"
+        customer_facing: true
+
+      - id: "DES-28"
+        name: "Adoption Plan"
+        what: "How customer adopts the cloud service post-provisioning"
+        why: "Ensure availability of resources and service levels"
+        how: "Cloud Adoption Services (CAS), business readiness"
+        skill_support: "reference"
+        skill_notes: "CAS/delivery partner responsibility"
+        customer_facing: true
+
+    service_design:
+      - id: "DES-29"
+        name: "Operational Services RACI"
+        what: "Runtime responsibilities for operating/supporting the solution"
+        why: "Clear ops responsibilities prevent go-live surprises"
+        how: "Map to operational-raci.yaml models (fully/co/self managed)"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates from kb/patterns/operational-raci.yaml"
+        customer_facing: true
+
+      - id: "DES-30"
+        name: "Operational Services Design"
+        what: "9 categories of operational service model for running the solution"
+        why: "Customer needs to know best practices for operating in cloud"
+        how: "Use 9 Enduring Capabilities framework"
+        skill_support: "assist"
+        skill_notes: "Skill generates operations model from template"
+        customer_facing: true
+
+    demo_poc:
+      - id: "DES-31"
+        name: "PoC Joint Execution Plan"
+        what: "Scope, approach, timeline, success criteria for PoC"
+        why: "Structured PoC with bilateral commitment"
+        how: "Define scope, test architectures, use cases, ground rules"
+        skill_support: "reference"
+        skill_notes: "Customer-specific; skill can outline structure"
+        customer_facing: true
+
+      - id: "DES-32"
+        name: "Demo / PoC Delivery"
+        what: "Execution of demo or proof of concept"
+        why: "Prove technical feasibility or address customer concerns"
+        how: "Demo Central, Cloud Trials, custom PoC"
+        skill_support: "reference"
+        skill_notes: "Execution activity, not a document"
+        customer_facing: true
+
+    bom_sizing:
+      - id: "DES-33"
+        name: "Architecture Review"
+        what: "Team review of all architecture artefacts before BoM"
+        why: "Ensure team alignment on proposed solution"
+        how: "Review meeting with complete account team"
+        skill_support: "auto_generate"
+        skill_notes: "Skill runs WA validation via validate-architecture.py"
+        customer_facing: false
+
+      - id: "DES-34"
+        name: "Bill of Materials & Sizing"
+        what: "All pricing and sizing for each solution component"
+        why: "Summarizes all software/hardware/service costs"
+        how: "Map from Future State Architecture + sizing model"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates cost estimate from kb/pricing/ + kb/sizing/"
+        customer_facing: true
+
+  confirm:
+    - id: "DES-35"
+      name: "Solution Proposal"
+      what: "High-impact customer presentation of the proposed solution"
+      why: "Enable customer to decide whether to proceed to Deliver"
+      how: "Collect all designs, simplify, merge with business drivers"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates .pptx deck via oci_deck_gen.py"
+      customer_facing: true
+
+    - id: "DES-36"
+      name: "Partner / Services Proposal"
+      what: "Implementation + operational services cost estimate"
+      why: "Complete solution = products + implementation + operations"
+      how: "Work with OC/ACS/partners based on Design artefacts"
+      skill_support: "reference"
+      skill_notes: "OC/ACS/partner responsibility"
+      customer_facing: true
+
+    - id: "DES-37"
+      name: "RFx Response"
+      what: "Formal response to customer RFI/RFQ/RFP"
+      why: "Formal stage in customer buying cycle"
+      how: "Qualify, plan, manage response, QA, submit"
+      skill_support: "reference"
+      skill_notes: "Sales/BD responsibility; skill provides technical content"
+      customer_facing: true
+
+    - id: "DES-38"
+      name: "Commercial Agreement"
+      what: "Commercial terms: cloud credits, BYOL, ELA, pricing"
+      why: "Customer needs to understand costs to proceed"
+      how: "Sales/CSM use BoM to produce commercial terms"
+      skill_support: "reference"
+      skill_notes: "Sales responsibility"
+      customer_facing: true
+
+# ═══════════════════════════════════════════════════════════════
+# DELIVER PHASE
+# ═══════════════════════════════════════════════════════════════
+
+deliver:
+  adopt:
+    establish_governance:
+      - id: "DEL-01"
+        name: "Architecture Governance"
+        what: "Compliance review process for projects vs. enterprise architecture"
+        why: "Ensure original vision is realized during implementation"
+        how: "Regular meetings, architecture compliance checklists"
+        skill_support: "reference"
+        skill_notes: "Implementation team responsibility"
+        customer_facing: true
+
+      - id: "DEL-02"
+        name: "Operating Model"
+        what: "How existing processes/tools change for the new solution"
+        why: "Without agreed model, risk of project failure"
+        how: "Assess org capabilities using Operational Service RACI/Design"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates via templates/operations-model.yaml"
+        customer_facing: true
+
+      - id: "DEL-03"
+        name: "Business Transition Plan"
+        what: "Managing business change and readiness for go-live"
+        why: "Business must change processes/org to realize value"
+        how: "Analysis of business strategy, process standardization"
+        skill_support: "reference"
+        skill_notes: "CAS/delivery partner responsibility"
+        customer_facing: true
+
+      - id: "DEL-04"
+        name: "Training & Communication Plan"
+        what: "End-user training strategy and project communication"
+        why: "Effective communication is difference between success and failure"
+        how: "Review Adoption Plan, determine training delivery method"
+        skill_support: "reference"
+        skill_notes: "Delivery partner responsibility"
+        customer_facing: true
+
+    manage_project:
+      - id: "DEL-05"
+        name: "Project Governance"
+        what: "Oversight framework: steering committee, change control, escalation"
+        why: "Key elements that make a project successful"
+        how: "Define governance structure, reporting, risk management"
+        skill_support: "reference"
+        skill_notes: "PM responsibility"
+        customer_facing: true
+
+      - id: "DEL-06"
+        name: "Project Plan"
+        what: "Detailed steps with timelines for deployment"
+        why: "Identify critical path, stick to timelines"
+        how: "Detailed iteration of high-level Implementation Plan"
+        skill_support: "reference"
+        skill_notes: "Implementation partner responsibility"
+        customer_facing: true
+
+      - id: "DEL-07"
+        name: "Project Delivery"
+        what: "Execute the project per plan and governance"
+        why: "Correctly mobilising prevents delays"
+        how: "Onboard team, enable, kick off, deliver"
+        skill_support: "reference"
+        skill_notes: "Execution activity"
+        customer_facing: false
+
+      - id: "DEL-08"
+        name: "Signoff & Close"
+        what: "Validate and sign off all elements of solution"
+        why: "Formal confirmation before moving to production"
+        how: "Confirm configs, integrations, data migrations complete"
+        skill_support: "reference"
+        skill_notes: "PM responsibility"
+        customer_facing: true
+
+    customer_adoption:
+      - id: "DEL-09"
+        name: "Contracts & Policy Review"
+        what: "Review all agreements associated with the project"
+        why: "Incomplete understanding puts project at risk"
+        how: "Review with customer, note risks"
+        skill_support: "reference"
+        skill_notes: "Legal/commercial responsibility"
+        customer_facing: true
+
+      - id: "DEL-10"
+        name: "Readiness Assessment"
+        what: "Ensure project team has right skills and assets"
+        why: "Lack of tools/docs/processes becomes obstacle"
+        how: "Review requirements, define readiness assets"
+        skill_support: "reference"
+        skill_notes: "PM responsibility"
+        customer_facing: false
+
+      - id: "DEL-11"
+        name: "Configuration & Customization"
+        what: "Build the solution: configs, customizations, integrations"
+        why: "Build per agreed architecture and deployment design"
+        how: "Delivery partner method (e.g., TCM)"
+        skill_support: "reference"
+        skill_notes: "Delivery team execution"
+        customer_facing: false
+
+      - id: "DEL-12"
+        name: "Security Build"
+        what: "Final review and build of security configuration"
+        why: "Confirm solution built per Identity & Access Design"
+        how: "Delivery partner method"
+        skill_support: "reference"
+        skill_notes: "Delivery team execution"
+        customer_facing: false
+
+      - id: "DEL-13"
+        name: "Data Migration"
+        what: "Extract, load, validate data from source to target"
+        why: "Confirm data migrates correctly and safely"
+        how: "DMS, GoldenGate, Data Pump, RMAN, ZDM"
+        skill_support: "assist"
+        skill_notes: "Skill recommends migration tools in architecture"
+        customer_facing: false
+
+      - id: "DEL-14"
+        name: "Validation & Testing"
+        what: "Business process validation and technical testing"
+        why: "Confirm solution ready for production"
+        how: "Process playback, final validation, sign-off"
+        skill_support: "reference"
+        skill_notes: "Delivery team + customer execution"
+        customer_facing: true
+
+      - id: "DEL-15"
+        name: "Business Enablement"
+        what: "End-user training delivery"
+        why: "Users must be effective with new solution"
+        how: "Per Training Plan, Oracle University"
+        skill_support: "reference"
+        skill_notes: "Training team responsibility"
+        customer_facing: true
+
+      - id: "DEL-16"
+        name: "Go-Live & Hypercare"
+        what: "Cutover to production + intensive post-go-live support"
+        why: "Reduce risk and provide better customer experience"
+        how: "Support, data integrity, availability monitoring"
+        skill_support: "auto_generate"
+        skill_notes: "Skill generates go-live-checklist.yaml"
+        customer_facing: true
+
+  operate:
+    - id: "DEL-17"
+      name: "Cloud Operating Framework"
+      what: "Detailed 52-week operational plan based on Operating Model"
+      why: "Cloud operations very different from on-premise"
+      how: "Create plan covering all 9 operational capability areas"
+      skill_support: "reference"
+      skill_notes: "ACS/delivery partner responsibility"
+      customer_facing: true
+
+    - id: "DEL-18"
+      name: "OCI Operationalization Framework"
+      what: "5-milestone methodology for deploying workloads to OCI"
+      why: "Blueprint for operationalizing OCI quickly"
+      how: "Preparation → Conceptual Arch → Physical Arch → Operations → Workloads"
+      skill_support: "reference"
+      skill_notes: "NAC framework; skill aligns architecture with milestones"
+      customer_facing: true
+
+  improve:
+    - id: "DEL-19"
+      name: "Retrospective"
+      what: "Team review: what worked, what didn't, what to improve"
+      why: "Key ECAL principle: learn fast, capture feedback"
+      how: "3-4 hour meeting, inspect → identify → output actions"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates via templates/lessons-learned.yaml"
+      customer_facing: false
+
+    - id: "DEL-20"
+      name: "Value Realization"
+      what: "Post-implementation review against Business Case metrics"
+      why: "Validate if benefits were actually realized"
+      how: "Formal or informal review of adoption, impact, benefits"
+      skill_support: "auto_generate"
+      skill_notes: "Skill generates via templates/success-criteria.yaml"
+      customer_facing: true
+
+    - id: "DEL-21"
+      name: "Customer Success Story"
+      what: "Single-slide summary: who, challenge, approach, value"
+      why: "Share success with wider community and other customers"
+      how: "Collect from Business Case, build storyline with customer"
+      skill_support: "reference"
+      skill_notes: "Account team responsibility; skill can structure"
+      customer_facing: true
+
+    - id: "DEL-22"
+      name: "Improvement Actions"
+      what: "Consolidated improvement plan from operations insights"
+      why: "Continuous improvement, may lead back to new DEFINE cycle"
+      how: "Consolidate actions, discuss with customer PM, track"
+      skill_support: "reference"
+      skill_notes: "Feeds back into DEFINE for next engagement"
+      customer_facing: true
+
+# ═══════════════════════════════════════════════════════════════
+# SUMMARY STATS
+# ═══════════════════════════════════════════════════════════════
+
+summary:
+  total_artefacts: 60
+  auto_generate: 16     # skill produces complete artefact
+  assist: 14            # skill provides partial content
+  reference: 30         # skill references but team produces
+  define_phase: 8
+  design_phase: 38
+  deliver_phase: 22

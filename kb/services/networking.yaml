@@ -1,0 +1,91 @@
+---
+last_verified: 2026-03-14
+service: OCI Networking
+category: networking
+oci_color: "#4F7B6E"
+---
+
+what: Software-defined networking layer in OCI. Includes VCN, subnets, gateways,
+  load balancers, DNS, and connectivity options.
+
+components:
+  vcn:
+    what: "Virtual Cloud Network — isolated network in OCI"
+    cidr: "Supports multiple CIDR blocks, /16 to /30"
+    max_per_region: 50
+  subnet:
+    what: "Subdivision of VCN, can be regional (spans all ADs)"
+    types: ["public", "private"]
+    recommendation: "Always use private subnets for databases and app servers"
+  security_list:
+    what: "Stateful firewall rules at subnet level"
+    recommendation: "Prefer NSGs (Network Security Groups) for granular control"
+  nsg:
+    what: "Network Security Group — firewall rules at VNIC level"
+    recommendation: "Preferred over security lists for micro-segmentation"
+  internet_gateway:
+    what: "Enables internet access for public subnets"
+  nat_gateway:
+    what: "Enables outbound internet for private subnets"
+  service_gateway:
+    what: "Private access to OCI services (Object Storage, ADB, etc.)"
+    recommendation: "Always use for database and storage access — no internet traversal"
+  drg:
+    what: "Dynamic Routing Gateway — hub for VCN peering and on-prem connectivity"
+    supports: ["VCN peering", "FastConnect", "IPSec VPN", "Remote peering"]
+  load_balancer:
+    types:
+      - name: "Flexible Load Balancer"
+        what: "Layer 7 (HTTP/HTTPS) load balancer"
+        bandwidth: "10 Mbps to 8 Gbps (flexible)"
+      - name: "Network Load Balancer"
+        what: "Layer 4 (TCP/UDP) load balancer"
+        bandwidth: "Up to line rate"
+
+connectivity:
+  fastconnect:
+    what: "Dedicated private connection to OCI (like AWS Direct Connect)"
+    speeds: ["1 Gbps", "2 Gbps", "5 Gbps", "10 Gbps", "100 Gbps"]
+    redundancy: "Always deploy 2 circuits for HA"
+    notes: "Partner or co-location model, typical setup takes 2-4 weeks"
+  ipsec_vpn:
+    what: "Encrypted tunnel over internet"
+    bandwidth: "Up to 250 Mbps per tunnel, aggregate with multiple tunnels"
+    notes: "Good for dev/test or backup connectivity, not production data transfer"
+  vcn_peering:
+    local: "Within same region, no bandwidth limits"
+    remote: "Cross-region via DRG, standard inter-region latency"
+
+pricing:
+  vcn: "Free"
+  subnet: "Free"
+  nat_gateway_per_hour: 0.0084
+  service_gateway: "Free"
+  drg_per_hour: 0.016
+  fastconnect:
+    port_per_month:
+      1gbps: 180
+      10gbps: 680
+    data_ingress: "Free"
+    data_egress: "Free over FastConnect"
+  load_balancer:
+    flexible_base: 0.014  # per hour
+    per_mbps: 0.0013
+  notes:
+    - "Inter-region data transfer: $0.0085/GB"
+    - "Internet egress: first 10 TB/month free, then $0.0085/GB"
+    - "OCI egress pricing is significantly cheaper than AWS/Azure/GCP"
+
+gotchas:
+  - id: NET-001
+    issue: "VCN CIDR blocks cannot overlap for peering"
+    impact: "Plan CIDR ranges carefully for multi-VCN architectures"
+    recommendation: "Use a documented IP addressing scheme before deployment"
+  - id: NET-002
+    issue: "FastConnect provisioning takes 2-4 weeks with partners"
+    impact: "Can delay migration timelines"
+    recommendation: "Start FastConnect procurement early, use VPN as interim"
+  - id: NET-003
+    issue: "Security lists apply to entire subnet, NSGs to specific VNICs"
+    impact: "Security lists can be too broad for micro-segmentation"
+    recommendation: "Use NSGs as primary, security lists as fallback"

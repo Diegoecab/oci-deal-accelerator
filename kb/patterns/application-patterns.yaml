@@ -1,0 +1,149 @@
+# Application Patterns Library
+# Proven application-level architecture patterns for common workload types
+# Referenced during DESIGN/Future to select the right application architecture
+
+patterns:
+
+  # --- Web Application Patterns ---
+  - id: app_web_traditional
+    name: "Traditional Web Application (3-Tier)"
+    description: "Classic presentation → application → database architecture on OCI"
+    applicable_when:
+      - "Java/J2EE, .NET, PHP, or Python web application"
+      - "WebLogic, Tomcat, or similar app server"
+      - "Stateful sessions or shared filesystem dependencies"
+    oci_architecture:
+      presentation_tier: "Load Balancer (public) → WAF"
+      application_tier: "Compute instances (VM.Standard.E4.Flex) in Instance Pool with auto-scaling"
+      database_tier: "ADB-S or DBCS depending on feature requirements"
+      networking: "Public subnet (LB) → Private subnet (app) → Private subnet (DB)"
+    technology_patterns: [compute_scaling, database_ha_adb_s, networking_basic, security_baseline]
+    considerations:
+      - "WebLogic clustering needs shared storage (FSS) or session replication"
+      - "Consider OKE if team has container skills and wants to modernize"
+
+  - id: app_web_cloud_native
+    name: "Cloud-Native Web Application"
+    description: "Containerized microservices on OKE with managed services"
+    applicable_when:
+      - "New application or major refactoring opportunity"
+      - "Team has Kubernetes experience"
+      - "Need rapid scaling and deployment"
+    oci_architecture:
+      presentation_tier: "Load Balancer → API Gateway"
+      application_tier: "OKE (managed K8s) with HPA auto-scaling"
+      database_tier: "ADB-S (OLTP) + autonomous JSON for microservice data"
+      messaging: "OCI Streaming (Kafka-compatible) for event-driven"
+    technology_patterns: [compute_scaling, database_ha_adb_s, networking_hub_spoke]
+
+  # --- Batch Processing Patterns ---
+  - id: app_batch_processing
+    name: "Batch / ETL Processing"
+    description: "Scheduled data processing, reporting, or ETL workloads"
+    applicable_when:
+      - "Nightly batch jobs, report generation, data warehousing"
+      - "Variable compute needs (high during batch windows)"
+    oci_architecture:
+      compute: "Preemptible instances or Functions for cost optimization"
+      orchestration: "Resource Scheduler or cron-based"
+      database: "ADB-S with auto-scaling (scale up during batch, scale down after)"
+      storage: "Object Storage for staging data"
+    technology_patterns: [database_ha_adb_s, compute_scaling]
+    considerations:
+      - "ADB-S auto-scaling takes 2-3 min to activate — pre-scale for predictable batch windows"
+
+  # --- Analytics Patterns ---
+  - id: app_analytics_lakehouse
+    name: "Analytics / Lakehouse"
+    description: "Data warehouse and analytics platform on OCI"
+    applicable_when:
+      - "Business intelligence, reporting, or advanced analytics"
+      - "Data from multiple sources needs consolidation"
+      - "Self-service analytics for business users"
+    oci_architecture:
+      ingestion: "GoldenGate or OCI Data Integration for CDC"
+      storage: "Object Storage (data lake) + ADB-DW (warehouse)"
+      analytics: "Oracle Analytics Cloud (OAC)"
+      governance: "Data Catalog for metadata management"
+    technology_patterns: [database_ha_adb_s]
+
+  # --- Hybrid Patterns ---
+  - id: app_hybrid_cloud
+    name: "Hybrid Cloud (On-Prem + OCI)"
+    description: "Application split across on-prem and OCI with connectivity"
+    applicable_when:
+      - "Cannot migrate everything at once"
+      - "Some workloads must stay on-prem (data gravity, regulation)"
+      - "Want to extend capacity to cloud"
+    oci_architecture:
+      connectivity: "FastConnect (primary) + IPSec VPN (backup)"
+      networking: "Hub-spoke VCN with DRG"
+      data_sync: "GoldenGate for bidirectional replication"
+      dns: "OCI DNS with split-horizon"
+    technology_patterns: [networking_hub_spoke, database_ha_adb_s]
+    considerations:
+      - "Latency between on-prem and OCI affects application performance"
+      - "FastConnect provisioning takes 2-4 weeks"
+      - "Consider data gravity — move compute to where data lives"
+
+  # --- Migration Patterns ---
+  - id: app_lift_and_shift
+    name: "Lift and Shift Migration"
+    description: "Move existing workloads to OCI with minimal changes"
+    applicable_when:
+      - "Timeline pressure (hardware EOL, contract expiry)"
+      - "Application is stable and not being modernized"
+      - "Want to get to cloud quickly, optimize later"
+    oci_architecture:
+      compute: "VM shapes matching current specs (use sizing ratios from kb/sizing/)"
+      database: "DBCS if feature compatibility requires, ADB-S if possible"
+      storage: "Block Volume (replacing SAN), FSS (replacing NFS)"
+    technology_patterns: [networking_basic, security_baseline]
+    considerations:
+      - "May not realize full cloud benefits initially"
+      - "Plan a Phase 2 optimization after stabilization"
+
+  - id: app_replatform
+    name: "Re-Platform (Lift, Tinker, Shift)"
+    description: "Migrate with targeted changes to leverage managed services"
+    applicable_when:
+      - "Want cloud benefits without full re-architecture"
+      - "Can accept minor application changes"
+      - "Database can move to managed service (ADB-S, MySQL HeatWave)"
+    oci_architecture:
+      compute: "OKE or Compute with auto-scaling"
+      database: "ADB-S (autonomous) vs DBCS (managed)"
+      storage: "Object Storage replacing file-based integrations"
+    technology_patterns: [database_ha_adb_s, compute_scaling]
+    considerations:
+      - "Test application compatibility with ADB-S restrictions early"
+      - "Connection string changes may require app config updates"
+
+  # --- Disaster Recovery Patterns ---
+  - id: app_dr_active_passive
+    name: "Active-Passive DR"
+    description: "Primary region active, standby region for failover"
+    applicable_when:
+      - "RTO 1-4 hours, RPO < 1 hour"
+      - "Cost-conscious — don't want to run full duplicate"
+    oci_architecture:
+      primary: "Full deployment in primary region"
+      standby: "Dormant compute (scaled down) + DB replica (Data Guard)"
+      failover: "DNS switchover + compute scale-up"
+    technology_patterns: [database_dr_cross_region, networking_hub_spoke]
+
+  - id: app_dr_active_active
+    name: "Active-Active Multi-Region"
+    description: "Both regions serve traffic, mutual failover"
+    applicable_when:
+      - "RTO < 15 min, RPO ~ 0"
+      - "Geo-distributed users"
+      - "Budget supports dual infrastructure"
+    oci_architecture:
+      both_regions: "Full deployment with load balancing"
+      database: "ADB-S with Autonomous Data Guard (bidirectional)"
+      traffic: "OCI Traffic Management for geo-steering"
+    technology_patterns: [database_dr_cross_region, database_ha_adb_s]
+    considerations:
+      - "Application must handle eventual consistency for cross-region writes"
+      - "Significantly higher cost (nearly 2x)"

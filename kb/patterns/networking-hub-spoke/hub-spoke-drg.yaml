@@ -1,0 +1,86 @@
+# Pattern: Hub-Spoke Network Topology via DRG
+# Composable architecture block for enterprise networking
+
+pattern:
+  name: "Hub-Spoke Network via DRG"
+  id: hub_spoke_drg
+  category: networking
+
+description: |
+  Hub-spoke topology using OCI Dynamic Routing Gateway (DRG) v2 as the central
+  routing hub. Spoke VCNs attach to the DRG for inter-VCN routing, on-premises
+  connectivity (FastConnect/VPN), and centralized security inspection.
+
+topology:
+  hub:
+    components:
+      - "DRG (Dynamic Routing Gateway) — central router"
+      - "Hub VCN (optional) — for shared services, Network Firewall, Bastion"
+      - "Service Gateway — OCI service access without internet"
+      - "NAT Gateway — outbound internet for private subnets"
+      - "Network Firewall (optional) — deep packet inspection, IDS/IPS"
+  spokes:
+    components:
+      - "Spoke VCN per workload/environment"
+      - "VCN attachment to DRG"
+      - "Route table on DRG attachment for traffic steering"
+
+use_when:
+  - "Multiple workloads or environments needing isolation"
+  - "On-premises connectivity via FastConnect or VPN"
+  - "Centralized security inspection required"
+  - "Shared services (Bastion, DNS, NTP) across workloads"
+  - "Enterprise landing zone deployment"
+
+when_not_to_use:
+  - "Single VCN deployment (no need for hub-spoke complexity)"
+  - "< 3 VCNs and no on-prem connectivity"
+  - "POC or dev-only environment"
+
+preconditions:
+  - "DRG v2 (default in all regions)"
+  - "Non-overlapping CIDR ranges across VCNs"
+  - "Sufficient IP address planning"
+
+implied_services:
+  - service: drg
+    reason: "Central routing hub"
+  - service: vcn
+    reason: "Hub and spoke VCNs"
+  - service: service_gateway
+    reason: "OCI service access"
+  - service: nat_gateway
+    reason: "Outbound internet for private subnets"
+  - service: route_tables
+    reason: "Traffic steering via DRG attachments"
+
+optional_services:
+  - service: network_firewall
+    when: "Deep packet inspection, IDS/IPS required"
+    placement: "Hub VCN, inline between DRG and spokes"
+  - service: fastconnect
+    when: "On-premises connectivity"
+  - service: vpn
+    when: "Backup connectivity or lower-cost option"
+
+conflicts:
+  - pattern: "local_peering"
+    reason: "DRG replaces local peering for inter-VCN routing. Don't mix both."
+
+cidr_guidance:
+  - "Use /16 per VCN for growth headroom"
+  - "Use /24 per subnet (251 usable IPs)"
+  - "Reserve /8 or /12 supernet for all OCI CIDRs"
+  - "Avoid overlapping with on-prem ranges"
+  - "Example: 10.0.0.0/16 (hub), 10.1.0.0/16 (spoke 1), 10.2.0.0/16 (spoke 2)"
+
+cost_impact:
+  - "DRG: free (no charge for the gateway itself)"
+  - "VCN peering via DRG: no data transfer charges within same region"
+  - "Cross-region via DRG: data transfer charges apply"
+  - "Network Firewall: per-hour + per-GB processing"
+  - "FastConnect: port fee + data transfer (inbound free)"
+
+references:
+  - "https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingDRGs.htm"
+  - "https://docs.oracle.com/en/solutions/hub-spoke-network-drg/"

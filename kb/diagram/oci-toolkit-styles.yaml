@@ -1,0 +1,240 @@
+# OCI Official Diagram Styles — Extracted from OCI Style Guide for Draw.io Toolkit v24.2
+# Source: OCI Library.xml + OCI Architecture Diagram Toolkit v24.2.drawio
+# This supersedes earlier palette files based on inference from reference architectures.
+
+# ============================================================
+# CONTAINER STYLES (from Physical Groupings in the toolkit)
+# These are the EXACT styles Oracle uses for diagram containers.
+# ============================================================
+
+containers:
+
+  tenancy:
+    # Toolkit item [200]: Physical - Grouping - Tenancy
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED gray border, NO fill"
+      - "Text color is charcoal #312D2A"
+      - "Border is warm gray #9E9892"
+
+  region:
+    # Toolkit item [202]: Physical - Grouping - OCI Region
+    style: "whiteSpace=wrap;html=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=5;strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;fontStyle=1;spacingLeft=8;spacingTop=5;"
+    notes:
+      - "SOLID border, rounded corners"
+      - "FILLED with warm gray #F5F4F2"
+      - "This is the only container with a solid background fill"
+
+  availability_domain:
+    # From template styles
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;align=center;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#DFDCD8;fontColor=#312D2A;strokeColor=#9E9892;rounded=1;arcSize=1;fontStyle=1;"
+    notes:
+      - "Slightly darker gray fill #DFDCD8"
+      - "Bold text (fontStyle=1)"
+
+  vcn:
+    # Toolkit item [197]: Physical - Grouping - VCN
+    style: "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#AE562C;strokeColor=#AE562C;perimeterSpacing=0;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED BURNT ORANGE border — this is the signature OCI VCN visual"
+      - "strokeWidth=2 (thicker than subnet)"
+      - "Text AND border are both #AE562C (burnt orange)"
+      - "NO fill — transparent background"
+
+  subnet:
+    # Toolkit item [198]: Physical - Grouping - Subnet
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#AE562C;perimeterSpacing=0;strokeColor=#AE562C;fontSize=12;spacingLeft=5;"
+    notes:
+      - "DASHED BURNT ORANGE border — same color as VCN but THINNER (strokeWidth=1)"
+      - "Inside templates, subnet interior uses fillColor=#FCFBFA (near-white)"
+      - "Text is #AE562C (burnt orange)"
+
+  compartment:
+    # Toolkit item [199]: Physical - Grouping - Compartment
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+    notes:
+      - "Same as tenancy style — dashed gray"
+
+  fault_domain:
+    # Toolkit item [204]
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+
+  tier:
+    # Toolkit item [201]
+    style: "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
+
+# ============================================================
+# SERVICE ICON COLORS
+# ============================================================
+
+service_colors:
+  oci_teal: "#2D5967"
+  oracle_copper: "#AA643B"
+  oracle_purple: "#804998"
+  burnt_orange: "#AE562C"  # Used ONLY for VCN/Subnet borders and text — NOT for service icons
+  oracle_red: "#C74634"     # Accent only
+
+# ============================================================
+# BACKGROUND AND TEXT COLORS
+# ============================================================
+
+backgrounds:
+  region_fill: "#F5F4F2"      # Warm gray — region containers
+  ad_fill: "#DFDCD8"          # Slightly darker — AD containers
+  subnet_fill: "#FCFBFA"      # Near-white — subnet interiors in templates
+  dormant: "#DFDCD8"          # Dormant/inactive elements
+
+text:
+  primary: "#312D2A"           # Charcoal — ALL text (never pure black)
+  secondary: "#70665E"         # Medium gray — step circles, muted text
+  on_dark: "#FFFFFF"           # White — text on colored service blocks
+
+borders:
+  container: "#9E9892"         # Warm gray — tenancy, region, compartment borders
+  vcn_subnet: "#AE562C"       # Burnt orange — VCN and subnet borders ONLY
+  connector: "#312D2A"        # Charcoal — ALL connection arrows (matches text color)
+
+# ============================================================
+# CONNECTOR STYLES (from toolkit items [206-214])
+# ALL connectors use charcoal #312D2A — same as text color.
+# Differentiation is via dash pattern, not color.
+# ============================================================
+
+connectors:
+  standard:
+    # Toolkit item [206]: Physical - Connector
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes:
+      - "Open arrow tip (not filled)"
+      - "Orthogonal routing (right-angle turns)"
+      - "endSize=6 for small consistent arrowheads"
+      - "Color is charcoal #312D2A — NOT gray"
+
+  fastconnect:
+    # Toolkit items [209-210]: Physical - Special Connectors - FastConnect
+    style: "endArrow=open;endFill=0;startArrow=open;startFill=0;strokeColor=#312D2A;strokeWidth=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes:
+      - "Bidirectional open arrows"
+      - "Same charcoal color as standard"
+      - "In toolkit, has lightning/zigzag icon overlay — not reproducible in simple edges"
+
+  site_to_site_vpn:
+    # Toolkit items [211-212]
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes: "Dashed line with lock icon overlay"
+
+  remote_peering:
+    # Toolkit items [213-214]
+    style: "endArrow=open;endFill=0;strokeColor=#312D2A;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;endSize=6;rounded=0"
+    notes: "Dashed line for inter-region connectivity"
+
+# ============================================================
+# TYPOGRAPHY
+# ============================================================
+
+typography:
+  font_family: "Oracle Sans"
+  fallback_fonts: "Segoe UI, Helvetica Neue, Arial, sans-serif"
+  container_labels: "fontSize=12, fontColor=#312D2A"
+  service_labels: "fontSize=8-9, fontColor=#FFFFFF (on colored background)"
+  title_text: "fontSize=10, fontColor=#70665E, fontStyle=2 (italic)"
+
+# ============================================================
+# KEY VISUAL RULES (from toolkit analysis)
+# ============================================================
+
+design_rules:
+  # Container rules (confirmed from OCI Toolkit v24.2 + 7 Oracle Architecture Center reference diagrams)
+  - "VCN and Subnet borders are ALWAYS dashed burnt orange (#AE562C) — this is the signature Oracle visual"
+  - "VCN border is strokeWidth=2, Subnet border is strokeWidth=1"
+  - "Region containers are the ONLY ones with solid background fill (#F5F4F2)"
+  - "Tenancy and Compartment containers are dashed gray, NO fill"
+  - "VCN and Subnet labels are BOLD, ORANGE (#AE562C), left-aligned inside the container (top-left)"
+  - "Subnet labels sometimes include CIDR notation below in smaller text (10pt gray)"
+
+  # VCN/Subnet containers — NO corner badges
+  - "VCN and Subnet containers do NOT have badges or icons at the corners"
+  - "Confirmed by re-checking original Architecture Center drawio files (e-commerce, ExaCS, etc.)"
+
+  # Service icon rules (confirmed from 7 Oracle Architecture Center reference diagrams)
+  - "Service icons are LINE ART / OUTLINE style in teal (#2D5967) — NOT filled colored rectangles"
+  - "Service icons do NOT have colored background boxes when rendered as OCI library stencils"
+  - "Service label is BELOW the icon, centered, in dark charcoal (#312D2A)"
+  - "Service label font size is 10-11pt (NOT 14pt) — confirmed from Oracle ref arch diagrams"
+  - "Total service block height (icon + label) should be ~90px for OCI services, not 45px"
+
+  # External cloud rules (confirmed from multicloud Oracle reference diagrams)
+  - "Azure containers use SOLID blue border (#0078D4) with light blue fill (#EBF5FF)"
+  - "Azure container labels are bold, dark blue (#0050A2)"
+  - "GCP containers use solid green border (#34A853) with light green fill (#E8F5E9)"
+  - "AWS/generic containers use dashed muted gray border (no specific Oracle style defined)"
+
+  # Oracle Services Network panel (confirmed from hub-spoke, OKE, lakehouse Oracle diagrams)
+  - "Oracle Services Network is a right-side dashed gray panel containing managed OCI services"
+  - "Services in Oracle Services Network are NOT in any VCN/Subnet — they float in the panel"
+  - "Use compartment-style container with oracle_services_network label for this panel"
+  - "OSN panel has NO fill (transparent) — dashed gray border only"
+
+  # Flow differentiation — Oracle uses line patterns, NOT numbered circles
+  - "Oracle differentiates flow types by DASH PATTERN, not numbered circle badges"
+  - "Ingest: dotted fine;  Transform: dash-dot;  Curate: fine dotted;  Analyze: dashed"
+  - "Flow labels are text strings on the arrow path ('Process and store', 'Deploy model')"
+  - "A legend box at the bottom explains the line patterns if multiple flow types exist"
+
+  # Connector and typography rules
+  - "Service blocks use solid fills with NO stroke (strokeColor=none)"
+  - "Text is NEVER pure black — always charcoal #312D2A"
+  - "Font is Oracle Sans (falls back to Segoe UI)"
+  - "Icons are composite multi-layer Visio stencils in the OCI Library.xml"
+  - "ALL connectors use charcoal #312D2A — same as text, NOT colored"
+  - "Connectors use open arrow tips (endArrow=open, endFill=0) — never filled blocks"
+  - "Connectors use orthogonal routing (edgeStyle=orthogonalEdgeStyle) — never diagonal"
+  - "Arrow size is small and consistent (endSize=6)"
+  - "Dashed lines differentiate replication/migration from standard flows"
+  - "FastConnect is bidirectional (startArrow=open + endArrow=open)"
+  - "Oracle DB-related services use copper #AA643B"
+  - "Integration/messaging services use purple #804998"
+  - "All other OCI services use teal #2D5967"
+
+reference_diagrams_analyzed:
+  # 7 Oracle Architecture Center diagrams analyzed visually (2026-03-17)
+  # Used to confirm and extend the style guide from OCI Toolkit v24.2
+  - url: "https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/img/exadb-dr-db-azure.png"
+    topology: "multi-region multi-cloud (ExaDB DR on Database@Azure)"
+  - url: "https://docs.oracle.com/en/solutions/hub-spoke-network-drg/img/hub-and-spoke-drg.png"
+    topology: "hub-spoke networking with DRG"
+  - url: "https://docs.oracle.com/en/solutions/data-platform-lakehouse/img/lakehouse-architecture.png"
+    topology: "data lakehouse (multi-tier, analytics)"
+  - url: "https://docs.oracle.com/en/solutions/deploy-oke-with-bastion-and-github/img/oke-bastion-deployment-diagram.png"
+    topology: "OKE with Bastion and GitHub Actions"
+  - url: "https://docs.oracle.com/en/solutions/cis-oci-benchmark/img/oci-core-landingzone.png"
+    topology: "CIS Landing Zone (complex, multi-compartment)"
+  - url: "https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/img/autonomous-database-db-azure-diagram.png"
+    topology: "ADB-S on Database@Azure (multi-cloud)"
+  - url: "https://docs.oracle.com/en/solutions/data-application-integration-workloads/img/integration-architecuture-pattern-1.png"
+    topology: "data integration pattern"
+
+# ============================================================
+# FULL ICON CATALOG (224 icons in OCI Library.xml)
+# ============================================================
+# See separate file for the full icon list.
+# Key icons for Deal Accelerator:
+#   37: Database - Autonomous DB
+#   18: Networking - Load Balancer
+#   32: Networking - Internet Gateway
+#   33: Networking - NAT Gateway
+#   31: Networking - Service Gateway
+#   30: Networking - Dynamic Routing Gateway DRG
+#   102: Identity and Security - WAF
+#   105: Identity and Security - Vault
+#   106: Identity and Security - Bastion
+#   45: Database - Data Safe
+#   46: Database - NoSQL
+#   74: Developer Services - Container Engine for Kubernetes
+#   2: Compute - Functions
+#   3: Compute - Virtual Machine VM
+#   65: Analytics and AI - Streaming
+#   127: Observability and Management - Queuing
+#   79: Developer Services - API Gateway
+#   120: Observability and Management - Monitoring
+#   123: Observability and Management - Logging Analytics

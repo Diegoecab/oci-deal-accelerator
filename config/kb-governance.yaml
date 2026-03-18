@@ -1,0 +1,35 @@
+# =============================================================================
+# KB GOVERNANCE CONFIGURATION
+# =============================================================================
+#
+# Controls freshness tracking, confidence decay, review cadence, and
+# contribution requirements for all KB files.
+#
+# Referenced by: tools/kb_linter.py, tools/kb_cli.py
+# =============================================================================
+
+---
+contribution:
+  required_fields: [name, team, date, confidence]
+  optional_fields: [client, context]
+  confidence_levels: [validated, observed, reported, inferred]
+
+freshness:
+  warning_days: 180
+  stale_days: 365
+
+confidence_decay:
+  validated:  { fresh: 180, stale: 365, expired: 730 }
+  observed:   { fresh: 120, stale: 270, expired: 540 }
+  reported:   { fresh: 90,  stale: 180, expired: 365 }
+  inferred:   { fresh: 90,  stale: 180, expired: 365 }
+
+review_triggers:
+  - event: "Oracle database version release"
+    action: "Review all feature matrix entries. Mark untested. Validate within 14 days."
+  - event: "Oracle pricing change"
+    action: "Update kb/pricing/ files. Verify cost calculator accuracy."
+  - event: "After customer engagement"
+    action: "Run After-Engagement Review (AER). Add findings and KB updates."
+  - event: "Quarterly"
+    action: "Run kb_linter.py. Refresh stale files. Review open findings."

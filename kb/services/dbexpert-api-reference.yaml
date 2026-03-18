@@ -1,0 +1,89 @@
+---
+last_verified: 2026-03-17
+description: |
+  Oracle DBExpert public REST API reference for refreshing the database service catalog.
+  Use this to keep kb/services/dbexpert-catalog.yaml up to date.
+---
+
+# ── DBExpert ORDS REST API ─────────────────────────────────────────
+
+swagger_ui: https://oracle-dbexpert.github.io/swagger/
+base_url: https://apexadb.oracle.com/ords/dbexpert
+
+endpoints:
+  all_db_services:
+    method: GET
+    url: https://apexadb.oracle.com/ords/dbexpert/db-services/v1/all
+    description: "Complete database service catalog with capabilities, multicloud, compliance"
+    response_format: JSON
+    fields_per_service:
+      - DATABASE_SERVICE_NAME
+      - DATABASE_TYPE          # Single Database, Distributed, Consolidation Pool
+      - MANAGEMENT_MODEL       # Fully Managed PaaS, Co-managed PaaS, Customer Managed
+      - SUPPORTED_CLOUD_ENVIRONMENTS
+      - RECOMMENDED_WORKLOADS
+      - RECOMMENDED_DATA_MODELS
+      - CERTIFIED_ORACLE_APPLICATIONS
+      - ORACLE_AI_DATABASE_BYOL_SUPPORT
+      - CPU_RANGE
+      - SHAPES
+      - CPU_SCALING            # Online, Auto scale up/down
+      - STORAGE_SCALING
+      - MAX_IOPS
+      - MAX_THROUGHPUT
+      - MAX_MEMORY
+      - NINES_OF_AVAILABILITY  # SLA/SLO
+      - ORACLE_DB_MAXIMUM_AVAILABILITY_ARCHITECTURE_MEDALS
+      - AUTOMATED_BACKUPS_MAX_RETENTION
+      - AZURE_COMPLIANCE
+      - GOOGLE_CLOUD_COMPLIANCE
+      - AWS_COMPLIANCE
+      - ALLOWS_SYSDBA_ACCESS
+      - SELECTAI_SUPPORT
+      - MONGO-COMPATIBLE_API
+      - SUPPORTED_DATABASE_VERSIONS
+      - AUTONOMOUS
+      - HARDWARE_INFRASTRUCTURE
+      - INCLUDED_ORACLE_DB_OPTIONS_FOR_LICENSE-INCLUDED_SERVICE
+      - FREE_ADD-ONS_(NO_EXTRA_LICENSING_REQUIRED)
+      - OCI_LOCATIONS
+      - ORACLE_DATABASE@AZURE_LOCATIONS
+      - ORACLE_DATABASE@GOOGLE_CLOUD_LOCATIONS
+      - ORACLE_DATABASE@AWS_LOCATIONS
+      - IS_AVAILABLE_AT_GOOGLE_CLOUD_(GCP)
+      - IS_AVAILABLE_AT_AZURE
+      - IS_AVAILABLE_AT_AWS
+
+  multicloud_regions:
+    url: https://apexadb.oracle.com/ords/r/dbexpert/multicloud-capabilities/multicloud-regions
+    description: "Multicloud region availability matrix (APEX app, WAF-blocked for curl)"
+    notes: "Must use browser or Swagger UI"
+
+  service_advisor:
+    url: https://apexadb.oracle.com/ords/r/dbexpert/dbsn/service-advisor
+    description: "Interactive service advisor/comparison tool (APEX app, WAF-blocked for curl)"
+    notes: "Must use browser"
+
+  dbsn_home:
+    url: https://apexadb.oracle.com/ords/r/dbexpert/dbsn/home
+    description: "Cloud Tools home page (APEX app)"
+
+access_notes: |
+  - The REST API at /ords/dbexpert/db-services/v1/all is accessible from Swagger UI
+    but blocked by Akamai WAF when called from curl/Python/programmatic clients
+  - The APEX apps (multicloud-capabilities, dbsn) are fully WAF-blocked
+  - To refresh data: open Swagger UI, execute the endpoint, copy JSON response
+
+refresh_procedure:
+  step_1: "Open https://oracle-dbexpert.github.io/swagger/"
+  step_2: "Find GET /db-services/v1/all and click 'Try it out' → 'Execute'"
+  step_3: "Copy the Response body JSON"
+  step_4: "Paste to Claude with instruction: 'actualiza kb/services/dbexpert-catalog.yaml con esto'"
+  alternative: |
+    curl -s 'https://apexadb.oracle.com/ords/dbexpert/db-services/v1/all' \
+      -H 'accept: application/json'
+    (may fail due to WAF — use browser if it does)
+
+kb_target_file: kb/services/dbexpert-catalog.yaml
+services_count: 35
+last_data_date: 2026-03-17

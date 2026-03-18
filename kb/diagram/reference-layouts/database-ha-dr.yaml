@@ -1,0 +1,55 @@
+---
+last_verified: 2026-03-14
+description: Reference layout for database HA/DR architecture diagram
+---
+
+layout:
+  name: "Database HA/DR — Dual Region"
+  page_size: "A3 landscape"
+
+  structure:
+    # Primary region takes 60% of width
+    primary_region:
+      position: { x: 20, y: 40 }
+      size: { width: 680, height: 720 }
+      contains:
+        vcn:
+          position: { x: 20, y: 40 }
+          size: { width: 640, height: 660 }
+          subnets:
+            data_tier:
+              position: { x: 20, y: 30 }
+              size: { width: 300, height: 400 }
+              label_position: "top-left"
+            app_tier:
+              position: { x: 340, y: 30 }
+              size: { width: 280, height: 200 }
+            dmz:
+              position: { x: 340, y: 250 }
+              size: { width: 280, height: 100 }
+
+    # DR region takes 35% of width
+    dr_region:
+      position: { x: 720, y: 40 }
+      size: { width: 460, height: 720 }
+      contains:
+        vcn:
+          position: { x: 20, y: 40 }
+          size: { width: 420, height: 400 }
+          subnets:
+            dr_data_tier:
+              position: { x: 20, y: 30 }
+              size: { width: 380, height: 350 }
+
+    # Connection between regions (horizontal)
+    inter_region_connection:
+      from: "data_tier"
+      to: "dr_data_tier"
+      style: "adg"
+      label_position: "center"
+
+  notes:
+    - "Primary region on left, DR region on right"
+    - "Data Guard arrow flows left → right"
+    - "FastConnect shown at bottom connecting to on-premises"
+    - "Security services (Vault, Data Safe) placed near data tier"

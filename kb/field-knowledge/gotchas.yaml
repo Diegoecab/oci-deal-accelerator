@@ -1,0 +1,247 @@
+# Field Knowledge: Real-World Gotchas and Lessons Learned
+# From actual OCI deployments — things the documentation doesn't emphasize
+
+gotchas:
+  - id: FK-001
+    area: "ADB-S Auto-Scaling"
+    severity: HIGH
+    description: |
+      ADB-S auto-scaling takes 2-3 minutes to activate. If you size base OCPUs
+      for average load (P50), short spikes will hit before scale-out completes.
+      Size base OCPUs for P75 sustained load.
+    recommendation: "Base OCPU = P75 CPU usage, not P50"
+
+  - id: FK-002
+    area: "ADB-S Private Endpoint"
+    severity: HIGH
+    description: |
+      ADB-S with public endpoint allows connections from the internet to the
+      DB listener. Always use private endpoints for production. This requires
+      a VCN subnet and Service Gateway.
+    recommendation: "Always use private endpoints. Never public for production."
+
+  - id: FK-003
+    area: "FastConnect Redundancy"
+    severity: HIGH
+    description: |
+      A single FastConnect virtual circuit is a single point of failure.
+      For production, deploy 2 virtual circuits on diverse physical paths.
+      Also configure IPSec VPN as a backup path.
+    recommendation: "2x FastConnect (diverse paths) + VPN backup"
+
+  - id: FK-004
+    area: "Service Limits"
+    severity: MEDIUM
+    description: |
+      OCI has default service limits per tenancy that are often too low for
+      production deployments. Request limit increases BEFORE go-live, as
+      approval can take 1-3 business days.
+    recommendation: "Submit service limit increase requests during planning phase"
+
+  - id: FK-005
+    area: "Block Volume Performance"
+    severity: MEDIUM
+    description: |
+      Block Volume IOPS scale with volume size. A 50 GB Balanced volume only
+      provides 3,000 IOPS. If you need 25,000 IOPS, you need at least 417 GB
+      (even if your data is only 50 GB).
+    recommendation: "Size volumes for IOPS, not just capacity. Over-provision if needed."
+
+  - id: FK-006
+    area: "OKE LoadBalancer Annotations"
+    severity: LOW
+    description: |
+      OKE creates a 10 Mbps Flexible Load Balancer by default for
+      LoadBalancer-type Kubernetes services. For production, set the
+      bandwidth annotation explicitly.
+    recommendation: |
+      Set annotation: service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+      And: service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "100"
+
+  - id: FK-007
+    area: "Terraform State"
+    severity: MEDIUM
+    description: |
+      Don't store Terraform state locally or in git. Use OCI Object Storage
+      with versioning as the remote backend. Enable state locking.
+    recommendation: "Use OCI Object Storage as Terraform remote backend with state locking."
+
+  - id: FK-008
+    area: "Cross-Region Data Transfer"
+    severity: MEDIUM
+    description: |
+      Cross-region data transfer is not free. Data Guard redo transport,
+      Object Storage replication, and cross-region backup copy all incur
+      egress charges. Factor this into DR cost estimates.
+    recommendation: "Include cross-region egress in DR cost estimates"
+
+  - id: FK-009
+    area: "Identity Domain Limits"
+    severity: LOW
+    description: |
+      Free tier Identity Domain supports up to 2,000 users. For larger
+      deployments, upgrade to Premium Identity Domain.
+    recommendation: "Check user count against Identity Domain tier limits"
+
+  - id: FK-010
+    area: "Compartment Depth"
+    severity: LOW
+    description: |
+      Compartments can be nested up to 6 levels deep. In practice, 3-4 levels
+      is the sweet spot. Deeper nesting makes IAM policies harder to manage.
+    recommendation: "Limit compartment depth to 3-4 levels"
+
+  - id: FK-011
+    area: "VCN CIDR Planning"
+    severity: HIGH
+    description: |
+      VCN CIDRs cannot be changed after creation (you can add secondary CIDRs
+      but not modify the primary). Plan CIDR ranges carefully, especially
+      when on-premises integration is required.
+    recommendation: "Use /16 per VCN, document all CIDRs, avoid overlap with on-prem"
+
+  - id: FK-012
+    area: "Data Guard Switchover vs Failover"
+    severity: HIGH
+    description: |
+      Switchover is planned (zero data loss, both DBs running). Failover is
+      unplanned (potential data loss with async). Ensure runbooks distinguish
+      between the two and teams practice both.
+    recommendation: "Document and practice both switchover (planned) and failover (unplanned)"
+
+  - id: FK-013
+    area: "TAC Replay Limitations"
+    severity: MEDIUM
+    description: |
+      Transparent Application Continuity (TAC) cannot replay operations that
+      have external side effects: UTL_HTTP calls, DBMS_PIPE, NOCACHE sequences,
+      and certain PL/SQL constructs. These cause replay to abort and the
+      application sees the error. Audit application code before relying on TAC.
+    recommendation: "Audit application for non-replayable operations before enabling TAC"
+
+  - id: FK-014
+    area: "ADB-S Auto Indexing"
+    severity: LOW
+    description: |
+      ADB-S Auto Indexing creates indexes with VISIBILITY=INVISIBLE (HIDDEN).
+      They exist and are used by the optimizer but don't appear in standard
+      DBA_INDEXES views unless you filter for invisible. This confuses DBAs
+      who think no indexes were created.
+    recommendation: "Query DBA_INDEXES with VISIBILITY='INVISIBLE' to see auto-created indexes"
+
+  - id: FK-015
+    area: "Database Enterprise Patching (DEP)"
+    severity: MEDIUM
+    description: |
+      DEP provisioning can take 30-60 minutes for DBCS/ExaCS. Plan maintenance
+      windows accordingly. DEP also requires Fleet Management setup which has
+      its own prerequisites (OS Management Hub agent, etc.).
+    recommendation: "Set up DEP and Fleet Management early; plan for 60-minute patching windows"
+
+  - id: FK-016
+    area: "ExaCS Minimum Cost"
+    severity: HIGH
+    description: |
+      ExaCS requires dedicated Exadata infrastructure. Minimum configuration
+      (quarter rack) starts at ~$6,000/month before database licensing.
+      Don't recommend for workloads under 16 OCPUs sustained.
+    recommendation: "Use ADB-S or DBCS for workloads < 16 OCPUs; ExaCS only for isolation/RAC/high IOPS"
+
+  - id: FK-017
+    area: "Cross-Region ADG is Async Only"
+    severity: HIGH
+    description: |
+      Cross-region Autonomous Data Guard uses asynchronous replication only.
+      RPO is always > 0 (typically seconds). For zero RPO you need same-region
+      standby or ADB-D with local synchronous Data Guard.
+    recommendation: "Set customer expectations: cross-region DR = RPO > 0 (seconds, not zero)"
+
+  - id: FK-018
+    area: "OKE VCN-Native Pod Networking"
+    severity: MEDIUM
+    description: |
+      VCN-Native Pod Networking (OCI CNI) assigns VCN IPs directly to pods.
+      This enables NSG attachment to pods but consumes subnet IP addresses
+      rapidly. A /24 subnet supports ~250 pods. Size subnets for pod count,
+      not node count.
+    recommendation: "Use /21 or larger subnets for pod networking; calculate IPs from max pod count"
+
+  - id: FK-019
+    area: "Object Storage Eventual Consistency"
+    severity: MEDIUM
+    description: |
+      OCI Object Storage provides strong read-after-write consistency for PUTs
+      of new objects, but LIST operations may show eventual consistency.
+      If your application lists then reads immediately after upload, the new
+      object may not appear in the list yet.
+    recommendation: "Don't rely on LIST immediately after PUT; use specific GET for confirmation"
+
+  - id: FK-020
+    area: "Database@AWS — ADB-S NOT available"
+    severity: HIGH
+    description: |
+      Oracle Database@AWS only supports ADB on Dedicated Exadata Infrastructure
+      (ADB-D), NOT ADB-S Serverless. Customers expecting serverless auto-scaling
+      and pay-per-query pricing will be disappointed. If ADB-S is required,
+      the architecture must use native OCI with FastConnect from AWS — which
+      adds ~1-2ms RTT vs the ~0.2-0.4ms of Database@AWS co-located infra.
+    recommendation: |
+      Clarify ADB-S vs ADB-D early in discovery. If P95 <1ms AND serverless
+      are both hard requirements, they are mutually exclusive with current
+      Database@AWS offering. Trade-off: co-located ADB-D (low latency) vs
+      native OCI ADB-S (serverless) via FastConnect (higher latency).
+
+  - id: FK-021
+    area: "Database@AWS — Same-AZ placement is critical"
+    severity: HIGH
+    description: |
+      Database@AWS latency drops from ~0.2-0.4ms (same AZ) to ~1ms+ (cross-AZ).
+      If app EC2 and ODB network are in different AZs, you lose the latency
+      benefit that justifies co-location. Transit Gateway attachment must also
+      be in the same AZ as the ODB network.
+    recommendation: |
+      Always deploy app and ODB network in the same AZ. Document AZ choice
+      early — VM clusters cannot be moved between ODB networks after creation.
+
+  - id: FK-022
+    area: "Flex Shape Memory Ratio"
+    severity: LOW
+    description: |
+      VM.Standard.E4.Flex allows 1-64 GB per OCPU (default 16 GB). For
+      memory-intensive workloads, you can increase memory without adding OCPUs.
+      But memory is billed separately — verify it's cheaper than adding OCPUs
+      with default memory.
+    recommendation: "Compare cost of extra memory vs extra OCPUs for memory-intensive workloads"
+
+  - id: FK-024
+    area: "Exadata X11M — Minimum Configuration (ADB-D and ExaCS)"
+    severity: HIGH
+    description: |
+      Exadata X11M applies the same minimum configuration for both ADB-D and ExaCS:
+      2 DB servers + 3 storage servers. It is not possible to provision a single DB
+      server. This applies to X8M, X9M, and X11M generations.
+      Elastic range: 2–32 DB servers, 3–64 storage servers.
+      The tenancy service limits for X11M must be set to at least DB=2, Storage=3
+      before provisioning.
+    recommendation: "Always start X11M sizing at 2 DB servers + 3 storage servers minimum. Applies to both ADB-D and ExaCS."
+    source: "Verified — Oracle docs (ExaDB-D X11M datasheet, ADB-D X11M datasheet, OCI docs)"
+    references:
+      - "https://www.oracle.com/a/ocom/docs/engineered-systems/exadata/exadb-d-x11m-ds.pdf"
+      - "https://docs.oracle.com/en/cloud/paas/autonomous-database/dedicated/adbde/"
+
+  - id: FK-023
+    area: "GPU Bare Metal — Preemptible Availability"
+    severity: HIGH
+    description: |
+      OCI Preemptible instances (~50% off) are technically supported for BM shapes,
+      but for high-demand GPU bare metal shapes (BM.GPU.H100, BM.GPU.H200, BM.GPU.B200,
+      BM.GPU.B300) preemptible capacity is practically unavailable. These shapes are
+      sold almost entirely via reservations or Universal Credits commitments.
+      Additionally, preemptible instances can be reclaimed with only 30 seconds notice,
+      making them operationally unviable for multi-day or multi-week training runs.
+    recommendation: |
+      Do NOT model GPU BM cost savings based on preemptible pricing.
+      Use Universal Credits 1yr (~35% off) or 3yr (~55% off) for realistic estimates.
+      If the workload is short batch jobs tolerant to interruptions, ask your PDM
+      about spot/preemptible availability before committing to that model.
+    source: "Field experience — Diego, OCI SA"

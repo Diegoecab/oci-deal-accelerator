@@ -1,0 +1,79 @@
+# Joint Engagement Plan Template — DEFINE Phase
+# Scopes the DESIGN phase: timebox, resources, milestones, success criteria
+
+engagement_plan:
+  # --- Header ---
+  customer_name: ""
+  project_name: ""
+  date: ""
+  architect: ""
+  engagement_tier: ""  # small, standard, complex
+
+  # --- Value Story Reference ---
+  value_story_summary: ""  # 1-2 sentence recap of the hypothesis
+  business_driver: ""
+
+  # --- Scope ---
+  scope:
+    in_scope:
+      - ""  # e.g., "3 Oracle OLTP databases (PROD, UAT, DR)"
+    out_of_scope:
+      - ""  # e.g., "Reporting data warehouse (Phase 2)"
+    assumptions:
+      - ""  # e.g., "AWR reports will be provided within 1 week"
+
+  # --- Timeline ---
+  timeline:
+    design_start: ""  # e.g., "2026-03-20"
+    design_end: ""  # e.g., "2026-04-17"
+    proposal_date: ""  # When the solution proposal will be presented
+    decision_date: ""  # When the customer commits (or iterates)
+
+  # --- Milestones ---
+  milestones:
+    - name: "Current State Review"
+      date: ""
+      deliverable: "Validated Workload Profile"
+      attendees: []
+
+    - name: "Architecture Workshop"
+      date: ""
+      deliverable: "Draft architecture diagram + key decisions"
+      attendees: []
+
+    - name: "Solution Proposal"
+      date: ""
+      deliverable: "Complete proposal deck + cost estimate"
+      attendees: []
+
+  # --- Resources ---
+  resources:
+    oracle_team:
+      - role: "Solutions Architect"
+        name: ""
+        commitment: ""  # e.g., "40% for 4 weeks"
+      - role: ""  # e.g., "Database Specialist", "Security Architect"
+        name: ""
+        commitment: ""
+
+    customer_team:
+      - role: ""  # e.g., "Technical Lead", "DBA", "Security"
+        name: ""
+        commitment: ""  # e.g., "Available for workshops + async questions"
+
+  # --- Success Criteria for DESIGN Phase ---
+  design_success_criteria:
+    - "Architecture validated against Well-Architected Framework"
+    - "Cost estimate within customer's budget range"
+    - "Migration plan achievable within stated timeline"
+    - ""  # Add engagement-specific criteria
+
+  # --- Risks to the Engagement ---
+  engagement_risks:
+    - risk: ""  # e.g., "Customer may not provide AWR data in time"
+      impact: ""  # high, medium, low
+      mitigation: ""  # e.g., "Use sizing estimates with safety margin, flag assumptions"
+
+  # --- Artifacts to Produce ---
+  # Auto-populated based on engagement_tier — see docs/engagement-tiers.md
+  planned_artifacts: []

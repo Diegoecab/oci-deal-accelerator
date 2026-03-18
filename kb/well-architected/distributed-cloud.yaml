@@ -1,0 +1,131 @@
+# OCI Well-Architected Framework — Pillar 5: Distributed Cloud
+# Source: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html
+
+pillar:
+  name: "Distributed Cloud"
+  id: distributed_cloud
+  wa_reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html"
+  reference: "https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html"
+  conditional: true
+  applies_when: "multi_region OR hybrid_cloud OR multicloud OR data_residency_requirements OR sovereign_requirements"
+
+categories:
+  - name: "Deployment Strategy"
+    id: dc_deployment_strategy
+    checks:
+      - id: DC-DEP-001
+        name: "Deployment model selected"
+        description: "Appropriate deployment model selected (public, dedicated, hybrid, multicloud)"
+        auto_detect:
+          pass_if: "deployment model explicitly chosen with justification"
+          gap_if: "no explicit deployment model decision"
+        severity: HIGH
+        applies_when: "distributed_cloud_applicable"
+
+      - id: DC-DEP-002
+        name: "Data residency mapping"
+        description: "Data residency requirements mapped to region selection"
+        auto_detect:
+          pass_if: "data residency requirements documented with region mapping"
+          gap_if: "data residency requirements exist but no region mapping"
+        severity: HIGH
+        applies_when: "has_data_residency_requirements"
+
+      - id: DC-DEP-003
+        name: "Sovereign/Dedicated Region"
+        description: "Sovereign Cloud or Dedicated Region considered if required"
+        auto_detect:
+          pass_if: "Sovereign Cloud or Dedicated Region evaluated"
+          gap_if: "sovereignty requirements exist without cloud model evaluation"
+        severity: HIGH
+        applies_when: "has_sovereign_requirements"
+
+  - name: "Integration Across Environments"
+    id: dc_integration
+    checks:
+      - id: DC-INT-001
+        name: "Consistent IAM"
+        description: "Consistent IAM across all locations"
+        auto_detect:
+          pass_if: "unified IAM strategy across all deployment locations"
+          gap_if: "separate, uncoordinated IAM in different locations"
+        severity: HIGH
+        applies_when: "distributed_cloud_applicable"
+
+      - id: DC-INT-002
+        name: "Data synchronization"
+        description: "Data synchronization strategy between sites"
+        auto_detect:
+          pass_if: "data sync strategy defined (replication, ETL, streaming)"
+          gap_if: "no data synchronization strategy between sites"
+        severity: HIGH
+        applies_when: "distributed_cloud_applicable"
+
+      - id: DC-INT-003
+        name: "Cross-environment networking"
+        description: "Network connectivity between environments (FastConnect, VPN, DRG)"
+        auto_detect:
+          pass_if: "network connectivity defined between all environments"
+          gap_if: "no network connectivity plan between environments"
+        severity: HIGH
+        applies_when: "distributed_cloud_applicable"
+
+  - name: "Compliance & Sovereignty"
+    id: dc_compliance
+    checks:
+      - id: DC-CMP-001
+        name: "Data residency laws"
+        description: "Regional data residency laws addressed"
+        auto_detect:
+          pass_if: "applicable data residency laws identified and addressed"
+          gap_if: "data residency laws not evaluated"
+        severity: HIGH
+        applies_when: "has_data_residency_requirements"
+
+      - id: DC-CMP-002
+        name: "Encryption key locality"
+        description: "Encryption key locality requirements met"
+        auto_detect:
+          pass_if: "encryption keys stored in required jurisdictions"
+          gap_if: "key locality requirements not addressed"
+        severity: HIGH
+        applies_when: "has_data_residency_requirements"
+
+      - id: DC-CMP-003
+        name: "Cross-environment audit"
+        description: "Audit trail spans all environments"
+        auto_detect:
+          pass_if: "unified audit across all deployment locations"
+          gap_if: "audit gaps between environments"
+        severity: MEDIUM
+        applies_when: "distributed_cloud_applicable"
+
+  - name: "Unified Operations"
+    id: dc_operations
+    checks:
+      - id: DC-OPS-001
+        name: "Single pane of glass"
+        description: "Single pane of glass monitoring across environments"
+        auto_detect:
+          pass_if: "centralized monitoring spanning all environments"
+          gap_if: "separate monitoring per environment"
+        severity: MEDIUM
+        applies_when: "distributed_cloud_applicable"
+
+      - id: DC-OPS-002
+        name: "IaC consistency"
+        description: "IaC consistency across all deployment targets"
+        auto_detect:
+          pass_if: "same IaC tooling and patterns across all environments"
+          gap_if: "different IaC approaches in different environments"
+        severity: MEDIUM
+        applies_when: "distributed_cloud_applicable"
+
+      - id: DC-OPS-003
+        name: "Operations feedback loop"
+        description: "Feedback loop from operations to design"
+        auto_detect:
+          pass_if: "operational feedback process defined"
+          gap_if: "no formal feedback loop from operations to architecture"
+        severity: LOW
+        applies_when: "distributed_cloud_applicable"
