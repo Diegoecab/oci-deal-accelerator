@@ -3,7 +3,8 @@
 OCI Deal Accelerator — Output Orchestrator
 
 Routes output generation based on the architect's format selection.
-Supports: deck (default), deck+drawio, deck+doc, deck+xlsx, full, doc only.
+Supports: deck (default), deck+drawio, deck+doc, deck+xlsx, deck+pdf,
+full, pdf, doc only.
 
 Usage:
     python oci_output.py --spec proposal.yaml --format deck --output-dir ./output
@@ -22,8 +23,10 @@ FORMATS = {
     "deck+drawio": ["pptx", "drawio"],
     "deck+doc": ["pptx", "docx"],
     "deck+xlsx": ["pptx", "xlsx"],
-    "full": ["pptx", "drawio", "docx", "xlsx"],
+    "deck+pdf": ["pptx", "pdf"],
+    "full": ["pptx", "drawio", "docx", "xlsx", "pdf"],
     "doc": ["docx"],
+    "pdf": ["pdf"],
 }
 
 GENERATORS = {
@@ -52,6 +55,12 @@ GENERATORS = {
         "method": "from_spec",
         "description": "Cost spreadsheet (.xlsx)",
         "optional": True,
+    },
+    "pdf": {
+        "module": "oci_pdf_gen",
+        "class": "OCIPDFGenerator",
+        "method": "from_spec",
+        "description": "Customer-facing PDF (.pdf)",
     },
 }
 

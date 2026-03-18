@@ -9,8 +9,9 @@ Takes unstructured discovery notes and produces a complete OCI architecture pack
 - **Workload Profile** — structured from messy notes (YAML)
 - **Value Story** — business hypothesis linked to OCI outcomes
 - **Business Case** — TCO comparison, ROI analysis, value drivers, risk assessment (.pptx)
-- **Architecture Diagram** — `.drawio` with official Oracle visual style
+- **Architecture Diagram** — `.drawio` with official Oracle visual style (OCI + AWS/GCP/Azure icons)
 - **Slide Deck** — 6-15 slides scaled to engagement complexity (.pptx)
+- **Customer PDF** — branded customer-facing document, no internal KB references (.pdf)
 - **Cost Estimate** — BYOL vs PAYG breakdown with assumptions
 - **Well-Architected Scorecard** — 5-pillar automated validation
 - **Operations Model** — day-2 monitoring, patching, incident response
@@ -42,8 +43,10 @@ deck              ← default (.pptx)
 deck + drawio     ← + editable diagram
 deck + doc        ← + technical document
 deck + xlsx       ← + cost spreadsheet
+deck + pdf        ← + customer-facing PDF (branded, no internal refs)
+pdf               ← customer PDF only
 bizcase           ← business case deck for customer approval
-full              ← everything
+full              ← everything (pptx + drawio + docx + xlsx + pdf)
 deliver           ← handover + go-live checklist + success criteria
 ```
 
@@ -164,11 +167,18 @@ If you paste discovery notes directly, the skill skips the menu and goes straigh
 # Slide deck generation (technical proposal)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
 
+# Customer-facing PDF (branded, no internal KB refs)
+python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf
+python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf --diagram arch.png
+
 # Business case deck
 python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case.pptx
 
 # Architecture diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
+
+# Output orchestrator (multiple formats at once)
+python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
 
 # Architecture Center catalog
 python tools/refresh_arch_catalog.py --validate
@@ -210,7 +220,6 @@ The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
 
 - Interactive what-if cost simulator (adjust ECPU/storage/commitment live)
 - Automated migration complexity scoring from discovery notes
-- Customer-facing PDF export (branded, no internal KB references)
 - Multi-region DR cost optimizer
 - Engagement timeline generator (Gantt-style from Joint Engagement Plan)
 - DBExpert API auto-refresh for database service catalog
@@ -218,7 +227,7 @@ The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
 ## Requirements
 
 - Python 3.8+
-- `pip install pyyaml python-pptx requests beautifulsoup4 lxml`
+- `pip install pyyaml python-pptx drawpyo requests beautifulsoup4 lxml reportlab`
 - No OCI CLI or SDK needed (the skill designs, it doesn't deploy)
 
 ## License

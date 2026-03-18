@@ -8,8 +8,10 @@ output_selection:
       deck + drawio     ← deck + editable diagram
       deck + doc        ← deck + detailed technical document
       deck + xlsx       ← deck + detailed cost spreadsheet
-      full              ← everything: deck + drawio + doc + xlsx
+      deck + pdf        ← deck + customer-facing PDF
+      full              ← everything: deck + drawio + doc + xlsx + pdf
       doc only          ← technical document without deck
+      pdf               ← customer-facing PDF only (branded, no internal refs)
     If not specified, produce "deck" only.
 
       deliver         ← handover + go-live checklist + success criteria
@@ -31,11 +33,81 @@ output_selection:
       extension: ".docx"
       generator: "tools/oci_doc_gen.py"
       description: "Detailed technical document (15-25 pages)"
+      sections:
+        - number: 1
+          title: "Executive Summary"
+          tiers: [small, standard, complex]
+          content: "1-page summary: business driver, proposed solution, key outcomes"
+
+        - number: 2
+          title: "Current State"
+          tiers: [standard, complex]
+          content: "People, process, technology assessment from Workload Profile"
+
+        - number: 3
+          title: "Solution Architecture"
+          tiers: [small, standard, complex]
+          content: "Full architecture description, service rationale, topology diagram"
+
+        - number: 4
+          title: "Architecture Decision Records (ADRs)"
+          tiers: [standard, complex]
+          content: "Each key design decision with context, options considered, and rationale"
+
+        - number: 5
+          title: "High Availability & Disaster Recovery"
+          tiers: [small, standard, complex]
+          content: "HA/DR topology, RTO/RPO targets, failover procedures"
+
+        - number: 6
+          title: "Security & Compliance"
+          tiers: [small, standard, complex]
+          content: "Security controls, identity model, compliance framework mapping"
+
+        - number: 7
+          title: "Cost Estimate"
+          tiers: [small, standard, complex]
+          content: "Detailed cost breakdown with assumptions, PAYG vs BYOL, discount scenarios"
+
+        - number: 8
+          title: "Migration Plan"
+          tiers: [standard, complex]
+          content: "Migration strategy per component, tooling, phased plan, rollback"
+
+        - number: 9
+          title: "Operations Model"
+          tiers: [standard, complex]
+          content: "Day-2 operations: monitoring, patching, backup, incident response, RACI"
+
+        - number: 10
+          title: "Well-Architected Scorecard"
+          tiers: [standard, complex]
+          content: |
+            5-pillar WA assessment (Operational Excellence, Security, Reliability,
+            Performance, Cost Optimization). Standard tier: score per pillar + top
+            recommendations. Complex tier: full findings, gap analysis, and remediation roadmap.
+          deck_equivalent: "slide 12 (summary) — doc section is the full underlying report"
+          note: "Small tier: traffic-light summary stays in deck only, not expanded in doc"
+
+        - number: 11
+          title: "Risk Register"
+          tiers: [standard, complex]
+          content: "Full risk table with likelihood, impact, severity, owner, mitigation"
+
+        - number: 12
+          title: "Next Steps"
+          tiers: [small, standard, complex]
+          content: "3-5 SMART actions with owners and dates"
 
     xlsx:
       extension: ".xlsx"
       generator: "tools/oci_cost_gen.py"
       description: "Detailed cost spreadsheet with tabs"
+
+    pdf:
+      extension: ".pdf"
+      generator: "tools/oci_pdf_gen.py"
+      description: "Customer-facing PDF (branded, no internal KB references)"
 
     deliver:
       extension: ".yaml"

@@ -19,174 +19,24 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict
-from pptx import Presentation
-from pptx.util import Inches, Pt, Emu
+
+from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 
-
-# ============================================================
-# Oracle Redwood Design System Colors
-# ============================================================
-
-class Colors:
-    DARK_BG = RGBColor(0x31, 0x2D, 0x2A)
-    PRIMARY_TEXT = RGBColor(0x31, 0x2D, 0x2A)
-    SECONDARY_TEXT = RGBColor(0x6F, 0x69, 0x64)
-    WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-    WARM_BG = RGBColor(0xFC, 0xFB, 0xFA)
-    ORACLE_RED = RGBColor(0xC7, 0x46, 0x34)
-    GOLD = RGBColor(0xFA, 0xCD, 0x62)
-    TEAL = RGBColor(0x2C, 0x59, 0x67)
-    SAGE = RGBColor(0x75, 0x9C, 0x6C)
-    FOREST = RGBColor(0x2B, 0x62, 0x42)
-    MUTED_TEAL = RGBColor(0x94, 0xAF, 0xAF)
-    BURNT_ORANGE = RGBColor(0xAE, 0x56, 0x2C)
-    TABLE_ALT_ROW = RGBColor(0xF5, 0xF4, 0xF2)
-    TABLE_HEADER_BG = RGBColor(0x2C, 0x59, 0x67)
-    SUCCESS = RGBColor(0x2B, 0x62, 0x42)
-    WARNING = RGBColor(0xAE, 0x56, 0x2C)
-    ERROR = RGBColor(0xC7, 0x46, 0x34)
-
-
-# ============================================================
-# Oracle FY26 Template Layout Indices
-# ============================================================
-
-class Layouts:
-    """Layout indices from Oracle_PPT-template_FY26.pptx (104 layouts)."""
-    COVER_DARK = 0              # Dark - Title_Pillar
-    COVER_LIGHT = 1             # Light - Title_Pillar
-    DIVIDER_LIGHT = 16          # Light - Divider
-    DIVIDER_DARK = 17           # Dark - Divider
-    IMPACT_DARK = 26            # Dark - Impact Statement
-    IMPACT_LIGHT = 27           # Light - Impact Statement
-    METRIC_DARK = 32            # Dark - Single metric
-    METRIC_LIGHT = 33           # Light - Single metric
-    MULTI_STATEMENT_DARK = 47   # Multi Statement – Dark
-    MULTI_STATEMENT_LIGHT = 48  # Multi Statement – Light
-    TWO_COL_LIGHT = 66          # Light - Title/Subtitle 2 Column
-    TWO_COL_DARK = 67           # Dark - Title/Subtitle 2 Column
-    FOUR_ICONS_LIGHT = 82       # Light - 4 Icons, Subhead and text
-    BLANK_DARK = 84             # Dark - Blank
-    BLANK_LIGHT = 85            # Light - Blank
-    SAFE_HARBOR_LIGHT = 96      # Light - Safe harbor - short (if exists)
+from oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
 # Business Case Deck Generator
 # ============================================================
 
-class BusinessCaseDeckGenerator:
+class BusinessCaseDeckGenerator(OraclePresBase):
     """Generate business case decks using Oracle FY26 template layouts."""
 
-    TEMPLATE_PATH = Path(__file__).parent.parent / "templates" / "Oracle_PPT-template_FY26.pptx"
-    FONT = "Oracle Sans"
-    FONT_HEADING = "Georgia"
-
-    def __init__(self, template: Optional[str] = None):
-        tmpl = template or str(self.TEMPLATE_PATH)
-        if not Path(tmpl).is_file():
-            raise FileNotFoundError(f"Template not found: {tmpl}")
-        self.prs = Presentation(tmpl)
-        self._clear_slides()
-
-    def _clear_slides(self):
-        """Remove all existing slides from the template (keep layouts/masters)."""
-        while len(self.prs.slides) > 0:
-            rId = self.prs.slides._sldIdLst[0].get(
-                '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id'
-            )
-            self.prs.part.drop_rel(rId)
-            self.prs.slides._sldIdLst.remove(self.prs.slides._sldIdLst[0])
-        # Clean sections
-        from lxml import etree
-        ns_p14 = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
-        for sectionLst in self.prs.part._element.findall(f'.//{{{ns_p14}}}sectionLst'):
-            sectionLst.getparent().remove(sectionLst)
-
-    def _add_layout_slide(self, layout_index: int):
-        """Add a slide using a specific template layout."""
-        layout = self.prs.slide_layouts[layout_index]
-        return self.prs.slides.add_slide(layout)
-
-    def _set_placeholder(self, slide, idx: int, text: str):
-        """Set text in a placeholder by index. Silently skips if not found."""
-        for ph in slide.placeholders:
-            if ph.placeholder_format.idx == idx:
-                ph.text = text
-                return ph
-        return None
-
-    def _style_placeholder(self, slide, idx: int, text: str,
-                           font_size: int = None, bold: bool = None,
-                           color: RGBColor = None):
-        """Set text and style a placeholder."""
-        ph = self._set_placeholder(slide, idx, text)
-        if ph and ph.text_frame.paragraphs:
-            for p in ph.text_frame.paragraphs:
-                if font_size:
-                    p.font.size = Pt(font_size)
-                if bold is not None:
-                    p.font.bold = bold
-                if color:
-                    p.font.color.rgb = color
-        return ph
-
-    def _add_blank_slide(self, dark: bool = False):
-        """Add a blank slide (light or dark)."""
-        idx = Layouts.BLANK_DARK if dark else Layouts.BLANK_LIGHT
-        return self._add_layout_slide(idx)
-
-    def _add_textbox(self, slide, left, top, width, height,
-                     text="", font_size=12, bold=False, italic=False,
-                     color=None, alignment=PP_ALIGN.LEFT, font_name=None):
-        """Add a text box to a slide."""
-        txBox = slide.shapes.add_textbox(left, top, width, height)
-        tf = txBox.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = text
-        p.font.size = Pt(font_size)
-        p.font.bold = bold
-        p.font.italic = italic
-        p.font.name = font_name or self.FONT
-        p.font.color.rgb = color or Colors.PRIMARY_TEXT
-        p.alignment = alignment
-        return txBox
-
-    def _add_paragraph(self, text_frame, text="", font_size=12,
-                       bold=False, color=None, space_before=0):
-        """Add a paragraph to an existing text frame."""
-        p = text_frame.add_paragraph()
-        p.text = text
-        p.font.size = Pt(font_size)
-        p.font.bold = bold
-        p.font.name = self.FONT
-        p.font.color.rgb = color or Colors.PRIMARY_TEXT
-        if space_before:
-            p.space_before = Pt(space_before)
-        return p
-
-    def _add_table(self, slide, rows, cols, left, top, width, height):
-        """Add a table to a slide."""
-        return slide.shapes.add_table(rows, cols, left, top, width, height).table
-
-    def _style_cell(self, cell, text, font_size=10, bold=False,
-                    color=None, bg_color=None, alignment=PP_ALIGN.LEFT):
-        """Style a table cell."""
-        cell.text = text
-        for p in cell.text_frame.paragraphs:
-            p.font.size = Pt(font_size)
-            p.font.bold = bold
-            p.font.name = self.FONT
-            p.font.color.rgb = color or Colors.PRIMARY_TEXT
-            p.alignment = alignment
-        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-        if bg_color:
-            cell.fill.solid()
-            cell.fill.fore_color.rgb = bg_color
+    # Use Teal accent for business case slides (finance / CxO audience)
+    TITLE_ACCENT_COLOR = Colors.TEAL
 
     # ================================================================
     # Slide Methods
@@ -204,19 +54,71 @@ class BusinessCaseDeckGenerator:
             self._set_placeholder(slide, 34, f"Prepared by: {prepared_by}")
 
     def add_executive_summary_slide(self, statement: str):
-        """Slide 2: Executive Summary — bold impact statement."""
-        slide = self._add_layout_slide(Layouts.IMPACT_LIGHT)
-        self._set_placeholder(slide, 0, statement)
+        """Slide 2: Executive Summary — controlled typography on blank slide."""
+        slide = self._add_blank_slide()
+
+        self._add_title_bar(slide, "Executive Summary")
+
+        # Body — large enough to read, small enough to fit the paragraph
+        body_box = slide.shapes.add_textbox(Inches(0.8), Inches(1.3), Inches(11.7), Inches(4.5))
+        tf = body_box.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = statement
+        p.font.size = Pt(18)
+        p.font.name = self.FONT
+        p.font.color.rgb = Colors.PRIMARY_TEXT
+        p.space_after = Pt(6)
 
     def add_business_drivers_slide(self, drivers: list):
-        """Slide 3: Business Drivers — 3 key statements.
+        """Slide 3: Business Drivers — numbered cards on blank slide.
 
-        drivers: list of up to 3 strings, each a driver statement.
+        drivers: list of up to 3 strings, each a driver statement (may include newline
+        separating a bold headline from detail text).
         """
-        slide = self._add_layout_slide(Layouts.MULTI_STATEMENT_LIGHT)
-        # Multi Statement layout has placeholders idx 17, 18, 19 for 3 text blocks
+        slide = self._add_blank_slide()
+
+        self._add_title_bar(slide, "Business Drivers")
+
+        card_colors = [Colors.TEAL, Colors.BURNT_ORANGE, Colors.FOREST]
+        card_y_start = Inches(1.3)
+        available_h = Inches(5.8)
+        n = min(len(drivers), 3)
+        card_h = available_h / n if n else available_h
+        card_h = min(card_h, Inches(2.1))
+
         for i, driver in enumerate(drivers[:3]):
-            self._set_placeholder(slide, 17 + i, driver)
+            color = card_colors[i % len(card_colors)]
+            y = card_y_start + i * card_h
+
+            # Left accent bar
+            accent = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), y + Inches(0.1), Inches(0.08), card_h - Inches(0.2))
+            accent.fill.solid()
+            accent.fill.fore_color.rgb = color
+            accent.line.fill.background()
+
+            # Number badge
+            self._add_textbox(
+                slide, Inches(1.05), y + Inches(0.12), Inches(0.5), Inches(0.45),
+                text=f"0{i+1}", font_size=18, bold=True, color=color,
+            )
+
+            # Split driver into headline + detail (split on \n if present)
+            parts = driver.split("\n", 1)
+            headline = parts[0].strip()
+            detail = parts[1].strip() if len(parts) > 1 else ""
+
+            # Headline
+            self._add_textbox(
+                slide, Inches(1.6), y + Inches(0.1), Inches(11.0), Inches(0.5),
+                text=headline, font_size=15, bold=True, color=Colors.PRIMARY_TEXT,
+            )
+            # Detail
+            if detail:
+                self._add_textbox(
+                    slide, Inches(1.6), y + Inches(0.6), Inches(11.0), card_h - Inches(0.75),
+                    text=detail, font_size=13, color=Colors.SECONDARY_TEXT,
+                )
 
     def add_tco_slide(self, tco: dict):
         """Slide 4: TCO Comparison — table on blank slide.
@@ -225,16 +127,12 @@ class BusinessCaseDeckGenerator:
         """
         slide = self._add_blank_slide()
 
-        # Title
-        self._add_textbox(
-            slide, Inches(0.8), Inches(0.4), Inches(11), Inches(0.7),
-            text="Total Cost of Ownership", font_size=24, bold=True,
-            font_name=self.FONT_HEADING,
-        )
+        self._add_title_bar(slide, "Total Cost of Ownership")
+
         # Subtitle
         horizon = tco.get("horizon_years", 3)
         self._add_textbox(
-            slide, Inches(0.8), Inches(1.0), Inches(11), Inches(0.4),
+            slide, Inches(0.8), Inches(1.1), Inches(11), Inches(0.4),
             text=f"{horizon}-Year Comparison  |  Current State vs Oracle Cloud Infrastructure",
             font_size=13, color=Colors.TEAL, bold=True,
         )
@@ -269,7 +167,7 @@ class BusinessCaseDeckGenerator:
 
         # Header
         for j, h in enumerate(["Cost Category", "Current (Annual)", "OCI (Annual)", "Savings"]):
-            self._style_cell(
+            self._style_table_cell(
                 table.cell(0, j), h, font_size=11, bold=True,
                 color=Colors.WHITE, bg_color=Colors.TEAL,
                 alignment=PP_ALIGN.CENTER if j > 0 else PP_ALIGN.LEFT,
@@ -282,21 +180,21 @@ class BusinessCaseDeckGenerator:
             curr_val = curr if isinstance(curr, (int, float)) else 0
             oci_val = oci if isinstance(oci, (int, float)) else 0
             save_val = curr_val - oci_val
-            self._style_cell(table.cell(row, 0), name, font_size=10, bg_color=bg)
-            self._style_cell(table.cell(row, 1), f"${curr_val:,.0f}", font_size=10, bg_color=bg, alignment=PP_ALIGN.RIGHT)
-            self._style_cell(table.cell(row, 2), f"${oci_val:,.0f}", font_size=10, bg_color=bg, alignment=PP_ALIGN.RIGHT)
+            self._style_table_cell(table.cell(row, 0), name, font_size=10, bg_color=bg)
+            self._style_table_cell(table.cell(row, 1), f"${curr_val:,.0f}", font_size=10, bg_color=bg, alignment=PP_ALIGN.RIGHT)
+            self._style_table_cell(table.cell(row, 2), f"${oci_val:,.0f}", font_size=10, bg_color=bg, alignment=PP_ALIGN.RIGHT)
             save_color = Colors.SUCCESS if save_val > 0 else Colors.ERROR
-            self._style_cell(table.cell(row, 3), f"${save_val:,.0f}", font_size=10, bold=True, color=save_color, bg_color=bg, alignment=PP_ALIGN.RIGHT)
+            self._style_table_cell(table.cell(row, 3), f"${save_val:,.0f}", font_size=10, bold=True, color=save_color, bg_color=bg, alignment=PP_ALIGN.RIGHT)
 
         # Annual total row
         total_row = len(rows_data) + 1
         ann_current = current.get("total_annual", 0) or sum(r[1] for r in rows_data if isinstance(r[1], (int, float)))
         ann_oci = proposed.get("total_annual", 0) or sum(r[2] for r in rows_data if isinstance(r[2], (int, float)))
         ann_savings = savings.get("annual", 0) or (ann_current - ann_oci)
-        self._style_cell(table.cell(total_row, 0), "TOTAL ANNUAL", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL)
-        self._style_cell(table.cell(total_row, 1), f"${ann_current:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
-        self._style_cell(table.cell(total_row, 2), f"${ann_oci:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
-        self._style_cell(table.cell(total_row, 3), f"${ann_savings:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(total_row, 0), "TOTAL ANNUAL", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL)
+        self._style_table_cell(table.cell(total_row, 1), f"${ann_current:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(total_row, 2), f"${ann_oci:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(total_row, 3), f"${ann_savings:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
 
         # Horizon total row
         h_row = total_row + 1
@@ -304,10 +202,10 @@ class BusinessCaseDeckGenerator:
         h_oci = proposed.get("total_over_horizon", 0) or (ann_oci * horizon + migration)
         h_savings = savings.get("over_horizon", 0) or (h_current - h_oci)
         pct = savings.get("percentage", 0) or (h_savings / h_current * 100 if h_current else 0)
-        self._style_cell(table.cell(h_row, 0), f"TOTAL {horizon}-YEAR", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG)
-        self._style_cell(table.cell(h_row, 1), f"${h_current:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
-        self._style_cell(table.cell(h_row, 2), f"${h_oci:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
-        self._style_cell(table.cell(h_row, 3), f"${h_savings:,.0f} ({pct:.0f}%)", font_size=11, bold=True, color=Colors.GOLD, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(h_row, 0), f"TOTAL {horizon}-YEAR", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG)
+        self._style_table_cell(table.cell(h_row, 1), f"${h_current:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(h_row, 2), f"${h_oci:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
+        self._style_table_cell(table.cell(h_row, 3), f"${h_savings:,.0f} ({pct:.0f}%)", font_size=11, bold=True, color=Colors.GOLD, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
 
         # Migration note
         if migration:
@@ -337,18 +235,7 @@ class BusinessCaseDeckGenerator:
         """Slide 5: ROI — centered big number + 3 supporting metrics."""
         slide = self._add_blank_slide()
 
-        # Title
-        self._add_textbox(
-            slide, Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.6),
-            text="Return on Investment", font_size=24, bold=True,
-            font_name=self.FONT_HEADING,
-        )
-
-        # Teal accent bar under title
-        bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.05), Inches(11.7), Inches(0.05))
-        bar.fill.solid()
-        bar.fill.fore_color.rgb = Colors.TEAL
-        bar.line.fill.background()
+        self._add_title_bar(slide, "Return on Investment")
 
         # Big centered ROI number
         pct = roi.get("three_year_roi_pct", 0)
@@ -416,15 +303,10 @@ class BusinessCaseDeckGenerator:
         """
         slide = self._add_blank_slide()
 
-        self._add_textbox(
-            slide, Inches(0.8), Inches(0.4), Inches(11), Inches(0.7),
-            text="Value Drivers", font_size=24, bold=True,
-            font_name=self.FONT_HEADING,
-        )
+        self._add_title_bar(slide, "Value Drivers")
 
         # 4 value cards in a 2x2 grid
         card_colors = [Colors.TEAL, Colors.FOREST, Colors.BURNT_ORANGE, Colors.ORACLE_RED]
-        icons = {"cost_reduction": "$", "risk_reduction": "!", "agility": ">", "innovation": "*"}
         positions = [
             (Inches(0.8), Inches(1.5)),   # top-left
             (Inches(6.8), Inches(1.5)),   # top-right
@@ -473,28 +355,22 @@ class BusinessCaseDeckGenerator:
         """Slide 7: Risk Assessment — two-column table layout."""
         slide = self._add_blank_slide()
 
-        # Title
-        self._add_textbox(
-            slide, Inches(0.8), Inches(0.35), Inches(11.7), Inches(0.6),
-            text="Risk Assessment", font_size=24, bold=True,
-            font_name=self.FONT_HEADING,
-        )
+        self._add_title_bar(slide, "Risk Assessment")
 
         col_w = Inches(5.6)
         col_gap = Inches(0.5)
         left_x = Inches(0.8)
         right_x = left_x + col_w + col_gap
-        header_y = Inches(1.1)
-        content_start_y = Inches(1.65)
+        header_y = Inches(1.2)
+        content_start_y = Inches(1.75)
         row_h = Inches(0.8)          # height per risk block (title + detail)
         slide_h = Inches(7.1)
 
-        # Calculate available rows based on the tallest list
+        # Stretch rows to fill available slide height
         n_rows = max(len(migration_risks[:5]), len(do_nothing_risks[:5]))
-        # Stretch rows to fill slide
         if n_rows > 0:
             available = slide_h - content_start_y
-            row_h = min(Inches(1.2), available / n_rows)
+            row_h = min(Inches(1.8), available / n_rows)
 
         # Column header backgrounds
         for x, color, label in [
@@ -530,7 +406,7 @@ class BusinessCaseDeckGenerator:
             if mitigation:
                 self._add_textbox(
                     slide, left_x + Inches(0.25), y + Inches(0.45), col_w - Inches(0.35), row_h - Inches(0.48),
-                    text=f"Mitigation: {mitigation}", font_size=10,
+                    text=f"Mitigation: {mitigation}", font_size=11,
                     italic=True, color=Colors.SECONDARY_TEXT,
                 )
 
@@ -564,82 +440,146 @@ class BusinessCaseDeckGenerator:
                 )
 
     def add_roadmap_slide(self, phases: list, total_duration: str = ""):
-        """Slide 8: Implementation Roadmap — timeline bars."""
+        """Slide 8: Implementation Roadmap — timeline bars filling the slide."""
         slide = self._add_blank_slide()
 
         title = "Implementation Roadmap"
         if total_duration:
-            title += f"  ({total_duration})"
-        self._add_textbox(
-            slide, Inches(0.8), Inches(0.4), Inches(11), Inches(0.7),
-            text=title, font_size=24, bold=True,
-            font_name=self.FONT_HEADING,
-        )
+            title += f"  —  {total_duration}"
+        self._add_title_bar(slide, title)
 
         phase_colors = [Colors.TEAL, Colors.BURNT_ORANGE, Colors.FOREST, Colors.ORACLE_RED]
-        y = Inches(1.6)
-        bar_left = Inches(3.5)
-        bar_max_width = Inches(9.0)
+        content_start = Inches(1.25)
+        available_h = Inches(5.9)
+        n = min(len(phases), 4)
+        row_h = available_h / n if n else available_h
+
+        bar_left = Inches(3.6)
+        bar_w = Inches(9.1)
+        label_w = Inches(2.6)
 
         for i, phase in enumerate(phases[:4]):
             color = phase_colors[i % len(phase_colors)]
+            y = content_start + i * row_h
             name = phase.get("name", f"Phase {i+1}")
             duration = phase.get("duration", "")
             deliverables = phase.get("deliverables", [])
             quick_wins = phase.get("quick_wins", [])
 
-            # Phase label
+            # Alternating row background
+            if i % 2 == 0:
+                bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), y, Inches(12.0), row_h - Inches(0.08))
+                bg.fill.solid()
+                bg.fill.fore_color.rgb = Colors.TABLE_ALT_ROW
+                bg.line.fill.background()
+
+            # Phase number circle accent
+            dot = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(0.82), y + (row_h - Inches(0.38)) / 2, Inches(0.38), Inches(0.38))
+            dot.fill.solid()
+            dot.fill.fore_color.rgb = color
+            dot.line.fill.background()
+            dot.text_frame.paragraphs[0].text = str(i + 1)
+            dot.text_frame.paragraphs[0].font.size = Pt(11)
+            dot.text_frame.paragraphs[0].font.bold = True
+            dot.text_frame.paragraphs[0].font.color.rgb = Colors.WHITE
+            dot.text_frame.paragraphs[0].font.name = self.FONT
+            dot.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+
+            # Phase name
             self._add_textbox(
-                slide, Inches(0.8), y, Inches(2.5), Inches(0.5),
-                text=name, font_size=13, bold=True,
+                slide, Inches(1.35), y + Inches(0.08), label_w, Inches(0.45),
+                text=name, font_size=14, bold=True, color=color,
             )
 
             # Duration bar
-            bar = slide.shapes.add_shape(
-                MSO_SHAPE.ROUNDED_RECTANGLE,
-                bar_left, y + Inches(0.05), bar_max_width * 0.85, Inches(0.4),
-            )
+            bar_h = Inches(0.42)
+            bar_y = y + (row_h - bar_h) / 2
+            bar = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, bar_left, bar_y, bar_w * 0.55, bar_h)
             bar.fill.solid()
             bar.fill.fore_color.rgb = color
             bar.line.fill.background()
             bar.text_frame.paragraphs[0].text = duration
-            bar.text_frame.paragraphs[0].font.size = Pt(10)
+            bar.text_frame.paragraphs[0].font.size = Pt(12)
+            bar.text_frame.paragraphs[0].font.bold = True
             bar.text_frame.paragraphs[0].font.color.rgb = Colors.WHITE
             bar.text_frame.paragraphs[0].font.name = self.FONT
             bar.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
-            # Deliverables
+            # Deliverables — listed to the right of the bar
             items = quick_wins + deliverables
             if items:
-                items_text = " • ".join(items[:4])
+                items_text = "  •  ".join(items[:3])
                 self._add_textbox(
-                    slide, bar_left, y + Inches(0.5),
-                    bar_max_width, Inches(0.3),
-                    text=items_text, font_size=9, italic=True,
-                    color=Colors.SECONDARY_TEXT,
+                    slide, bar_left + bar_w * 0.57, bar_y - Inches(0.02),
+                    bar_w * 0.43, bar_h + Inches(0.05),
+                    text=items_text, font_size=11, color=Colors.SECONDARY_TEXT,
                 )
 
-            y += Inches(1.1)
-
     def add_recommendation_slide(self, summary: str, next_steps: list = None):
-        """Slide 9: Recommendation — bold ask on dark background."""
-        slide = self._add_layout_slide(Layouts.IMPACT_DARK)
-        self._set_placeholder(slide, 0, summary)
+        """Slide 9: Recommendation — dark blank slide with controlled fonts."""
+        slide = self._add_blank_slide(dark=True)
 
-        # Add next steps as textbox if provided
+        # "Recommendation" label in gold
+        self._add_textbox(
+            slide, Inches(0.8), Inches(0.45), Inches(11.7), Inches(0.5),
+            text="Our Recommendation", font_size=13, bold=True,
+            color=Colors.GOLD, font_name=self.FONT,
+        )
+
+        # Gold accent bar
+        acc = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.0), Inches(11.7), Inches(0.05))
+        acc.fill.solid()
+        acc.fill.fore_color.rgb = Colors.GOLD
+        acc.line.fill.background()
+
+        # Main recommendation statement — 20pt, white, readable
+        rec_box = slide.shapes.add_textbox(Inches(0.8), Inches(1.2), Inches(11.7), Inches(2.2))
+        tf = rec_box.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = summary
+        p.font.size = Pt(20)
+        p.font.bold = True
+        p.font.name = self.FONT_HEADING
+        p.font.color.rgb = Colors.WHITE
+
+        # Next steps section
         if next_steps:
-            y = Inches(4.5)
+            self._add_textbox(
+                slide, Inches(0.8), Inches(3.6), Inches(4.0), Inches(0.4),
+                text="NEXT STEPS", font_size=11, bold=True,
+                color=Colors.GOLD,
+            )
+            # Divider
+            div = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(4.05), Inches(11.7), Inches(0.03))
+            div.fill.solid()
+            div.fill.fore_color.rgb = RGBColor(0x55, 0x50, 0x4C)
+            div.line.fill.background()
+
+            y = Inches(4.15)
             for i, step in enumerate(next_steps[:4]):
                 action = step.get("action", str(step)) if isinstance(step, dict) else str(step)
                 owner = step.get("owner", "") if isinstance(step, dict) else ""
-                text = f"{i+1}. {action}"
-                if owner:
-                    text += f"  [{owner}]"
+                deadline = step.get("deadline", "") if isinstance(step, dict) else ""
+
+                # Number
                 self._add_textbox(
-                    slide, Inches(0.8), y, Inches(11), Inches(0.4),
-                    text=text, font_size=14, color=Colors.WHITE,
+                    slide, Inches(0.8), y, Inches(0.4), Inches(0.5),
+                    text=str(i + 1), font_size=13, bold=True, color=Colors.GOLD,
                 )
-                y += Inches(0.45)
+                # Action text
+                action_text = action
+                meta_parts = []
+                if owner:
+                    meta_parts.append(owner)
+                if deadline:
+                    meta_parts.append(deadline)
+                meta = f"  [{' · '.join(meta_parts)}]" if meta_parts else ""
+                self._add_textbox(
+                    slide, Inches(1.25), y, Inches(11.2), Inches(0.5),
+                    text=action_text + meta, font_size=13, color=Colors.WHITE,
+                )
+                y += Inches(0.6)
 
     # ================================================================
     # Build from YAML spec
@@ -726,19 +666,11 @@ class BusinessCaseDeckGenerator:
                     next_steps=rec.get("next_steps", []),
                 )
 
+        # Closing slides
+        prepared_by = bc.get("prepared_by", "")
+        gen.add_closing_slide(name=prepared_by)
+
         return gen
-
-    # ================================================================
-    # Save
-    # ================================================================
-
-    def save(self, filepath: str):
-        """Save the presentation to a .pptx file."""
-        self.prs.save(filepath)
-
-    @property
-    def slide_count(self):
-        return len(self.prs.slides)
 
 
 # ============================================================

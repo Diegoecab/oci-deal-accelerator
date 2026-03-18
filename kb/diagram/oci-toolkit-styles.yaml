@@ -19,7 +19,7 @@ containers:
 
   region:
     # Toolkit item [202]: Physical - Grouping - OCI Region
-    style: "whiteSpace=wrap;html=1;align=center;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=10;strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;"
+    style: "whiteSpace=wrap;html=1;align=left;fontFamily=Oracle Sans;verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=5;strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;fontStyle=1;spacingLeft=8;spacingTop=5;"
     notes:
       - "SOLID border, rounded corners"
       - "FILLED with warm gray #F5F4F2"
@@ -144,10 +144,44 @@ typography:
 # ============================================================
 
 design_rules:
+  # Container rules (confirmed from OCI Toolkit v24.2 + 7 Oracle Architecture Center reference diagrams)
   - "VCN and Subnet borders are ALWAYS dashed burnt orange (#AE562C) — this is the signature Oracle visual"
   - "VCN border is strokeWidth=2, Subnet border is strokeWidth=1"
   - "Region containers are the ONLY ones with solid background fill (#F5F4F2)"
   - "Tenancy and Compartment containers are dashed gray, NO fill"
+  - "VCN and Subnet labels are BOLD, ORANGE (#AE562C), left-aligned inside the container (top-left)"
+  - "Subnet labels sometimes include CIDR notation below in smaller text (10pt gray)"
+
+  # VCN/Subnet containers — NO corner badges
+  - "VCN and Subnet containers do NOT have badges or icons at the corners"
+  - "Confirmed by re-checking original Architecture Center drawio files (e-commerce, ExaCS, etc.)"
+
+  # Service icon rules (confirmed from 7 Oracle Architecture Center reference diagrams)
+  - "Service icons are LINE ART / OUTLINE style in teal (#2D5967) — NOT filled colored rectangles"
+  - "Service icons do NOT have colored background boxes when rendered as OCI library stencils"
+  - "Service label is BELOW the icon, centered, in dark charcoal (#312D2A)"
+  - "Service label font size is 10-11pt (NOT 14pt) — confirmed from Oracle ref arch diagrams"
+  - "Total service block height (icon + label) should be ~90px for OCI services, not 45px"
+
+  # External cloud rules (confirmed from multicloud Oracle reference diagrams)
+  - "Azure containers use SOLID blue border (#0078D4) with light blue fill (#EBF5FF)"
+  - "Azure container labels are bold, dark blue (#0050A2)"
+  - "GCP containers use solid green border (#34A853) with light green fill (#E8F5E9)"
+  - "AWS/generic containers use dashed muted gray border (no specific Oracle style defined)"
+
+  # Oracle Services Network panel (confirmed from hub-spoke, OKE, lakehouse Oracle diagrams)
+  - "Oracle Services Network is a right-side dashed gray panel containing managed OCI services"
+  - "Services in Oracle Services Network are NOT in any VCN/Subnet — they float in the panel"
+  - "Use compartment-style container with oracle_services_network label for this panel"
+  - "OSN panel has NO fill (transparent) — dashed gray border only"
+
+  # Flow differentiation — Oracle uses line patterns, NOT numbered circles
+  - "Oracle differentiates flow types by DASH PATTERN, not numbered circle badges"
+  - "Ingest: dotted fine;  Transform: dash-dot;  Curate: fine dotted;  Analyze: dashed"
+  - "Flow labels are text strings on the arrow path ('Process and store', 'Deploy model')"
+  - "A legend box at the bottom explains the line patterns if multiple flow types exist"
+
+  # Connector and typography rules
   - "Service blocks use solid fills with NO stroke (strokeColor=none)"
   - "Text is NEVER pure black — always charcoal #312D2A"
   - "Font is Oracle Sans (falls back to Segoe UI)"
@@ -161,6 +195,24 @@ design_rules:
   - "Oracle DB-related services use copper #AA643B"
   - "Integration/messaging services use purple #804998"
   - "All other OCI services use teal #2D5967"
+
+reference_diagrams_analyzed:
+  # 7 Oracle Architecture Center diagrams analyzed visually (2026-03-17)
+  # Used to confirm and extend the style guide from OCI Toolkit v24.2
+  - url: "https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/img/exadb-dr-db-azure.png"
+    topology: "multi-region multi-cloud (ExaDB DR on Database@Azure)"
+  - url: "https://docs.oracle.com/en/solutions/hub-spoke-network-drg/img/hub-and-spoke-drg.png"
+    topology: "hub-spoke networking with DRG"
+  - url: "https://docs.oracle.com/en/solutions/data-platform-lakehouse/img/lakehouse-architecture.png"
+    topology: "data lakehouse (multi-tier, analytics)"
+  - url: "https://docs.oracle.com/en/solutions/deploy-oke-with-bastion-and-github/img/oke-bastion-deployment-diagram.png"
+    topology: "OKE with Bastion and GitHub Actions"
+  - url: "https://docs.oracle.com/en/solutions/cis-oci-benchmark/img/oci-core-landingzone.png"
+    topology: "CIS Landing Zone (complex, multi-compartment)"
+  - url: "https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/img/autonomous-database-db-azure-diagram.png"
+    topology: "ADB-S on Database@Azure (multi-cloud)"
+  - url: "https://docs.oracle.com/en/solutions/data-application-integration-workloads/img/integration-architecuture-pattern-1.png"
+    topology: "data integration pattern"
 
 # ============================================================
 # FULL ICON CATALOG (224 icons in OCI Library.xml)

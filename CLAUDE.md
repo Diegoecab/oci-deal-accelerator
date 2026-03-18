@@ -38,6 +38,7 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   └── field-knowledge/        # Real-world gotchas and lessons learned
 ├── tools/                      # Python tooling
 │   ├── oci_deck_gen.py         # .pptx slide deck generator (DEFAULT output)
+│   ├── oci_pdf_gen.py          # .pdf customer-facing document (branded, no internal refs)
 │   ├── oci_diagram_gen.py      # .drawio diagram generator
 │   ├── oci_output.py           # Output orchestrator
 │   └── refresh_arch_catalog.py # Architecture Center catalog refresh tool
@@ -87,7 +88,9 @@ deck              ← default
 deck + drawio     ← + editable diagram
 deck + doc        ← + technical document
 deck + xlsx       ← + cost spreadsheet
-full              ← everything
+deck + pdf        ← + customer-facing PDF (branded, no internal refs)
+pdf               ← customer PDF only
+full              ← everything (pptx + drawio + docx + xlsx + pdf)
 doc only          ← technical doc without slides
 deliver           ← handover + go-live checklist + success criteria
 ```
@@ -97,6 +100,10 @@ deliver           ← handover + go-live checklist + success criteria
 ```bash
 # Generate slide deck (default output)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
+
+# Generate customer-facing PDF (branded, no internal KB refs)
+python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf
+python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf --diagram arch.png
 
 # Generate diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio

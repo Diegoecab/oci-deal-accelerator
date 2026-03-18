@@ -4,8 +4,8 @@
 metadata:
   customer: "Acme Retail Inc."
   project: "E-Commerce Platform Migration to OCI"
-  architect: "Diego E."
-  firm: "Oracle Consulting"
+  architect: "Diego Cabrera"
+  firm: "Solutions Architect | Oracle"
   subtitle: "Architecture Proposal — March 2026"
 
 summary:
@@ -308,4 +308,4 @@ next_steps:
     - "Run ADB assessment tool on production database — April 7, 2026"
     - "Begin Phase 1: Infrastructure setup — April 14, 2026"
     - "Schedule weekly architecture review cadence"
-  contact_info: "Diego E. — diego@example.com | Oracle Consulting"
+  contact_info: "Diego Cabrera | Solutions Architect | Oracle"

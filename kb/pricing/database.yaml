@@ -49,26 +49,45 @@ autonomous_json_database:
 autonomous_database_dedicated:
   billing_unit: ECPU
   infrastructure:
-    quarter_rack:
-      base_per_hour: "~$10.50"
-      monthly_estimate: "$7,500–$8,000"
-      included: "2 DB servers, 3 storage servers, 100TB usable"
-    half_rack:
-      base_per_hour: "~$21.00"
-      monthly_estimate: "$15,000–$16,000"
-      included: "4 DB servers, 6 storage servers, 200TB usable"
-    full_rack:
-      base_per_hour: "~$42.00"
-      monthly_estimate: "$30,000–$32,000"
-      included: "8 DB servers, 12 storage servers, 400TB usable"
+    # X9M / X8M — fixed rack shapes (legacy, still available in some regions)
+    x9m:
+      quarter_rack:
+        base_per_hour: "~$10.50"
+        monthly_estimate: "$7,500–$8,000"
+        included: "2 DB servers, 3 storage servers, 100TB usable"
+      half_rack:
+        base_per_hour: "~$21.00"
+        monthly_estimate: "$15,000–$16,000"
+        included: "4 DB servers, 6 storage servers, 200TB usable"
+      full_rack:
+        base_per_hour: "~$42.00"
+        monthly_estimate: "$30,000–$32,000"
+        included: "8 DB servers, 12 storage servers, 400TB usable"
+    # X11M — elastic scaling (new default as of 2025, replaces fixed rack shapes)
+    x11m:
+      model: "Elastic — 2 to 32 DB servers + 3 to 64 storage servers (no fixed rack shapes)"
+      minimum_config: "2 DB servers minimum (cannot order 1 DB server) + 3 storage servers"
+      billing: "Per ECPU per second (8-ECPU minimum per active DB VM)"
+      infrastructure_rate: "NOT PUBLICLY LISTED — requires OCI PDM/sales confirmation"
+      monthly_estimate: "Confirm with Oracle sales; X9M rates used as proxy for estimation"
+      notes: |
+        X11M is the current-generation Exadata infrastructure (announced 2025).
+        Key changes vs X9M:
+        - No fixed quarter/half/full rack — elastic scale in/out
+        - MINIMUM: 2 DB servers + 3 storage servers (cannot provision less)
+        - Infrastructure pricing parity with X9M (no premium) per Oracle comms,
+          but exact per-hour rates are not published in the public price list
+        - ECPU billing by the second (vs hourly in older generations)
+        - Improved compute, storage density, and RDMA throughput vs X9M
   ecpu_pricing:
     license_included_per_hour: 0.0672
     byol_per_hour: 0.0504
   notes: |
-    Infrastructure cost is fixed (rack size). ECPU cost is on top.
+    Infrastructure cost is fixed per rack size (X9M) or elastic per server (X11M). ECPU cost is on top.
     DEP (Database Enterprise Patching) co-location is at next maintenance window.
     Billing starts only at AVAILABLE state.
     Provisioning takes days to weeks depending on capacity.
+    IMPORTANT: For X11M sizing, confirm infrastructure rates with PDM — use X9M as proxy only.
 
 # ── Base Database Service (DBCS) ──────────────────────────────────
 
@@ -97,16 +116,29 @@ dbcs:
 exadata_dedicated:
   billing_unit: ECPU
   infrastructure:
-    quarter_rack_x9m:
-      per_hour: 2.10
-      monthly_estimate: "$1,533"
-      ocpu_max: 100
-    half_rack_x9m:
-      per_hour: 6.30
-      monthly_estimate: "$4,599"
-    full_rack_x9m:
-      per_hour: 12.60
-      monthly_estimate: "$9,198"
+    # X9M — fixed rack shapes (available in all regions)
+    x9m:
+      quarter_rack:
+        per_hour: 2.10
+        monthly_estimate: "$1,533"
+      half_rack:
+        per_hour: 6.30
+        monthly_estimate: "$4,599"
+      full_rack:
+        per_hour: 12.60
+        monthly_estimate: "$9,198"
+    # X11M — elastic scaling (current generation, replaces fixed rack shapes)
+    x11m:
+      model: "Elastic — 2 to 32 DB servers + 3 to 64 storage servers"
+      minimum_config: "2 DB servers + 3 storage servers (hard minimum — applies to ADB-D and ExaCS)"
+      billing: "Per ECPU per second (8-ECPU minimum per active DB VM)"
+      infrastructure_rate: "Line items exist in OCI price list ('Database Server - X11M' and 'Storage Server - X11M') but dollar amounts not visible without Oracle Cost Estimator or authenticated access"
+      proxy_for_estimation: "Use X9M quarter rack ($2.10/hr) as proxy for 2 DB + 3 storage"
+      notes: |
+        X11M is confirmed current-gen Exadata for both ExaCS and ADB-D on OCI.
+        MINIMUM: 2 DB servers + 3 storage servers — cannot provision less (verified against Oracle datasheets).
+        Per-server line items exist in price list but amounts require Oracle Cost Estimator or PDM quote.
+        Use X9M quarter rack ($2.10/hr infrastructure) as proxy for minimum config estimation.
   ecpu_pricing:
     license_included_per_hour: 0.0504
     byol_per_hour: 0.0420
@@ -120,9 +152,10 @@ exadata_dedicated:
     - "Additional storage beyond rack capacity"
     - "Object Storage for long-term backup retention"
   gotchas:
-    - "Infrastructure cost is fixed regardless of ECPU utilization."
+    - "Infrastructure cost is fixed regardless of ECPU utilization (X9M)."
+    - "X11M elastic model: scale in/out by server, not by rack."
     - "Provisioning takes 4-8 hours."
-    - "X9M has better storage density and newer CPUs than X8M."
+    - "X11M has improved storage density, RDMA throughput, and CPU vs X9M."
 
 # ── Exadata Exascale ───────────────────────────────────────────────
 

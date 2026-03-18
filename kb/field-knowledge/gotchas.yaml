@@ -212,3 +212,36 @@ gotchas:
       But memory is billed separately — verify it's cheaper than adding OCPUs
       with default memory.
     recommendation: "Compare cost of extra memory vs extra OCPUs for memory-intensive workloads"
+
+  - id: FK-024
+    area: "Exadata X11M — Minimum Configuration (ADB-D and ExaCS)"
+    severity: HIGH
+    description: |
+      Exadata X11M applies the same minimum configuration for both ADB-D and ExaCS:
+      2 DB servers + 3 storage servers. It is not possible to provision a single DB
+      server. This applies to X8M, X9M, and X11M generations.
+      Elastic range: 2–32 DB servers, 3–64 storage servers.
+      The tenancy service limits for X11M must be set to at least DB=2, Storage=3
+      before provisioning.
+    recommendation: "Always start X11M sizing at 2 DB servers + 3 storage servers minimum. Applies to both ADB-D and ExaCS."
+    source: "Verified — Oracle docs (ExaDB-D X11M datasheet, ADB-D X11M datasheet, OCI docs)"
+    references:
+      - "https://www.oracle.com/a/ocom/docs/engineered-systems/exadata/exadb-d-x11m-ds.pdf"
+      - "https://docs.oracle.com/en/cloud/paas/autonomous-database/dedicated/adbde/"
+
+  - id: FK-023
+    area: "GPU Bare Metal — Preemptible Availability"
+    severity: HIGH
+    description: |
+      OCI Preemptible instances (~50% off) are technically supported for BM shapes,
+      but for high-demand GPU bare metal shapes (BM.GPU.H100, BM.GPU.H200, BM.GPU.B200,
+      BM.GPU.B300) preemptible capacity is practically unavailable. These shapes are
+      sold almost entirely via reservations or Universal Credits commitments.
+      Additionally, preemptible instances can be reclaimed with only 30 seconds notice,
+      making them operationally unviable for multi-day or multi-week training runs.
+    recommendation: |
+      Do NOT model GPU BM cost savings based on preemptible pricing.
+      Use Universal Credits 1yr (~35% off) or 3yr (~55% off) for realistic estimates.
+      If the workload is short batch jobs tolerant to interruptions, ask your PDM
+      about spot/preemptible availability before committing to that model.
+    source: "Field experience — Diego, OCI SA"

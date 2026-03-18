@@ -2,14 +2,11 @@
 """
 OCI Deal Accelerator — Slide Deck Generator (.pptx)
 
-Produces a 10-12 slide architecture proposal deck using the Oracle Redwood
-design system colors and typography. Supports an optional --template flag
-to inherit theme/fonts from an external .pptx (e.g. Oracle Icon Library).
+Produces a 10-12 slide architecture proposal deck using the Oracle FY26 official
+PowerPoint template and the Oracle Redwood design system colors and typography.
 
 Usage:
     python oci_deck_gen.py --spec proposal-data.yaml --output proposal.pptx
-    python oci_deck_gen.py --spec proposal-data.yaml --output proposal.pptx \\
-        --template "path/to/Oracle Database Icon Library.pptx"
 
 Or import and use programmatically:
     from oci_deck_gen import OCIDeckGenerator
@@ -23,351 +20,37 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from pptx import Presentation
+
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-
-# ============================================================
-# Oracle Redwood Design System Colors
-# Source: Oracle Database Icon Library [July 2024] — theme RMIL_Master
-# Color scheme: "Oracle Redwood"
-# ============================================================
-
-class Colors:
-    # Primary text — never pure black
-    DARK_BG = RGBColor(0x31, 0x2D, 0x2A)       # #312D2A — dk1
-    PRIMARY_TEXT = RGBColor(0x31, 0x2D, 0x2A)    # #312D2A — dk1
-    SECONDARY_TEXT = RGBColor(0x6F, 0x69, 0x64)  # #6F6964 — Neutral 60
-    WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-    WARM_BG = RGBColor(0xFC, 0xFB, 0xFA)         # #FCFBFA — lt1, content bg
-
-    # Oracle Redwood accent palette
-    ORACLE_RED = RGBColor(0xC7, 0x46, 0x34)      # #C74634 — accent1, primary brand
-    GOLD = RGBColor(0xFA, 0xCD, 0x62)            # #FACD62 — accent2
-    TEAL = RGBColor(0x2C, 0x59, 0x67)            # #2C5967 — hlink, tables/links
-    SAGE = RGBColor(0x75, 0x9C, 0x6C)            # #759C6C — accent6
-    FOREST = RGBColor(0x2B, 0x62, 0x42)          # #2B6242 — accent4
-    MUTED_TEAL = RGBColor(0x94, 0xAF, 0xAF)      # #94AFAF — accent3
-    BURNT_ORANGE = RGBColor(0xAE, 0x56, 0x2C)    # #AE562C — accent5
-
-    # OCI service category colors (unchanged from architecture diagrams)
-    COPPER = RGBColor(0xAA, 0x64, 0x3B)          # #AA643B — database
-    PURPLE = RGBColor(0x80, 0x49, 0x98)          # #804998 — integration
-
-    # Status
-    SUCCESS = RGBColor(0x2B, 0x62, 0x42)         # #2B6242 — forest green
-    WARNING = RGBColor(0xAE, 0x56, 0x2C)         # #AE562C — burnt orange
-    ERROR = RGBColor(0xC7, 0x46, 0x34)           # #C74634 — Oracle red
-
-    # Table
-    TABLE_ALT_ROW = RGBColor(0xF5, 0xF4, 0xF2)  # #F5F4F2 — Neutral 10
-    TABLE_HEADER_BG = RGBColor(0x2C, 0x59, 0x67) # teal
+from oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
 # Slide Generator
 # ============================================================
 
-class OCIDeckGenerator:
+class OCIDeckGenerator(OraclePresBase):
     """Generate Oracle Redwood-styled architecture proposal slide decks."""
 
     SLIDE_WIDTH = Inches(13.333)   # Widescreen 16:9
     SLIDE_HEIGHT = Inches(7.5)
     MARGIN = Inches(0.5)
-    # Oracle Redwood typography
-    FONT_HEADING = "Georgia"
-    FONT_BODY = "Oracle Sans"
-    # Fallback chain: if Oracle Sans not installed, degrade gracefully
-    FONT_BODY_FALLBACK = "Segoe UI"
-    FONT = "Oracle Sans"  # default used by helpers
+
+    # Use Oracle Red accent for proposal deck (differentiates from bizcase teal)
+    TITLE_ACCENT_COLOR = Colors.ORACLE_RED
 
     def __init__(self, customer: str = "", project: str = "",
                  architect: str = "", firm: str = "",
                  template: Optional[str] = None):
-        if template and Path(template).is_file():
-            self.prs = Presentation(template)
-            # Remove all existing slides (keep theme/masters)
-            while len(self.prs.slides) > 0:
-                rId = self.prs.slides._sldIdLst[0].get(
-                    '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id'
-                )
-                self.prs.part.drop_rel(rId)
-                self.prs.slides._sldIdLst.remove(self.prs.slides._sldIdLst[0])
-            # Remove inherited sections (e.g. "HCM", "Health", "CX icons"
-            # from icon library templates)
-            from lxml import etree
-            prs_elem = self.prs.part._element
-            ns_p14 = 'http://schemas.microsoft.com/office/powerpoint/2010/main'
-            for sectionLst in prs_elem.findall(f'.//{{{ns_p14}}}sectionLst'):
-                sectionLst.getparent().remove(sectionLst)
-        else:
-            self.prs = Presentation()
-        self.prs.slide_width = self.SLIDE_WIDTH
-        self.prs.slide_height = self.SLIDE_HEIGHT
+        super().__init__(template)
         self.customer = customer
         self.project = project
         self.architect = architect
         self.firm = firm
-        self._using_template = template and Path(template).is_file()
-
-    # ---- Helpers ----
-
-    def _find_blank_layout(self):
-        """Find a blank or minimal slide layout."""
-        # Try known blank layout names first
-        for layout in self.prs.slide_layouts:
-            if layout.name.lower() in ("blank", "blank slide"):
-                return layout
-        # For template-based: pick layout with fewest placeholders
-        if self._using_template:
-            best = min(self.prs.slide_layouts,
-                       key=lambda l: len(list(l.placeholders)))
-            return best
-        # Default: layout index 6 (standard blank in python-pptx default)
-        if len(self.prs.slide_layouts) > 6:
-            return self.prs.slide_layouts[6]
-        return self.prs.slide_layouts[-1]
-
-    def _add_blank_slide(self, warm_bg: bool = True):
-        """Add a blank slide with optional warm off-white background."""
-        layout = self._find_blank_layout()
-        slide = self.prs.slides.add_slide(layout)
-        # Remove all inherited placeholder shapes (template layouts may
-        # carry icon grids, footer fields, etc. that clutter the slide)
-        if self._using_template:
-            ns_p = 'http://schemas.openxmlformats.org/presentationml/2006/main'
-            spTree = slide.shapes._spTree
-            for sp in list(spTree):
-                # Find <p:ph> anywhere inside the shape — marks it as a
-                # layout-inherited placeholder (title, picture, body, etc.)
-                if sp.find(f'.//{{{ns_p}}}ph') is not None:
-                    spTree.remove(sp)
-        if warm_bg:
-            bg = slide.background
-            fill = bg.fill
-            fill.solid()
-            fill.fore_color.rgb = Colors.WARM_BG
-        return slide
-
-    def _resolve_font(self, font_name=None, is_heading=False):
-        """Resolve font name with fallback chain."""
-        if font_name:
-            return font_name
-        return self.FONT_HEADING if is_heading else self.FONT
-
-    def _add_textbox(self, slide, left, top, width, height,
-                     text="", font_size=12, bold=False, italic=False,
-                     color=None, alignment=PP_ALIGN.LEFT,
-                     font_name=None, is_heading=False):
-        """Add a text box to a slide."""
-        txBox = slide.shapes.add_textbox(left, top, width, height)
-        tf = txBox.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = text
-        p.font.size = Pt(font_size)
-        p.font.bold = bold
-        p.font.italic = italic
-        p.font.name = self._resolve_font(font_name, is_heading)
-        p.font.color.rgb = color or Colors.PRIMARY_TEXT
-        p.alignment = alignment
-        return txBox
-
-    def _add_paragraph(self, text_frame, text="", font_size=12,
-                       bold=False, italic=False, color=None,
-                       alignment=PP_ALIGN.LEFT, space_before=0,
-                       space_after=0, bullet=False):
-        """Add a paragraph to an existing text frame."""
-        p = text_frame.add_paragraph()
-        p.text = text
-        p.font.size = Pt(font_size)
-        p.font.bold = bold
-        p.font.italic = italic
-        p.font.name = self.FONT
-        p.font.color.rgb = color or Colors.PRIMARY_TEXT
-        p.alignment = alignment
-        if space_before:
-            p.space_before = Pt(space_before)
-        if space_after:
-            p.space_after = Pt(space_after)
-        if bullet:
-            p.level = 0
-        return p
-
-    def _add_rect(self, slide, left, top, width, height,
-                  fill_color=None, border_color=None):
-        """Add a rectangle shape."""
-        shape = slide.shapes.add_shape(
-            MSO_SHAPE.RECTANGLE, left, top, width, height
-        )
-        if fill_color:
-            shape.fill.solid()
-            shape.fill.fore_color.rgb = fill_color
-        else:
-            shape.fill.background()
-        if border_color:
-            shape.line.color.rgb = border_color
-        else:
-            shape.line.fill.background()
-        return shape
-
-    def _add_table(self, slide, rows, cols, left, top, width, height):
-        """Add a table to a slide."""
-        table_shape = slide.shapes.add_table(rows, cols, left, top, width, height)
-        table = table_shape.table
-        return table
-
-    def _style_table_cell(self, cell, text, font_size=10, bold=False,
-                          color=None, bg_color=None, alignment=PP_ALIGN.LEFT):
-        """Style a table cell."""
-        cell.text = text
-        for paragraph in cell.text_frame.paragraphs:
-            paragraph.font.size = Pt(font_size)
-            paragraph.font.bold = bold
-            paragraph.font.name = self.FONT
-            paragraph.font.color.rgb = color or Colors.PRIMARY_TEXT
-            paragraph.alignment = alignment
-        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-        if bg_color:
-            cell.fill.solid()
-            cell.fill.fore_color.rgb = bg_color
-
-    def _add_title_bar(self, slide, title_text):
-        """Add a consistent title bar at top of content slides."""
-        # Title text — Georgia heading font
-        self._add_textbox(
-            slide, self.MARGIN, Inches(0.3),
-            Inches(10), Inches(0.6),
-            text=title_text, font_size=24, bold=True,
-            color=Colors.PRIMARY_TEXT, is_heading=True,
-        )
-        # Oracle Red accent line under title
-        self._add_rect(
-            slide, self.MARGIN, Inches(0.85),
-            Inches(2), Inches(0.04),
-            fill_color=Colors.ORACLE_RED,
-        )
-
-    # ---- Slide Methods ----
-
-    def add_title_slide(self, subtitle: str = ""):
-        """Slide 1: Title slide with dark background."""
-        slide = self._add_blank_slide(warm_bg=False)
-
-        # Dark background
-        self._add_rect(
-            slide, Inches(0), Inches(0),
-            self.SLIDE_WIDTH, self.SLIDE_HEIGHT,
-            fill_color=Colors.DARK_BG,
-        )
-
-        # Oracle Red accent bar (vertical)
-        self._add_rect(
-            slide, Inches(0.8), Inches(2.2),
-            Inches(0.08), Inches(2.5),
-            fill_color=Colors.ORACLE_RED,
-        )
-
-        # Customer name — Georgia heading
-        title = f"{self.customer}" if self.customer else "Architecture Proposal"
-        self._add_textbox(
-            slide, Inches(1.2), Inches(2.2),
-            Inches(10), Inches(0.7),
-            text=title, font_size=32, bold=True,
-            color=Colors.WHITE, is_heading=True,
-        )
-
-        # Project name — body font
-        if self.project:
-            self._add_textbox(
-                slide, Inches(1.2), Inches(2.9),
-                Inches(10), Inches(0.6),
-                text=self.project, font_size=22,
-                color=Colors.WHITE,
-            )
-
-        # Subtitle
-        date_str = datetime.now().strftime("%B %Y")
-        sub = subtitle or f"Architecture Proposal — {date_str}"
-        self._add_textbox(
-            slide, Inches(1.2), Inches(3.6),
-            Inches(10), Inches(0.5),
-            text=sub, font_size=16,
-            color=RGBColor(0x9E, 0x98, 0x92),  # muted gray
-        )
-
-        # Architect / Firm
-        if self.architect or self.firm:
-            info = f"{self.architect}"
-            if self.firm:
-                info += f"  |  {self.firm}" if self.architect else self.firm
-            self._add_textbox(
-                slide, Inches(1.2), Inches(5.5),
-                Inches(10), Inches(0.4),
-                text=info, font_size=12,
-                color=RGBColor(0x9E, 0x98, 0x92),
-            )
-
-        # "Prepared with OCI Deal Accelerator"
-        self._add_textbox(
-            slide, Inches(1.2), Inches(6.2),
-            Inches(10), Inches(0.3),
-            text="Prepared with OCI Deal Accelerator", font_size=9,
-            italic=True, color=RGBColor(0x6F, 0x69, 0x64),
-        )
-
-    def add_summary_slide(self, why: str, current_state: list,
-                          target_state: str, timeline: str):
-        """Slide 2: Engagement Summary."""
-        slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Engagement Summary")
-
-        y = Inches(1.2)
-
-        # Why — teal for emphasis
-        box = self._add_textbox(
-            slide, self.MARGIN, y, Inches(11), Inches(0.5),
-            text=why, font_size=14, color=Colors.TEAL, bold=True,
-            is_heading=True,
-        )
-        y += Inches(0.7)
-
-        # Current state
-        self._add_textbox(
-            slide, self.MARGIN, y, Inches(5), Inches(0.4),
-            text="Current State", font_size=14, bold=True,
-        )
-        y += Inches(0.45)
-
-        for item in current_state:
-            self._add_textbox(
-                slide, Inches(0.7), y, Inches(10), Inches(0.35),
-                text=f"•  {item}", font_size=12,
-            )
-            y += Inches(0.35)
-
-        y += Inches(0.3)
-
-        # Target state
-        self._add_textbox(
-            slide, self.MARGIN, y, Inches(5), Inches(0.4),
-            text="Target State", font_size=14, bold=True,
-        )
-        y += Inches(0.45)
-        self._add_textbox(
-            slide, Inches(0.7), y, Inches(10), Inches(0.4),
-            text=target_state, font_size=12, color=Colors.TEAL,
-        )
-        y += Inches(0.5)
-
-        # Timeline
-        self._add_textbox(
-            slide, self.MARGIN, y, Inches(10), Inches(0.4),
-            text=f"Timeline: {timeline}", font_size=12, bold=True,
-        )
 
     # ---- Architecture visual helpers ----
 
@@ -408,15 +91,13 @@ class OCIDeckGenerator:
             slide, left + Inches(0.1), top + Inches(0.05),
             width - Inches(0.2), Inches(0.3),
             text=label, font_size=label_size, bold=True,
-            color=border_color, is_heading=False,
+            color=border_color,
         )
         return shape
 
     def _add_arrow(self, slide, start_x, start_y, end_x, end_y,
                    color=None, dashed=False, label=""):
         """Add a connector arrow between two points."""
-        from pptx.enum.shapes import MSO_SHAPE
-        # Use a line shape (thin rectangle as proxy)
         connector = slide.shapes.add_connector(
             1,  # MSO_CONNECTOR.STRAIGHT
             start_x, start_y, end_x, end_y,
@@ -427,6 +108,75 @@ class OCIDeckGenerator:
             connector.line.dash_style = 2
         return connector
 
+    # ---- Slide Methods ----
+
+    def add_title_slide(self, subtitle: str = ""):
+        """Slide 1: Title slide using FY26 Dark Cover layout."""
+        slide = self._add_layout_slide(Layouts.COVER_DARK)
+
+        customer = self.customer or "Architecture Proposal"
+        date_str = datetime.now().strftime("%B %Y")
+        sub = subtitle or f"Architecture Proposal — {date_str}"
+
+        self._set_placeholder(slide, 0, customer)
+        self._set_placeholder(slide, 33, sub)
+        self._set_placeholder(slide, 35, date_str)
+        if self.architect or self.firm:
+            info = self.architect
+            if self.firm:
+                info += f"  |  {self.firm}" if self.architect else self.firm
+            self._set_placeholder(slide, 34, info)
+
+    def add_summary_slide(self, why: str, current_state: list,
+                          target_state: str, timeline: str):
+        """Slide 2: Engagement Summary."""
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, "Engagement Summary", margin=self.MARGIN)
+
+        y = Inches(1.2)
+
+        # Why — teal for emphasis
+        self._add_textbox(
+            slide, self.MARGIN, y, Inches(11), Inches(0.5),
+            text=why, font_size=14, color=Colors.TEAL, bold=True,
+            font_name=self.FONT_HEADING,
+        )
+        y += Inches(0.7)
+
+        # Current state
+        self._add_textbox(
+            slide, self.MARGIN, y, Inches(5), Inches(0.4),
+            text="Current State", font_size=14, bold=True,
+        )
+        y += Inches(0.45)
+
+        for item in current_state:
+            self._add_textbox(
+                slide, Inches(0.7), y, Inches(10), Inches(0.35),
+                text=f"•  {item}", font_size=12,
+            )
+            y += Inches(0.35)
+
+        y += Inches(0.3)
+
+        # Target state
+        self._add_textbox(
+            slide, self.MARGIN, y, Inches(5), Inches(0.4),
+            text="Target State", font_size=14, bold=True,
+        )
+        y += Inches(0.45)
+        self._add_textbox(
+            slide, Inches(0.7), y, Inches(10), Inches(0.4),
+            text=target_state, font_size=12, color=Colors.TEAL,
+        )
+        y += Inches(0.5)
+
+        # Timeline
+        self._add_textbox(
+            slide, self.MARGIN, y, Inches(10), Inches(0.4),
+            text=f"Timeline: {timeline}", font_size=12, bold=True,
+        )
+
     def add_architecture_slide(self, diagram_path: Optional[str] = None,
                                 description: str = "",
                                 visual: Optional[dict] = None):
@@ -436,7 +186,7 @@ class OCIDeckGenerator:
                 as colored blocks. Keys: regions, on_prem, security_footer.
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Architecture Overview")
+        self._add_title_bar(slide, "Architecture Overview", margin=self.MARGIN)
 
         if diagram_path:
             try:
@@ -533,7 +283,6 @@ class OCIDeckGenerator:
 
                 for sub_idx, subnet in enumerate(subnets):
                     sub_name = subnet.get("name", f"Subnet {sub_idx+1}")
-                    sub_type = subnet.get("type", "private")
                     sub_border = Colors.BURNT_ORANGE
                     sub_h = Inches(0.95) if is_primary else Inches(0.7)
 
@@ -655,7 +404,7 @@ class OCIDeckGenerator:
                            "rto": str, "rpo": str}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Service Tiering")
+        self._add_title_bar(slide, "Service Tiering", margin=self.MARGIN)
 
         # Subtitle
         self._add_textbox(
@@ -715,7 +464,7 @@ class OCIDeckGenerator:
                      "deployment": [...], "service": [...]}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Architecture Principles")
+        self._add_title_bar(slide, "Architecture Principles", margin=self.MARGIN)
 
         y = Inches(1.2)
         col_x = self.MARGIN
@@ -743,10 +492,10 @@ class OCIDeckGenerator:
                     label += f" — {summary}"
                 self._add_textbox(
                     slide, col_x + Inches(0.1), item_y,
-                    col_width - Inches(0.1), Inches(0.3),
-                    text=f"• {label}", font_size=9,
+                    col_width - Inches(0.1), Inches(0.4),
+                    text=f"• {label}", font_size=11,
                 )
-                item_y += Inches(0.3)
+                item_y += Inches(0.4)
 
             col_x += Inches(4.2)
 
@@ -756,7 +505,7 @@ class OCIDeckGenerator:
         decisions: list of {"decision": str, "rationale": str}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Architecture Decisions")
+        self._add_title_bar(slide, "Architecture Decisions", margin=self.MARGIN)
 
         rows = len(decisions) + 1
         table = self._add_table(
@@ -798,7 +547,7 @@ class OCIDeckGenerator:
         tiers: list of {"tier": str, "technology": str, "rto": str, "rpo": str}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "High Availability & Disaster Recovery")
+        self._add_title_bar(slide, "High Availability & Disaster Recovery", margin=self.MARGIN)
 
         if description:
             self._add_textbox(
@@ -842,7 +591,7 @@ class OCIDeckGenerator:
         compliance: ["PCI-DSS", "SOC2", ...] or None
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Security & Compliance")
+        self._add_title_bar(slide, "Security & Compliance", margin=self.MARGIN)
 
         y = Inches(1.2)
 
@@ -892,7 +641,7 @@ class OCIDeckGenerator:
         cost_notes: optional list of cost optimization notes
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Environment Catalogue")
+        self._add_title_bar(slide, "Environment Catalogue", margin=self.MARGIN)
 
         rows = len(environments) + 1
         table = self._add_table(
@@ -936,10 +685,10 @@ class OCIDeckGenerator:
             for note in cost_notes:
                 self._add_textbox(
                     slide, self.MARGIN + Inches(0.1), note_y,
-                    Inches(11.5), Inches(0.25),
-                    text=f"• {note}", font_size=9,
+                    Inches(11.5), Inches(0.35),
+                    text=f"• {note}", font_size=11,
                 )
-                note_y += Inches(0.25)
+                note_y += Inches(0.35)
 
     def add_cost_slide(self, line_items: list, assumptions: list = None,
                        show_byol: bool = True):
@@ -949,7 +698,7 @@ class OCIDeckGenerator:
                             "monthly_byol": str (optional), "notes": str}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Cost Estimate")
+        self._add_title_bar(slide, "Cost Estimate", margin=self.MARGIN)
 
         cols = 4 if show_byol else 3
         rows = len(line_items) + 1
@@ -1021,15 +770,15 @@ class OCIDeckGenerator:
             table_bottom = Inches(1.2) + Inches(0.4 * rows) + Inches(0.3)
             self._add_textbox(
                 slide, self.MARGIN, table_bottom,
-                Inches(12), Inches(0.3),
-                text="Assumptions:", font_size=9, bold=True,
+                Inches(12), Inches(0.35),
+                text="Assumptions:", font_size=11, bold=True,
                 color=Colors.SECONDARY_TEXT, italic=True,
             )
             for idx, assumption in enumerate(assumptions):
                 self._add_textbox(
-                    slide, Inches(0.7), table_bottom + Inches(0.3 + idx * 0.25),
-                    Inches(11), Inches(0.25),
-                    text=f"• {assumption}", font_size=8, italic=True,
+                    slide, Inches(0.7), table_bottom + Inches(0.35 + idx * 0.3),
+                    Inches(11), Inches(0.3),
+                    text=f"• {assumption}", font_size=10, italic=True,
                     color=Colors.SECONDARY_TEXT,
                 )
 
@@ -1041,7 +790,7 @@ class OCIDeckGenerator:
         col_headers: custom column headers (default: ["Component", "Current", "OCI", "Savings"])
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, title)
+        self._add_title_bar(slide, title, margin=self.MARGIN)
 
         headers = col_headers or ["Component", "Current", "OCI", "Savings"]
         num_rows = len(rows) + 1
@@ -1097,7 +846,7 @@ class OCIDeckGenerator:
         phases: list of {"name": str, "weeks": str, "tasks": [...]}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Migration Approach")
+        self._add_title_bar(slide, "Migration Approach", margin=self.MARGIN)
 
         y = Inches(1.3)
         phase_colors = [Colors.TEAL, Colors.ORACLE_RED, Colors.BURNT_ORANGE, Colors.FOREST]
@@ -1112,32 +861,32 @@ class OCIDeckGenerator:
             self._add_textbox(
                 slide, self.MARGIN, y,
                 Inches(2), Inches(0.45),
-                text=phase["name"], font_size=11, bold=True,
+                text=phase["name"], font_size=13, bold=True,
             )
 
             # Phase bar
             bar = self._add_rect(
                 slide, bar_left, y + Inches(0.05),
-                bar_width * 0.9, Inches(0.35),
+                bar_width * 0.9, Inches(0.4),
                 fill_color=color,
             )
             bar.text_frame.paragraphs[0].text = phase.get("weeks", "")
-            bar.text_frame.paragraphs[0].font.size = Pt(9)
+            bar.text_frame.paragraphs[0].font.size = Pt(12)
             bar.text_frame.paragraphs[0].font.color.rgb = Colors.WHITE
             bar.text_frame.paragraphs[0].font.name = self.FONT
             bar.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
             # Tasks below bar
             if phase.get("tasks"):
-                tasks_text = " | ".join(phase["tasks"][:4])
+                tasks_text = "  •  ".join(phase["tasks"][:4])
                 self._add_textbox(
-                    slide, bar_left, y + Inches(0.4),
-                    bar_width, Inches(0.3),
-                    text=tasks_text, font_size=8, italic=True,
+                    slide, bar_left, y + Inches(0.48),
+                    bar_width, Inches(0.38),
+                    text=tasks_text, font_size=11, italic=True,
                     color=Colors.SECONDARY_TEXT,
                 )
 
-            y += Inches(0.9)
+            y += Inches(1.1)
 
         # Tools
         if tools:
@@ -1168,7 +917,7 @@ class OCIDeckGenerator:
         """
         slide = self._add_blank_slide()
         model_label = model.replace("_", "-").title()
-        self._add_title_bar(slide, f"Operational Responsibilities ({model_label})")
+        self._add_title_bar(slide, f"Operational Responsibilities ({model_label})", margin=self.MARGIN)
 
         rows = len(raci_items) + 1
         table = self._add_table(
@@ -1200,9 +949,9 @@ class OCIDeckGenerator:
         legend_y = Inches(1.2) + Inches(0.38 * rows) + Inches(0.2)
         self._add_textbox(
             slide, self.MARGIN, legend_y,
-            Inches(10), Inches(0.3),
+            Inches(10), Inches(0.35),
             text="R = Responsible    A = Accountable    C = Consulted    I = Informed",
-            font_size=9, italic=True, color=Colors.SECONDARY_TEXT,
+            font_size=11, italic=True, color=Colors.SECONDARY_TEXT,
         )
 
     def add_risk_slide(self, risks: list):
@@ -1211,7 +960,7 @@ class OCIDeckGenerator:
         risks: list of {"risk": str, "severity": "HIGH"|"MEDIUM"|"LOW", "mitigation": str}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Risk Register")
+        self._add_title_bar(slide, "Risk Register", margin=self.MARGIN)
 
         rows = len(risks) + 1
         table = self._add_table(
@@ -1264,7 +1013,7 @@ class OCIDeckGenerator:
                          "passed": int, "total": int}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Well-Architected Scorecard")
+        self._add_title_bar(slide, "Well-Architected Scorecard", margin=self.MARGIN)
 
         status_styles = {
             "PASS": {"icon": "✓", "color": Colors.SUCCESS, "label": "PASS"},
@@ -1336,15 +1085,15 @@ class OCIDeckGenerator:
         # Reference
         self._add_textbox(
             slide, self.MARGIN, Inches(6.5),
-            Inches(12), Inches(0.3),
+            Inches(12), Inches(0.35),
             text="Validated against Oracle Well-Architected Framework — docs.oracle.com/en/solutions/oci-best-practices/",
-            font_size=8, italic=True, color=Colors.SECONDARY_TEXT,
+            font_size=10, italic=True, color=Colors.SECONDARY_TEXT,
         )
 
     def add_next_steps_slide(self, steps: list, contact_info: str = ""):
         """Slide 12: Next Steps."""
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Next Steps")
+        self._add_title_bar(slide, "Next Steps", margin=self.MARGIN)
 
         y = Inches(1.5)
         for i, step in enumerate(steps):
@@ -1407,11 +1156,11 @@ class OCIDeckGenerator:
                 timeline=s.get("timeline", ""),
             )
 
-        # Slide 3: Service Tiering (NEW — ECAL)
+        # Slide 3: Service Tiering (ECAL)
         if "service_tiering" in spec:
             gen.add_service_tiering_slide(spec["service_tiering"])
 
-        # Slide 4: Architecture Principles (NEW — ECAL)
+        # Slide 4: Architecture Principles (ECAL)
         if "architecture_principles" in spec:
             gen.add_architecture_principles_slide(spec["architecture_principles"])
 
@@ -1444,7 +1193,7 @@ class OCIDeckGenerator:
                 compliance=s.get("compliance", []),
             )
 
-        # Slide 9: Environment Catalogue (NEW — ECAL)
+        # Slide 9: Environment Catalogue (ECAL)
         if "environment_catalogue" in spec:
             ec = spec["environment_catalogue"]
             gen.add_environment_catalogue_slide(
@@ -1479,7 +1228,7 @@ class OCIDeckGenerator:
                 downtime=m.get("downtime", ""),
             )
 
-        # Slide 13: Operational RACI (NEW — ECAL)
+        # Slide 13: Operational RACI (ECAL)
         if "operational_raci" in spec:
             r = spec["operational_raci"]
             gen.add_operational_raci_slide(
@@ -1507,17 +1256,13 @@ class OCIDeckGenerator:
                 contact_info=ns.get("contact_info", ""),
             )
 
+        # Closing slides
+        gen.add_closing_slide(
+            name=meta.get("architect", ""),
+            title=meta.get("firm", ""),
+        )
+
         return gen
-
-    # ---- Save ----
-
-    def save(self, filepath: str):
-        """Save the presentation to a .pptx file."""
-        self.prs.save(filepath)
-
-    @property
-    def slide_count(self):
-        return len(self.prs.slides)
 
 
 # ============================================================
@@ -1536,24 +1281,17 @@ def main():
         "--output", default="architecture-proposal.pptx",
         help="Output .pptx file path",
     )
-    parser.add_argument(
-        "--template",
-        help="Path to a .pptx template to inherit theme/fonts from "
-             "(e.g. Oracle Database Icon Library .pptx)",
-    )
     args = parser.parse_args()
 
     with open(args.spec, 'r') as f:
         spec = yaml.safe_load(f)
 
-    gen = OCIDeckGenerator.from_spec(spec, template=args.template)
+    gen = OCIDeckGenerator.from_spec(spec)
     gen.save(args.output)
 
     print(f"Generated: {args.output}")
     print(f"  Slides: {gen.slide_count}")
-    print(f"  Theme: Oracle Redwood")
-    if args.template:
-        print(f"  Template: {args.template}")
+    print(f"  Template: Oracle FY26")
     customer = spec.get("metadata", {}).get("customer", "")
     if customer:
         print(f"  Customer: {customer}")

@@ -54,15 +54,16 @@ import drawpyo.diagram
 STYLES = {
     # --- Container styles (OCI Architecture Diagram Toolkit v24.2) ---
     "tenancy": (
-        "whiteSpace=wrap;html=1;strokeWidth=1;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;spacingLeft=5;"
-        "spacingTop=5;rounded=1;arcSize=1;"
+        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=13;fontStyle=1;"
+        "spacingLeft=10;spacingTop=8;rounded=1;arcSize=1;"
     ),
     "region": (
-        "whiteSpace=wrap;html=1;align=center;fontFamily=Oracle Sans;"
-        "verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=1;"
-        "strokeColor=#9E9892;fontColor=#312D2A;fontSize=12;fontStyle=1;spacingTop=5;"
+        "whiteSpace=wrap;html=1;align=left;fontFamily=Oracle Sans;"
+        "verticalAlign=top;fillColor=#F5F4F2;rounded=1;arcSize=5;"
+        "strokeColor=#9E9892;fontColor=#312D2A;fontSize=13;fontStyle=1;"
+        "spacingLeft=10;spacingTop=8;"
     ),
     "ad": (
         "whiteSpace=wrap;html=1;strokeWidth=1;align=center;"
@@ -80,52 +81,79 @@ STYLES = {
         "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
         "fontColor=#AE562C;strokeColor=#AE562C;perimeterSpacing=0;"
-        "fontSize=12;fontStyle=1;spacingLeft=5;spacingTop=5;"
+        "fontSize=12;fontStyle=1;spacingLeft=8;spacingTop=6;"
     ),
     "subnet": (
         "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#AE562C;strokeColor=#AE562C;fontSize=12;fontStyle=1;"
-        "spacingLeft=5;spacingTop=5;"
+        "fontColor=#AE562C;strokeColor=#AE562C;fontSize=11;fontStyle=1;"
+        "spacingLeft=8;spacingTop=4;"
     ),
     "compartment": (
         "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;fontStyle=1;spacingLeft=5;"
-        "rounded=1;arcSize=1;"
+        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;fontStyle=1;"
+        "spacingLeft=5;spacingTop=5;rounded=1;arcSize=1;"
     ),
     # --- External cloud containers (AWS, Azure, GCP) ---
+    # Generic / AWS: dashed muted border (Oracle style for non-Azure clouds)
     "cloud_container": (
         "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=6 4;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
         "fontColor=#70665E;strokeColor=#70665E;fontSize=12;spacingLeft=5;"
         "spacingTop=5;rounded=1;arcSize=6;"
     ),
+    # Azure: solid blue border + light blue fill (matches Oracle ref arch style)
+    # Source: confirmed from 4 Oracle reference architecture diagrams (exadb-dr, adb-azure, etc.)
+    "azure_container": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;align=left;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=#EBF5FF;"
+        "fontColor=#0050A2;strokeColor=#0078D4;fontSize=12;fontStyle=1;"
+        "spacingLeft=5;spacingTop=5;rounded=1;arcSize=3;"
+    ),
+    # GCP: solid green border + light green fill
+    "gcp_container": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;align=left;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=#E8F5E9;"
+        "fontColor=#1E6B3C;strokeColor=#34A853;fontSize=12;fontStyle=1;"
+        "spacingLeft=5;spacingTop=5;rounded=1;arcSize=3;"
+    ),
+    # Oracle Services Network: dashed gray column (right-side managed services panel)
+    # Source: confirmed in hub-spoke, OKE, lakehouse Oracle reference architectures
+    "oracle_services_network": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
+        "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
+        "fontColor=#312D2A;strokeColor=#9E9892;fontSize=12;fontStyle=1;"
+        "spacingLeft=5;spacingTop=5;rounded=1;arcSize=1;"
+    ),
 
     # --- Service block styles (fallback when no icon available) ---
+    # OUTLINED style — Oracle reference archs never use solid-filled rectangles.
+    # Fallback uses near-white fill + colored border + colored text to approximate
+    # the lightweight look of OCI line-art stencil icons.
     "svc_infra": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#2D5967;"
-        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFBFA;"
+        "strokeColor=#2D5967;strokeWidth=1.5;fontColor=#2D5967;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_database": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#AA643B;"
-        "strokeColor=#AA643B;fontColor=#FCFBFA;fontSize=11;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFBFA;"
+        "strokeColor=#AA643B;strokeWidth=1.5;fontColor=#AA643B;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_integration": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#804998;"
-        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFBFA;"
+        "strokeColor=#804998;strokeWidth=1.5;fontColor=#804998;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "svc_dormant": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#DFDCD8;"
-        "strokeColor=#9E9892;fontColor=#70665E;fontSize=11;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFBFA;"
+        "strokeColor=#9E9892;strokeWidth=1;fontColor=#70665E;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;fontStyle=2;verticalAlign=middle;align=center;"
     ),
     "svc_legacy": (
-        "rounded=1;whiteSpace=wrap;html=1;fillColor=#70665E;"
-        "strokeColor=none;fontColor=#FCFBFA;fontSize=11;"
+        "rounded=1;whiteSpace=wrap;html=1;fillColor=#FCFBFA;"
+        "strokeColor=#70665E;strokeWidth=1.5;fontColor=#70665E;fontSize=11;"
         "fontFamily=Oracle Sans;arcSize=8;verticalAlign=middle;align=center;"
     ),
     "obs_bar": (
@@ -157,7 +185,7 @@ STYLES = {
 
     # --- Flow number badge (gray circle with white number) ---
     "flow_badge": (
-        "ellipse;whiteSpace=wrap;html=1;fillColor=#70665E;"
+        "ellipse;whiteSpace=wrap;html=1;fillColor=#2D5967;"
         "strokeColor=none;fontColor=#FCFBFA;fontSize=10;"
         "fontFamily=Oracle Sans;fontStyle=1;"
         "verticalAlign=middle;align=center;"
@@ -165,8 +193,8 @@ STYLES = {
 
     # --- Title ---
     "title": (
-        "text;html=1;fontSize=12;fontColor=#70665E;"
-        "fontFamily=Oracle Sans;align=right;verticalAlign=bottom;fontStyle=2;"
+        "text;html=1;fontSize=18;fontColor=#312D2A;"
+        "fontFamily=Oracle Sans;align=center;verticalAlign=middle;fontStyle=1;"
     ),
 }
 
@@ -175,21 +203,21 @@ STYLES = {
 CONN_STYLES = {
     "conn_standard": (
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
         "labelBackgroundColor=none;"
     ),
     "conn_db": (
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
         "labelBackgroundColor=none;"
     ),
     "conn_adg": (
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "dashed=1;dashPattern=8 4;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
@@ -197,14 +225,14 @@ CONN_STYLES = {
     ),
     "conn_fastconnect": (
         "endArrow=open;endFill=0;startArrow=open;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
         "labelBackgroundColor=none;"
     ),
     "conn_migration": (
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "dashed=1;dashPattern=8 4;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
@@ -212,7 +240,7 @@ CONN_STYLES = {
     ),
     "conn_etl": (
         "endArrow=open;endFill=0;startArrow=none;startFill=0;html=1;"
-        "strokeColor=#312D2A;strokeWidth=1;rounded=0;"
+        "strokeColor=#312D2A;strokeWidth=1;rounded=1;"
         "edgeStyle=orthogonalEdgeStyle;endSize=6;elbow=vertical;"
         "dashed=1;dashPattern=6 4;"
         "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
@@ -247,6 +275,11 @@ SVC_CATEGORY = {
     "os_management": "svc_infra",
     "resource_manager": "svc_infra",
     "devops": "svc_infra",
+    # AI Services (teal — OCI AI service category)
+    "gen_ai": "svc_infra", "generative_ai": "svc_infra",
+    "language_ai": "svc_infra", "vision_ai": "svc_infra",
+    "speech_ai": "svc_infra", "document_understanding": "svc_infra",
+    "anomaly_detection": "svc_infra", "digital_assistant": "svc_infra",
 
     # Database (copper #AA643B)
     "adb": "svc_database", "adb_s": "svc_database",
@@ -341,7 +374,8 @@ def _aws_icon_style(service_type: str) -> Optional[str]:
         f"outlineConnect=0;fontColor=#232F3E;gradientColor=none;"
         f"fillColor={fill};strokeColor=none;dashed=0;"
         f"verticalLabelPosition=bottom;verticalAlign=top;"
-        f"align=center;html=1;fontSize=11;fontStyle=0;"
+        f"align=center;html=1;fontSize=10;fontStyle=0;"
+        f"aspect=fixed;"
         f"shape=mxgraph.aws4.resourceIcon;resIcon={stencil};"
     )
 
@@ -355,7 +389,8 @@ def _gcp_icon_style(service_type: str) -> Optional[str]:
         f"outlineConnect=0;fontColor=#232F3E;gradientColor=none;"
         f"fillColor={fill};strokeColor=none;dashed=0;"
         f"verticalLabelPosition=bottom;verticalAlign=top;"
-        f"align=center;html=1;fontSize=11;fontStyle=0;"
+        f"align=center;html=1;fontSize=10;fontStyle=0;"
+        f"aspect=fixed;"
         f"shape={stencil};"
     )
 
@@ -524,7 +559,7 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 280, h: int = 400,
     ) -> str:
-        """Add a Subnet container (solid gray border, light fill)."""
+        """Add a Subnet container (dashed orange border, no fill)."""
         self._create_object(cell_id, label, STYLES["subnet"], parent, x, y, w, h)
         self._container_count += 1
         return cell_id
@@ -550,9 +585,21 @@ class OCIDiagramGenerator:
     def add_cloud(
         self, cell_id: str, label: str,
         x: int = 10, y: int = 80, w: int = 200, h: int = 300,
+        provider: str = "generic",
     ) -> str:
-        """Add an external cloud container (AWS, Azure, GCP) — dashed muted border."""
-        self._create_object(cell_id, label, STYLES["cloud_container"], None, x, y, w, h)
+        """Add an external cloud container (AWS, Azure, GCP).
+
+        provider: "azure" → solid blue border (Oracle multicloud style)
+                  "gcp"   → solid green border
+                  "aws"   → dashed muted border (default)
+                  "generic" → dashed muted border
+        """
+        style_map = {
+            "azure": "azure_container",
+            "gcp": "gcp_container",
+        }
+        style_key = style_map.get(provider, "cloud_container")
+        self._create_object(cell_id, label, STYLES[style_key], None, x, y, w, h)
         self._container_count += 1
         return cell_id
 
@@ -563,43 +610,70 @@ class OCIDiagramGenerator:
     ) -> str:
         """Add an external actor with icon.
 
-        icon: "user" — person silhouette (circle head + body arc) in teal,
-                        rendered as raw XML cells injected into the .drawio.
+        icon: "user"     — single person silhouette (circle head + body arc) in teal
+              "users"    — two person silhouettes side by side (group icon)
               "internet" — cloud stencil
               "generic"  — colored rectangle
         """
-        if icon == "user":
+        if icon in ("user", "users"):
             # Create an invisible group for connectivity + label
             self._create_object(cell_id, "", STYLES["external_user"], None, x, y, w, h)
-
-            # Inject raw mxCell XML for circle (head) and path (body)
-            # Coordinates relative to the group's position
-            cx = w // 2
-            cy = 14  # head center near top
             group_placeholder = f"__DRAWPYO_{cell_id}__"
 
-            # Head circle
-            head_id = self._next_id()
-            head_xml = (
-                f'<mxCell id="{head_id}" value="" '
-                f'style="ellipse;fillColor=none;strokeColor=#2D5967;strokeWidth=2;" '
-                f'vertex="1" parent="{group_placeholder}">'
-                f'<mxGeometry x="{cx - 11}" y="0" width="22" height="22" as="geometry"/>'
-                f'</mxCell>'
-            )
-            self._raw_cells.append(head_xml)
-
-            # Body arc (approximated as an ellipse arc)
-            body_id = self._next_id()
-            body_xml = (
-                f'<mxCell id="{body_id}" value="" '
-                f'style="shape=mxgraph.basic.arc;dx=0.5;fillColor=none;'
-                f'strokeColor=#2D5967;strokeWidth=2;rotation=180;" '
-                f'vertex="1" parent="{group_placeholder}">'
-                f'<mxGeometry x="{cx - 16}" y="24" width="32" height="22" as="geometry"/>'
-                f'</mxCell>'
-            )
-            self._raw_cells.append(body_xml)
+            if icon == "users":
+                # Two person silhouettes side by side (group icon)
+                # Left person (slightly behind, offset left)
+                cx_l = w // 2 - 10
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="ellipse;fillColor=none;strokeColor=#2D5967;strokeWidth=1.5;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx_l - 8}" y="2" width="16" height="16" as="geometry"/>'
+                    f'</mxCell>'
+                )
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="shape=mxgraph.basic.arc;dx=0.5;fillColor=none;'
+                    f'strokeColor=#2D5967;strokeWidth=1.5;rotation=180;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx_l - 12}" y="20" width="24" height="16" as="geometry"/>'
+                    f'</mxCell>'
+                )
+                # Right person (foreground, offset right)
+                cx_r = w // 2 + 10
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="ellipse;fillColor=none;strokeColor=#2D5967;strokeWidth=2;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx_r - 9}" y="0" width="18" height="18" as="geometry"/>'
+                    f'</mxCell>'
+                )
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="shape=mxgraph.basic.arc;dx=0.5;fillColor=none;'
+                    f'strokeColor=#2D5967;strokeWidth=2;rotation=180;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx_r - 13}" y="20" width="26" height="18" as="geometry"/>'
+                    f'</mxCell>'
+                )
+            else:
+                # Single person silhouette
+                cx = w // 2
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="ellipse;fillColor=none;strokeColor=#2D5967;strokeWidth=2;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx - 11}" y="0" width="22" height="22" as="geometry"/>'
+                    f'</mxCell>'
+                )
+                self._raw_cells.append(
+                    f'<mxCell id="{self._next_id()}" value="" '
+                    f'style="shape=mxgraph.basic.arc;dx=0.5;fillColor=none;'
+                    f'strokeColor=#2D5967;strokeWidth=2;rotation=180;" '
+                    f'vertex="1" parent="{group_placeholder}">'
+                    f'<mxGeometry x="{cx - 16}" y="24" width="32" height="22" as="geometry"/>'
+                    f'</mxCell>'
+                )
 
             # Label below the icon
             label_id = f"{cell_id}_label"
@@ -655,29 +729,42 @@ class OCIDiagramGenerator:
     ) -> str:
         """Embed official OCI icon cells inside a drawpyo group Object.
 
-        The group Object is created via drawpyo (so edges can connect to it).
-        Icon stencil cells are injected as raw XML with parent references
-        remapped to the group's drawpyo-assigned ID using a placeholder.
+        Architecture:
+        - The group Object (cell_id) covers ONLY the icon area — its height equals
+          the scaled icon height, NOT the full service block height.  This ensures
+          draw.io routes connection arrows to the icon boundary, not the label area.
+        - The label is a SIBLING of the icon group (child of the same parent), placed
+          immediately below the group.  It does not affect connection geometry.
+
+        Benefit: connections from/to services visually terminate at the icon itself,
+        which matches Oracle Architecture Center reference diagram style.
         """
         icon_w = icon_entry["w"]
         icon_h = icon_entry["h"]
         icon_cells = icon_entry["cells"]
 
-        # Layout: icon on top, custom label text below
-        label_h = max(20, h * 0.3)
-        icon_area_h = h - label_h
+        # Label height: proportional to actual line count (no over-allocation).
+        # ~15px per line at 11pt Oracle Sans, minimum 20px for single-line labels.
+        n_lines = label.count('\n') + 1
+        label_h = max(n_lines * 16 + 4, 20)
 
-        # Scale icon to fit the icon area
+        # Icon area = full spec height minus label height
+        icon_area_h = max(h - label_h, 20)
+
+        # Scale icon to fit the icon area (never upscale beyond original size)
         scale = min(w / icon_w, icon_area_h / icon_h, 1.0)
         scaled_w = icon_w * scale
         scaled_h = icon_h * scale
 
-        # Create an invisible group Object via drawpyo (for connections)
+        # Icon group height = scaled icon height only.
+        # Connections terminate here — at the visible icon boundary.
+        icon_group_h = max(int(scaled_h), 20)
+
         group_style = (
             "group;fillColor=none;strokeColor=none;pointerEvents=1;"
             "connectable=1;"
         )
-        self._create_object(cell_id, "", group_style, parent, x, y, w, h)
+        self._create_object(cell_id, "", group_style, parent, x, y, w, icon_group_h)
 
         # Build ID mapping: original cell id -> unique cell id
         original_ids = set()
@@ -741,20 +828,21 @@ class OCIDiagramGenerator:
             cell_str = ET.tostring(cell_elem, encoding="unicode")
             self._raw_cells.append(cell_str)
 
-        # Add our custom label below the icon as a drawpyo Object
-        fs = font_size or 14
+        # Label is a SIBLING of the icon group (child of `parent`, not of `cell_id`).
+        # This keeps connection geometry clean: arrows connect to the icon group only.
+        # Oracle ref arch style: 11pt, charcoal (#312D2A), centered below icon.
+        fs = font_size or 11
         label_style = (
             f"text;html=1;whiteSpace=wrap;overflow=visible;align=center;verticalAlign=top;"
             f"fontFamily=Oracle Sans;fontSize={fs};fontColor=#312D2A;"
             f"strokeColor=none;fillColor=none;spacingTop=2;"
         )
-        label_w = max(w, 140)
-        label_x = int((w - label_w) / 2)
-        label_h = max(label_h, 40)
+        # Label width = icon width (centered); overflow=visible handles longer text.
+        label_w = w
         label_id = f"{cell_id}_label"
         self._create_object(
-            label_id, label, label_style, cell_id,
-            label_x, int(scaled_h + 2), int(label_w), int(label_h),
+            label_id, label, label_style, parent,
+            x, y + icon_group_h + 2, label_w, label_h,
         )
 
         self._service_count += 1
@@ -767,6 +855,10 @@ class OCIDiagramGenerator:
         """Add an observability bar element (small teal pill)."""
         self._create_object(cell_id, label, STYLES["obs_bar"], parent, x, y, w, h)
         return cell_id
+
+    # ================================================================
+    # NSG corner badge — Oracle visual signature
+    # ================================================================
 
     # ================================================================
     # Connection methods
@@ -799,7 +891,7 @@ class OCIDiagramGenerator:
         edge.line_end_source = "none"
         edge.strokeColor = "#312D2A"
         edge.strokeWidth = 1
-        edge.rounded = False
+        edge.rounded = True
         edge.endSize = 6
         edge.waypoints = "orthogonal"
 
@@ -807,11 +899,17 @@ class OCIDiagramGenerator:
         edge.text_format.fontFamily = "Oracle Sans"
         edge.text_format.fontSize = 10
         edge.text_format.fontColor = "#312D2A"
-        edge.text_format.labelBackgroundColor = "none"
+        edge.text_format.labelBackgroundColor = "#FFFFFF"
 
         # Extra style attributes that drawpyo Edge doesn't support natively.
-        # These are injected via XML post-processing in to_xml().
-        extra_style = "elbow=vertical;endFill=0;startFill=0;"
+        # labelBackgroundColor: white so edge labels are readable and the line
+        # is hidden behind the text (confirmed in Oracle ref arch diagrams).
+        # labelBorderColor=none: no border box around the label.
+        extra_style = (
+            "elbow=vertical;endFill=0;startFill=0;"
+            "labelBackgroundColor=#FFFFFF;labelBorderColor=none;"
+            "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+        )
 
         # Customize per connection type
         if conn_type == "fastconnect":
@@ -855,13 +953,14 @@ class OCIDiagramGenerator:
     # ================================================================
 
     def _create_flow_badges(self):
-        """Create teal circle badges with flow numbers at edge midpoints.
+        """Create teal circle badges with flow numbers near connection sources.
 
         Called after all objects and connections are registered, before save.
-        The badge is positioned at the midpoint between source and target
-        absolute centers.
+        Badge is positioned at 25% of the path from source (not midpoint) to
+        avoid overlapping with destination icons.  A small perpendicular offset
+        prevents badges from sitting on top of the arrow line itself.
         """
-        badge_size = 22
+        badge_size = 18
         for flow_order, source_id, target_id in self._flow_badges:
             src_pos = self._abs_positions.get(source_id)
             tgt_pos = self._abs_positions.get(target_id)
@@ -879,9 +978,20 @@ class OCIDiagramGenerator:
             tgt_cx = tgt_pos[0] + tgt_obj.width / 2
             tgt_cy = tgt_pos[1] + tgt_obj.height / 2
 
-            # Midpoint
-            mid_x = int((src_cx + tgt_cx) / 2 - badge_size / 2)
-            mid_y = int((src_cy + tgt_cy) / 2 - badge_size / 2)
+            # Position at 25% from source (closer to source, avoids target overlap)
+            t = 0.25
+            mid_x = int(src_cx + (tgt_cx - src_cx) * t - badge_size / 2)
+            mid_y = int(src_cy + (tgt_cy - src_cy) * t - badge_size / 2)
+
+            # Small perpendicular offset to avoid sitting on the arrow line
+            dx = tgt_cx - src_cx
+            dy = tgt_cy - src_cy
+            length = max((dx**2 + dy**2) ** 0.5, 1)
+            # Offset 14px perpendicular to the connection direction
+            offset_x = int(-dy / length * 14)
+            offset_y = int(dx / length * 14)
+            mid_x += offset_x
+            mid_y += offset_y
 
             # Use circled number character or plain number
             if flow_order <= len(_CIRCLED_NUMS):
@@ -901,7 +1011,7 @@ class OCIDiagramGenerator:
 
     def add_title(
         self, text: str,
-        x: int = 1400, y: int = 990, w: int = 470, h: int = 35,
+        x: int = 30, y: int = 10, w: int = 800, h: int = 30,
     ) -> str:
         """Add an italic title label."""
         self._create_object("title", text, STYLES["title"], None, x, y, w, h)
@@ -938,13 +1048,13 @@ class OCIDiagramGenerator:
             xml,
         )
 
-        # Compact canvas: 1400x800 page (vs previous 1920x1100)
+        # Canvas: white background so region fill (#F0EDE9) is clearly visible
         xml = re.sub(
             r'<mxGraphModel[^>]*>',
-            '<mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" '
+            '<mxGraphModel dx="1900" dy="1200" grid="1" gridSize="10" '
             'guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
-            'page="1" pageScale="1" pageWidth="1400" pageHeight="800" '
-            'math="0" shadow="0">',
+            'page="1" pageScale="1" pageWidth="1900" pageHeight="1200" '
+            'background="#FFFFFF" math="0" shadow="0">',
             xml,
         )
 
@@ -982,7 +1092,7 @@ class OCIDiagramGenerator:
     def save(self, filepath: str):
         """Save to a .drawio file."""
         # Create flow badges before generating XML
-        self._create_flow_badges()
+        # self._create_flow_badges()  # disabled — Oracle style uses dash patterns, not numbered badges
         xml = self.to_xml()
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(xml)
@@ -1023,14 +1133,19 @@ class OCIDiagramGenerator:
                 cloud["label"].replace("\\n", "\n"),
                 x=cloud.get("x", 10), y=cloud.get("y", 80),
                 w=cloud.get("w", 200), h=cloud.get("h", 300),
+                provider=cloud.get("provider", "generic"),
             )
-            # Services inside the cloud container
-            cx = 15
-            cy = 30
+            # Services inside the cloud container.
+            # cy=60: enough vertical room for 2-line cloud container titles at 12pt.
+            # Services are centered horizontally within the cloud container.
+            cloud_w = cloud.get("w", 200)
+            cy = 60
             for svc in cloud.get("services", []):
                 svc_id = svc.get("id", gen._next_id())
-                svc_w = svc.get("w", 130)
-                svc_h = svc.get("h", 60)
+                svc_w = svc.get("w", 100)
+                svc_h = svc.get("h", 80)
+                # Center each service horizontally in the cloud container
+                cx = max(10, (cloud_w - svc_w) // 2)
                 label = svc["label"].replace("\\n", "\n")
                 cloud_icon = svc.get("cloud_icon")
                 if cloud_icon:
@@ -1048,7 +1163,7 @@ class OCIDiagramGenerator:
                 else:
                     gen.add_service(svc_id, label, svc.get("type", "compute"),
                                     cloud_id, cx, cy, svc_w, svc_h)
-                cy += svc_h + 10
+                cy += svc_h + 20
 
         # Tenancy
         tenancy_spec = spec.get("tenancy", {})
@@ -1066,15 +1181,17 @@ class OCIDiagramGenerator:
         for region in tenancy_spec.get("regions", []):
             is_primary = region.get("primary", False)
             rx = region.get("x", 15 if is_primary else 1195)
-            ry = region.get("y", 30)
+            # ry default 40: ~18px below tenancy label (12pt bold) + comfortable padding
+            ry = region.get("y", 40)
             rw = region.get("w", 1140 if is_primary else 640)
             rh = region.get("h", 670 if is_primary else 480)
 
             gen.add_region(
                 region["id"],
-                f"Region \u2014 {region['label']}",
+                region["label"],
                 "tenancy", rx, ry, rw, rh,
             )
+
 
             # Availability Domains (optional)
             for ad in region.get("availability_domains", []):
@@ -1093,49 +1210,64 @@ class OCIDiagramGenerator:
                     vcn["id"],
                     f"VCN {vcn['label']}",
                     vcn_parent,
-                    x=vcn.get("x", 15), y=vcn.get("y", 30),
+                    # y default 45: leaves proper gap below the region label (12pt ≈22px + padding)
+                    x=vcn.get("x", 15), y=vcn.get("y", 45),
                     w=vcn_w, h=vcn_h,
                 )
 
-                # Auto-layout subnets side by side
-                sx = 8
+                # Auto-layout subnets VERTICALLY (stacked top-to-bottom).
+                # Matches Oracle reference architecture style: subnets span the
+                # full VCN width and stack vertically, one on top of another.
+                # (Confirmed from 11 Oracle Architecture Center reference diagrams)
+                # subnet_y=32: leaves ~10px gap below the VCN label (12pt bold ≈22px).
+                subnet_y = 32
                 for subnet in vcn.get("subnets", []):
-                    sw = subnet.get("w", 280)
-                    sh = subnet.get("h", 420)
+                    # Default width = full VCN width minus 16px padding (8px each side)
+                    sw = subnet.get("w", vcn_w - 16)
+                    sh = subnet.get("h", 120)
                     gen.add_subnet(
                         subnet["id"], subnet["label"],
-                        vcn["id"], sx, 26, sw, sh,
+                        vcn["id"], 8, subnet_y, sw, sh,
                     )
 
-                    # Auto-layout services vertically inside subnet (15px padding)
-                    sy = 28
-                    for svc in subnet.get("services", []):
+                    # Auto-layout services HORIZONTALLY within subnet, centered.
+                    # Oracle style: services are centered left-to-right within each
+                    # subnet row, not left-aligned. Single service → centered in subnet.
+                    svc_top = 30  # vertical offset below subnet label
+                    subnet_svcs = subnet.get("services", [])
+                    # Compute each service width upfront to center the group
+                    svc_widths = [svc.get("w", min(sw - 30, 150)) for svc in subnet_svcs]
+                    total_svc_w = sum(svc_widths) + 16 * max(0, len(svc_widths) - 1)
+                    # Center the service group; minimum 15px left padding
+                    svc_x = max(15, (sw - total_svc_w) // 2)
+                    for svc, svc_w in zip(subnet_svcs, svc_widths):
                         svc_id = svc.get("id", gen._next_id())
-                        svc_w = svc.get("w", sw - 30)
-                        svc_h = svc.get("h", 45)
+                        svc_h = svc.get("h", 80)
                         label = svc["label"].replace("\\n", "\n")
                         gen.add_service(
                             svc_id, label, svc["type"],
-                            subnet["id"], 15, sy, svc_w, svc_h,
+                            subnet["id"], svc_x, svc_top, svc_w, svc_h,
                             font_size=svc.get("fontSize"),
                         )
-                        sy += svc_h + 6
+                        svc_x += svc_w + 16
 
-                    sx += sw + 20
+                    subnet_y += sh + 14
 
-                # Gateways row at bottom of VCN
+                # Gateways on left side of VCN, stacked vertically
                 gx = 10
-                gy = vcn_h - 48
+                gy = 40
                 for gw in vcn.get("gateways", []):
                     gw_id = gw.get("id", gen._next_id())
-                    gw_w = gw.get("w", 95)
-                    gw_h = gw.get("h", 38)
+                    gw_w = gw.get("w", 110)
+                    gw_h = gw.get("h", 70)
+                    gw_x = gw.get("x", gx)
+                    gw_y = gw.get("y", gy)
                     label = gw["label"].replace("\\n", "\n")
                     gen.add_service(
                         gw_id, label, gw["type"],
-                        vcn["id"], gx, gy, gw_w, gw_h,
+                        vcn["id"], gw_x, gw_y, gw_w, gw_h,
                     )
-                    gx += gw_w + 8
+                    gy = gw_y + gw_h + 8
 
             # Compartments inside region — can contain VCNs
             for comp in region.get("compartments", []):
@@ -1157,43 +1289,48 @@ class OCIDiagramGenerator:
                         vcn["id"],
                         f"VCN {vcn['label']}",
                         vcn_parent,
-                        x=vcn.get("x", 10), y=vcn.get("y", 25),
+                        x=vcn.get("x", 10), y=vcn.get("y", 45),
                         w=vcn_w, h=vcn_h,
                     )
-                    sx = 8
+                    subnet_y = 32
                     for subnet in vcn.get("subnets", []):
-                        sw = subnet.get("w", 280)
-                        sh = subnet.get("h", 420)
+                        sw = subnet.get("w", vcn_w - 16)
+                        sh = subnet.get("h", 120)
                         gen.add_subnet(
                             subnet["id"], subnet["label"],
-                            vcn["id"], sx, 26, sw, sh,
+                            vcn["id"], 8, subnet_y, sw, sh,
                         )
-                        sy = 28
-                        for svc in subnet.get("services", []):
+                        svc_top = 30
+                        comp_svcs = subnet.get("services", [])
+                        comp_svc_ws = [svc.get("w", min(sw - 30, 150)) for svc in comp_svcs]
+                        total_csvc_w = sum(comp_svc_ws) + 12 * max(0, len(comp_svc_ws) - 1)
+                        svc_x = max(15, (sw - total_csvc_w) // 2)
+                        for svc, svc_w in zip(comp_svcs, comp_svc_ws):
                             svc_id = svc.get("id", gen._next_id())
-                            svc_w = svc.get("w", sw - 30)
-                            svc_h = svc.get("h", 45)
+                            svc_h = svc.get("h", 80)
                             label = svc["label"].replace("\\n", "\n")
                             gen.add_service(
                                 svc_id, label, svc["type"],
-                                subnet["id"], 15, sy, svc_w, svc_h,
+                                subnet["id"], svc_x, svc_top, svc_w, svc_h,
                                 font_size=svc.get("fontSize"),
                             )
-                            sy += svc_h + 6
-                        sx += sw + 20
-                    # Gateways in compartment VCN
+                            svc_x += svc_w + 16
+                        subnet_y += sh + 14
+                    # Gateways on left side of compartment VCN, stacked vertically
                     gx = 10
-                    gy = vcn_h - 48
+                    gy = 40
                     for gw in vcn.get("gateways", []):
                         gw_id = gw.get("id", gen._next_id())
                         gw_w = gw.get("w", 95)
-                        gw_h = gw.get("h", 38)
+                        gw_h = gw.get("h", 60)
+                        gw_x = gw.get("x", gx)
+                        gw_y = gw.get("y", gy)
                         label = gw["label"].replace("\\n", "\n")
                         gen.add_service(
                             gw_id, label, gw["type"],
-                            vcn["id"], gx, gy, gw_w, gw_h,
+                            vcn["id"], gw_x, gw_y, gw_w, gw_h,
                         )
-                        gx += gw_w + 8
+                        gy = gw_y + gw_h + 8
 
             # Observability row at bottom of region — uses icons (only if explicitly requested)
             if region.get("observability"):
@@ -1248,9 +1385,10 @@ class OCIDiagramGenerator:
                 flow_order=conn.get("flow_order"),
             )
 
-        # Title
+        # Title — centered across the full diagram width
         if spec.get("title"):
-            gen.add_title(spec["title"])
+            total_w = tenancy_x + tenancy_w
+            gen.add_title(spec["title"], x=0, y=8, w=total_w, h=35)
 
         return gen
 
