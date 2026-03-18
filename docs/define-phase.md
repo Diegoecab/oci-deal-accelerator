@@ -12,14 +12,22 @@ Create a value hypothesis expressed in the customer's business terms — not Ora
 - Discovery notes (unstructured)
 - Customer's public filings, strategy docs, press releases
 - Industry patterns from `kb/patterns/business-patterns.yaml`
+- Business Drivers Framework from `kb/patterns/business-drivers.yaml`
 
 **Activities:**
+- Build Customer Profile (`templates/customer-profile.yaml`) — strategic goals, Oracle footprint, industry analysis
+- Build Strategy Map (`templates/strategy-map.yaml`) — goals → strategies → capabilities → enablers
 - Parse discovery notes into structured Workload Profile
-- Identify 1-3 business drivers (cost, risk, growth, compliance, modernization)
-- Formulate hypothesis: "If we [technical action], the customer achieves [business outcome]"
+- Identify 1-3 business drivers using the four pillars (Strategic, Financial, Business Ops, IT Ops)
+- Formulate 1+ Points of View, evaluate each against SMART criteria
+- Select the strongest PoV as the value hypothesis
 - Cross-reference with `kb/patterns/application-patterns.yaml` for proven solutions
+- Map to hypothesis family from `kb/patterns/business-drivers.yaml`
 
-**Output:** Draft Value Story (`templates/value-story.yaml`)
+**Output:** Customer Profile + Strategy Map + Draft Value Story (`templates/value-story.yaml`)
+
+**ECAL Artefacts:** See `kb/patterns/ecal-artefacts-catalog.yaml` DEF-01 through DEF-06
+**Engagement RACI:** See `kb/patterns/engagement-raci.yaml` define.ideate
 
 ### 2. Validate
 

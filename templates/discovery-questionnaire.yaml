@@ -1,0 +1,174 @@
+# ═══════════════════════════════════════════════════════════════
+# ECAL Discovery Questionnaire
+# ═══════════════════════════════════════════════════════════════
+# Source: ECAL 3.1 - Current Step (Design Phase)
+# Purpose: Structured collection of customer IT landscape info
+# Usage: Send to customer pre-workshop or fill collaboratively
+# ═══════════════════════════════════════════════════════════════
+
+metadata:
+  customer: ""
+  engagement: ""
+  date: ""
+  completed_by: ""
+  version: "1.0"
+
+# ───────────────────────────────────────────────────────────────
+# 1. BUSINESS CONTEXT
+# ───────────────────────────────────────────────────────────────
+business_context:
+  industry: ""
+  annual_revenue: ""
+  employees: ""
+  geographies: []           # regions/countries with IT presence
+  business_drivers:         # what is motivating this initiative?
+    strategic: []           # cloud strategy, digital transformation, M&A
+    financial: []           # cost reduction, CAPEX→OPEX, license optimization
+    operational: []         # efficiency, time-to-market, agility
+    compliance: []          # regulatory, audit, data sovereignty
+  urgency:
+    deadline: ""            # hard deadline if any
+    trigger: ""             # contract renewal, EOL, compliance, competitive
+  key_stakeholders:
+    sponsor: ""             # executive sponsor name/role
+    technical_lead: ""      # customer technical DRI
+    decision_makers: []     # who signs off
+
+# ───────────────────────────────────────────────────────────────
+# 2. CURRENT STATE — APPLICATIONS & SYSTEMS
+# ───────────────────────────────────────────────────────────────
+applications:
+  # Repeat this block for each application in scope
+  - name: ""
+    description: ""
+    business_criticality: ""   # Critical / High / Medium / Low
+    current_platform: ""       # e.g., "On-prem VMware", "AWS EC2", "bare metal"
+    database:
+      type: ""                 # Oracle, PostgreSQL, MySQL, SQL Server, etc.
+      version: ""
+      size_gb: ""
+      instance_count: ""
+      ha_current: ""           # RAC, Data Guard, none, etc.
+      dr_current: ""           # cross-site DG, backup only, none
+    compute:
+      type: ""                 # VM, bare metal, container
+      cpu_cores: ""
+      memory_gb: ""
+      os: ""
+    storage:
+      type: ""                 # SAN, NAS, local, S3
+      capacity_gb: ""
+      iops_required: ""
+    integrations:
+      - target: ""             # what does it integrate with?
+        method: ""             # API, DB link, file transfer, messaging
+        frequency: ""          # real-time, batch daily, batch weekly
+        data_volume: ""        # GB/day or records/day
+    users:
+      concurrent: ""
+      total: ""
+      locations: []            # where are users located?
+    sla:
+      uptime_requirement: ""   # e.g., 99.9%, 99.99%
+      rto: ""                  # recovery time objective
+      rpo: ""                  # recovery point objective
+    compliance:
+      frameworks: []           # PCI-DSS, HIPAA, GDPR, SOX, banking regs
+      data_classification: ""  # public, internal, confidential, restricted
+      data_residency: ""       # must stay in specific country/region?
+    migration_preference: ""   # lift-and-shift, re-platform, re-architect, retain
+    notes: ""
+
+# ───────────────────────────────────────────────────────────────
+# 3. CURRENT STATE — INFRASTRUCTURE
+# ───────────────────────────────────────────────────────────────
+infrastructure:
+  data_centers:
+    - location: ""
+      type: ""                 # owned, colo, cloud
+      provider: ""             # if cloud: AWS, Azure, GCP, OCI
+      role: ""                 # primary, DR, dev/test
+  networking:
+    wan_type: ""               # MPLS, SD-WAN, internet VPN
+    bandwidth_to_cloud: ""     # if already connected
+    latency_requirements: ""   # between sites, to users
+    dns_provider: ""
+    load_balancing: ""         # F5, Citrix, cloud-native
+  identity:
+    idp: ""                    # Active Directory, Okta, Azure AD, Oracle IAM
+    sso: ""                    # yes/no, which protocol (SAML, OIDC)
+    mfa: ""                    # yes/no, which product
+  security:
+    firewall: ""               # product/vendor
+    waf: ""                    # yes/no, product
+    siem: ""                   # product (Splunk, QRadar, etc.)
+    encryption_at_rest: ""     # yes/no, method
+    encryption_in_transit: ""  # yes/no, method
+    key_management: ""         # HSM, KMS, manual
+  monitoring:
+    tools: []                  # e.g., [Datadog, Nagios, OEM, CloudWatch]
+    alerting: ""               # PagerDuty, email, custom
+    log_aggregation: ""        # ELK, Splunk, OCI Logging
+
+# ───────────────────────────────────────────────────────────────
+# 4. CURRENT STATE — PEOPLE & PROCESS
+# ───────────────────────────────────────────────────────────────
+people_and_process:
+  team:
+    total_it_staff: ""
+    dba_count: ""
+    cloud_engineers: ""
+    devops_engineers: ""
+    security_staff: ""
+    cloud_experience: ""       # none, basic, intermediate, advanced
+    oracle_experience: ""      # none, basic, intermediate, advanced
+    certifications: []         # OCI, AWS, Azure, etc.
+  operations:
+    change_management: ""      # CAB, lightweight approval, none
+    deployment_process: ""     # manual, CI/CD, IaC
+    iac_tools: []              # Terraform, Ansible, CloudFormation, ARM
+    ci_cd_tools: []            # Jenkins, GitLab CI, GitHub Actions, OCI DevOps
+    patching_cadence: ""       # monthly, quarterly, ad-hoc
+    backup_testing: ""         # frequency of restore tests
+    incident_process: ""       # NOC, on-call, outsourced
+    itsm_tool: ""              # ServiceNow, Jira, BMC
+  managed_services:
+    current_provider: ""       # self-managed, outsourced to whom?
+    preference: ""             # self-managed, co-managed, fully managed
+    budget_for_managed: ""     # yes/no, approximate
+
+# ───────────────────────────────────────────────────────────────
+# 5. CONSTRAINTS & ASSUMPTIONS
+# ───────────────────────────────────────────────────────────────
+constraints:
+  budget:
+    capex_available: ""
+    opex_monthly_target: ""
+    existing_oracle_licenses: ""  # ULA, PULA, NUP, Processor
+    byol_eligible: ""             # yes/no, which products
+  timeline:
+    project_start: ""
+    hard_deadline: ""
+    phased_approach_ok: ""     # yes/no
+  technical:
+    - ""                       # e.g., "Must keep Oracle RAC", "Cannot change app code"
+  regulatory:
+    - ""                       # e.g., "Data must stay in EU", "FCA audit requirements"
+  organizational:
+    - ""                       # e.g., "Change freeze Dec-Jan", "Union approval needed"
+
+# ───────────────────────────────────────────────────────────────
+# 6. PRIORITIZATION (fill after workshop)
+# ───────────────────────────────────────────────────────────────
+prioritization:
+  # Score each application 1-5 on these criteria
+  # Then sort by weighted score to determine migration order
+  criteria:
+    - { name: "Business Criticality", weight: 0.25 }
+    - { name: "Functional Fit (cloud-ready)", weight: 0.20 }
+    - { name: "Transformation Potential", weight: 0.20 }
+    - { name: "Technology Fit (OCI alignment)", weight: 0.20 }
+    - { name: "Risk Profile (migration risk)", weight: 0.15 }  # inverted: lower risk = higher score
+  scores: []
+  # Example:
+  # - { app: "Core ERP", criticality: 5, functional_fit: 3, transformation: 4, tech_fit: 4, risk: 2, weighted: 3.7 }

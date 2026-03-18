@@ -85,6 +85,13 @@ Present these options as a numbered list. The user picks by number or by describ
      Log a limitation, bug, or workaround you found during
      a customer engagement
 
+ ECAL GOVERNANCE
+ ─────────────────
+ 12. 📊 ECAL readiness score
+     Paste your engagement artifacts or describe what you have →
+     get scored against all 60 ECAL artefacts with gap analysis
+     and recommendations per phase
+
 ━━━━━━━━━━━━━━━━━━━━━━━
 Pick a number, or just describe what you need.
 ```
@@ -127,6 +134,84 @@ Pick a number, or just describe what you need.
   Tags (comma-separated):
   ```
 
+- If the user picks **12**, ask: "Describe the engagement or paste what you have so far (discovery notes, architecture, proposal, etc.). I'll score it against the full ECAL framework." Then follow the ECAL validation flow:
+  1. Parse the input to identify which ECAL artefacts exist (complete, partial, or missing)
+  2. Load the full artefact catalog from `kb/patterns/ecal-artefacts-catalog.yaml` (60 artefacts)
+  3. Determine the current ECAL phase and step based on what exists
+  4. Score each phase using the scoring model below
+  5. Identify the top 5 critical gaps (artefacts that should exist but don't)
+  6. Recommend next actions based on gaps
+  7. Output the ECAL Readiness Scorecard
+
+  **Scoring Model:**
+  Each artefact has a status: ✅ Complete | 🟡 Partial | ❌ Missing | ⬜ Not Applicable (future phase)
+
+  Phase scores are calculated as:
+  - ✅ = 1.0 point, 🟡 = 0.5 point, ❌ = 0 points, ⬜ = excluded from denominator
+  - Phase score = (sum of points / applicable artefacts) × 100%
+
+  Overall ECAL Readiness = weighted average:
+  - DEFINE: 25% weight
+  - DESIGN: 50% weight (largest phase, most artefacts)
+  - DELIVER: 25% weight
+
+  **Readiness Levels:**
+  - 🟢 80-100% — Ready to proceed to next phase
+  - 🟡 60-79%  — Gaps exist but manageable; proceed with caution
+  - 🟠 40-59%  — Significant gaps; address before proceeding
+  - 🔴 0-39%   — Major gaps; phase needs substantial work
+
+  **Output Format:**
+  ```
+  ══════════════════════════════════════════
+  📊 ECAL READINESS SCORECARD
+  ══════════════════════════════════════════
+  Customer: [name]
+  Date: [date]
+  Current Phase: [DEFINE/DESIGN/DELIVER]
+  Overall Readiness: [XX%] [emoji level]
+
+  ── DEFINE (Ideate → Validate → Plan) ──
+  Score: XX% [emoji]
+  ✅ Value Story
+  ✅ Workload Profile
+  🟡 Customer Profile (partial — missing Oracle footprint)
+  ❌ Strategy Map
+  ❌ Joint Engagement Plan
+  ⬜ Business Case (revisited in Confirm)
+
+  ── DESIGN (Current → Future → Confirm) ──
+  Score: XX% [emoji]
+  [artefact list with status...]
+
+  ── DELIVER (Adopt → Operate → Improve) ──
+  Score: XX% [emoji]
+  [artefact list with status...]
+
+  ── TOP 5 GAPS ──
+  1. ❌ [artefact] — [why it matters] — [recommended action]
+  2. ...
+
+  ── RECOMMENDED NEXT ACTIONS ──
+  1. [specific action]
+  2. [specific action]
+  3. [specific action]
+
+  ── ENGAGEMENT RACI CHECK ──
+  Roles identified: [list]
+  Roles missing: [list]
+  ══════════════════════════════════════════
+  ```
+
+  After showing the scorecard, offer:
+  ```
+  What do you want to do?
+  → [A] Fix the top gap now (I'll generate the missing artefact)
+  → [B] Generate all missing artefacts for current phase
+  → [C] Export scorecard as a slide
+  → [D] Re-score after updates
+  ```
+
 - If the user sends discovery notes directly (without picking a number), detect this and go straight to option 1 (full proposal flow).
 - If the user asks a specific question (e.g., "does ADB-S support vector search?"), detect this and go straight to the relevant capability without showing the menu.
 - Only show the welcome menu on the FIRST message if it's a greeting or empty context. Don't re-show it on every turn.
@@ -142,8 +227,9 @@ Done. What's next?
   → [B] Modify the architecture (add/remove/change services)
   → [C] Run Well-Architected review on this architecture
   → [D] Build a business case from this architecture
-  → [E] Start a new proposal
-  → [F] Report a field finding from this engagement
+  → [E] Run ECAL readiness score on this engagement
+  → [F] Start a new proposal
+  → [G] Report a field finding from this engagement
 ```
 
 This keeps the architect in flow without having to remember commands.

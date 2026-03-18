@@ -13,7 +13,8 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── define-phase.md         # DEFINE phase detailed guide
 │   ├── design-phase.md         # DESIGN phase detailed guide
 │   ├── deliver-phase.md        # DELIVER phase detailed guide
-│   └── engagement-tiers.md     # Tier definitions and artifact matrix
+│   ├── engagement-tiers.md     # Tier definitions and artifact matrix
+│   └── ecal-gaps-backlog.md    # Remaining ECAL gaps to implement (20 items)
 ├── kb/                         # Knowledge Base
 │   ├── architecture-center/    # Oracle Architecture Center reference catalog
 │   │   └── catalog.yaml        # 123 curated reference architectures
@@ -24,6 +25,9 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   │   ├── service-tiering.yaml      # Service tier model (Platinum/Gold/Silver/Bronze)
 │   │   ├── architecture-principles.yaml # ECAL principles (Design/Deployment/Service)
 │   │   ├── operational-raci.yaml     # RACI matrix templates (3 operational models)
+│   │   ├── engagement-raci.yaml     # ECAL engagement RACI (10 roles, all 9 steps)
+│   │   ├── business-drivers.yaml    # 4-pillar business drivers + hypothesis families
+│   │   ├── ecal-artefacts-catalog.yaml # Complete ECAL 3.1 artefacts catalog (60 items)
 │   │   ├── environment-catalogue.yaml # Environment templates per tier
 │   │   ├── database-ha-adb-s.yaml
 │   │   ├── database-dr-cross-region.yaml
@@ -53,6 +57,9 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 ├── templates/                  # ECAL phase templates
 │   ├── Oracle_PPT-template_FY26.pptx # Official Oracle FY26 PowerPoint template
 │   ├── workload-profile.yaml   # DEFINE: Discovery capture
+│   ├── customer-profile.yaml   # DEFINE: Strategic customer profiling (internal)
+│   ├── strategy-map.yaml       # DEFINE: Goals→Strategies→Capabilities→Enablers
+│   ├── discovery-questionnaire.yaml # DESIGN: Structured customer IT collection
 │   ├── business-case.yaml      # DEFINE: Business case for customer approval
 │   ├── value-story.yaml        # DEFINE: Business value hypothesis
 │   ├── joint-engagement-plan.yaml # DEFINE: Engagement scoping

@@ -1,21 +1,40 @@
 # OCI Deal Accelerator
 
-AI skill aligned with Oracle's **ECAL framework** (Define → Design → Deliver) that compresses the OCI SA's cycle from customer discovery to architecture proposal — from days to hours.
+An AI-powered skill that acts as a **force multiplier for OCI Solutions Architects**. Feed it raw discovery notes from a customer call and get back a complete, defensible architecture proposal — ready to present.
 
-## What It Does
+What normally takes an SA days of work (structuring notes, designing architecture, building decks, estimating costs, validating against Well-Architected) gets compressed into a single conversation. The skill doesn't just generate documents — it applies field-tested patterns, real pricing data, and lessons learned from actual OCI engagements to produce artifacts you can confidently put in front of a customer.
 
-Takes unstructured discovery notes and produces a complete OCI architecture package:
+**Fully aligned with Oracle's ECAL 3.1 framework** — covers all 9 steps (Ideate → Validate → Plan → Current → Future → Confirm → Adopt → Operate → Improve) with a catalog of 60 artefacts, engagement RACIs for 10 roles, and an ECAL Readiness Scorecard to track engagement completeness.
 
-- **Workload Profile** — structured from messy notes (YAML)
-- **Value Story** — business hypothesis linked to OCI outcomes
-- **Business Case** — TCO comparison, ROI analysis, value drivers, risk assessment (.pptx)
-- **Architecture Diagram** — `.drawio` with official Oracle visual style (OCI + AWS/GCP/Azure icons)
-- **Slide Deck** — 6-15 slides scaled to engagement complexity (.pptx)
-- **Customer PDF** — branded customer-facing document, no internal KB references (.pdf)
-- **Cost Estimate** — BYOL vs PAYG breakdown with assumptions
-- **Well-Architected Scorecard** — 5-pillar automated validation
-- **Operations Model** — day-2 monitoring, patching, incident response
-- **Delivery Artifacts** — handover, go-live checklist, success criteria
+### Key differentiators
+
+- **ECAL 3.1 native** — engagement RACI, artefact catalog, readiness scoring, and lessons learned per step baked into the workflow
+- **Field knowledge, not docs regurgitation** — built-in KB with real gotchas, workarounds, and sizing lessons from production OCI deployments
+- **Honest about trade-offs** — flags OCI limitations and competitive gaps instead of overselling
+- **Multi-cloud aware** — supports hybrid/multi-cloud diagrams (AWS, Azure, GCP icons) and considers options like ADB Multicloud before recommending full migration
+- **End-to-end coverage** — from discovery notes to go-live checklist, not just the architecture slide
+
+## What It Produces
+
+From unstructured input (meeting notes, emails, Slack threads), the skill generates:
+
+| Artifact | Format | ECAL Phase | ECAL Step |
+|---|---|---|---|
+| **Customer Profile** — strategic goals, Oracle footprint, industry analysis | YAML | Define | Ideate |
+| **Strategy Map** — goals → strategies → capabilities → enablers | YAML | Define | Ideate |
+| **Workload Profile** — structured discovery capture | YAML | Define | Ideate |
+| **Value Story** — business hypothesis linked to OCI outcomes | YAML | Define | Ideate |
+| **Business Case** — TCO, ROI, value drivers, risk assessment | .pptx | Define | Ideate |
+| **Joint Engagement Plan** — scope, resources, timeline | YAML | Define | Plan |
+| **Discovery Questionnaire** — structured IT landscape collection | YAML | Design | Current |
+| **Architecture Diagram** — official Oracle visual style, multi-cloud support | .drawio | Design | Future |
+| **Slide Deck** — 6-15 slides scaled to engagement complexity | .pptx | Design | Confirm |
+| **Customer PDF** — branded, no internal KB references | .pdf | Design | Confirm |
+| **Cost Estimate** — BYOL vs PAYG breakdown with assumptions | YAML | Design | Future |
+| **Well-Architected Scorecard** — 5-pillar automated validation | YAML | Design | Future |
+| **Operations Model** — day-2 monitoring, patching, incident response | YAML | Design | Future |
+| **ECAL Readiness Scorecard** — 60-artefact gap analysis per phase | Text | All | All |
+| **Delivery Artifacts** — handover, go-live checklist, success criteria | YAML | Deliver | Adopt |
 
 ## Quick Start
 
@@ -53,6 +72,25 @@ deliver           ← handover + go-live checklist + success criteria
 ## Knowledge Base
 
 The KB is the moat — field experience, not documentation regurgitation.
+
+### Contributing to the KB
+
+Any SA can contribute knowledge to the skill. The KB lives in `kb/` as editable YAML files. Here's where each type of contribution goes:
+
+| What you want to contribute | Where it goes | How |
+|---|---|---|
+| **Field caveat or workaround** | `kb/field-findings/tracker.yaml` | Menu option 11, or `python tools/findings_cli.py add` |
+| **Lesson learned** | `kb/field-knowledge/lessons-learned.yaml` | Edit YAML directly |
+| **Undocumented real-world limit** | `kb/field-knowledge/real-world-limits.yaml` | Edit YAML directly |
+| **Service caveat** | `kb/field-knowledge/gotchas.yaml` | Edit YAML directly |
+| **OCI service info** | `kb/services/<service>.yaml` | Create or edit the service YAML |
+| **Architecture pattern** | `kb/patterns/` | Add YAML following existing format |
+| **Architecture Center reference** | `kb/architecture-center/catalog.yaml` | `python tools/refresh_arch_catalog.py --url <url>` |
+| **Updated pricing** | `kb/pricing/<category>.yaml` | Edit with data from [OCI Price List](https://www.oracle.com/cloud/price-list/) |
+| **Feature compatibility** | `kb/compatibility/adb-feature-matrix.yaml` | Edit the matrix, mark `verified_in_field: true` |
+| **Competitive comparison** | `kb/competitive/` | Add or edit YAML with real pros AND cons |
+
+**Fastest path**: if you hit something in an engagement that another SA should know about, use menu option 11 (Report a field finding) — the skill walks you through the format and adds it to the tracker automatically.
 
 ### OCI Pricing (13 categories)
 
@@ -123,6 +161,61 @@ python tools/findings_cli.py stats
 
 Honest AWS/Azure/GCP comparisons (`kb/competitive/`) that cover genuine advantages AND genuine gaps. No marketing — only field-verified facts.
 
+## ECAL Readiness Score
+
+Option 12 in the menu scores an engagement against the complete ECAL 3.1 framework:
+
+```
+══════════════════════════════════════════
+📊 ECAL READINESS SCORECARD
+══════════════════════════════════════════
+Customer: Acme Corp
+Current Phase: DESIGN
+Overall Readiness: 62% 🟡
+
+── DEFINE ──────────────────── 85% 🟢
+✅ Value Story
+✅ Workload Profile
+🟡 Customer Profile (missing Oracle footprint)
+❌ Strategy Map
+✅ Joint Engagement Plan
+
+── DESIGN ──────────────────── 55% 🟠
+✅ Future State Architecture
+✅ Cost Estimate
+🟡 Discovery Questionnaire (partial)
+❌ Operational RACI
+❌ Recovery Model
+...
+
+── TOP 5 GAPS ──
+1. ❌ Strategy Map — links solution to business goals
+2. ❌ Operational RACI — who runs what post go-live
+...
+══════════════════════════════════════════
+```
+
+The scorecard evaluates each of the **60 ECAL artefacts** from `kb/patterns/ecal-artefacts-catalog.yaml`, weighted by phase (DEFINE 25%, DESIGN 50%, DELIVER 25%). Readiness levels: 🟢 80%+ | 🟡 60-79% | 🟠 40-59% | 🔴 <40%.
+
+After scoring, the skill offers to generate missing artefacts, fix the top gap, or export the scorecard as a slide.
+
+## ECAL 3.1 Coverage
+
+The KB includes comprehensive ECAL 3.1 process knowledge:
+
+| KB File | What it covers |
+|---|---|
+| `kb/patterns/ecal-artefacts-catalog.yaml` | All 60 ECAL artefacts with description, purpose, and skill support level |
+| `kb/patterns/engagement-raci.yaml` | RACI matrices for 10 roles across all 9 ECAL steps + lessons learned |
+| `kb/patterns/business-drivers.yaml` | 4-pillar framework (Strategic/Financial/BizOps/ITOps) + hypothesis families |
+| `kb/patterns/architecture-principles.yaml` | Design, Deployment, and Service principles from ECAL |
+| `kb/patterns/operational-raci.yaml` | 3 operational models (fully managed, co-managed, self-managed) |
+| `kb/patterns/service-tiering.yaml` | Platinum/Gold/Silver/Bronze service tier definitions |
+| `kb/patterns/environment-catalogue.yaml` | Environment templates per tier (prod, pre-prod, dev, DR) |
+| `templates/customer-profile.yaml` | Strategic customer profiling (goals, footprint, industry) |
+| `templates/strategy-map.yaml` | Goals → Strategies → Capabilities → Enablers mapping |
+| `templates/discovery-questionnaire.yaml` | Structured IT landscape collection with prioritization matrix |
+
 ## Business Case Builder
 
 Option 8 in the menu generates a business case deck for customer internal approval:
@@ -153,10 +246,11 @@ When you start a conversation without discovery notes, the skill presents an int
 🏗️ OCI Deal Accelerator
 ━━━━━━━━━━━━━━━━━━━━━━━
 
- DESIGN & PROPOSE:      1-4 (proposal, diagram, deck, cost)
- VALIDATE & CHECK:      5-7 (WA review, compatibility, competitive)
- STRATEGY & BUSINESS:   8   (business case builder)
+ DESIGN & PROPOSE:      1-4  (proposal, diagram, deck, cost)
+ VALIDATE & CHECK:      5-7  (WA review, compatibility, competitive)
+ STRATEGY & BUSINESS:   8    (business case builder)
  KNOWLEDGE BASE:        9-11 (field findings, ref arch, report finding)
+ ECAL GOVERNANCE:       12   (ECAL readiness score)
 ```
 
 If you paste discovery notes directly, the skill skips the menu and goes straight to the full proposal flow.
@@ -218,11 +312,21 @@ The skill is LLM-agnostic. The same `SKILL.md` and KB work with:
 
 ## Roadmap
 
+### ECAL Completeness (see `docs/ecal-gaps-backlog.md` for full list)
+- Integration Catalog template — detailed integration mapping with data flows
+- Cloud Operating Framework — 52-week operational plan (9 capability areas)
+- OCI Operationalization Framework — 5-milestone deployment methodology
+- POD (Pool of Databases) pattern — large-scale DB consolidation
+- Banking/Financial compliance pattern — EBA/FCA/PRA mapped to OCI services
+- ExaCC managed service pattern — complete ExaCC + ZDLRA/ZFS/OEM/OKV
+
+### Platform
 - Interactive what-if cost simulator (adjust ECPU/storage/commitment live)
 - Automated migration complexity scoring from discovery notes
 - Multi-region DR cost optimizer
 - Engagement timeline generator (Gantt-style from Joint Engagement Plan)
 - DBExpert API auto-refresh for database service catalog
+- KB vectorizada en base de datos (RAG) — almacenar knowledge base en OCI 23ai con embeddings para busqueda semantica en lugar de lookup estatico por YAML
 
 ## Requirements
 

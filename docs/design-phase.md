@@ -8,6 +8,13 @@ The DESIGN phase produces a complete, defensible architecture. Output: agreed ar
 
 Capture enough about the current state to architect the future. Frame the problem — don't gather exhaustive requirements.
 
+**Artefacts:**
+- Discovery Questionnaire (`templates/discovery-questionnaire.yaml`) — structured customer data collection
+- Business & Security Constraints — time, funding, legal, compliance, technology constraints
+- Current State Apps & Tech Portfolio — systems, assets, integrations
+- Prioritization Matrix — score apps by criticality, fit, potential, risk (in discovery questionnaire)
+- Current State Architecture — diagrams of current environment
+
 **Technology** (existing in Workload Profile):
 - Databases, compute, middleware, messaging, storage, networking, identity, integration
 - Use `config/workload-profile-schema.yaml` for field definitions
@@ -25,10 +32,14 @@ Capture enough about the current state to architect the future. Frame the proble
 - Backup/recovery testing frequency
 
 **Guidelines:**
+- Frame the problem — don't gather exhaustive requirements
 - Be collaborative — share everything with the customer
 - Use whatever works — top-down and bottom-up
 - Understand business context, drivers, and desired outcomes
 - Be very clear about scope — which systems are in and out
+
+**ECAL Artefacts:** See `kb/patterns/ecal-artefacts-catalog.yaml` DES-01 through DES-09
+**Engagement RACI:** See `kb/patterns/engagement-raci.yaml` design.current
 
 ### 2. Future State (Solution Design)
 
