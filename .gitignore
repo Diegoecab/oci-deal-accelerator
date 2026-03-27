@@ -31,3 +31,4 @@ examples/*.yaml
 
 # Exported PDFfiles
 examples/*.pdf
+examples/*.xlsx
