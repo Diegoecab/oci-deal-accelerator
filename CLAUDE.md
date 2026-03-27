@@ -38,6 +38,7 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   │   └── (dirs: database-ha/, database-dr/, networking-hub-spoke/, etc.)
 │   ├── sizing/                 # CPU conversion ratios, IOPS, scaling rules
 │   ├── pricing/                # Simplified pricing for estimation
+│   │   └── oci-sku-catalog.yaml  # ~160 OCI SKUs for BOM generation
 │   ├── competitive/            # AWS/Azure/GCP service mapping
 │   ├── well-architected/       # 5-pillar WA Framework checklists
 │   ├── compatibility/          # Feature matrices (ADB, etc.)
@@ -47,7 +48,9 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── oci_deck_gen.py         # .pptx slide deck generator (DEFAULT output)
 │   ├── oci_pdf_gen.py          # .pdf customer-facing document (branded, no internal refs)
 │   ├── oci_diagram_gen.py      # .drawio diagram generator
+│   ├── oci_bom_gen.py          # .xlsx Bill of Materials generator (SA tool)
 │   ├── oci_output.py           # Output orchestrator
+│   ├── refresh_sku_catalog.py  # SKU catalog refresh from Oracle pricing API
 │   └── refresh_arch_catalog.py # Architecture Center catalog refresh tool
 ├── scripts/                    # Validation and utilities
 │   └── validate-architecture.py # WA validation engine
@@ -72,7 +75,8 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   ├── handover-document.yaml  # DELIVER: Implementation handover
 │   ├── go-live-checklist.yaml  # DELIVER: Pre-cutover verification
 │   ├── success-criteria.yaml   # DELIVER: Post go-live metrics
-│   └── lessons-learned.yaml    # DELIVER: Engagement retrospective
+│   ├── lessons-learned.yaml    # DELIVER: Engagement retrospective
+│   └── bom-spec.yaml          # SA TOOL: BOM input spec template
 ├── codex/                      # Codex setup guide (README only)
 └── examples/                   # Example specs and generated outputs
 ```
@@ -115,6 +119,9 @@ python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposa
 python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf
 python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf --diagram arch.png
 
+# Generate BOM (.xlsx Bill of Materials)
+python tools/oci_bom_gen.py --spec examples/bom-spec.yaml --output customer-bom.xlsx
+
 # Generate diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
 
@@ -126,6 +133,12 @@ python scripts/validate-architecture.py \
 
 # Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
+
+# Refresh SKU catalog from Oracle pricing API
+python tools/refresh_sku_catalog.py --refresh          # update all prices
+python tools/refresh_sku_catalog.py --refresh --diff   # update + show changes
+python tools/refresh_sku_catalog.py --validate         # check for stale prices
+python tools/refresh_sku_catalog.py --sku B110627      # inspect single SKU
 
 # Refresh Architecture Center catalog
 python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages

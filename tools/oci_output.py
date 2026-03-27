@@ -27,6 +27,7 @@ FORMATS = {
     "full": ["pptx", "drawio", "docx", "xlsx", "pdf"],
     "doc": ["docx"],
     "pdf": ["pdf"],
+    "bom": ["bom"],
 }
 
 GENERATORS = {
@@ -61,6 +62,13 @@ GENERATORS = {
         "class": "OCIPDFGenerator",
         "method": "from_spec",
         "description": "Customer-facing PDF (.pdf)",
+    },
+    "bom": {
+        "module": "oci_bom_gen",
+        "class": "OCIBomGenerator",
+        "method": "from_spec",
+        "description": "Bill of Materials (.xlsx)",
+        "optional": True,
     },
 }
 

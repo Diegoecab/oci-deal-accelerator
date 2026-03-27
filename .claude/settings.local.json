@@ -60,7 +60,21 @@
       "Bash(PYTHONPATH=/tmp/pptx_ok python3 -c \"from pptx import Presentation; print\\(''''OK''''\\)\")",
       "Bash(PYTHONPATH=/tmp/pptx_ok python3 /tmp/migrate_to_oracle.py)",
       "Bash(PYTHONPATH=/tmp/pptx_ok python3 -c \"\nfrom pptx import Presentation\nprs = Presentation\\('/mnt/c/Users/Diego/Documents/oci-deal-accelerator/oci-deal-accelerator/templates/Oracle_PPT-template_FY26.pptx'\\)\nprint\\('Template has {} existing slides'.format\\(len\\(prs.slides\\)\\)\\)\n\")",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(ls \"/mnt/c/Users/Diego/Documents/oci-deal-accelerator-oracle/oci-deal-accelerator/templates/Oracle_PPT\"*)",
+      "Bash(ls \"/mnt/c/Users/Diego/Documents/oci-deal-accelerator-oracle/oci-deal-accelerator/templates/\"*.pptx)",
+      "Bash(ls \"/mnt/c/Users/Diego/Documents/oci-deal-accelerator-oracle/oci-deal-accelerator/templates/\"*.potx)",
+      "Bash(python3.12 -c \"import drawpyo\")",
+      "Bash(python3.12 tools/oci_diagram_gen.py --spec examples/output-meli-kvs/diagram-spec.yaml --output examples/output-meli-kvs/architecture.drawio)",
+      "Bash(python3.12 tools/oci_pdf_gen.py --spec examples/output-meli-kvs/proposal-spec.yaml --output examples/output-meli-kvs/customer-proposal.pdf)",
+      "Bash(python3.12 -c \":*)",
+      "Bash(python3.12 tools/oci_deck_gen.py --spec examples/output-meli-kvs/proposal-spec.yaml --output examples/output-meli-kvs/architecture-proposal.pptx)",
+      "Bash(python3.12 tools/oci_bizcase_gen.py --spec examples/output-meli-kvs/business-case.yaml --output examples/output-meli-kvs/business-case.pptx)",
+      "Bash(python3 -c \":*)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s --max-time 15 -H \"X-Oracle-Accept-CurrencyCode: USD\" \"https://itra.oraclecloud.com/itas/.anon/myservices/api/v1/products?limit=2&partNumber=B110627\")",
+      "Bash(curl -v --max-time 10 -H \"X-Oracle-Accept-CurrencyCode: USD\" \"https://itra.oraclecloud.com/itas/.anon/myservices/api/v1/products?limit=1\")",
+      "Bash(curl -s --max-time 15 \"https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/?partNumber=B110627&currencyCode=USD\")"
     ]
   }
 }

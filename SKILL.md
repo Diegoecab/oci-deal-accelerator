@@ -59,6 +59,11 @@ Present these options as a compact numbered list. Each option has a bold title f
  ─────────────────
  12. 📊 ECAL readiness score — *60-artefact gap analysis*
 
+ SA TOOLS
+ ─────────────────
+ 13. 📦 BOM generator — *services + quantities → .xlsx Bill of Materials*
+ 14. 📤 BOM for AppCA — *BOM → .xlsx ready to import into AppCA*
+
 ━━━━━━━━━━━━━━━━━━━━━━━
 Pick a number, or just describe what you need.
 ```
@@ -263,6 +268,29 @@ Pick a number, or just describe what you need.
   → [C] Export scorecard as a slide (.pptx)
   → [D] Re-score after updates
   ```
+
+- If the user picks **13**, ask: "What services does the customer need? (e.g., 'ExaCS X11M BYOL 2 DB servers + 4 storage + 128 ECPUs + ADB-S 8 ECPU + 2TB Block Storage + FastConnect 1Gbps'). I'll generate the BOM with only those SKUs."
+  Then follow the BOM generation flow:
+  1. Parse the customer request to identify needed OCI services and quantities
+  2. Match services against `kb/pricing/oci-sku-catalog.yaml` to select exact SKUs
+  3. Ask for discount % and contract duration if not specified (default: 0%, 12 months)
+  4. Ask if currency conversion is needed (e.g., USD→BRL with exchange rate and tax)
+  5. Generate the BOM spec YAML and save to the output folder
+  6. Run `tools/oci_bom_gen.py` to produce the .xlsx
+  7. Present a summary table in the terminal showing key totals (monthly, ARR)
+  8. List the files generated
+
+  **BOM Output Rules:**
+  - NEVER include "Confidential: Internal ONLY" or any confidentiality marking
+  - ALWAYS include the Oracle Cost Estimator disclaimer at the bottom
+  - Only include SKUs the customer actually requested — never dump the full catalog
+  - Show cost proportions so the customer can see where their spend concentrates
+  - Use Excel formulas (not static values) so the customer can adjust quantities
+
+- If the user picks **14**, follow the same flow as option 13 (BOM generator) but generate the output in AppCA import format. AppCA is Oracle's internal deal approval tool. The generated .xlsx has two sheets:
+  - **"Export to AppCA"**: Flat table with columns SKU, QTY, HOURS, MONTHS, DISCOUNT, BURSTABLE — ready to paste/import into AppCA
+  - **"BOM.C1"**: Full BOM detail with product names, metrics, prices, and formulas for cost calculations
+  Run with: `python tools/oci_bom_gen.py --spec <spec>.yaml --output <name>.xlsx --appca`
 
 - If the user sends discovery notes directly (without picking a number), detect this and go straight to option 1 (full proposal flow).
 - If the user asks a specific question (e.g., "does ADB-S support vector search?"), detect this and go straight to the relevant capability without showing the menu.

@@ -1,0 +1,50 @@
+# ──────────────────────────────────────────────────────────────────
+# OCI Bill of Materials (BOM) — Spec Template
+# ──────────────────────────────────────────────────────────────────
+# The AI generates this YAML based on the customer's request,
+# selecting only the relevant SKUs from kb/pricing/oci-sku-catalog.yaml.
+# The BOM generator tool (tools/oci_bom_gen.py) renders it to .xlsx.
+#
+# Usage:
+#   python tools/oci_bom_gen.py --spec this-file.yaml --output bom.xlsx
+
+bom:
+  # ── Header ──────────────────────────────────────────────────────
+  customer_name: ""
+  project_name: ""
+  prepared_by: ""
+  date: ""                       # ISO format: 2026-03-27
+  reference_label: ""            # e.g., "ACME-BOM-001"
+  currency: USD                  # Primary currency
+  # realm: "OC1 - Commercial"   # Optional: OC1 / OC2 / OC3 / OC9
+  # service_type: "Pay as You Go" # Optional: PAYG / UCM / Annual Flex
+
+  # ── Optional currency conversion ────────────────────────────────
+  # Enable to add converted columns (e.g., USD → BRL with tax)
+  conversion:
+    enabled: false
+    target_currency: BRL
+    exchange_rate: 5.75          # 1 USD = X target currency
+    tax_rate: 0.0                # e.g., 0.1385 for 13.85% ISS+PIS+COFINS
+
+  # ── Line items (only requested services) ────────────────────────
+  # Each item must reference a SKU from oci-sku-catalog.yaml.
+  # Only include services the customer actually needs.
+  line_items:
+    - sku: "B97384"              # Must match oci-sku-catalog.yaml
+      qty: 4                     # Number of instances/units
+      # hours_units: 730         # Override catalog default if needed
+      months: 12                 # Contract duration
+      discount: 0.0              # 0.0 to 1.0 (e.g., 0.30 = 30%)
+      # custom_label: ""         # Optional label
+      # custom_note: ""          # Optional note
+
+    - sku: "B97385"
+      qty: 64                   # 64 GB memory
+      months: 12
+      discount: 0.0
+
+  # ── Notes (optional) ────────────────────────────────────────────
+  notes:
+    - "Pricing based on Ashburn region (OC1)"
+    - "Discounts subject to Oracle approval"

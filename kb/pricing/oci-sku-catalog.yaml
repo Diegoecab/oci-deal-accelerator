@@ -1,0 +1,1327 @@
+last_verified: '2026-03-27'
+source: Oracle OCI Price List + internal BOM reference v1.73
+description: 'OCI SKU catalog for BOM generation. ~160 SKUs across 14+ categories. Prices are approximate and for estimation
+  only. Always verify against https://www.oracle.com/cloud/pricing/
+
+  '
+currency: USD
+disclaimer: 'This sample quote is provided solely for evaluation purposes and is intended to further discussions between you
+  and Oracle. This sample quote is not eligible for acceptance by you and is not a binding contract between you and Oracle
+  for the services specified. If you would like to purchase the services specified in this sample quote, please request that
+  Oracle issue you a formal quote (which may include an OMA or a CSA if you do not already have an appropriate agreement in
+  place with Oracle) for your acceptance and execution. Your formal quote will be effective only upon Oracle''s acceptance
+  of the formal quote (and the OMA or CSA, if required).
+
+  '
+categories:
+  iaas:
+    display_name: Oracle Cloud Infrastructure - IaaS
+    skus:
+    - sku: B97384
+      product: Compute - Standard - E5 (OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 0.03
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B97385
+      product: Compute - Standard - E5 (Memory)
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.002
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B111129
+      product: Compute - Standard - E6 (OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 0.03
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B111130
+      product: Compute - Standard - E6 (Memory)
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.002
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B94176
+      product: Compute - Standard - X9 (OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 0.04
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B94177
+      product: Compute - Standard - X9 (Memory)
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.0015
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93311
+      product: Compute - Optimized - X9 (OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 0.054
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93312
+      product: Compute - Optimized - X9 (Memory)
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.0015
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93297
+      product: 'Compute - Standard - A1 (OCPU) (Free Tier: 4 OCPUs)'
+      metric: OCPU Per Hour
+      list_price_usd: 0.01
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93298
+      product: 'Compute - Standard - A1 (Memory) (Free Tier: 24 GB RAM)'
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.0015
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109529
+      product: Compute - Standard - A2 (OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 0.014
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109530
+      product: Compute - Standard - A2 (Memory)
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.002
+      default_hours_units: 730
+      billing_type: hourly
+  gpu:
+    display_name: Oracle Cloud Infrastructure - GPUs
+    skus:
+    - sku: B95909
+      product: Compute - GPU - A10 (1, 2 or 4 GPUs NVIDIA Ampere A10 / 24 GB per GPU)
+      metric: GPU Per Hour
+      list_price_usd: 2.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109479
+      product: Compute - GPU - BM.GPU.L40S.4 (4 GPUs NVIDIA Hopper L40S / 192 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 3.5
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92740
+      product: Compute - GPU - BM.GPU4.8 (8 GPUs NVIDIA Ampere A100 v1 / 320 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 3.05
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95907
+      product: Compute - GPU - BM.GPU.A100-v2.8 (8 GPUs NVIDIA Ampere A100 / 640 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 4.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109485
+      product: Compute - GPU - BM.GPU.MI300X.8 (8 GPUs AMD MI300X / 1536 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 6.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B98415
+      product: Compute - GPU - BM.GPU.H100.8 (8 GPUs NVIDIA Hopper H100 / 640 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 10.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110519
+      product: Compute - GPU - BM.GPU.H200.8 (8 GPUs NVIDIA Hopper H200 / 1128 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 10.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110978
+      product: Compute - GPU - BM.GPU.B200.8 (8 GPUs NVIDIA Blackwell B200 / 1440 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 14.0
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110979
+      product: Compute - GPU - BM.GPU.GB200.4 (4 GPUs NVIDIA Blackwell GB200 NVL72 / 768 GB Total)
+      metric: GPU Per Hour
+      list_price_usd: 16.0
+      default_hours_units: 730
+      billing_type: hourly
+  vmware:
+    display_name: Oracle Cloud Infrastructure - VMware
+    skus:
+    - sku: B95178
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.64 - Hourly Commit (minimum 192 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.2437
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95179
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.64 - Monthly Commit (minimum 192 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.2031
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95180
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.64 - 1 Year Commit (minimum 192 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1625
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95181
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.64 - 3 Year Commit (minimum 192 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.132
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95415
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.128 - Hourly Commit (minimum 384 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.195
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95416
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.128 - Monthly Commit (minimum 384 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1625
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95417
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.128 - 1 Year Commit (minimum 384 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.13
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95418
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E4.128 - 3 Year Commit (minimum 384 OCPUs)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1056
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B108809
+      product: Oracle Cloud VMware Solution - BM.Standard.E5.48 - Hourly Commit (minimum 144 OCPUs) - 8 hours min
+      metric: Node Per Hour (48 OCPUs each, min x3)
+      list_price_usd: 16.6617
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B108810
+      product: Oracle Cloud VMware Solution - BM.Standard.E5.48 - 1 Year Commit (minimum 144 OCPUs)
+      metric: Node Per Hour (48 OCPUs each, min x3)
+      list_price_usd: 13.1604
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B108811
+      product: Oracle Cloud VMware Solution - BM.Standard.E5.48 - 3 Year Commit (minimum 144 OCPUs)
+      metric: Node Per Hour (48 OCPUs each, min x3)
+      list_price_usd: 10.6119
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B110680
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E5.32 - Hourly Commit (minimum 96 OCPUs) - 8 hours min
+      metric: Node Per Hour (32 OCPUs each, min x3)
+      list_price_usd: 10.2379
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B110681
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E5.32 - Monthly Commit (minimum 96 OCPUs)
+      metric: Node Per Hour (32 OCPUs each, min x3)
+      list_price_usd: 8.531
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B110682
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E5.32 - 1 Year Commit (minimum 96 OCPUs)
+      metric: Node Per Hour (32 OCPUs each, min x3)
+      list_price_usd: 6.8242
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B110683
+      product: Oracle Cloud VMware Solution - BM.DenseIO.E5.32 - 3 Year Commit (minimum 96 OCPUs)
+      metric: Node Per Hour (32 OCPUs each, min x3)
+      list_price_usd: 6.072
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97105
+      product: Oracle Cloud VMware Solution - BM.Standard3.16 - Hourly Commit (minimum 48 OCPUs) - 8 hours min
+      metric: Node Per Hour (16 OCPUs each, min x3)
+      list_price_usd: 5.554
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97106
+      product: Oracle Cloud VMware Solution - BM.Standard3.16 - 1 Year Commit (minimum 48 OCPUs)
+      metric: Node Per Hour (16 OCPUs each, min x3)
+      list_price_usd: 4.2943
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97107
+      product: Oracle Cloud VMware Solution - BM.Standard3.16 - 3 Year Commit (minimum 48 OCPUs)
+      metric: Node Per Hour (16 OCPUs each, min x3)
+      list_price_usd: 3.3522
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97111
+      product: Oracle Cloud VMware Solution - Expansion - Hourly Commit (Add. OCPUs for BM.E5 / X9)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1605
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B110684
+      product: Oracle Cloud VMware Solution - Expansion - Monthly Commit (Add. OCPUs for BM.E5 / X9)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1338
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97112
+      product: Oracle Cloud VMware Solution - Expansion - 1 Year Commit (Add. OCPUs for BM.E5 / X9)
+      metric: OCPU Per Hour
+      list_price_usd: 0.1092
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B97113
+      product: Oracle Cloud VMware Solution - Expansion - 3 Year Commit (Add. OCPUs for BM.E5 / X9)
+      metric: OCPU Per Hour
+      list_price_usd: 0.0739
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B93421
+      product: Oracle Cloud VMware Solution - HCX Enterprise - Monthly
+      metric: OCPU Per Hour
+      list_price_usd: 0.0126
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+  software:
+    display_name: Oracle Cloud Infrastructure - Software
+    skus:
+    - sku: B88318
+      product: OCI - Compute - Windows OS (license only)
+      metric: OCPU Per Hour
+      list_price_usd: 0.092
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B91373
+      product: OCI - Compute - Microsoft SQL Standard (LICENSE ONLY, no IaaS, X9.Std3 only)
+      metric: OCPU Per Hour (minimum 2 OCPUs)
+      list_price_usd: 0.37
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B91372
+      product: OCI - Compute - Microsoft SQL Enterprise (LICENSE ONLY, no IaaS, X7 only)
+      metric: OCPU Per Hour (minimum 2 OCPUs)
+      list_price_usd: 1.47
+      default_hours_units: 730
+      billing_type: hourly
+  storage:
+    display_name: Oracle Cloud Infrastructure - Storage
+    skus:
+    - sku: B91961
+      product: OCI - Block Volume Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0255
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B91962
+      product: OCI - Block Volume Performance (VPU)
+      metric: Performance Units Per Gigabyte Per Month
+      list_price_usd: 0.0017
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B91628
+      product: 'OCI - Object Storage - Storage (Free Tier: 10 GB)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0255
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B91627
+      product: 'OCI - Object Storage - Requests (Free Tier: 50000 Requests)'
+      metric: 10,000 (10K) Requests Per Month
+      list_price_usd: 0.0034
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93000
+      product: 'OCI - Infrequent Access - Storage (Free Tier: 10 GB)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.01
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93001
+      product: 'OCI - Infrequent Access - Data Retrieval (Free Tier: 10 GB)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.01
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B91633
+      product: 'OCI - Archive Storage (Free Tier: 10 GB)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0026
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B89057
+      product: OCI - File Storage Service
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.3
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B109546
+      product: 'OCI - File Storage Service - High Performance Mount Target (Options: 20, 40 or 80 TB)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.3
+      default_hours_units: 1
+      billing_type: monthly
+  base_database:
+    display_name: Oracle Cloud Infrastructure - Base Database (DBCS)
+    skus:
+    - sku: B90573
+      product: Oracle Base Database Service - BYOL
+      metric: OCPU Per Hour
+      list_price_usd: 0.1935
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90569
+      product: Oracle Base Database Service - Standard Edition
+      metric: OCPU Per Hour
+      list_price_usd: 0.215
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90570
+      product: Oracle Base Database Service - Enterprise Edition
+      metric: OCPU Per Hour
+      list_price_usd: 0.4301
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90571
+      product: Oracle Base Database Service - Enterprise High Performance Edition
+      metric: OCPU Per Hour
+      list_price_usd: 0.8871
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90572
+      product: Oracle Base Database Service - Enterprise Extreme Performance Edition
+      metric: OCPU Per Hour
+      list_price_usd: 1.3441
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B97200
+      product: Oracle Base Database Service on ARM - BYOL
+      metric: OCPU (1 vCPU, single thread) Per Hour
+      list_price_usd: 0.0968
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B97197
+      product: Oracle Base Database Service on ARM - Enterprise Edition
+      metric: OCPU (1 vCPU, single thread) Per Hour
+      list_price_usd: 0.2151
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B97198
+      product: Oracle Base Database Service on ARM - Enterprise High Performance Edition
+      metric: OCPU (1 vCPU, single thread) Per Hour
+      list_price_usd: 0.4436
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B97199
+      product: Oracle Base Database Service on ARM - Enterprise Extreme Performance Edition
+      metric: OCPU (1 vCPU, single thread) Per Hour
+      list_price_usd: 0.6721
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90230
+      product: Database Backup Cloud - Object Storage (add SKU)
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0051
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B90231
+      product: Database Backup Cloud - Archive Storage (add SKU)
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0005
+      default_hours_units: 1
+      billing_type: monthly
+  autonomous_exadata:
+    display_name: Oracle Cloud Infrastructure - Autonomous Database & Exadata
+    skus:
+    - sku: B95701
+      product: Oracle Autonomous Database (ATP or ADW) - ECPU (2 ECPU minimum)
+      metric: ECPU Per Hour
+      list_price_usd: 0.336
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95703
+      product: Oracle Autonomous Database (ATP or ADW) - BYOL ECPU (2 ECPU minimum)
+      metric: ECPU Per Hour
+      list_price_usd: 0.0807
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95706
+      product: Oracle Autonomous Database Storage for Transaction Processing (ATP), using ECPU
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.1156
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B95754
+      product: Oracle Autonomous Database Storage for Data Warehouse (ADW), using ECPU
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0244
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B95754a
+      product: Oracle Autonomous Database Backup Storage (ATP or ADW), using ECPU
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0244
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B92992
+      product: OCI - GoldenGate
+      metric: OCPU Per Hour
+      list_price_usd: 1.3441
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92993
+      product: OCI - GoldenGate - BYOL
+      metric: OCPU Per Hour
+      list_price_usd: 0.3226
+      default_hours_units: 730
+      billing_type: hourly
+  exadata_infra:
+    display_name: Oracle Cloud Infrastructure - Database Exadata Infrastructure
+    skus:
+    - sku: B90777
+      product: OCI - Database Exadata Infrastructure - Base System
+      metric: Hosted Environment Per Hour
+      list_price_usd: 10.7527
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92380
+      product: OCI - Database Exadata Infrastructure - Quarter Rack - X8M
+      metric: Hosted Environment Per Hour
+      list_price_usd: 14.5162
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93380
+      product: OCI - Database Exadata Infrastructure - Quarter Rack - X9M
+      metric: Hosted Environment Per Hour
+      list_price_usd: 14.5162
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B88592
+      product: OCI - Database Exadata OCPU
+      metric: OCPU Per Hour
+      list_price_usd: 1.3441
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B88847
+      product: OCI - Database Exadata OCPU - BYOL
+      metric: OCPU Per Hour
+      list_price_usd: 0.3226
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110627
+      product: OCI - Exadata Cloud Infrastructure - Database Server - X11M
+      metric: Hosted Environment Per Hour
+      list_price_usd: 2.9032
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110629
+      product: OCI - Exadata Cloud Infrastructure - Storage Server - X11M
+      metric: Hosted Environment Per Hour
+      list_price_usd: 2.9032
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110631
+      product: OCI - Exadata Database ECPU - Dedicated Infrastructure (X11M)
+      metric: ECPU Per Hour
+      list_price_usd: 0.336
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110632
+      product: OCI - Exadata Database ECPU - Dedicated Infrastructure - BYOL (X11M)
+      metric: ECPU Per Hour
+      list_price_usd: 0.0807
+      default_hours_units: 730
+      billing_type: hourly
+  exascale:
+    display_name: Oracle Cloud Infrastructure - Database Exadata Exascale Infrastructure
+    skus:
+    - sku: B109356
+      product: Oracle Exadata Exascale Database - ECPU
+      metric: ECPU Per Hour
+      list_price_usd: 0.336
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109357
+      product: Oracle Exadata Exascale Database - ECPU BYOL
+      metric: ECPU Per Hour
+      list_price_usd: 0.0807
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109355
+      product: Oracle Exadata Exascale RDMA Compute Infrastructure
+      metric: ECPU Per Hour
+      list_price_usd: 0.025
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B107951
+      product: Oracle Exadata Exascale VM Filesystem Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.0425
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B107952
+      product: Oracle Exadata Exascale Smart Database Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.1156
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B109375
+      product: Oracle Exadata Exascale Additional Flash Cache
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.0005
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110989
+      product: Oracle Globally Distributed Exadata Exascale Database ECPU
+      metric: ECPU Per Hour
+      list_price_usd: 0.3864
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110990
+      product: Oracle Globally Distributed Exadata Exascale Database ECPU - BYOL
+      metric: ECPU Per Hour
+      list_price_usd: 0.0928
+      default_hours_units: 730
+      billing_type: hourly
+  postgresql:
+    display_name: Oracle Cloud Infrastructure - Database with PostgreSQL
+    skus:
+    - sku: B99060
+      product: 'OCI - PostgreSQL: OCPU Database with PostgreSQL (additional cost to IaaS)'
+      metric: OCPU Per Hour
+      list_price_usd: 0.098
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B99062
+      product: 'OCI - PostgreSQL: Database Optimized Storage'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.072
+      default_hours_units: 1
+      billing_type: monthly
+  mysql:
+    display_name: Oracle Cloud Infrastructure - MySQL Database Service (MDS)
+    skus:
+    - sku: B108030
+      product: MySQL Database - ECPU (includes GB RAM, according to shapes)
+      metric: ECPU Per Hour
+      list_price_usd: 0.0366
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92426
+      product: MySQL Database - Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.04
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B92483
+      product: MySQL Database - Backup Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.04
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B96626
+      product: 'OCI - HeatWave Node (Options: 32 GB RAM or 512 GB RAM each)'
+      metric: Node per Hour (bundle 16 GB RAM)
+      list_price_usd: 0.011
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B96625
+      product: OCI - HeatWave - Storage
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.02
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B109169
+      product: MySQL Database - Outbound Data Transfer - Inter OCI Region
+      metric: Gigabyte Outbound Data Transfer Per Month
+      list_price_usd: 0.04
+      default_hours_units: 1
+      billing_type: monthly
+  networking:
+    display_name: Oracle Cloud Infrastructure - Networking
+    skus:
+    - sku: B88327
+      product: 'OCI - Outbound Data Transfer - Originating in North America, Europe, and UK (Free Tier: 10240 GB)'
+      metric: Gigabyte Outbound Data Transfer Per Month
+      list_price_usd: 0.0085
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93455
+      product: 'OCI - Outbound Data Transfer - Originating in APAC, Japan, and South America (Free Tier: 10240 GB)'
+      metric: Gigabyte Outbound Data Transfer Per Month
+      list_price_usd: 0.025
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93456
+      product: 'OCI - Outbound Data Transfer - Originating in Middle East and Africa (Free Tier: 10240 GB)'
+      metric: Gigabyte Outbound Data Transfer Per Month
+      list_price_usd: 0.05
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93030
+      product: 'OCI - Load Balancer Base (Free Tier: 1 Load Balancer Instance)'
+      metric: Load Balancer Hour
+      list_price_usd: 0.0113
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93031
+      product: 'OCI - Load Balancer Bandwidth (Free Tier: 10 Mbps Per Hour)'
+      metric: Mbps Per Hour
+      list_price_usd: 0.0001
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B88325
+      product: OCI - FastConnect 1 Gbps
+      metric: Port Hour
+      list_price_usd: 0.2125
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B88326
+      product: OCI - FastConnect 10 Gbps
+      metric: Port Hour
+      list_price_usd: 1.275
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93126
+      product: OCI - FastConnect 100 Gbps
+      metric: Port Hour
+      list_price_usd: 10.75
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B88525
+      product: OCI - DNS
+      metric: 1 Million Queries
+      list_price_usd: 0.85
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B90327
+      product: OCI - DNS Traffic Management
+      metric: 1 Million Queries
+      list_price_usd: 4.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B88523
+      product: 'OCI - Email Delivery (Free Tier: 3000 Emails Sent)'
+      metric: 1,000 (1K) Emails Sent
+      list_price_usd: 0.085
+      default_hours_units: 1
+      billing_type: per_unit
+  security:
+    display_name: Oracle Cloud Infrastructure - Security
+    skus:
+    - sku: B94579
+      product: 'OCI - Web Application Firewall - Instance (Free Tier: 1 WAF Instance)'
+      metric: WAF Instance Per Month
+      list_price_usd: 5.0
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B94277
+      product: 'OCI - Web Application Firewall - Requests (Free Tier: 10 Million Incoming Requests)'
+      metric: 1 Million Incoming Requests Per Month
+      list_price_usd: 0.6
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B92092
+      product: 'OCI - KMS Vault - Key Versions (Free Tier: 20 Key Versions)'
+      metric: Key Version Per Month
+      list_price_usd: 0.5334
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B95403
+      product: OCI - Network Firewall Instance
+      metric: Instance Per Hour
+      list_price_usd: 2.75
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B95404
+      product: 'OCI - Network Firewall Data Processing (Free Tier: 10240 GB)'
+      metric: Gigabyte of Data Processed
+      list_price_usd: 0.01
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+  observability:
+    display_name: Oracle Cloud Infrastructure - Observability and Management
+    skus:
+    - sku: B90940
+      product: 'OCI - Notifications - HTTPS Delivery (Free Tier: 1 Million Delivery Operations)'
+      metric: 1 Million Delivery Operations
+      list_price_usd: 0.6
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B90941
+      product: 'OCI - Notifications - Email Delivery (Free Tier: 1000 Emails Sent)'
+      metric: 1,000 (1K) Emails Sent
+      list_price_usd: 0.02
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B93006
+      product: 'OCI - Notifications - SMS Outbound to Country Zone 3 [Brazil] (Free Tier: 100 SMS Messages Sent)'
+      metric: SMS Message Sent
+      list_price_usd: 0.086
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B92593
+      product: 'OCI - Logging - Storage (Free Tier: 10 GB)'
+      metric: Gigabyte Log Storage Per Month
+      list_price_usd: 0.05
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B92941
+      product: 'Application Performance Monitoring Service - Tracing Data (Free Tier: 1000 Events Per Hour)'
+      metric: 100,000 (100K) Events Per Hour
+      list_price_usd: 0.65
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B92942
+      product: Application Performance Monitoring Service - Synthetic Usage
+      metric: 10 Monitor Runs Per Hour
+      list_price_usd: 0.02
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B95264
+      product: Application Performance Monitoring Service - Stack Monitoring - 10 Monitored Resources Per Hour
+      metric: 10 Monitored Resources Per Hour
+      list_price_usd: 0.075
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B92682
+      product: Oracle Analytics - Professional (min 10 users)
+      metric: User Per Month
+      list_price_usd: 16.0
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B92683
+      product: Oracle Analytics - Enterprise (min 10 users)
+      metric: User Per Month
+      list_price_usd: 80.0
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B89630
+      product: Oracle Analytics - Professional (per OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 1.0753
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B89631
+      product: Oracle Analytics - Enterprise (per OCPU)
+      metric: OCPU Per Hour
+      list_price_usd: 2.1506
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95485
+      product: OCI - Full Stack Disaster Recovery Service (per OCPU)
+      metric: OCPUs Per Month
+      list_price_usd: 0.0128
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110274
+      product: OCI - Full Stack Disaster Recovery Service (per ECPU)
+      metric: ECPUs Per Month
+      list_price_usd: 0.0032
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95240
+      product: Oracle Database Zero Data Loss Recovery Service
+      metric: Virtualized Gigabyte Per Month
+      list_price_usd: 0.0306
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B95241
+      product: Oracle Database Zero Data Loss Autonomous Recovery Service (Real-Time Protection)
+      metric: Virtualized Gigabyte Per Month
+      list_price_usd: 0.04
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B90323
+      product: OCI - Health Checks - Basic
+      metric: Endpoints Per Month
+      list_price_usd: 0.3
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90925
+      product: 'OCI - Monitoring - Ingestion (Free Tier: 500 Million Datapoints)'
+      metric: 1 Million Datapoints
+      list_price_usd: 0.0025
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90926
+      product: 'OCI - Monitoring - Retrieval (Free Tier: 1 Billion Datapoints)'
+      metric: 1 Billion Data Points
+      list_price_usd: 0.0015
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B110475
+      product: 'OCI - Fleet Application Management Service (Free Tier: 25 Managed Resources)'
+      metric: Managed Resource Per Month
+      list_price_usd: 2.604
+      default_hours_units: 1
+      billing_type: monthly
+  devops:
+    display_name: Oracle Cloud Infrastructure - DevOps
+    skus:
+    - sku: B92072
+      product: OCI - API Gateway - 1,000,000 API Calls
+      metric: 1 Million API Calls Per Month
+      list_price_usd: 3.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B90938
+      product: OCI - Streaming - PUT or GET
+      metric: Gigabytes of Data Transferred
+      list_price_usd: 0.025
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B90939
+      product: OCI - Streaming - Storage
+      metric: Gigabyte Per Hour
+      list_price_usd: 0.0002
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110500
+      product: OCI - Streaming With Apache Kafka
+      metric: OCPU Per Hour
+      list_price_usd: 0.1
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B90617
+      product: 'Oracle Functions - Execution Time (Free Tier: 40 Blocks of 10000 Gigabyte Memory-Seconds)'
+      metric: 10,000 (10K) Gigabyte Memory-Seconds
+      list_price_usd: 0.1417
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B90618
+      product: 'Oracle Functions - Invocations (Free Tier: 2 Blocks of 1M Function Invocations)'
+      metric: 1 Million Function Invocations
+      list_price_usd: 0.2
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B89737
+      product: 'Oracle NoSQL Database Cloud - Write (Free Tier: 50 Units)'
+      metric: Write Unit Per Month (2.6M Writes Month)
+      list_price_usd: 0.1254
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B89738
+      product: 'Oracle NoSQL Database Cloud - Read (Free Tier: 50 Units)'
+      metric: Read Unit Per Month (2.6M Reads Month)
+      list_price_usd: 0.0064
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B89739
+      product: 'Oracle NoSQL Database Cloud - Storage (Free Tier: 25 GB per table and a maximum of 3 tables)'
+      metric: Gigabyte Storage Capacity Per Month
+      list_price_usd: 0.066
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B93709
+      product: Oracle Cloud Infrastructure Search Service with Open Search HA (Over 2 Data Nodes)
+      metric: Node Per Hour
+      list_price_usd: 0.25
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95697
+      product: 'OCI Queue - Requests (Free Tier: 1 Million Requests)'
+      metric: 1 Million Requests per Month
+      list_price_usd: 0.22
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B96109
+      product: Oracle Container Engine for Kubernetes - Virtual Node (Virtual Node Per Hour)
+      metric: Virtual Node Per Hour
+      list_price_usd: 0.015
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B96545
+      product: Oracle Container Engine for Kubernetes - Enhanced Cluster (Cluster Per Hour)
+      metric: Cluster Per Hour
+      list_price_usd: 0.1
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95634
+      product: 'OCI Logging Analytics - Active Storage (Free Tier: 10 GB) - Tiered Pricing'
+      metric: Logging Analytics Storage Unit Per Month
+      list_price_usd: 372.0
+      default_hours_units: 1
+      billing_type: monthly
+    - sku: B91346
+      product: Oracle WebLogic Server Enterprise Edition for Oracle Cloud Infrastructure
+      metric: OCPU Per Hour
+      list_price_usd: 0.2581
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B91347
+      product: Oracle WebLogic Suite for Oracle Cloud Infrastructure
+      metric: OCPU Per Hour
+      list_price_usd: 0.4646
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92599
+      product: OCI Data Integration (OCI DI) - Data Processed
+      metric: Gigabyte of Data Processed Per Hour
+      list_price_usd: 0.04
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B92598
+      product: OCI Data Integration (OCI DI) - Workspace Usage
+      metric: Workspace Usage Per Hour
+      list_price_usd: 0.16
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93306
+      product: 'OCI Data Integration (OCI DI) - Pipeline Operator Execution (Free Tier: 30 Execution Hours)'
+      metric: Execution Hour
+      list_price_usd: 0.3
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B98217
+      product: OCI Cache with Redis - Low Memory (up to 10 GB per node, min 2 GB)
+      metric: Redis Memory Gigabyte Per Hour
+      list_price_usd: 0.0194
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B99591
+      product: OCI Cache with Redis - High Memory (above 10 GB per node, min 2 GB)
+      metric: Redis Memory Gigabyte Per Hour
+      list_price_usd: 0.0136
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B89639
+      product: Oracle Integration Cloud Service - Standard
+      metric: Messages Pack (5,000 Messages Per Hour)
+      list_price_usd: 0.6452
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B89640
+      product: Oracle Integration Cloud Service - Enterprise
+      metric: Messages Pack (5,000 Messages Per Hour)
+      list_price_usd: 1.2903
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B109559
+      product: Oracle Integration Cloud Service - Healthcare
+      metric: Messages Pack (5,000 Messages Per Hour)
+      list_price_usd: 1.9355
+      default_hours_units: 730
+      billing_type: hourly
+  ai:
+    display_name: Oracle Cloud Infrastructure - Artificial Intelligence (AI)
+    skus:
+    - sku: B90260
+      product: OCI - Oracle Digital Assistant Cloud Service
+      metric: Requests
+      list_price_usd: 0.0232
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B94973
+      product: 'OCI - Vision: Image Analysis (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 0.25
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B94974
+      product: 'OCI - Vision: OCR (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 1.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B110617
+      product: 'OCI - Vision: Stored Video Analysis (Free Tier: 1,000 Minutes)'
+      metric: Processed Video Minute
+      list_price_usd: 0.1
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B94977
+      product: 'OCI - Vision: Custom Training (Free Tier: 15 Training Hours)'
+      metric: Training Hour
+      list_price_usd: 1.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B94896
+      product: 'OCI - Speech (Free Tier: 5 Transcription Hours)'
+      metric: Transcription Hour
+      list_price_usd: 0.35
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B95917
+      product: 'OCI - Language: Custom Inferencing'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 3.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B95919
+      product: 'OCI - Language: Custom Training (Free Tier: 15 Training Hours)'
+      metric: Training Hour
+      list_price_usd: 1.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B95918
+      product: 'OCI - Language: Custom Inferencing - Dedicated (Free Tier: 15 Inferencing Unit Hours)'
+      metric: Inferencing Unit Hour
+      list_price_usd: 1.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B108711
+      product: 'OCI - Language: Dedicated Inferencing - Healthcare'
+      metric: Inferencing Unit Hour
+      list_price_usd: 20.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B93423
+      product: 'OCI - Language: Pre-trained Inferencing (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 0.25
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B95920
+      product: 'OCI - Language: Text Translating (Free Tier: 1,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 10.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B96113
+      product: 'OCI - Document Understanding: Custom Training (Free Tier: 15 Training Hours)'
+      metric: Training Hour
+      list_price_usd: 1.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B96112
+      product: 'OCI - Document Understanding: Document Extraction (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 10.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B97194
+      product: 'OCI - Document Understanding: Custom Document Extraction (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 30.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B96111
+      product: 'OCI - Document Understanding: Document Properties (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 0.25
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B97193
+      product: 'OCI - Document Understanding: Custom Document Properties (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 1.5
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B96110
+      product: 'OCI - Document Understanding: OCR (Free Tier: 5,000 Transactions)'
+      metric: 1,000 (1K) Transactions
+      list_price_usd: 1.0
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B94282
+      product: 'OCI - Data Labeling (Free Tier: 1,000 Annotated Data Records)'
+      metric: Annotated Data Record
+      list_price_usd: 0.0002
+      default_hours_units: 1
+      billing_type: per_unit
+  genai_cohere:
+    display_name: Oracle Cloud Infrastructure - Generative AI - Cohere
+    skus:
+    - sku: B108077
+      product: Oracle Cloud Infrastructure Generative AI - Large Cohere
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0156
+      default_hours_units: 1
+      billing_type: per_unit
+      discountable: false
+    - sku: B108078
+      product: Oracle Cloud Infrastructure Generative AI - Small Cohere
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0009
+      default_hours_units: 1
+      billing_type: per_unit
+      discountable: false
+    - sku: B108079
+      product: Oracle Cloud Infrastructure Generative AI - Embed Cohere
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.001
+      default_hours_units: 1
+      billing_type: per_unit
+      discountable: false
+    - sku: B108082
+      product: Oracle Cloud Infrastructure Generative AI - Large Cohere - Dedicated
+      metric: AI Unit Per Hour
+      list_price_usd: 24.0
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B108083
+      product: Oracle Cloud Infrastructure Generative AI - Small Cohere - Dedicated
+      metric: AI Unit Per Hour
+      list_price_usd: 6.5
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B108084
+      product: Oracle Cloud Infrastructure Generative AI - Embed Cohere - Dedicated
+      metric: AI Unit Per Hour
+      list_price_usd: 10.9
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+    - sku: B111015
+      product: Oracle Cloud Infrastructure Generative AI - Cohere Rerank - Dedicated
+      metric: Cluster Hour
+      list_price_usd: 10.0
+      default_hours_units: 730
+      billing_type: hourly
+      discountable: false
+  genai_llama:
+    display_name: Oracle Cloud Infrastructure - Generative AI - Llama
+    skus:
+    - sku: B108080
+      product: Oracle Cloud Infrastructure Generative AI - Large Meta 70B
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0018
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B110517
+      product: Oracle Cloud Infrastructure Generative AI - Meta Llama 3.1 405B
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0267
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B110679
+      product: Oracle Cloud Infrastructure Generative AI - Meta Llama 3.2 90B Vision
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.005
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B111035
+      product: Oracle Cloud Infrastructure Generative AI - Meta Llama 4 Scout
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0018
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B111036
+      product: Oracle Cloud Infrastructure Generative AI - Meta Llama 4 Maverick
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0018
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B108085
+      product: Oracle Cloud Infrastructure Generative AI - Large Meta - Dedicated
+      metric: AI Unit Per Hour
+      list_price_usd: 12.0
+      default_hours_units: 730
+      billing_type: hourly
+  genai_agents:
+    display_name: Oracle Cloud Infrastructure - Generative AI Agents - RAG
+    skus:
+    - sku: B110461
+      product: Oracle Cloud Infrastructure Generative AI Agents - Retrieval-Augmented Generation (RAG)
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.003
+      default_hours_units: 1
+      billing_type: per_unit
+    - sku: B110462
+      product: Oracle Cloud Infrastructure Generative AI Agents - Knowledge Base Storage
+      metric: Gigabyte Storage Capacity Per HOUR
+      list_price_usd: 0.0084
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B110463
+      product: Oracle Cloud Infrastructure Generative AI Agents - Data Ingestion
+      metric: 10,000 (10K) Transactions
+      list_price_usd: 0.0003
+      default_hours_units: 1
+      billing_type: per_unit
+  roving_edge:
+    display_name: Oracle Roving Edge Infrastructure
+    skus:
+    - sku: B92615
+      product: Roving Edge Device - Compute Optimized - Ruggedized
+      metric: Resource Possession Per Day
+      list_price_usd: 160.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B93039
+      product: Roving Edge Device - Compute Optimized - Standard
+      metric: Resource Possession Per Day
+      list_price_usd: 160.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B95228
+      product: Roving Edge Ultra
+      metric: Resource Possession Per Day
+      list_price_usd: 45.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B109492
+      product: Roving Edge Device - RED.2 Compute
+      metric: Resource Possession Per Day
+      list_price_usd: 80.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B109493
+      product: Roving Edge Device - RED.2 GPU
+      metric: Resource Possession Per Day
+      list_price_usd: 100.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B109494
+      product: Roving Edge Device - RED.2.STG Storage
+      metric: Resource Possession Per Day
+      list_price_usd: 95.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B109496
+      product: Roving Edge Device - RED.2 Ruggedized Case (add-on)
+      metric: Resource Possession Per Day
+      list_price_usd: 10.0
+      default_hours_units: 31
+      billing_type: daily
+    - sku: B109495
+      product: Roving Edge Device - RED.2 Non-Return Fee
+      metric: Device
+      list_price_usd: 25000.0
+      default_hours_units: 1
+      billing_type: one_time
+    - sku: B93040
+      product: Roving Edge Device - Compute Optimized - Unreturnable/Loss Fee
+      metric: Device
+      list_price_usd: 45000.0
+      default_hours_units: 1
+      billing_type: one_time
+    - sku: B95229
+      product: Roving Edge Ultra - Non-Return or Loss Fee
+      metric: Device
+      list_price_usd: 35000.0
+      default_hours_units: 1
+      billing_type: one_time
