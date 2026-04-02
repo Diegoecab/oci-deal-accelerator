@@ -4,9 +4,10 @@ description: ADB-S auto-scaling behavior, timing, and sizing implications.
 ---
 
 auto_scaling:
+  notes: "OCPU is legacy billing. ECPU is now default. 1 OCPU ≈ 4 ECPUs."
   ocpu_scaling:
     trigger: "CPU demand exceeds current allocation"
-    max_scale: "3x base OCPUs (up to 128 OCPU maximum)"
+    max_scale: "3x base OCPUs/ECPUs (up to 128 OCPU / 512 ECPU maximum)"
     ramp_up_time: "2-3 minutes to begin scaling"
     ramp_down_time: "After sustained low utilization (5-10 minutes)"
     billing: "Only billed during active scaling period, per OCPU per second"

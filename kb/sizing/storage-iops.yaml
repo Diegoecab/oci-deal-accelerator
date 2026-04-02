@@ -21,18 +21,19 @@ block_volume:
 
     - name: "Higher Performance"
       iops_per_gb: 75
-      max_iops: 35000
+      max_iops: 50000
       throughput_mbps_per_gb: 0.6
-      max_throughput_mbps: 480
+      max_throughput_mbps: 680
       use_when: "Database data files, high-throughput applications"
 
     - name: "Ultra High Performance"
       iops_per_gb: 90
-      max_iops: 120000
+      max_iops: 300000
+      iops_range: "75,000 - 300,000 (at 30-120 VPU)"
       throughput_mbps_per_gb: 0.72
       max_throughput_mbps: 2680
       use_when: "Extreme IOPS requirements, OLTP databases"
-      notes: "Only available with certain compute shapes"
+      notes: "Only available with certain compute shapes. IOPS scales with VPU (30-120)."
 
   sizing_guidance: |
     1. Determine required IOPS (from AWR, CloudWatch, or application benchmarks)

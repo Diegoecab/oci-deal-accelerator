@@ -27,15 +27,18 @@ limits:
     - name: "Exadata.Quarter3.100"
       base_ocpu: 100
       max_ocpu: 100
-      storage_tb: 49.5
+      storage_tb: 149
+      notes: "Legacy X8 fixed shape — storage is usable disk"
     - name: "Exadata.Half3.200"
       base_ocpu: 200
       max_ocpu: 200
-      storage_tb: 99
+      storage_tb: 299
+      notes: "Legacy X8 fixed shape"
     - name: "Exadata.Full3.400"
       base_ocpu: 400
       max_ocpu: 400
-      storage_tb: 198
+      storage_tb: 598
+      notes: "Legacy X8 fixed shape; current generation is elastic X9M/X11M"
   max_vm_clusters: 8
   max_databases_per_cluster: "Limited by resources"
   max_pdb_per_cdb: 252

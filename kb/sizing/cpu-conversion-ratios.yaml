@@ -65,8 +65,8 @@ adb_s_sizing:
 memory_sizing:
   oci_shapes:
     standard_e4: "16 GB per OCPU (VM.Standard.E4.Flex)"
-    standard_e5: "16 GB per OCPU (VM.Standard.E5.Flex)"
+    standard_e5: "up to 64 GB per OCPU (VM.Standard.E5.Flex, default 16)"
     standard_a1: "6 GB per OCPU (VM.Standard.A1.Flex / Ampere)"
-    standard_a2: "8 GB per OCPU (VM.Standard.A2.Flex / Ampere)"
+    standard_a2: "up to 64 GB per OCPU (VM.Standard.A2.Flex / Ampere)"
     optimized3: "14 GB per OCPU (VM.Optimized3.Flex)"
     dense_io_e4: "32 GB per OCPU + local NVMe (VM.DenseIO.E4.Flex)"

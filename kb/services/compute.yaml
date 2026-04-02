@@ -11,9 +11,16 @@ what: Virtual machines and bare metal instances. Flexible shapes allow custom
 shape_families:
   - name: VM.Standard.E5.Flex
     processor: "AMD EPYC 9J14 (Genoa)"
-    max_ocpu: 94
+    max_ocpu: 126
     memory_per_ocpu_gb: "1-64 GB per OCPU"
     use_for: "General purpose, most workloads"
+  - name: VM.Standard.E6.Flex
+    processor: "AMD EPYC 9J45 (Turin)"
+    max_ocpu: 126
+    max_memory_gb: 1454
+    memory_per_ocpu_gb: "1-64 GB per OCPU"
+    network_gbps: 99
+    use_for: "Latest generation general purpose"
   - name: VM.Standard3.Flex
     processor: "Intel Xeon (Ice Lake)"
     max_ocpu: 32
@@ -21,14 +28,28 @@ shape_families:
     use_for: "Intel-optimized workloads"
   - name: VM.Standard.A2.Flex
     processor: "Ampere Altra (Arm)"
-    max_ocpu: 80
+    max_ocpu: 78
     memory_per_ocpu_gb: "1-64 GB per OCPU"
     use_for: "Arm-compatible workloads, cost optimization"
+  - name: VM.Standard.A4.Flex
+    processor: "Arm"
+    max_ocpu: 45
+    max_memory_gb: 700
+    network_gbps: 100
+    use_for: "Latest Arm generation, cloud-native workloads"
   - name: VM.Optimized3.Flex
     processor: "Intel Xeon (Ice Lake)"
     max_ocpu: 18
     memory_per_ocpu_gb: "1-64 GB per OCPU"
     use_for: "High-frequency trading, HPC"
+  - name: BM.Standard.E5
+    processor: "AMD EPYC 9J14 (Genoa)"
+    ocpus: 192
+    use_for: "Bare metal general purpose"
+  - name: BM.Standard.E6
+    processor: "AMD EPYC 9J45 (Turin)"
+    ocpus: 256
+    use_for: "Bare metal latest generation"
   - name: VM.GPU.A10.1
     processor: "NVIDIA A10"
     gpu_count: 1
@@ -37,6 +58,38 @@ shape_families:
     processor: "NVIDIA H100 (8 GPUs)"
     gpu_count: 8
     use_for: "AI/ML training, large model inference"
+  - name: BM.GPU.H200.8
+    processor: "NVIDIA H200 (8 GPUs)"
+    gpu_count: 8
+    use_for: "AI/ML training, large model inference (higher memory bandwidth)"
+  - name: BM.GPU.B200.8
+    processor: "NVIDIA B200 (8 GPUs)"
+    gpu_count: 8
+    use_for: "Next-gen AI training and inference"
+  - name: BM.GPU.B300.8
+    processor: "NVIDIA B300 (8 GPUs)"
+    gpu_count: 8
+    use_for: "Next-gen AI training and inference"
+  - name: BM.GPU.GB200.4
+    processor: "NVIDIA GB200 (4 GPUs)"
+    gpu_count: 4
+    use_for: "Grace Blackwell superchip, AI training"
+  - name: BM.GPU.GB300.4
+    processor: "NVIDIA GB300 (4 GPUs)"
+    gpu_count: 4
+    use_for: "Grace Blackwell next-gen AI"
+  - name: BM.GPU.MI300X.8
+    processor: "AMD Instinct MI300X (8 GPUs)"
+    gpu_count: 8
+    use_for: "AMD GPU AI/ML workloads"
+  - name: BM.GPU.MI355X.8
+    processor: "AMD Instinct MI355X (8 GPUs)"
+    gpu_count: 8
+    use_for: "AMD GPU next-gen AI/ML workloads"
+  - name: BM.GPU.L40S.4
+    processor: "NVIDIA L40S (4 GPUs)"
+    gpu_count: 4
+    use_for: "AI inference, graphics, video"
 
 when_to_use:
   - Traditional VM-based applications

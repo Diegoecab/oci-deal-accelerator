@@ -33,14 +33,14 @@ storage_tiers:
   block_volume_higher_performance:
     type: "Block Volume (Higher Performance)"
     iops_per_gb: 75
-    max_iops: 35000
+    max_iops: 50000
     throughput_kbps_per_gb: 600
-    max_throughput_mbps: 600
+    max_throughput_mbps: 680
     latency_us: "Sub-millisecond"
 
   block_volume_uhp:
     type: "Block Volume (Ultra High Performance)"
-    max_iops: 450000
+    max_iops: 300000
     max_throughput_mbps: 2680
     notes: "Requires UHP-enabled shapes"
 
@@ -53,7 +53,7 @@ storage_tiers:
 
   file_storage:
     type: "File Storage (NFS)"
-    max_iops: 25000
+    max_iops: 50000
     max_throughput_mbps: 1200
     latency: "Sub-millisecond"
     use_for: "Shared file access, NFS workloads"

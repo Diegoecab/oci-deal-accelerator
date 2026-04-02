@@ -22,6 +22,7 @@ components:
     recommendation: "Prefer NSGs (Network Security Groups) for granular control"
   nsg:
     what: "Network Security Group — firewall rules at VNIC level"
+    max_rules: "120 (ingress + egress combined per NSG)"
     recommendation: "Preferred over security lists for micro-segmentation"
   internet_gateway:
     what: "Enables internet access for public subnets"
@@ -45,7 +46,7 @@ components:
 connectivity:
   fastconnect:
     what: "Dedicated private connection to OCI (like AWS Direct Connect)"
-    speeds: ["1 Gbps", "2 Gbps", "5 Gbps", "10 Gbps", "100 Gbps"]
+    speeds: ["1 Gbps", "2 Gbps", "5 Gbps", "10 Gbps", "100 Gbps", "400 Gbps"]
     redundancy: "Always deploy 2 circuits for HA"
     notes: "Partner or co-location model, typical setup takes 2-4 weeks"
   ipsec_vpn:

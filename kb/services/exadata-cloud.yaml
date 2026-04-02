@@ -26,30 +26,54 @@ variants:
   - id: exacs_x9m
     name: "ExaCS X9M"
     description: "Exadata X9M shape — current-generation infrastructure with RDMA over Converged Ethernet and persistent memory acceleration."
-  - id: exacs_x10m
-    name: "ExaCS X10M"
-    description: "Exadata X10M shape — next-generation infrastructure with improved compute, storage density, and throughput."
+    per_db_server:
+      ocpus: 126
+      memory_gb: 1390
+      pmem_tb: 1.5
+      flash_cache_tb: 25.6
+    per_storage_server:
+      usable_tb: 63.6
+  - id: exacs_x11m
+    name: "ExaCS X11M"
+    description: "Exadata X11M shape — latest generation with AMD EPYC 9J25 processors and XRMEM acceleration."
+    per_db_server:
+      ecpus: 760
+      memory_gb: 1390
+      xrmem_gb: 1250
+      flash_cache_tb: 27.2
+    per_storage_server:
+      usable_tb: 52.5
+      type: "Extreme Flash (EF)"
 
 sizing:
+  model: "Elastic per-server (2-32 DB servers, 3-64 storage servers)"
   rack_configurations:
     quarter_rack:
-      ocpus: "100 (scalable)"
-      memory: "1.44 TB"
-      storage: "Up to 76.8 TB usable (Exadata Storage)"
+      ocpus: "252 (X9M: 2 × 126/server)"
+      memory: "2.71 TB (X9M: 2 × 1,390 GB)"
+      storage: "Up to 190.8 TB usable (X9M: 3 SS × 63.6 TB)"
       db_nodes: 2
       storage_servers: 3
     half_rack:
-      ocpus: "200 (scalable)"
-      memory: "2.88 TB"
-      storage: "Up to 153.6 TB usable"
+      ocpus: "504 (X9M: 4 × 126/server)"
+      memory: "5.43 TB"
+      storage: "Up to 383 TB usable"
       db_nodes: 4
       storage_servers: 6
     full_rack:
-      ocpus: "400 (scalable)"
-      memory: "5.76 TB"
-      storage: "Up to 307.2 TB usable"
+      ocpus: "1,008 (X9M: 8 × 126/server)"
+      memory: "10.86 TB"
+      storage: "Up to 766 TB usable"
       db_nodes: 8
       storage_servers: 12
+  legacy_x8_fixed_shapes:
+    quarter_rack:
+      storage_tb: 149
+    half_rack:
+      storage_tb: 299
+    full_rack:
+      storage_tb: 598
+    notes: "X8 shapes are fixed-size (not elastic). Storage values are usable disk, not flash cache."
   ocpu_scaling: "OCPUs can be scaled online in increments without downtime. You pay for enabled OCPUs, not the total available in the rack."
   sizing_guidance: "Start with a quarter rack for most production workloads. Scale OCPUs on demand. Choose half/full rack only when storage capacity or aggregate memory requirements exceed quarter rack limits."
 

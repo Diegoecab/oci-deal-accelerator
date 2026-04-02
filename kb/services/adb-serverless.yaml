@@ -20,15 +20,18 @@ features:
 ha_dr_options:
   local_ha: "Built-in TAC (Transparent Application Continuity) — ~0 perceived RTO"
   same_region_adg: "Autonomous Data Guard standby — synchronous, RPO 0"
-  cross_region_adg: "Cross-region ADG — asynchronous only, RPO seconds, RTO < 15 min"
+  cross_region_adg: "Cross-region ADG — asynchronous only, RPO seconds (switchover RPO 0, manual failover RPO up to 1 min), RTO < 10 min"
+  cross_region_auto_failover: "NOT available — cross-region requires manual switchover/failover only"
 
 limits:
-  max_ocpu: 128
-  max_storage_tb: 383
-  max_auto_scale: "3x base OCPUs"
+  max_ecpu: 512
+  max_ocpu_legacy: 128
+  max_storage_tb: 384
+  max_auto_scale: "3x base ECPUs"
   auto_scale_activation: "2-3 minutes"
-  min_ocpu: 1
+  min_ecpu: 2
   min_storage_tb: 1
+  notes: "ECPU is now the default billing unit. 4 ECPUs ≈ 1 OCPU. OCPU billing is legacy."
 
 variants:
   - id: adb_s
@@ -66,12 +69,14 @@ when_not_to_use:
 
 sizing:
   adb_s:
-    min_ocpu: 1
-    max_ocpu: 128
-    auto_scaling: "Up to 3x base OCPUs (takes 2-3 minutes to activate)"
-    sizing_guidance: "Size base OCPUs for P75 sustained load, not P50. Auto-scaling covers peaks but has activation latency."
+    min_ecpu: 2
+    max_ecpu: 512
+    min_ocpu_legacy: 1
+    max_ocpu_legacy: 128
+    auto_scaling: "Up to 3x base ECPUs (takes 2-3 minutes to activate)"
+    sizing_guidance: "Size base ECPUs for P75 sustained load, not P50. Auto-scaling covers peaks but has activation latency. 4 ECPUs ≈ 1 OCPU."
     storage_min_tb: 1
-    storage_max_tb: 383
+    storage_max_tb: 384
     iops: "Proportional to OCPU count, Exadata storage servers"
 
   adb_d:
@@ -105,9 +110,9 @@ gotchas:
     severity: MEDIUM
     description: "Cross-region Autonomous Data Guard is async only (RPO > 0). For zero RPO, need same-region standby or ADB-D with local Data Guard."
 
-  - id: adb_19c_only
+  - id: adb_version
     severity: LOW
-    description: "ADB currently runs Oracle 19c. If customer needs 23ai features, verify availability."
+    description: "ADB now defaults to Oracle 26ai in all commercial regions. 19c is legacy. Verify customer version requirements."
 
 implied_dependencies:
   - service: service_gateway

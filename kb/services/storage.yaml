@@ -22,8 +22,9 @@ services:
         iops_per_gb: 75
         throughput_kbps_per_gb: 600
       - name: Ultra High Performance
-        max_iops: 450000
+        max_iops: 300000
         max_throughput_mbps: 2680
+        notes: "IOPS range 75K-300K at 30-120 VPU"
     max_volume_size_tb: 32
     max_volumes_per_instance: 32
 
@@ -36,7 +37,7 @@ services:
         use_for: "Data accessed less than once per month"
       - name: Archive
         use_for: "Long-term retention, compliance"
-        retrieval_time: "1 hour (standard), 1 minute (expedited)"
+        retrieval_time: "1 hour (standard)"
     features:
       - "S3-compatible API"
       - "Versioning"
@@ -49,7 +50,7 @@ services:
     what: "NFSv3-compatible managed file system"
     use_for: "Shared file access across multiple compute instances"
     max_size: "8 EB (exabytes)"
-    iops: "Up to 25,000 IOPS per file system"
+    iops: "Up to 50,000 IOPS per file system"
     throughput: "Up to 1.2 GB/s per mount target"
 
 pricing:

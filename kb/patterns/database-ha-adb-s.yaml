@@ -28,7 +28,7 @@ variants:
     name: "Same-Region Autonomous Data Guard Standby"
     topology: "Primary + Standby in same region via Autonomous Data Guard"
     rpo: "0 (synchronous replication)"
-    rto: "< 30 seconds (automatic switchover)"
+    rto: "~2 minutes (automatic switchover)"
     use_when:
       - "Zero RPO mandatory"
       - "Protection against full AD or FD failure"

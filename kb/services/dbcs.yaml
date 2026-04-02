@@ -30,12 +30,14 @@ when_NOT_to_use:
 
 limits:
   vm_shapes:
-    - "VM.Standard.E5.Flex: 1-94 OCPUs"
+    - "VM.Standard.E5.Flex: 1-64 OCPUs"
     - "VM.Standard3.Flex: 1-32 OCPUs"
+    - "VM.Standard.x86: ECPU billing (new shape)"
   bm_shapes:
     - "BM.Standard.E5: 128 OCPUs"
     - "BM.DenseIO.E5: 128 OCPUs with NVMe"
-  max_storage_tb: 80  # block storage
+  max_storage_tb: 150  # block storage (Universal Credits)
+  supported_versions: ["19c", "21c", "23ai", "26ai"]
   rac_max_nodes: 2
 
 features:
