@@ -314,7 +314,7 @@ def main():
                     existing_urls.add(url)
                     new_count += 1
 
-        catalog["last_refreshed"] = datetime.now().strftime("%Y-%m-%d")
+        catalog["last_verified"] = datetime.now().strftime("%Y-%m-%d")
         catalog["source"] = "https://docs.oracle.com/en/solutions/oracle-architecture-center/"
         catalog["entry_count"] = len(catalog.get("entries", []))
         save_catalog(catalog)

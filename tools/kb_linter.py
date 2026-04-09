@@ -60,7 +60,14 @@ def _load_yaml(path: str) -> Optional[Dict[str, Any]]:
     if not os.path.isfile(resolved):
         return None
     with open(resolved, "r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        # Many KB files use a frontmatter pattern: a metadata doc followed by
+        # a body doc, separated by `---`. Merge all dict docs into one so
+        # callers see a single namespace (later docs override earlier keys).
+        merged: Dict[str, Any] = {}
+        for doc in yaml.safe_load_all(fh):
+            if isinstance(doc, dict):
+                merged.update(doc)
+        return merged or None
 
 
 def _load_governance() -> Dict[str, Any]:
@@ -125,8 +132,14 @@ def check_contributor_blocks(tracker_path: str = TRACKER_PATH) -> List[str]:
             else:
                 issues.append(f"{fid}: missing contributor block")
             continue
+        # The finding's top-level `date` is the canonical discovery date and
+        # acts as a fallback when the contributor block doesn't repeat it.
+        finding_date = f.get("date")
         for field in required:
-            if not contributor.get(field):
+            value = contributor.get(field)
+            if not value and field == "date" and finding_date:
+                continue
+            if not value:
                 issues.append(f"{fid}: contributor missing required field '{field}'")
         conf = contributor.get("confidence", "")
         if conf and conf not in valid_confidence:
@@ -239,7 +252,11 @@ def check_freshness() -> List[Dict[str, Any]]:
             if not data:
                 continue
 
-            last_verified = data.get("last_verified") or data.get("last_updated")
+            last_verified = (
+                data.get("last_verified")
+                or data.get("last_updated")
+                or data.get("last_refreshed")
+            )
             if last_verified:
                 age = _days_ago(last_verified)
                 if age is not None:

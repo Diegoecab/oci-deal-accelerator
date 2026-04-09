@@ -1,5 +1,5 @@
 ---
-name: OCI Deal Accelerator
+name: oci-deal-accelerator
 description: Compresses the OCI Solutions Architect's cycle from customer discovery to architecture proposal and delivery handover. Aligned with Oracle ECAL framework (Define, Design, Deliver). Use when processing discovery notes, composing OCI architectures, generating proposals, planning solution delivery, or producing handover artifacts.
 ---
 
@@ -14,6 +14,33 @@ You follow the **Oracle ECAL framework** (Define → Design → Deliver) to prod
 ## Welcome Flow
 
 When the user starts a conversation without providing discovery notes or a specific request, present the welcome message and capability menu.
+
+### Pre-flight: KB freshness check
+
+**Before showing the welcome message**, run `python tools/kb_freshness.py --check --json` and parse the JSON output. Behavior based on the result:
+
+- **`stale_count == 0`** → proceed directly to the welcome message. No banner.
+- **`stale_count > 0` and at least one file has `refreshable: true`** → prepend this banner above the menu and ask the user inline:
+
+  ```
+  ⚠️  KB freshness: <N> file(s) outdated (oldest: <file> — <age_days>d).
+      <M> can be auto-refreshed (SKU catalog, Architecture Center).
+      Refresh now before showing the menu? [y/N]
+  ```
+
+  - If the user replies `y` / `yes` / `sí` → run `python tools/kb_freshness.py --auto-refresh`, wait for completion, then show the menu.
+  - If the user replies `n` / anything else → show the menu immediately, with a one-line compact reminder above it: `⚠️ <N> KB file(s) stale — run /freshness or python tools/kb_freshness.py --auto-refresh later.`
+
+- **`stale_count > 0` but no file has `refreshable: true`** (only manual files stale) → prepend a non-blocking informational banner above the menu, do NOT ask:
+
+  ```
+  ⚠️  KB freshness: <N> file(s) need manual review (oldest: <file> — <age_days>d).
+      No automated refresh available — see kb/README.md for review process.
+  ```
+
+  Then show the menu directly.
+
+**Important**: this check is informational, not gating. If `kb_freshness.py` errors out (exit 2 or missing tool), silently fall back to showing the welcome message — never block the user on tooling failures.
 
 ### Welcome Message
 
@@ -85,74 +112,13 @@ Pick a number, or just describe what you need.
      - Save the workload profile YAML to `examples/<customer>-wa-workload-profile.yaml`
   6. After the scorecard, offer next actions
 
-  **WA Review Output Format:**
-
-  The WA review MUST produce **two layers of output**: (a) the formatted terminal scorecard shown to the user, and (b) the structured YAML files saved to disk. The terminal output is the primary deliverable — the YAML is the backing data. Never produce YAML-only output without the formatted scorecard.
-
-  ```
-  ══════════════════════════════════════════════════════
-  ✅ OCI WELL-ARCHITECTED REVIEW — [Customer Name]
-  ══════════════════════════════════════════════════════
-  Overall: [STATUS] — X/Y checks passed
-  HIGH: N │ MEDIUM: N │ LOW: N
-  ══════════════════════════════════════════════════════
-
-  [emoji] SECURITY & COMPLIANCE          X/Y passed
-  [emoji] RELIABILITY & RESILIENCE       X/Y passed
-  [emoji] PERFORMANCE & COST             X/Y passed
-  [emoji] OPERATIONAL EFFICIENCY         X/Y passed
-  [emoji] DISTRIBUTED CLOUD              X/Y passed | N/A
-  ```
-
-  Pillar emoji: 🟢 all passed, 🟡 medium gaps only, 🔴 any HIGH gap, ⬜ N/A
-
-  **HIGH Severity Gaps Table:**
-  Present all HIGH gaps grouped by pillar in a markdown table:
-
-  ```
-  ### HIGH severity gaps that must be addressed:
-
-  **[Pillar Name] (N HIGH)**
-  | ID | Gap | Fix |
-  |---|---|---|
-  | CHECK-ID | Finding description | Recommended action |
-  ```
-
-  **MEDIUM gaps:** List as a compact bullet list grouped by pillar (ID + one-line finding + fix). Skip the table format to keep it concise.
-
-  **LOW gaps:** Mention count only, list individual items only if ≤ 5.
-
-  **Analysis Section:**
-  After the gap tables, add a "Why so many gaps?" paragraph if total gaps > 20, explaining the root cause (e.g., business case without architecture, missing landing zone, no ops design). This contextualizes the score for the SA.
-
-  **Recommended Path Forward:**
-  3-5 numbered, actionable recommendations that directly map to closing the highest-impact gaps. Reference skill options where applicable (e.g., "Generate the architecture — option 1 or 2").
-
-  **Files Generated:**
-  Always list the files saved at the end of the review:
-  ```
-  📁 Files saved:
-  - examples/<customer>-wa-scorecard.yaml
-  - examples/<customer>-wa-architecture.yaml
-  - examples/<customer>-wa-workload-profile.yaml
-  ```
-
-  **After WA Review Menu:**
-  ```
-  What do you want to do?
-  → [A] Generate/fix the architecture to close gaps
-  → [B] Deep-dive a specific pillar
-  → [C] Export scorecard as a slide (.pptx)
-  → [D] Re-run after changes
-  ```
-
-  **Option [A] behavior — CRITICAL:** When the user picks [A], remediate the EXISTING architecture by adding the minimum changes needed to close gaps (e.g., add `encryption: true` to a storage block, add `flow_logs: enabled` to networking). NEVER replace the customer's actual architecture with a generic "ideal" one. NEVER add services or components the customer didn't mention (no inventing ExaCS, ADB, regions, etc.). If a gap requires a service the customer doesn't have, flag it as a recommendation and ASK before adding it. The remediated architecture MUST be recognizable as the customer's original architecture with targeted fixes applied.
+  **WA Review Output Format:** see [docs/skill/wa-review-format.md](docs/skill/wa-review-format.md) for the exact terminal scorecard layout, gap-table format, "after review" menu, and the critical Option [A] remediation behavior. Read that file before producing the scorecard.
 - If the user picks **6**, ask: "What feature and deployment type? (e.g., 'Auto Indexing on ADB-S 23ai')"
 - If the user picks **7**, ask: "What's the competitive situation? (e.g., 'Customer comparing ADB-S vs AWS Aurora')"
 - If the user picks **8**, ask: "Describe the scenario or paste discovery notes. I'll build the business case. If you already have a cost estimate or architecture, share that too — it'll make the TCO more precise." Then follow the business case flow:
   1. Parse input into `templates/business-case.yaml` structure
   2. Identify business drivers and urgency from discovery notes
-  3. Estimate TCO comparison using `kb/pricing/*` and `kb/sizing/*`
+  3. Estimate TCO comparison using `kb/pricing/oci-sku-catalog.yaml` (live SKU prices), `kb/pricing/compute.yaml` (shape-level), `kb/field-knowledge/pricing-knowledge.yaml` (billing models, BYOL rules, free tiers), and `kb/sizing/*`
   4. Calculate ROI and payback period
   5. Map value drivers (cost, risk, agility, innovation) with quantified evidence
   6. Assess migration risks from `kb/field-knowledge/gotchas.yaml` and do-nothing risks
@@ -190,89 +156,12 @@ Pick a number, or just describe what you need.
      - Present the formatted terminal scorecard (primary deliverable)
   8. Output the ECAL Readiness Scorecard
 
-  **Scoring Model:**
-  Each artefact has a status: ✅ Complete | 🟡 Partial | ❌ Missing | ⬜ Not Applicable (future phase)
-
-  Phase scores are calculated as:
-  - ✅ = 1.0 point, 🟡 = 0.5 point, ❌ = 0 points, ⬜ = excluded from denominator
-  - Phase score = (sum of points / applicable artefacts) × 100%
-
-  Overall ECAL Readiness = weighted average:
-  - DEFINE: 25% weight
-  - DESIGN: 50% weight (largest phase, most artefacts)
-  - DELIVER: 25% weight
-
-  **Readiness Levels:**
-  - 🟢 80-100% — Ready to proceed to next phase
-  - 🟡 60-79%  — Gaps exist but manageable; proceed with caution
-  - 🟠 40-59%  — Significant gaps; address before proceeding
-  - 🔴 0-39%   — Major gaps; phase needs substantial work
-
-  **Output Format:**
-
-  The ECAL readiness score MUST produce **two layers of output**: (a) the formatted terminal scorecard shown to the user, and (b) the structured YAML file saved to disk. The terminal output is the primary deliverable — the YAML is the backing data. Never produce YAML-only output without the formatted scorecard.
-
-  ```
-  ══════════════════════════════════════════
-  📊 ECAL READINESS SCORECARD
-  ══════════════════════════════════════════
-  Customer: [name]
-  Date: [date]
-  Current Phase: [DEFINE/DESIGN/DELIVER]
-  Overall Readiness: [XX%] [emoji level]
-
-  ── DEFINE (Ideate → Validate → Plan) ──
-  Score: XX% [emoji]
-  ✅ Value Story
-  ✅ Workload Profile
-  🟡 Customer Profile (partial — missing Oracle footprint)
-  ❌ Strategy Map
-  ❌ Joint Engagement Plan
-  ⬜ Business Case (revisited in Confirm)
-
-  ── DESIGN (Current → Future → Confirm) ──
-  Score: XX% [emoji]
-  [artefact list with status...]
-
-  ── DELIVER (Adopt → Operate → Improve) ──
-  Score: XX% [emoji]
-  [artefact list with status...]
-
-  ── TOP 5 GAPS ──
-  1. ❌ [artefact] — [why it matters] — [recommended action]
-  2. ...
-
-  ── RECOMMENDED NEXT ACTIONS ──
-  1. [specific action]
-  2. [specific action]
-  3. [specific action]
-
-  ── ENGAGEMENT RACI CHECK ──
-  Roles identified: [list]
-  Roles missing: [list]
-  ══════════════════════════════════════════
-  ```
-
-  **Files Generated:**
-  Always list the files saved at the end of the scorecard:
-  ```
-  📁 Files saved:
-  - examples/<customer>-ecal-scorecard.yaml
-  ```
-
-  After showing the scorecard, offer:
-  ```
-  What do you want to do?
-  → [A] Fix the top gap now (I'll generate the missing artefact)
-  → [B] Generate all missing artefacts for current phase
-  → [C] Export scorecard as a slide (.pptx)
-  → [D] Re-score after updates
-  ```
+  **Scoring model, readiness levels, and output format:** see [docs/skill/ecal-readiness-format.md](docs/skill/ecal-readiness-format.md) for the scoring weights, the terminal scorecard layout, and the after-scorecard menu. Read that file before producing the scorecard.
 
 - If the user picks **13**, ask: "What services does the customer need? (e.g., 'ExaCS X11M BYOL 2 DB servers + 4 storage + 128 ECPUs + ADB-S 8 ECPU + 2TB Block Storage + FastConnect 1Gbps'). I'll generate the BOM with only those SKUs."
   Then follow the BOM generation flow:
   1. Parse the customer request to identify needed OCI services and quantities
-  2. Match services against `kb/pricing/oci-sku-catalog.yaml` to select exact SKUs
+  2. Match services against `kb/pricing/oci-sku-catalog.yaml` (live, auto-refreshed) to select exact SKUs
   3. Ask for discount % and contract duration if not specified (default: 0%, 12 months)
   4. Ask if currency conversion is needed (e.g., USD→BRL with exchange rate and tax)
   5. Generate the BOM spec YAML and save to the output folder
@@ -467,106 +356,15 @@ Every skill option that produces output MUST generate **readable, human-consumab
 
 If a tool or agent generates YAML without the corresponding readable output, the task is **incomplete**. Always present the formatted result, then list the files saved.
 
-### Output Directory Convention
+### Output directory, slide deck structure, format options, service categorization
 
-All generated files MUST be saved inside a dedicated output folder per customer/initiative:
-
-```
-examples/output-<customer>-<initiative>/
-```
-
-Examples:
-- `examples/output-meli-im06/` — MELI MySQL engagement
-- `examples/output-meli-im30/` — MELI ElasticSearch engagement
-- `examples/output-acme-migration/` — ACME cloud migration
-
-This folder contains ALL outputs for that engagement: `.pptx`, `.drawio`, `.yaml` specs, `.pdf`, scorecards. The folder is gitignored via `examples/output-*/` — never commit customer data.
-
-YAML spec files (architecture, workload-profile, diagram-spec) are saved IN the output folder, not loose in `examples/`. This keeps everything grouped and portable.
-
-Default output is a **slide deck (.pptx)**. The architect can specify:
-
-| Format | Output |
-|--------|--------|
-| `deck` (default) | 10-12 slide presentation |
-| `deck + drawio` | + editable architecture diagram |
-| `deck + doc` | + technical document (15-25 pages) |
-| `deck + xlsx` | + cost spreadsheet with formulas |
-| `deck + pdf` | + customer-facing PDF (branded, no internal refs) |
-| `pdf` | Customer PDF only |
-| `full` | Everything (pptx + drawio + docx + xlsx + pdf) |
-| `doc only` | Technical document without slides |
-| `deliver` | Handover + go-live checklist + success criteria |
-
-### Slide Deck Structure
-
-Slide count adapts to engagement tier (6-8 small, 10-12 standard, 12-16 complex):
-
-1. **Title** — customer, project, date (dark background)
-2. **Value Story** — business driver, hypothesis, desired outcomes
-3. **Service Tiering** — workload-to-tier mapping (Platinum/Gold/Silver/Bronze) with SLA, RTO/RPO
-4. **Architecture Principles** — selected ECAL principles (Design/Deployment/Service) that govern the architecture
-5. **Architecture Diagram** — fills 85% of slide
-6. **Architecture Decisions** — 4-6 key decisions with rationale
-7. **HA/DR** — topology + RTO/RPO per tier
-8. **Security & Compliance** — controls grid, compliance badges
-9. **Environment Catalogue** — Prod/Pre-Prod/Dev-Test/DR per workload with sizing and isolation
-10. **Cost Estimate** — PAYG vs BYOL table with assumptions (all environments)
-11. **Cost Comparison** (optional) — vs current state or competitor
-12. **Migration Approach** — phased timeline, tools, downtime strategy
-13. **Operational RACI** — responsibility matrix (customer vs Oracle/partner)
-14. **Risk Register** — severity-coded risk table
-15. **Well-Architected Scorecard** — 5-pillar traffic-light indicators
-16. **Next Steps** — concrete SMART actions with dates
-
-Use `tools/oci_deck_gen.py` for generation. Colors: teal `#2D5967`, copper `#AA643B`, purple `#804998`. Font: Segoe UI. Design standards: `config/output-formats.yaml`.
-
-### Architecture Diagram
-
-Use `tools/oci_diagram_gen.py` with OCI official styles from `kb/diagram/oci-toolkit-styles.yaml`. Containers, service blocks, connections, and typography rules are defined there.
-
----
-
-## Service Categorization
-
-| Category | Color | Use |
-|----------|-------|-----|
-| **Infrastructure** | Teal `#2D5967` | Compute, OKE, LB, Gateways, WAF, Bastion, Storage, Monitoring |
-| **Database** | Copper `#AA643B` | ADB-S/D, DBCS, ExaCS, MySQL, PostgreSQL, NoSQL, GoldenGate |
-| **Integration** | Purple `#804998` | DRG, Streaming, Queue, OIC, FastConnect, Service Connector Hub |
-| **Dormant** | Light gray `#DFDCD8` | Standby/inactive resources (DR tier) |
-| **Legacy** | Medium gray `#70665E` | Non-OCI systems (MQ Series, legacy middleware) |
+See [docs/skill/output-formats.md](docs/skill/output-formats.md) for the per-customer output folder convention, the complete format option matrix, the 16-slide deck structure, the diagram generation rules, and the service-to-color mapping.
 
 ---
 
 ## Knowledge Base
 
-```
-kb/
-├── architecture-center/ # Oracle Architecture Center reference catalog
-│   └── catalog.yaml     # 130+ reference architectures, solution playbooks
-├── services/          # One YAML per OCI service (what, when, gotchas)
-├── patterns/          # Composable blocks
-│   ├── business-patterns.yaml      # Business-level patterns (DEFINE)
-│   ├── application-patterns.yaml   # Application architecture patterns (DESIGN)
-│   ├── service-tiering.yaml        # Service tier definitions (Platinum/Gold/Silver/Bronze)
-│   ├── architecture-principles.yaml # ECAL architecture principles (Design/Deployment/Service)
-│   ├── operational-raci.yaml       # RACI matrix templates (fully/co/self-managed)
-│   ├── environment-catalogue.yaml  # Environment templates per tier
-│   ├── database-ha/                # Database HA patterns
-│   ├── database-dr/                # Database DR patterns
-│   ├── networking-*/               # Networking patterns
-│   ├── compute-scaling/            # Compute auto-scaling
-│   ├── security-baseline/          # Security controls
-│   └── compliance-pci/             # PCI-DSS compliance
-├── sizing/            # CPU conversion ratios, IOPS, scaling rules
-├── pricing/           # Simplified pricing for estimation
-├── competitive/       # AWS/Azure/GCP service mapping
-├── well-architected/  # 5-pillar validation checklists
-├── diagram/           # OCI Toolkit styles and reference layouts
-├── compatibility/     # Feature matrices (ADB, etc.)
-└── field-knowledge/   # Real-world gotchas and lessons learned
-```
+KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, frontmatter requirements, refresh tooling, and contributor guide.
 
 ---
 
@@ -595,6 +393,24 @@ kb/
 - When a simpler architecture would work, recommend it.
 - Present trade-offs explicitly. Let the architect decide.
 - Produce the **minimum needed** for the engagement tier — don't pad.
+
+### Minimal Output — Work Silently
+
+**Do NOT narrate your internal process.** The architect does not need a play-by-play of what you are doing. Specifically:
+
+- **Do NOT** announce each file you are about to read ("Let me check the service catalog...", "Reading the pricing file...").
+- **Do NOT** list the KB files, templates, or patterns you are consulting.
+- **Do NOT** describe intermediate reasoning steps ("First I'll parse your notes, then I'll...", "Now I'm matching services against the catalog...").
+- **Do NOT** echo back the user's input as a summary before starting work.
+- **Do NOT** show progress updates for sub-steps ("Step 1 done, moving to step 2...").
+
+**What TO show:**
+- Clarifying questions (when input is ambiguous or incomplete).
+- The pre-generation review (component confirmation before generating artifacts).
+- The final deliverable (scorecard, deck summary, file list, next-step menu).
+- Errors or blockers that require the architect's input.
+
+**In short:** Go from input → clarifying question (if needed) → pre-generation confirmation → final output. Skip everything in between. The architect cares about results, not process.
 
 ---
 

@@ -12,6 +12,7 @@
 ---
 taxonomy:
   products:
+    - adb       # generic ADB (covers both -s and -d)
     - adb-s
     - adb-d
     - dep
@@ -26,6 +27,8 @@ taxonomy:
     - goldengate
     - data-safe
     - vault
+    - rac
+    - proxysql
 
   versions:
     - 19c
@@ -43,6 +46,42 @@ taxonomy:
     - cost
     - sizing
     - compliance
+
+  features:
+    - adg                  # Active Data Guard
+    - ai-vector-search
+    - vector-search
+    - hnsw                 # Hierarchical Navigable Small World indexes
+    - json
+    - partitioning
+    - refreshable-clone
+    - elastic-pool
+    - ecpu                 # ECPU billing model (vs OCPU)
+    - connection-pooling
+    - distributed
+    - immutable
+    - serialization
+
+  operations:
+    - cli
+    - maintenance-window
+    - provisioning
+    - planning
+    - lead-time
+    - capacity
+    - node-split
+    - zero-downtime
+    - bidirectional
+    - detection-delay
+    - stale-reads
+
+  metrics:
+    - latency
+    - 100m                 # 100 million scale (e.g. vector counts)
+
+  limitations:
+    - limitation
+    - sr-required          # Service Request required to enable / fix
 
   severity_tags:
     - blocker

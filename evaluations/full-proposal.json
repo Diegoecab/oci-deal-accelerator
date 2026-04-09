@@ -1,0 +1,18 @@
+{
+  "skills": ["oci-deal-accelerator"],
+  "query": "Customer: ACME Bank, retail banking, 200 branches across LATAM. Driver: migrating core banking from on-prem Exadata to OCI for cost reduction and DR. Current: 4-node RAC on X8M, ~12 TB DB, 2000 TPS peak, RTO 4h / RPO 15min. Compliance: PCI-DSS, local data residency. Timeline: 6 months. Budget: tight, exploring BYOL. They are also evaluating AWS RDS Custom for Oracle.",
+  "files": [],
+  "expected_behavior": [
+    "Detects this is discovery notes and skips the welcome menu (no 14-option list shown)",
+    "Goes directly into the full proposal flow (option 1 behavior)",
+    "Builds a workload profile reflecting ACME Bank's stated requirements (does NOT invent services they did not mention)",
+    "Recommends an architecture that addresses RTO/RPO, PCI-DSS, data residency, and BYOL — using kb/services/, kb/patterns/, and kb/well-architected/",
+    "Cites at least one Oracle Architecture Center reference architecture from kb/architecture-center/catalog.yaml when there is a strong match",
+    "Generates a slide deck (.pptx) as the primary deliverable, saved to examples/output-acme-bank-*/",
+    "Includes a Cost Estimate slide that distinguishes BYOL vs PAYG using kb/pricing/",
+    "Mentions the AWS RDS Custom for Oracle competitive context honestly using kb/competitive/aws-mapping.yaml",
+    "Does NOT add observability/security services that ACME did not request, beyond what is required for stated compliance",
+    "Asks clarifying questions when input is genuinely ambiguous, instead of inventing answers",
+    "Surfaces relevant gotchas from kb/field-knowledge/ (e.g., Exadata-to-cloud migration risks)"
+  ]
+}

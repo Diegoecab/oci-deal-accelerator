@@ -1,0 +1,419 @@
+---
+last_verified: 2026-04-08
+source: Migrated from former kb/pricing/<domain>.yaml files (removed 2026-04-08).
+  Stable, non-numeric pricing knowledge that does not need API refresh.
+  All actual price numbers live in kb/pricing/oci-sku-catalog.yaml (auto-refreshed).
+description: Pricing context, billing models, free tiers, BYOL rules, and
+  cross-service estimation knowledge for the OCI Deal Accelerator.
+---
+
+# =============================================================================
+# OCI Pricing Knowledge
+# =============================================================================
+#
+# This file is the human-readable companion to kb/pricing/oci-sku-catalog.yaml.
+# The catalog has live SKU prices (auto-refreshed). This file has the *context*
+# a Solutions Architect needs to estimate accurately:
+#   - Pricing models and when to use each
+#   - BYOL rules and savings
+#   - Free-tier rules per service
+#   - Service-specific billing nuances
+#   - Cost comparison framing vs hyperscalers
+#
+# This file is intentionally non-numeric where possible. Specific prices that
+# change should NOT be added here — add them to the SKU catalog instead.
+# Where a percentage or range is unavoidable (e.g. "BYOL ~50% off"), prefer
+# stable rules of thumb over exact figures.
+# =============================================================================
+
+# ── PRICING MODELS ────────────────────────────────────────────────
+
+pricing_models:
+  payg:
+    name: Pay As You Go
+    commitment: none
+    billing: Per second (compute), per hour (database), per month (storage)
+    when_to_use:
+      - Variable / unpredictable workloads
+      - Short-term projects
+      - Dev / test environments
+      - Initial cloud adoption (before committing)
+
+  monthly_flex:
+    name: Monthly Flex (Universal Credits)
+    commitment: Minimum $1,000/month or custom commitment
+    billing: Committed credits consumed by usage
+    discount_tiers:
+      - spend_band: $1K-$10K/month
+        approx_discount: 5-10%
+      - spend_band: $10K-$50K/month
+        approx_discount: 10-20%
+      - spend_band: $50K+/month
+        approx_discount: 20-30% (negotiated)
+    when_to_use:
+      - Steady-state production workloads
+      - Known baseline consumption
+      - Multiple services across OCI
+
+  annual_flex:
+    name: Annual Flex (Committed)
+    commitment: 1-year or 3-year
+    discount: Deeper than Monthly Flex
+    when_to_use:
+      - Established production workloads with predictable spend
+      - Organizations committed to OCI long-term
+
+  byol:
+    name: Bring Your Own License
+    approx_savings: ~50% on database ECPU/OCPU costs
+    eligible:
+      - Oracle Database Enterprise Edition
+      - Oracle Database Standard Edition 2
+      - Oracle WebLogic
+      - Oracle Java SE
+    conversion: 1 processor license = 2 OCPUs (or 8 ECPUs)
+    when_to_use:
+      - Existing Oracle on-prem licenses with active support
+      - Licenses not being used elsewhere
+    when_not_to_use:
+      - No existing licenses
+      - Licenses still needed for on-prem during migration
+      - Standard Edition workloads on ADB (ADB requires EE)
+
+  reserved_capacity:
+    name: Reserved Capacity
+    commitment: 1-year or 3-year for specific shapes
+    approx_discount:
+      one_year: ~35% off on-demand
+      three_year: ~55% off on-demand
+    when_to_use:
+      - Known compute shapes running 24/7
+      - Predictable database capacity
+    notes: Shape-specific, less flexible than Universal Credits
+
+# ── ESTIMATION APPROACH ──────────────────────────────────────────
+
+estimation_approach:
+  steps:
+    - Calculate PAYG cost first (baseline)
+    - Apply BYOL if customer has eligible licenses
+    - Show savings with Monthly Flex / Annual Flex for steady-state
+    - Compare total annual cost vs current on-prem spending
+    - Include migration costs in year 1
+  assumptions_to_state:
+    - Hours per month (730 for 24/7)
+    - Auto-scaling hours per day (estimate)
+    - Data transfer volumes (egress in particular)
+    - Backup retention policy
+    - Support tier (Premier vs Standard)
+
+# ── DATABASE KNOWLEDGE ──────────────────────────────────────────
+
+database:
+  billing_unit_change:
+    fact: ADB and most modern Oracle Database services bill in ECPUs, not OCPUs.
+    rule_of_thumb: 1 OCPU ≈ 4 ECPUs for sizing conversion.
+    note: When reading old datasheets or RFP documents, normalize to ECPU before quoting.
+
+  autonomous_database_serverless:
+    auto_scaling: Billed per ECPU-second for additional ECPUs above base. Same hourly rate as base ECPUs.
+    adg_standby: Standby ECPU cost at the same rate as primary. Storage shared (no extra storage charge).
+    backup: Automated backups included in storage cost. Manual backups use Object Storage rates.
+    sweet_spot: 4-32 ECPUs with auto-scaling. Below 4, consider Always Free. Above 128, consider ADB-D or ExaCS.
+
+  autonomous_database_dedicated:
+    x11m_elastic_model:
+      description: |
+        X11M is the current-generation Exadata infrastructure for ADB-D and
+        ExaCS (announced 2025). It uses elastic scaling instead of fixed
+        quarter / half / full racks.
+      configuration:
+        min_db_servers: 2
+        min_storage_servers: 3
+        max_db_servers: 32
+        max_storage_servers: 64
+      key_changes_vs_x9m:
+        - No fixed rack shapes — elastic scale in / out by server
+        - Hard minimum: 2 DB + 3 storage servers (cannot provision less)
+        - Per-second ECPU billing (was per-hour in older generations)
+        - Improved compute, storage density, RDMA throughput
+      pricing_caveat: |
+        Per-server line items exist in the OCI price list ('Database Server -
+        X11M', 'Storage Server - X11M') but the dollar amounts are not visible
+        in the public API. For estimation, use X9M quarter rack as a proxy
+        and confirm final pricing with the Oracle PDM / sales team.
+    legacy_x9m_model:
+      shapes:
+        - quarter_rack
+        - half_rack
+        - full_rack
+      note: Still available in some regions; new deployments default to X11M.
+
+  dbcs_editions:
+    SE: Standard Edition 2
+    EE: Enterprise Edition (base)
+    EE_HP: Enterprise Edition - High Performance (partitioning, advanced compression, etc.)
+    EE_EP: Enterprise Edition - Extreme Performance (RAC, Active Data Guard, In-Memory)
+    note: Backup storage is charged separately at Object Storage rates.
+
+  exacs_gotchas:
+    - Infrastructure cost is fixed regardless of ECPU utilization on X9M (rack-based).
+    - X11M elastic model bills by server, not by rack — scale in / out as needed.
+    - Provisioning takes 4-8 hours.
+    - Billing starts only at AVAILABLE state.
+    - For X11M, the public API does not expose infrastructure-rate dollar amounts — confirm with PDM.
+
+  exadata_cloud_at_customer:
+    note: Exadata infrastructure deployed in the customer datacenter, managed by Oracle.
+    same_ecpu_pricing_as: ExaCS Dedicated
+
+  database_migration_service:
+    free_period: First 183 days of an active migration are free.
+
+  backup_recovery:
+    autonomous_recovery_service: Per-GB protected per month, virtualized.
+    zdlra: Zero Data Loss variant — same model, slightly higher rate.
+
+  cost_comparison_vs_hyperscalers:
+    when_pitching_vs_aws_rds_or_azure_sqlmi:
+      include_in_comparison:
+        - OCI inbound data transfer is free
+        - OCI egress to internet is dramatically cheaper (~80% less than AWS after 10TB free)
+        - OCI BYOL discount is deeper than AWS BYOL
+        - ADB-S includes patching, tuning, indexing — RDS does not
+        - ADB now bills in ECPU (not OCPU) — 1 ECPU is a fraction of an OCPU
+        - Network LB is free per-hour on OCI
+
+# ── NETWORKING KNOWLEDGE ────────────────────────────────────────
+
+networking:
+  data_transfer:
+    ingress: Free (all sources)
+    egress_internet:
+      free_tier: First 10 TB / month is free
+      billing_after: Per-GB charge applies beyond free tier
+    inter_region: Per-GB charge (low)
+    fastconnect: Free in both directions (ingress AND egress)
+    competitive_advantage: |
+      OCI is dramatically cheaper than hyperscalers for data transfer:
+      - AWS: $0.09 / GB egress (OCI is ~10x cheaper after 10 TB free)
+      - Azure: $0.087 / GB egress
+      - GCP: $0.12 / GB egress
+      - OCI FastConnect egress is FREE (AWS DirectConnect charges per GB)
+      This is one of the strongest cost arguments when migrating data-intensive
+      workloads from AWS / Azure / GCP.
+
+  fastconnect:
+    note: Private dedicated connectivity. No data transfer charges.
+    port_speeds_available_in_api: [1, 2, 5, 10, 40, 100, 400]   # Gbps
+    note_400gbps: 400 Gbps option is available; check oci-sku-catalog.yaml for current SKUs.
+
+  network_load_balancer:
+    cost_model: No per-hour charge (Layer 4). Data processing fees apply.
+
+  flexible_load_balancer:
+    cost_model: Base instance hourly + bandwidth per Mbps-hour. See oci-sku-catalog.yaml.
+
+  vpn_connect:
+    cost_model: No additional charge for IPSec VPN tunnels. Included with DRG.
+
+  dns:
+    free_tier: 1 million queries / month at no cost.
+
+  waf:
+    cost_model: Pricing based on requests processed. See oci-sku-catalog.yaml.
+
+# ── STORAGE KNOWLEDGE ───────────────────────────────────────────
+
+storage:
+  block_volume:
+    tier_model: |
+      OCI block volume tiers are configured via Volume Performance Units (VPU):
+      - Lower Cost: 0 VPU
+      - Balanced: 10 VPU (default)
+      - Higher Performance: 20 VPU
+      - Ultra High Performance (UHP): 30-120 VPU
+      The base storage SKU is the same across tiers; the difference is the
+      VPU multiplier on top. See oci-sku-catalog.yaml for the base storage
+      SKU and the VPU SKU.
+    boot_volume_free_tier: First 200 GB included with each compute instance.
+    backup_billing: Block volume backups have their own per-GB-month rate (lower than primary).
+
+  object_storage:
+    tiers:
+      standard: General-purpose, immediate access.
+      infrequent_access: Lower per-GB cost; retrieval fee applies.
+      archive: Lowest per-GB cost; standard retrieval is ~1 hour.
+    free_tier: 10 GB storage + 50,000 requests / month always free.
+    request_pricing: Separate per-10k-PUT and per-10k-GET charges.
+
+  file_storage:
+    note: Per-GB-month, higher rate than block volume.
+    high_performance_mount_target: Available for high-throughput workloads.
+
+# ── OBSERVABILITY & MANAGEMENT KNOWLEDGE ────────────────────────
+
+observability:
+  free_services:
+    - Cloud Guard (tenancy threat detection)
+    - Security Zones (compartment policy enforcement)
+    - Vulnerability Scanning (host + container image)
+    - Certificates (TLS certificate management)
+    - Bastion (managed SSH / RDP bastion)
+    - Vault (software keys; HSM is paid)
+    - OS Management Hub
+    - Java Management Service
+    - Autonomous Linux
+    - Resource Analytics
+    - Events service
+    - DevOps pipeline execution (compute / storage billed separately)
+    - Cluster management for OKE basic clusters
+
+  free_tiers:
+    monitoring:
+      ingestion: 500 million datapoints / month
+      retrieval: 1 billion datapoints / month
+    logging:
+      free_per_month: 10 GB
+    queue:
+      free_per_month: 1 million requests
+    functions:
+      invocations: 2 million / month
+      memory: 400,000 GB-seconds / month
+    notifications:
+      deliveries: 1 million / month
+      emails: 1,000 / month
+
+  ops_insights:
+    note: Basic and Autonomous tiers are free. Cloud-external (e.g. on-prem databases) is paid per OCPU-hour.
+
+  log_analytics:
+    unit: 1 storage unit = 300 GB.
+
+  full_stack_dr:
+    note: Orchestrates DR failover across compute, database, and networking. Billed per ECPU / OCPU hour.
+
+# ── COMPUTE / CONTAINERS / SERVERLESS KNOWLEDGE ────────────────
+
+compute_containers_serverless:
+  oke:
+    basic_cluster: Cluster management is free (control plane).
+    enhanced_cluster: Per-cluster hourly charge — adds virtual nodes, workload identity, etc.
+    worker_nodes: Billed at standard compute shape rates (see kb/pricing/compute.yaml).
+    virtual_nodes: Additional per-pod pricing on enhanced clusters.
+
+  container_instances:
+    billing: Billed at compute rates (OCPU / hour + GB memory / hour). No additional service charge.
+    shapes_available: [A1 (Arm), E3 (AMD), E4 (AMD), E5 (AMD), E6 (AMD)]
+
+  functions:
+    free_tier_strength: Very generous — most event-driven workloads stay in the free tier.
+
+  batch:
+    billing: Pay-as-you-go compute pricing, no additional service charge.
+
+# ── INTEGRATION & MIDDLEWARE KNOWLEDGE ─────────────────────────
+
+integration:
+  integration_cloud:
+    editions: [Standard, Enterprise]
+    billing_unit: Per 5,000 messages / hour band
+
+  api_management:
+    note: Per-API-call pricing is very low; most use cases trivially below $1 / million calls.
+
+  streaming:
+    note: Kafka-compatible. Billed per GB stored per hour + per GB transferred.
+
+  queue:
+    free_tier_strength: 1 million requests / month free, very cost-effective for decoupling.
+
+  goldengate:
+    billing: OCPU-hour. BYOL available.
+    use_case: Real-time data integration and replication.
+
+  soa_suite:
+    note: For legacy SOA workload migration. OCPU-hour billing.
+
+# ── DEVELOPER SERVICES KNOWLEDGE ───────────────────────────────
+
+developer:
+  apex:
+    free_tier: Yes — APEX free tier available for low-code development.
+  visual_builder:
+    note: Low-code app builder with included storage.
+  devops:
+    free: Pipeline execution itself is free; compute / memory billed separately.
+  blockchain:
+    note: OCPU-hour billing; storage charged separately.
+  iot:
+    billing_unit: ECPU-hour.
+  media_flow:
+    billing: Per-minute, varies by codec, resolution, and fps.
+  media_streams:
+    billing: Per-GB packaged.
+
+# ── AI / ML KNOWLEDGE ──────────────────────────────────────────
+
+ai_ml:
+  generative_ai_vendors_available:
+    - Cohere (Command, Embed)
+    - Meta Llama
+    - xAI Grok
+    - Google Gemini
+  generative_ai_billing_unit: Per 10K transactions or per 1M tokens (varies by vendor).
+  generative_ai_agents:
+    extra_costs: Plus storage and ingestion fees for agent knowledge bases.
+
+  data_science:
+    notebook_sessions: Billed at compute shape rates (OCPU / hour + GB memory / hour + GPU options).
+    jobs: Same compute pricing as notebook sessions.
+    model_deployment: Compute + networking + storage combined pricing.
+    model_catalog_storage: Object Storage rates.
+
+  anomaly_detection:
+    free_tier: Up to 100M data points / month per region.
+
+  document_understanding:
+    note: OCR billed per 1K transactions; custom training billed per training hour.
+
+  language_services:
+    note: Pretrained per-transaction billing; custom training available at additional cost.
+
+  vision:
+    note: Per-1K image analysis billing; custom training per hour.
+
+  speech:
+    note: Per-transcription-hour billing.
+
+  digital_assistant:
+    note: Per-request billing with a minimum throughput floor.
+
+# ── SECURITY KNOWLEDGE ─────────────────────────────────────────
+
+security:
+  free_services:
+    - Cloud Guard
+    - Security Zones
+    - Vulnerability Scanning
+    - Certificates
+    - Bastion
+    - Vault (software keys only — HSM keys are paid)
+  paid_services:
+    - Access Governance (per workforce / consumer user / month)
+    - Network Firewall (instance hours + data processed)
+    - Data Safe (per target / month + audit records)
+    - Vault (HSM-backed keys)
+
+# ── HYBRID / EDGE KNOWLEDGE ────────────────────────────────────
+
+hybrid:
+  vmware_solution:
+    note: Bare-metal nodes (BM.Standard2.12, BM.Standard3.16, BM.Standard.E4.32, BM.Standard.E5.48). Hourly to 3-year commitment ranges.
+    hcx_enterprise: Available for cross-cloud migration from on-prem vSphere; 1-month minimum commitment.
+  compute_cloud_at_customer:
+    note: OCI compute, storage, and load balancer in customer datacenter. E6 shapes available.
+  managed_mac:
+    note: Apple Mac instances (M2 Pro, M4 Pro) for iOS / macOS build pipelines.
+  roving_edge:
+    note: Portable compute / GPU / storage devices for edge and disconnected scenarios. Per-device-day billing.

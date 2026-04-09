@@ -20,15 +20,15 @@ domains:
     review_cadence: "quarterly"
 
   - area: "kb/compatibility/"
-    owner: { name: "TBD", team: "Database Specialists" }
+    owner: { name: "Diego Cabrera", team: "Field SA" }
     review_cadence: "on Oracle version release + quarterly"
 
   - area: "kb/pricing/"
-    owner: { name: "TBD", team: "Solution Engineering" }
-    review_cadence: "monthly (pricing changes frequently)"
+    owner: { name: "Auto-refreshed", team: "Oracle Public Pricing API" }
+    review_cadence: "automatic — refresh tools pull from the API on demand; freshness checker runs in welcome flow"
 
   - area: "kb/competitive/"
-    owner: { name: "TBD", team: "Competitive Intelligence" }
+    owner: { name: "Diego Cabrera", team: "Field SA" }
     review_cadence: "quarterly + on competitor announcements"
 
   - area: "kb/field-findings/"
@@ -36,5 +36,5 @@ domains:
     review_cadence: "continuous"
 
   - area: "kb/well-architected/"
-    owner: { name: "TBD", team: "Cloud Architecture" }
+    owner: { name: "Diego Cabrera", team: "Field SA" }
     review_cadence: "on Oracle WA Framework updates"

@@ -1,0 +1,16 @@
+{
+  "skills": ["oci-deal-accelerator"],
+  "query": "hola",
+  "files": [],
+  "expected_behavior": [
+    "Reads SKILL.md before showing anything to the user (does not improvise the menu from memory or folder structure)",
+    "Runs python tools/kb_freshness.py --check --json as a pre-flight step",
+    "If freshness reports stale files with refreshable=true, prepends a banner asking the user [y/N] before proceeding",
+    "If freshness reports stale files but none are refreshable, prepends a non-blocking informational banner without asking",
+    "Shows the welcome banner exactly as defined in SKILL.md (no paraphrasing)",
+    "Shows all 14 capability menu options in the correct 6 sections: DESIGN & PROPOSE (1-4), VALIDATE & CHECK (5-7), STRATEGY & BUSINESS (8), KNOWLEDGE BASE (9-11), ECAL GOVERNANCE (12), SA TOOLS (13-14)",
+    "Does NOT invent options that are not in SKILL.md",
+    "Does NOT omit options that are in SKILL.md",
+    "If the freshness tool errors out, falls back to showing the welcome message silently — never blocks the user on tooling failures"
+  ]
+}

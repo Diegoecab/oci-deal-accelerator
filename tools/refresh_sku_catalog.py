@@ -28,6 +28,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import date
@@ -50,6 +51,17 @@ DEFAULT_CURRENCY = "USD"
 # ── Paths ─────────────────────────────────────────────────────────
 TOOLS_DIR = Path(__file__).resolve().parent
 CATALOG_PATH = TOOLS_DIR.parent / "kb" / "pricing" / "oci-sku-catalog.yaml"
+COMPUTE_DOMAIN_PATH = TOOLS_DIR.parent / "kb" / "pricing" / "compute.yaml"
+
+# ── Domain refresh registry ───────────────────────────────────────
+# Maps a domain key (used by --refresh-domain) to its file path and
+# refresher function. Add a new entry here to support more domains.
+DOMAIN_REGISTRY = {
+    "compute": {
+        "path": COMPUTE_DOMAIN_PATH,
+        "refresher": "refresh_compute_yaml",
+    },
+}
 
 
 def fetch_all_products(currency="USD", verbose=False):
@@ -293,6 +305,252 @@ def inspect_sku(part_number):
                 ))
 
 
+# ── Domain refresh: compute ───────────────────────────────────────
+
+# Compute family token regex. Matches the family token (E3-E6, A1/A2/A4, X9)
+# inside shape names like VM.Standard.E6.Flex, BM.Standard.E5, BM.Standard.x9.
+_COMPUTE_FAMILY_RE = re.compile(r'\b(E[3-6]|A[1-4]|X9|x9)\b')
+
+
+def _shape_family(shape_name):
+    """Return the family token (E5, A2, X9, ...) used in API displayName,
+    or None if the shape can't be mapped automatically.
+
+    Special case: VM.Optimized3.Flex maps to the 'Optimized X9' product line.
+    """
+    if "Optimized3" in shape_name or "Optimized" in shape_name:
+        return "X9_OPTIMIZED"
+    m = _COMPUTE_FAMILY_RE.search(shape_name)
+    if m:
+        return m.group(1).upper()
+    return None
+
+
+def build_compute_family_lookup(api_map):
+    """Scan the API for Compute Standard / Optimized OCPU and Memory products,
+    return {family: {'ocpu': price, 'memory': price, 'ocpu_sku': sku, 'memory_sku': sku}}.
+    """
+    lookup = {}
+    for sku, product in api_map.items():
+        name = product.get("displayName", "")
+        if "Compute" not in name:
+            continue
+        if "Cloud@Customer" in name:
+            continue
+        if "Dense I/O" in name or "Dense IO" in name:
+            continue  # different pricing tier
+        if "HPC" in name:
+            continue
+        if "VMware" in name:
+            continue
+        if "GPU" in name:
+            continue  # GPU shapes not handled in this domain refresher
+
+        is_optimized = "Optimized" in name
+        is_standard = "Standard" in name
+        if not (is_optimized or is_standard):
+            continue
+
+        # Find the family token in the displayName
+        m = _COMPUTE_FAMILY_RE.search(name)
+        if not m:
+            continue
+        family = m.group(1).upper()
+        if is_optimized:
+            family = "X9_OPTIMIZED"
+
+        metric = product.get("metricName", "")
+        price = extract_payg_price(product)
+
+        slot = lookup.setdefault(family, {})
+        if "OCPU" in metric.upper():
+            # Prefer the first match (deterministic across runs since API order is stable)
+            slot.setdefault("ocpu", price)
+            slot.setdefault("ocpu_sku", sku)
+        elif "GIGABYTE" in metric.upper() or "Gigabytes" in metric:
+            slot.setdefault("memory", price)
+            slot.setdefault("memory_sku", sku)
+
+    return lookup
+
+
+def _load_multidoc_yaml(path):
+    """Load a multi-doc YAML file (frontmatter + body) and return both as dicts."""
+    with open(str(path), "r", encoding="utf-8") as fh:
+        docs = list(yaml.safe_load_all(fh))
+    frontmatter = {}
+    body = {}
+    for d in docs:
+        if not isinstance(d, dict):
+            continue
+        # Frontmatter typically has last_verified, source, description, currency
+        if "last_verified" in d or "source" in d or "currency" in d:
+            frontmatter.update(d)
+        else:
+            body.update(d)
+    return frontmatter, body
+
+
+def _save_multidoc_yaml(path, frontmatter, body):
+    """Write frontmatter + body as a two-doc YAML file."""
+    with open(str(path), "w", encoding="utf-8") as fh:
+        yaml.safe_dump(frontmatter, fh, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        fh.write("---\n")
+        yaml.safe_dump(body, fh, default_flow_style=False, sort_keys=False, allow_unicode=True, width=120)
+
+
+def refresh_compute_yaml(verbose=False):
+    """Refresh kb/pricing/compute.yaml from the live API.
+
+    Updates ocpu_per_hour, memory_per_gb_hour, and monthly_730h for shapes
+    in flexible_shapes and bare_metal_shapes. Skips GPU shapes (out of scope).
+    Preserves notes, free_tier, gpu_model, and other manual fields.
+    """
+    print("Fetching current prices from Oracle API...")
+    products = fetch_all_products(currency=DEFAULT_CURRENCY, verbose=verbose)
+    api_map = {p.get("partNumber", ""): p for p in products if p.get("partNumber")}
+    print("  {} products from API".format(len(api_map)))
+
+    family_prices = build_compute_family_lookup(api_map)
+    if verbose:
+        print("\n  Family lookup built:")
+        for fam, prices in sorted(family_prices.items()):
+            print("    {:<14} OCPU=${:.4f}  Memory=${:.4f}".format(
+                fam, prices.get("ocpu", 0), prices.get("memory", 0)
+            ))
+
+    print("\nLoading {}...".format(COMPUTE_DOMAIN_PATH))
+    frontmatter, body = _load_multidoc_yaml(COMPUTE_DOMAIN_PATH)
+
+    updated = []
+    skipped = []
+
+    def update_shape(section_name, shape_name, shape_data, has_memory=True):
+        family = _shape_family(shape_name)
+        if not family or family not in family_prices:
+            skipped.append((section_name, shape_name, "no API match"))
+            return
+        prices = family_prices[family]
+        new_ocpu = prices.get("ocpu")
+        new_memory = prices.get("memory")
+        if new_ocpu is None:
+            skipped.append((section_name, shape_name, "no OCPU price"))
+            return
+
+        old_ocpu = shape_data.get("ocpu_per_hour") or 0
+        old_memory = shape_data.get("memory_per_gb_hour") or 0
+
+        # Protect against API returning $0 for tiered/free-tier SKUs (e.g. A1 Always Free).
+        # Same convention as refresh_catalog(): keep the existing value if it's > 0.
+        if new_ocpu == 0 and old_ocpu > 0:
+            skipped.append((section_name, shape_name, "API returned $0 (free tier) — kept existing"))
+            return
+        if has_memory and new_memory == 0 and old_memory > 0:
+            skipped.append((section_name, shape_name, "API returned $0 memory (free tier) — kept existing"))
+            return
+
+        shape_data["ocpu_per_hour"] = new_ocpu
+
+        if has_memory and new_memory is not None:
+            shape_data["memory_per_gb_hour"] = new_memory
+
+            # Recompute monthly_730h block if present
+            if "monthly_730h" in shape_data:
+                shape_data["monthly_730h"] = {
+                    "ocpu": round(new_ocpu * 730, 2),
+                    "memory_per_gb": round(new_memory * 730, 2),
+                }
+            updated.append((section_name, shape_name, family, old_ocpu, new_ocpu, old_memory, new_memory))
+        else:
+            updated.append((section_name, shape_name, family, old_ocpu, new_ocpu, None, None))
+
+    for shape_name, shape_data in (body.get("flexible_shapes") or {}).items():
+        if isinstance(shape_data, dict):
+            update_shape("flexible_shapes", shape_name, shape_data, has_memory=True)
+
+    for shape_name, shape_data in (body.get("bare_metal_shapes") or {}).items():
+        if isinstance(shape_data, dict):
+            update_shape("bare_metal_shapes", shape_name, shape_data, has_memory=False)
+
+    # Update frontmatter: bump last_verified, replace stale source, drop NEEDS REVIEW
+    # (the comment block lives only in the source text and is dropped on round-trip)
+    frontmatter["last_verified"] = date.today().isoformat()
+    frontmatter["source"] = API_BASE
+    frontmatter["description"] = (
+        "OCI Compute pricing for estimation purposes. Auto-refreshed from the "
+        "Oracle public pricing API by tools/refresh_sku_catalog.py --refresh-domain compute. "
+        "GPU shapes, secure desktops, estimation_helpers, and discounts are NOT auto-refreshed."
+    )
+
+    # Recompute estimation_helpers from the new E5 / A1 prices, since the
+    # hardcoded `monthly` values are derived from them.
+    _recompute_compute_estimation_helpers(body)
+
+    _save_multidoc_yaml(COMPUTE_DOMAIN_PATH, frontmatter, body)
+
+    print("\nRefresh complete:")
+    print("  Shapes updated: {}".format(len(updated)))
+    print("  Shapes skipped: {}".format(len(skipped)))
+    if verbose or updated:
+        print("\nUpdated shapes:")
+        for section, name, family, old_o, new_o, old_m, new_m in updated:
+            mem = ""
+            if old_m is not None:
+                mem = "  mem ${:.4f}->${:.4f}".format(old_m, new_m)
+            print("  [{}] {} ({}): OCPU ${:.4f}->${:.4f}{}".format(
+                section, name, family, old_o or 0, new_o, mem
+            ))
+    if skipped:
+        print("\nSkipped shapes (no API match — preserve existing values):")
+        for section, name, reason in skipped:
+            print("  [{}] {}  ({})".format(section, name, reason))
+    print("\nFile saved: {}".format(COMPUTE_DOMAIN_PATH))
+
+
+def _recompute_compute_estimation_helpers(body):
+    """Recompute the hardcoded `monthly` values in estimation_helpers from
+    the (now fresh) E5 and A1 prices. Best-effort: if the referenced shape
+    is missing, leave the helper unchanged.
+    """
+    helpers = body.get("estimation_helpers") or {}
+    flex = body.get("flexible_shapes") or {}
+
+    # Configs are: (helper_key, shape_name, ocpu_count, memory_gb)
+    rules = [
+        ("typical_app_server", "VM.Standard.E5.Flex", 4, 64),
+        ("typical_web_server", "VM.Standard.E5.Flex", 2, 16),
+        ("typical_bastion", "VM.Standard.E5.Flex", 1, 8),
+        ("typical_arm_app_server", "VM.Standard.A1.Flex", 4, 24),
+    ]
+
+    for helper_key, shape_name, ocpus, mem_gb in rules:
+        if helper_key not in helpers:
+            continue
+        shape = flex.get(shape_name)
+        if not isinstance(shape, dict):
+            continue
+        ocpu_h = shape.get("ocpu_per_hour")
+        mem_h = shape.get("memory_per_gb_hour")
+        if ocpu_h is None or mem_h is None:
+            continue
+        # 730 hours per month convention (matches the rest of the file)
+        monthly = round((ocpus * ocpu_h * 730) + (mem_gb * mem_h * 730), 2)
+        helpers[helper_key]["monthly"] = monthly
+
+
+def refresh_domain(domain_key, verbose=False):
+    """Dispatch to the registered domain refresher."""
+    if domain_key not in DOMAIN_REGISTRY:
+        print("Unknown domain: {}. Available: {}".format(
+            domain_key, ", ".join(sorted(DOMAIN_REGISTRY.keys()))
+        ))
+        return 1
+    refresher_name = DOMAIN_REGISTRY[domain_key]["refresher"]
+    refresher = globals()[refresher_name]
+    refresher(verbose=verbose)
+    return 0
+
+
 def dump_all(output_path, verbose=False):
     """Dump raw API response to JSON file."""
     products = fetch_all_products(currency=DEFAULT_CURRENCY, verbose=verbose)
@@ -307,6 +565,10 @@ def main():
     )
     parser.add_argument("--refresh", action="store_true",
                         help="Refresh catalog prices from Oracle API")
+    parser.add_argument("--refresh-domain", type=str, metavar="DOMAIN",
+                        choices=sorted(DOMAIN_REGISTRY.keys()),
+                        help="Refresh a domain pricing file from the API "
+                             "(currently: compute)")
     parser.add_argument("--validate", action="store_true",
                         help="Validate catalog prices against API")
     parser.add_argument("--sku", type=str,
@@ -321,6 +583,8 @@ def main():
 
     if args.sku:
         inspect_sku(args.sku)
+    elif args.refresh_domain:
+        return refresh_domain(args.refresh_domain, verbose=args.verbose or args.diff)
     elif args.refresh:
         refresh_catalog(verbose=args.verbose or args.diff)
     elif args.validate:

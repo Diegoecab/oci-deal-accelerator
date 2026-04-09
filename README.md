@@ -86,31 +86,27 @@ Any SA can contribute knowledge to the skill. The KB lives in `kb/` as editable 
 | **OCI service info** | `kb/services/<service>.yaml` | Create or edit the service YAML |
 | **Architecture pattern** | `kb/patterns/` | Add YAML following existing format |
 | **Architecture Center reference** | `kb/architecture-center/catalog.yaml` | `python tools/refresh_arch_catalog.py --url <url>` |
-| **Updated pricing** | `kb/pricing/<category>.yaml` | Edit with data from [OCI Price List](https://www.oracle.com/cloud/price-list/) |
+| **Updated pricing** | `kb/pricing/oci-sku-catalog.yaml` (SKUs) or `kb/pricing/compute.yaml` (shapes) | `python tools/refresh_sku_catalog.py --refresh` (SKUs) or `--refresh-domain compute` (shapes). Both auto-pull from the Oracle public pricing API. |
 | **Feature compatibility** | `kb/compatibility/adb-feature-matrix.yaml` | Edit the matrix, mark `verified_in_field: true` |
 | **Competitive comparison** | `kb/competitive/` | Add or edit YAML with real pros AND cons |
 
 **Fastest path**: if you hit something in an engagement that another SA should know about, use menu option 11 (Report a field finding) — the skill walks you through the format and adds it to the tracker automatically.
 
-### OCI Pricing (13 categories)
+### OCI Pricing
 
-Comprehensive pricing from the [OCI Price List](https://www.oracle.com/cloud/price-list/) covering compute, database, storage, networking, AI/ML, containers, integration, observability, developer, analytics, hybrid/VMware, and security services. Source date: 2025-09-11.
+All pricing is auto-refreshed from the [Oracle public pricing API](https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/?currencyCode=USD). No manually maintained pricing files.
 
 ```
 kb/pricing/
-├── compute.yaml            # VMs, bare metal, GPU (B200/B300/H200/H100/A100/L40S)
-├── database.yaml           # ADB (ECPU), DBCS, ExaCS, MySQL, PostgreSQL, NoSQL, Redis
-├── storage.yaml            # Block, object, file, data transfer
-├── networking.yaml         # LB, NLB, FastConnect, DNS, egress
-├── ai-ml.yaml              # GenAI, Data Science, Vision, Speech, Digital Assistant
-├── containers-serverless.yaml  # OKE, Functions, Container Instances
-├── integration.yaml        # OIC, API Mgmt, Streaming, Queue, GoldenGate
-├── observability.yaml      # Monitoring, Logging, APM, DR, Email
-├── developer.yaml          # APEX, Visual Builder, DevOps, Blockchain
-├── analytics.yaml          # OAC, Essbase, Big Data, Data Flow
-├── hybrid-vmware.yaml      # OCVS, Compute C@C, Managed Mac, Roving Edge
-├── security.yaml           # Access Governance, Vault, Cloud Guard
-└── pricing-models.yaml     # PAYG, UCM, Reserved, BYOL
+├── oci-sku-catalog.yaml    # 200+ SKUs across 20 categories — single source of truth
+│                             Refresh: python tools/refresh_sku_catalog.py --refresh
+└── compute.yaml            # Shape-level estimation pricing (VMs, BM, GPU)
+                              Refresh: python tools/refresh_sku_catalog.py --refresh-domain compute
+
+kb/field-knowledge/pricing-knowledge.yaml
+                            # Stable pricing context: billing models, BYOL rules,
+                              free tiers, service nuances, hyperscaler comparisons.
+                              Non-numeric — no refresh needed.
 ```
 
 ### DBExpert Database Services Catalog

@@ -1,0 +1,20 @@
+{
+  "skills": ["oci-deal-accelerator"],
+  "query": "5",
+  "follow_up": "Single-region OCI architecture: ADB-S 8 ECPU in São Paulo, 2 VM.Standard.E5.Flex web tier behind a public load balancer, Object Storage for media. No backups configured, no FastConnect. Customer: SmallShop, e-commerce, no compliance requirements stated.",
+  "files": [],
+  "expected_behavior": [
+    "After the user picks 5, asks for the architecture description (does not skip to scoring)",
+    "Reads docs/skill/wa-review-format.md before producing the scorecard",
+    "Parses the input into a workload profile YAML and architecture YAML",
+    "Runs scripts/validate-architecture.py with both files",
+    "Produces the formatted terminal scorecard with the exact banner format from docs/skill/wa-review-format.md (5 pillars, X/Y passed, HIGH/MEDIUM/LOW counts)",
+    "Saves three YAML files under examples/: <customer>-wa-scorecard.yaml, <customer>-wa-architecture.yaml, <customer>-wa-workload-profile.yaml",
+    "Lists the saved files at the end of the review",
+    "Identifies the obvious gaps (no backups, no DR, no monitoring, single-AD) as HIGH severity",
+    "Presents HIGH gaps as a markdown table grouped by pillar",
+    "Presents MEDIUM gaps as compact bullets, not a table",
+    "Offers the after-WA-review menu with options [A] [B] [C] [D]",
+    "If the user picks [A], remediates the EXISTING architecture (adds encryption, backups, etc. to the actual services SmallShop has) — does NOT replace it with a generic 'ideal' architecture, does NOT invent services SmallShop did not mention"
+  ]
+}

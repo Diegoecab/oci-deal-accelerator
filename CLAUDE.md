@@ -37,8 +37,9 @@ AI skill aligned with Oracle ECAL framework (Define → Design → Deliver) that
 │   │   ├── networking-basic.yaml
 │   │   └── (dirs: database-ha/, database-dr/, networking-hub-spoke/, etc.)
 │   ├── sizing/                 # CPU conversion ratios, IOPS, scaling rules
-│   ├── pricing/                # Simplified pricing for estimation
-│   │   └── oci-sku-catalog.yaml  # ~160 OCI SKUs for BOM generation
+│   ├── pricing/                # Auto-refreshed from Oracle public pricing API
+│   │   ├── oci-sku-catalog.yaml  # 200+ OCI SKUs across 20 categories (BOM source of truth)
+│   │   └── compute.yaml          # Shape-level estimation pricing
 │   ├── competitive/            # AWS/Azure/GCP service mapping
 │   ├── well-architected/       # 5-pillar WA Framework checklists
 │   ├── compatibility/          # Feature matrices (ADB, etc.)
@@ -163,10 +164,16 @@ make lint           # check YAML syntax
 
 ## Welcome Flow
 
-When the user starts a conversation without providing discovery notes or a specific request (e.g., a greeting like "hola", "hey", or empty context), present the welcome message and capability menu defined in `SKILL.md` § Welcome Flow. Specifically:
+When the user starts a conversation without providing discovery notes or a specific request (e.g., a greeting like "hola", "hey", or empty context):
 
-1. Show the welcome banner and numbered capability menu from SKILL.md
-2. Follow the behavior rules for each option (1-10)
-3. After completing any task, offer the next-step menu (A-E)
+**MANDATORY:** Use the `Read` tool to open `SKILL.md` and read the entire `## Welcome Flow` section **before** showing anything to the user. Reproduce the welcome banner and the 14-option capability menu **verbatim** from that file. Do NOT paraphrase, reorder, summarize, translate, or reconstruct the menu from memory, folder structure, or prior conversations. If `SKILL.md` cannot be read for any reason, tell the user instead of improvising a menu.
+
+**Pre-flight check (also defined in SKILL.md):** Before showing the welcome message, run `python tools/kb_freshness.py --check --json`. If `stale_count > 0`, follow the banner-and-prompt logic in SKILL.md § Welcome Flow → Pre-flight. If the tool errors, silently skip the banner — never block the user.
+
+Then:
+
+1. Show the welcome banner and numbered capability menu exactly as defined in SKILL.md (14 options across DESIGN & PROPOSE, VALIDATE & CHECK, STRATEGY & BUSINESS, KNOWLEDGE BASE, ECAL GOVERNANCE, SA TOOLS)
+2. Follow the behavior rules in SKILL.md for each option (1-14)
+3. After completing any task, offer the next-step menu (A-E) as defined in SKILL.md
 4. If the user sends discovery notes directly, skip the menu and go straight to full proposal flow
 5. If the user asks a specific question, skip the menu and answer directly

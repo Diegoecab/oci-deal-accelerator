@@ -28,7 +28,7 @@ review_triggers:
   - event: "Oracle database version release"
     action: "Review all feature matrix entries. Mark untested. Validate within 14 days."
   - event: "Oracle pricing change"
-    action: "Update kb/pricing/ files. Verify cost calculator accuracy."
+    action: "Run python tools/refresh_sku_catalog.py --refresh and --refresh-domain compute. Both pull from the live Oracle pricing API."
   - event: "After customer engagement"
     action: "Run After-Engagement Review (AER). Add findings and KB updates."
   - event: "Quarterly"

@@ -47,8 +47,12 @@ findings:
 
   - id: "FF-202603-008"
     date: "2026-03-14"
-    reported_by: "Diego Cabrera"
-    client: "Vector Search Customer"
+    contributor:
+      name: "Diego Cabrera"
+      team: "Field Architecture"
+      client: "Vector Search Customer"
+      context: "AI Vector Search engagement"
+      confidence: "validated"
     product: "ADB-S"
     version: "23ai"
     severity: "HIGH"

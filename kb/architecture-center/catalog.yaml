@@ -9,12 +9,12 @@
 #   STRONG MATCH:   ≥2 service matches + ≥1 tag match
 #   MODERATE MATCH: ≥1 service match + ≥2 tag matches
 #
-# Last refreshed: 2026-03-16
+# Last verified: 2026-03-16
 # Entry count: 123
 # To refresh: python tools/refresh_arch_catalog.py --whats-new
 # =============================================================================
 
-last_refreshed: "2026-03-16"
+last_verified: "2026-03-16"
 source: "https://docs.oracle.com/en/solutions/oracle-architecture-center/"
 entry_count: 123
 

@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill
 
 PYTHON ?= python3.12
 SPEC_DIR = examples
@@ -62,8 +62,19 @@ clean: ## Remove generated output files
 	rm -f examples/sample-output/*.xlsx
 	rm -f examples/sample-output/*.docx
 
-lint: ## Check YAML files for syntax errors
+lint: ## Check YAML files for syntax errors and validate SKILL.md sync
 	@echo "Checking YAML files..."
 	@find kb/ config/ examples/ -name '*.yaml' -exec $(PYTHON) -c \
-		"import yaml, sys; yaml.safe_load(open(sys.argv[1]))" {} \; \
+		"import yaml, sys; list(yaml.safe_load_all(open(sys.argv[1])))" {} \; \
 		-print 2>&1 | grep -v "^$$" || echo "All YAML files valid."
+	@echo "Checking SKILL.md sync..."
+	@$(PYTHON) scripts/sync-skill.py --check
+
+sync-skill: ## Regenerate .agents/skills/oci-deal-accelerator/SKILL.md from root SKILL.md
+	@$(PYTHON) scripts/sync-skill.py
+
+freshness: ## Report stale KB files (informational, never fails)
+	-@$(PYTHON) tools/kb_freshness.py --check
+
+freshness-refresh: ## Run refresh tools for stale KB files that support automation
+	@$(PYTHON) tools/kb_freshness.py --auto-refresh
