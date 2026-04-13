@@ -1,3 +1,5 @@
+# Auto-deploy OCI Deal Accelerator skill to MCP server on every push to main.
+# Requires secrets: OCI_SSH_KEY (private key), OCI_HOST (DNS alias).
 name: Deploy Skill to OCI
 
 on:
