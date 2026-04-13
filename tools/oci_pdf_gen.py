@@ -619,20 +619,38 @@ class OCIPDFGenerator:
             self._add_bullet_list(items)
 
     def add_environment_catalogue(self, environments: list,
-                                   cost_notes: list = None):
+                                   cost_notes=None):
         """Environment Catalogue section."""
         self._add_section_title("Environment Catalogue")
 
-        headers = ["Environment", "Tier", "Databases", "OCPUs", "Isolation"]
-        rows = [
-            [e.get("environment", ""), e.get("tier", ""),
-             e.get("databases", ""), e.get("ocpus", ""),
-             e.get("isolation", "")]
-            for e in environments
-        ]
-        avail = self.PAGE_WIDTH - 2 * self.MARGIN
-        widths = [avail * 0.16, avail * 0.10, avail * 0.20,
-                  avail * 0.10, avail * 0.44]
+        # Normalize cost_notes to list
+        if isinstance(cost_notes, str):
+            cost_notes = [s.strip() for s in cost_notes.split(".") if s.strip()]
+
+        # Detect schema: new (name/sizing/cost_pct) vs legacy (environment/tier/databases/ocpus)
+        sample = environments[0] if environments else {}
+        if "sizing" in sample or "cost_pct" in sample:
+            headers = ["Environment", "Sizing", "Isolation", "Cost %"]
+            rows = [
+                [e.get("name", e.get("environment", "")),
+                 e.get("sizing", ""),
+                 e.get("isolation", ""),
+                 f"{e.get('cost_pct', '')}%" if e.get("cost_pct", "") != "" else ""]
+                for e in environments
+            ]
+            avail = self.PAGE_WIDTH - 2 * self.MARGIN
+            widths = [avail * 0.18, avail * 0.40, avail * 0.27, avail * 0.15]
+        else:
+            headers = ["Environment", "Tier", "Databases", "OCPUs", "Isolation"]
+            rows = [
+                [e.get("environment", ""), e.get("tier", ""),
+                 e.get("databases", ""), e.get("ocpus", ""),
+                 e.get("isolation", "")]
+                for e in environments
+            ]
+            avail = self.PAGE_WIDTH - 2 * self.MARGIN
+            widths = [avail * 0.16, avail * 0.10, avail * 0.20,
+                      avail * 0.10, avail * 0.44]
         self.story.append(self._make_table(headers, rows, widths))
 
         if cost_notes:
