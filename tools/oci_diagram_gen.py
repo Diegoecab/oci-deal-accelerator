@@ -886,14 +886,15 @@ class OCIDiagramGenerator:
             label=label or "",
         )
 
-        # Base OCI style: open arrows, charcoal color, orthogonal routing
+        # Base OCI style: open arrows, charcoal color
+        # Note: orthogonal routing is set via extra_style (edgeStyle=orthogonalEdgeStyle)
+        # to avoid conflicts with drawpyo's own style merging
         edge.line_end_target = "open"
         edge.line_end_source = "none"
         edge.strokeColor = "#312D2A"
         edge.strokeWidth = 1
         edge.rounded = True
         edge.endSize = 6
-        edge.waypoints = "orthogonal"
 
         # Font styling via text_format (drawpyo's supported approach)
         edge.text_format.fontFamily = "Oracle Sans"
@@ -902,11 +903,14 @@ class OCIDiagramGenerator:
         edge.text_format.labelBackgroundColor = "#FFFFFF"
 
         # Extra style attributes that drawpyo Edge doesn't support natively.
-        # labelBackgroundColor: white so edge labels are readable and the line
-        # is hidden behind the text (confirmed in Oracle ref arch diagrams).
-        # labelBorderColor=none: no border box around the label.
+        # - edgeStyle=orthogonalEdgeStyle: right-angle routing (no diagonal lines)
+        # - jumpStyle=arc: when edges cross, show a small arc instead of overlapping
+        # - labelBackgroundColor: white so labels are readable over the line
+        # - NO elbow=vertical (it conflicts with orthogonal + port constraints)
         extra_style = (
-            "elbow=vertical;endFill=0;startFill=0;"
+            "edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;"
+            "jumpStyle=arc;jumpSize=8;"
+            "endFill=0;startFill=0;"
             "labelBackgroundColor=#FFFFFF;labelBorderColor=none;"
             "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
         )
@@ -958,23 +962,28 @@ class OCIDiagramGenerator:
             dx = tx - sx
             dy = ty - sy
 
-            # Determine dominant direction and set ports.
-            # Use 1.5x threshold: prefer vertical within same container (natural
-            # top-down flow), only go horizontal when clearly side-by-side.
-            # This matches Oracle ref arch style where subnets stack vertically
-            # and connections flow down between them.
-            if abs(dx) > abs(dy) * 1.5:
-                # Clearly horizontal: exit right → enter left (or vice versa)
+            # Determine dominant direction and set exit/entry ports.
+            # Threshold: prefer vertical for diagonal connections (natural
+            # top-down flow between subnets in Oracle ref arch style).
+            is_horizontal = abs(dx) > abs(dy) * 1.5
+
+            if is_horizontal:
+                # Horizontal: exit right → enter left (or vice versa)
                 if dx > 0:
                     extra_style += "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
                 else:
                     extra_style += "exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;"
             else:
-                # Vertical or diagonal: exit bottom → enter top (or vice versa)
+                # Vertical: exit bottom → enter top (or vice versa)
                 if dy > 0:
                     extra_style += "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
                 else:
                     extra_style += "exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
+
+                # For vertical edges with labels, position label to the right
+                # so it doesn't overlap the source/target icons
+                if label:
+                    extra_style += "align=left;verticalAlign=middle;"
 
         # Add waypoints if provided
         if waypoints:
