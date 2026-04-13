@@ -444,13 +444,16 @@ def build_demo_deck(output_path):
             '       "https://mcp.tech-lad.com/deal-accelerator/mcp/"',
             "",
             "OPTION B — Clone the skill repo (full access to KB + tools):",
-            "   git clone https://github.com/Diegoecab/oci-deal-accelerator.git",
+            "   git clone https://git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git",
             "",
             "MCP Server repo (deploy your own instance):",
             "   github.com/Diegoecab/arch-mcp-oracle",
             "",
+            "Skill repo (KB + tools + generators):",
+            "   git.tech-lad.com.br/diegoecab/oci-deal-accelerator",
             "",
-            "GET_STARTED_LINK_PLACEHOLDER",
+            "",
+            "Skill repo: git.tech-lad.com.br/diegoecab/oci-deal-accelerator    MCP repo: github.com/Diegoecab/arch-mcp-oracle",
         ],
         note="Scan the QR or visit the link above to get started in 30 seconds"
     )
@@ -458,7 +461,7 @@ def build_demo_deck(output_path):
     # ── SLIDE 13: Closing ──
     gen.add_closing_slide(
         name="OCI Deal Accelerator",
-        title="github.com/Diegoecab/arch-mcp-oracle",
+        title="git.tech-lad.com.br/diegoecab/oci-deal-accelerator  |  github.com/Diegoecab/arch-mcp-oracle",
     )
 
     gen.save(output_path)
