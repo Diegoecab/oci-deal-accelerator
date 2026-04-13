@@ -395,7 +395,32 @@ def build_demo_deck(output_path):
         ],
     )
 
-    # ── SLIDE 10: Key Takeaways (9:00-9:30) ──
+    # ── SLIDE 10: MCP Server — Zero Setup (8:30-9:00) ──
+    gen.add_content_slide(
+        "MCP Server: Use It From Any Client — Zero Code Setup",
+        [
+            "The skill also runs as an MCP (Model Context Protocol) server.",
+            "14 tools exposed over HTTP — same capabilities, no local repo needed.",
+            "",
+            "SUPPORTED CLIENTS — connect once, use forever:",
+            "   Claude Code / Claude Desktop (OAuth)  |  Cursor (OAuth)",
+            "   Codex - OpenAI (Bearer token)         |  Windsurf (SSE)",
+            "   Any MCP-compliant client",
+            "",
+            "SETUP — 1 command, done:",
+            "   claude mcp add --transport http oci-deal-accelerator \\",
+            '       "https://mcp.tech-lad.com/deal-accelerator/mcp/"',
+            "",
+            "HOW IT WORKS:",
+            "   Your IDE / Claude  -->  MCP Server (Docker)  -->  KB + Tools + Generators",
+            "   You type a prompt  -->  Server runs the tool  -->  You get .pptx, .xlsx, .json",
+            "",
+            "Zero Python setup. Zero repo cloning. Zero dependency management.",
+            "The SA opens their IDE, connects to the MCP, and starts working.",
+        ],
+    )
+
+    # ── SLIDE 11: Key Takeaways (9:00-9:30) ──
     gen.add_content_slide(
         "Key Takeaways",
         [
@@ -404,16 +429,36 @@ def build_demo_deck(output_path):
             "The KB is the moat: field experience > documentation > AI hallucination",
             "Self-updating: pricing + architectures refresh automatically",
             "Collaborative: every SA's gotcha becomes everyone's advantage",
-            "ECAL-aligned: Define > Design > Deliver with 60-artefact tracking",
+            "MCP server: zero setup, use from any AI client (Claude, Codex, Cursor...)",
             "Real deliverables: .pptx, .drawio, .pdf, .xlsx, BOM, AppCA — not chat summaries",
             "SA stays in control: AI generates, architect reviews and refines",
         ],
     )
 
-    # ── SLIDE 11: Closing ──
+    # ── SLIDE 12: Get Started ──
+    gen.add_content_slide(
+        "Get Started Right Now",
+        [
+            "OPTION A — MCP Server (recommended, zero setup):",
+            "   claude mcp add --transport http oci-deal-accelerator \\",
+            '       "https://mcp.tech-lad.com/deal-accelerator/mcp/"',
+            "",
+            "OPTION B — Clone the skill repo (full access to KB + tools):",
+            "   git clone https://github.com/Diegoecab/oci-deal-accelerator.git",
+            "",
+            "MCP Server repo (deploy your own instance):",
+            "   github.com/Diegoecab/arch-mcp-oracle",
+            "",
+            "",
+            "GET_STARTED_LINK_PLACEHOLDER",
+        ],
+        note="Scan the QR or visit the link above to get started in 30 seconds"
+    )
+
+    # ── SLIDE 13: Closing ──
     gen.add_closing_slide(
         name="OCI Deal Accelerator",
-        title="github.com/your-org/oci-deal-accelerator",
+        title="github.com/Diegoecab/arch-mcp-oracle",
     )
 
     gen.save(output_path)
