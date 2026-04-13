@@ -1,5 +1,6 @@
 # OCI Deal Accelerator — Business Case
 # Demo: PharmaCorp Mexico — ExaCS migration from on-prem Exadata X6
+# Follows exact schema expected by oci_bizcase_gen.py
 
 business_case:
   customer_name: "PharmaCorp Mexico"
@@ -12,118 +13,125 @@ business_case:
     company into 5 more years of on-prem operations with no DR capability. Migration
     to OCI ExaCS X11M reduces annual infrastructure costs by 61% ($1.75M over 3 years),
     adds cross-region DR (RPO<15min, RTO<1h), and resolves the pending SOX audit
-    finding on automated patching — all while eliminating data center costs.
+    finding on automated patching.
 
   drivers:
     primary: "hardware_refresh_avoidance"
     urgency: "HW refresh due in 6 months — must decide now or commit $1.8M"
     cost_of_inaction:
-      financial: "$1.8M HW refresh + $300K/yr support + $80K/yr DC costs = $2.88M over 3yr"
-      risk: "No DR today — single site, single point of failure for EBS production"
-      compliance: "SOX audit finding: manual quarterly patching is non-compliant"
+      financial: "$2.88M over 3yr: $1.8M HW refresh + $300K/yr support + $80K/yr DC costs"
+      operational: "No DR today — single site, single point of failure for EBS production"
+      strategic: "SOX audit finding pending: manual quarterly patching is non-compliant"
 
-  tco_comparison:
+  tco:
+    horizon_years: 3
     current_state:
-      description: "On-premises Exadata X6 with hardware refresh"
-      line_items:
-        - item: "Hardware Refresh (Exadata X8M)"
-          year_1: 1800000
-          year_2: 0
-          year_3: 0
-          notes: "One-time CapEx"
-        - item: "Annual Support & Maintenance"
-          year_1: 220000
-          year_2: 220000
-          year_3: 220000
-        - item: "Data Center (power, cooling, space)"
-          year_1: 80000
-          year_2: 80000
-          year_3: 80000
-        - item: "DBA Operations (patching)"
-          year_1: 60000
-          year_2: 60000
-          year_3: 60000
-        - item: "DR Infrastructure"
-          year_1: 0
-          year_2: 0
-          year_3: 0
-          notes: "No DR — risk accepted"
-      total_3yr: 2880000
+      annual_infrastructure: 600000
+      annual_licensing: 220000
+      annual_operations: 60000
+      annual_downtime_cost: 50000
+      annual_compliance_cost: 30000
+      breakdown:
+        - item: "Exadata X6 depreciation + refresh amortization"
+          annual: 600000
+        - item: "Oracle DB EE Support & Maintenance"
+          annual: 220000
+        - item: "DBA patching + infra management (part-time)"
+          annual: 60000
+        - item: "Data center (power, cooling, space)"
+          annual: 80000
 
     proposed_oci:
-      description: "OCI ExaCS X11M with Data Guard DR"
-      line_items:
+      migration_one_time: 50000
+      annual_cloud_consumption: 278400
+      annual_licensing: 0
+      annual_operations: 20000
+      annual_downtime_cost: 0
+      annual_compliance_cost: 0
+      breakdown:
         - item: "ExaCS X11M Queretaro (Prod, BYOL)"
-          year_1: 98400
-          year_2: 98400
-          year_3: 98400
-          notes: "$8,200/mo"
-        - item: "ExaCS X11M Sao Paulo (DR, BYOL)"
-          year_1: 98400
-          year_2: 98400
-          year_3: 98400
-          notes: "$8,200/mo — Data Guard standby"
+          annual: 98400
+        - item: "ExaCS X11M Sao Paulo (DR Standby, BYOL)"
+          annual: 98400
         - item: "FastConnect 10Gbps Dual"
-          year_1: 36720
-          year_2: 36720
-          year_3: 36720
-          notes: "$3,060/mo"
+          annual: 36720
         - item: "OCI Vault + Monitoring + Storage"
-          year_1: 30000
-          year_2: 30000
-          year_3: 30000
-          notes: "$2,500/mo"
-        - item: "Migration (one-time)"
-          year_1: 50000
-          year_2: 0
-          year_3: 0
-          notes: "ZDM + Data Guard setup + testing"
-      total_3yr: 1130400
+          annual: 30000
+        - item: "Reduced DBA operations (automated patching)"
+          annual: 20000
+        - item: "Migration project (one-time, amortized Y1)"
+          annual: 50000
 
-    savings_3yr: 1749600
-    savings_pct: 61
+    savings:
+      annual: 661600
+      three_year: 1749600
+      pct: 61
 
   roi:
-    investment: 50000
-    annual_savings: 583200
+    three_year_roi_pct: 3400
     payback_months: 1
-    three_year_roi: "3,400%"
+    total_investment: 50000
+    annual_net_benefit: 661600
+    notes: >
+      ROI based on 3-year TCO comparison. 1-month payback driven by immediate
+      elimination of HW refresh commitment ($1.8M avoided). Conservative — does
+      not include productivity gains from automated patching or DR risk reduction.
 
   value_drivers:
-    - driver: "Cost Avoidance"
-      impact: "$1.75M saved over 3 years vs HW refresh"
-      evidence: "BYOL pricing + elimination of DC costs + automated patching"
-    - driver: "Risk Reduction"
-      impact: "Cross-region DR where none exists today"
-      evidence: "RPO<15min, RTO<1h with Data Guard + FSDR"
-    - driver: "Compliance"
-      impact: "SOX audit finding resolved"
-      evidence: "ExaCS automated patching + OCI Audit + Vault for key management"
-    - driver: "Operational Agility"
-      impact: "DBA freed from patching + infrastructure management"
-      evidence: "Oracle-managed ExaCS infrastructure, automated backups"
+    - category: "Cost Avoidance"
+      driver: "Avoid $1.8M hardware refresh + eliminate DC costs"
+      quantification: "$1.75M saved over 3 years (61% reduction)"
+
+    - category: "Risk Reduction"
+      driver: "Cross-region DR where none exists today"
+      quantification: "RPO<15min, RTO<1h with Data Guard + FSDR"
+
+    - category: "Compliance"
+      driver: "SOX audit finding resolved with automated patching"
+      quantification: "ExaCS auto-patching + OCI Audit + Vault key management"
+
+    - category: "Operational Efficiency"
+      driver: "DBA freed from manual patching + infrastructure management"
+      quantification: "60% reduction in DBA time allocated to patching"
 
   risks:
     migration_risks:
-      - risk: "EBS customizations require testing"
-        mitigation: "Pre-Prod testing in Phase 2 before cutover"
+      - risk: "EBS R12 customizations may require OS-level changes post-migration"
+        probability: "Medium"
+        impact: "Medium"
+        mitigation: "Inventory all customizations pre-migration; test in Pre-Prod"
+
       - risk: "FastConnect provisioning delay (partner-dependent)"
-        mitigation: "Start in week 1; IPSec VPN as interim backup"
+        probability: "Medium"
+        impact: "Low"
+        mitigation: "Start in Phase 1 week 1; IPSec VPN as interim backup"
+
       - risk: "HW refresh deadline pressure (6 months)"
-        mitigation: "16-week migration plan fits within window"
+        probability: "High"
+        impact: "High"
+        mitigation: "16-week migration plan fits within window with margin"
+
     do_nothing_risks:
-      - risk: "No DR — single site, single point of failure for EBS"
-        mitigation: "Cannot be mitigated without investment"
+      - risk: "No DR — single site, single point of failure for EBS production"
+        probability: "High"
+        impact: "Critical"
+        mitigation: "Cannot be mitigated without infrastructure investment"
+
       - risk: "SOX audit finding remains unresolved (manual patching)"
+        probability: "High"
+        impact: "High"
         mitigation: "Remediation requires automated patching — on-prem can't deliver"
-      - risk: "$1.8M HW refresh locks in 5 more years of on-prem"
-        mitigation: "Sunk cost — no cloud migration ROI for 5+ years"
+
+      - risk: "$1.8M HW refresh locks in 5 more years of on-prem with no cloud ROI"
+        probability: "High"
+        impact: "High"
+        mitigation: "Sunk cost — delays any cloud migration benefit for 5+ years"
 
   recommendation:
     summary: >
       Proceed with OCI ExaCS migration. 61% cost reduction over 3 years ($1.75M saved),
       cross-region DR capability, and SOX compliance resolution. The alternative
-      (HW refresh) costs $1.75M more and leaves DR + compliance gaps unresolved.
+      (HW refresh at $1.8M) costs more and leaves DR + compliance gaps unresolved.
     next_steps:
       - "Board approval with TCO presentation — May 2026"
       - "Provision OCI tenancy + ExaCS in Queretaro — June 2026"
@@ -134,18 +142,27 @@ business_case:
   roadmap:
     total_duration: "16 weeks (May — September 2026)"
     phases:
-      - phase: "Board Approval"
-        timeline: "May 2026"
-        key_action: "Present TCO + risk analysis to board"
-      - phase: "Foundation (networking + ExaCS)"
-        timeline: "June 2026 (4 weeks)"
-        key_action: "Provision OCI tenancy, ExaCS, FastConnect"
-      - phase: "EBS Migration"
-        timeline: "July 2026 (6 weeks)"
-        key_action: "Migrate EBS R12 with ZDM, configure Data Guard"
-      - phase: "SAP + DW Migration"
-        timeline: "August 2026 (4 weeks)"
-        key_action: "Migrate remaining databases"
-      - phase: "Cutover + Decommission"
-        timeline: "September 2026 (2 weeks)"
-        key_action: "Production cutover, decommission Exadata X6"
+      - name: "Board Approval"
+        duration: "2 weeks"
+        investment: 0
+        description: "Present TCO + risk analysis to board"
+
+      - name: "Foundation (networking + ExaCS)"
+        duration: "4 weeks"
+        investment: 15000
+        description: "Provision OCI tenancy, ExaCS, FastConnect"
+
+      - name: "EBS Migration + Data Guard"
+        duration: "6 weeks"
+        investment: 25000
+        description: "Migrate EBS R12 with ZDM, configure Data Guard to Sao Paulo"
+
+      - name: "SAP + DW Migration"
+        duration: "4 weeks"
+        investment: 10000
+        description: "Migrate remaining databases, RMAN backup for DW"
+
+      - name: "Cutover + Decommission"
+        duration: "2 weeks"
+        investment: 0
+        description: "Production cutover, decommission Exadata X6"

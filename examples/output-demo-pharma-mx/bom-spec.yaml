@@ -1,5 +1,6 @@
-# Prompt 13: BOM generator
-# ExaCS X11M Half Rack + ADB-S + networking + security
+# OCI Deal Accelerator — BOM Spec
+# Demo: PharmaCorp Mexico — ExaCS X11M + networking + security
+# SKUs verified against kb/pricing/oci-sku-catalog.yaml
 
 metadata:
   customer: "PharmaCorp Mexico"
@@ -8,64 +9,134 @@ metadata:
   currency: "USD"
   contract_months: 12
   discount_pct: 0.45
-  notes: "ExaCS BYOL — customer has existing Oracle DB EE licenses"
+  notes: "ExaCS BYOL — customer has existing Oracle DB EE licenses with active support"
 
 line_items:
-  # ExaCS Production — Queretaro
-  - category: "Exadata Cloud Service"
-    product: "ExaCS X11M Half Rack — DB Server"
-    sku: "B92459"
-    qty: 4
-    unit: "OCPU per hour"
+  # ExaCS X11M — DB Servers (Queretaro Production)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M DB Server"
+    sku: "B110627"
+    qty: 2
+    unit: "Hosted Environment Per Hour"
     hours_units: 744
     months: 12
-    notes: "4 DB servers, 128 ECPUs each, BYOL"
+    notes: "2 DB servers for Quarter Rack — Queretaro (Prod)"
 
-  - category: "Exadata Cloud Service"
-    product: "ExaCS X11M Half Rack — Storage Server"
-    sku: "B92460"
-    qty: 6
-    unit: "per hour"
+  # ExaCS X11M — Storage Servers (Queretaro Production)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M Storage Server"
+    sku: "B110629"
+    qty: 3
+    unit: "Hosted Environment Per Hour"
     hours_units: 744
     months: 12
-    notes: "6 storage servers"
+    notes: "3 storage servers — Quarter Rack minimum"
 
-  # ADB-S
+  # ExaCS X11M — ECPU BYOL (Queretaro)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M ECPU BYOL"
+    sku: "B110632"
+    qty: 128
+    unit: "ECPU Per Hour"
+    hours_units: 744
+    months: 12
+    notes: "128 ECPUs BYOL — EBS + SAP + DW"
+
+  # ExaCS X11M — DB Servers (Sao Paulo DR Standby)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M DB Server (DR)"
+    sku: "B110627"
+    qty: 2
+    unit: "Hosted Environment Per Hour"
+    hours_units: 744
+    months: 12
+    notes: "2 DB servers — Sao Paulo (DR Standby)"
+
+  # ExaCS X11M — Storage Servers (Sao Paulo DR)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M Storage Server (DR)"
+    sku: "B110629"
+    qty: 3
+    unit: "Hosted Environment Per Hour"
+    hours_units: 744
+    months: 12
+    notes: "3 storage servers — DR Standby"
+
+  # ExaCS X11M — ECPU BYOL (Sao Paulo DR)
+  - category: "Exadata Cloud Infrastructure"
+    product: "ExaCS X11M ECPU BYOL (DR)"
+    sku: "B110632"
+    qty: 128
+    unit: "ECPU Per Hour"
+    hours_units: 744
+    months: 12
+    notes: "128 ECPUs BYOL — Data Guard standby"
+
+  # ADB-S for DW migration (Phase 2)
   - category: "Autonomous Database"
-    product: "ADB-S Serverless ECPU"
-    sku: "B97472"
-    qty: 32
-    unit: "ECPU per hour"
+    product: "ADB-S ECPU BYOL"
+    sku: "B95703"
+    qty: 16
+    unit: "ECPU Per Hour"
     hours_units: 744
     months: 12
-    notes: "32 ECPU for DW migration (Phase 2)"
+    notes: "16 ECPU for DW migration to ADB-S (optional Phase 2)"
 
-  # Storage
-  - category: "Block Storage"
-    product: "Block Volume Performance Units"
-    sku: "B91628"
-    qty: 50000
-    unit: "GB per month"
+  # ADB-S Storage
+  - category: "Autonomous Database"
+    product: "ADB-S Storage (ATP)"
+    sku: "B95706"
+    qty: 2000
+    unit: "Gigabyte Storage Capacity Per Month"
     hours_units: 1
     months: 12
-    notes: "50TB block storage"
+    notes: "2TB storage for DW"
 
-  # Networking
+  # FastConnect 10Gbps Dual
   - category: "Networking"
-    product: "FastConnect 10Gbps"
-    sku: "B91960"
-    qty: 2
-    unit: "port per hour"
+    product: "FastConnect 10 Gbps (Primary)"
+    sku: "B88326"
+    qty: 1
+    unit: "Port Hour"
     hours_units: 744
     months: 12
-    notes: "Dual 10Gbps circuits"
+    notes: "Primary circuit — Mexico City to Queretaro"
 
-  # Security
+  - category: "Networking"
+    product: "FastConnect 10 Gbps (Redundant)"
+    sku: "B88326"
+    qty: 1
+    unit: "Port Hour"
+    hours_units: 744
+    months: 12
+    notes: "Redundant circuit — Mexico City to Queretaro"
+
+  # Object Storage for RMAN backups
+  - category: "Storage"
+    product: "Object Storage"
+    sku: "B91628"
+    qty: 50000
+    unit: "Gigabyte Storage Capacity Per Month"
+    hours_units: 1
+    months: 12
+    notes: "50TB for RMAN backups (DW + EBS)"
+
+  # Block Volume
+  - category: "Storage"
+    product: "Block Volume Storage"
+    sku: "B91961"
+    qty: 10000
+    unit: "Gigabyte Storage Capacity Per Month"
+    hours_units: 1
+    months: 12
+    notes: "10TB additional block storage"
+
+  # OCI Vault
   - category: "Security"
-    product: "OCI Vault — Key Management"
-    sku: "B92098"
+    product: "OCI Vault Key Versions"
+    sku: "B92092"
     qty: 10
-    unit: "key version per month"
+    unit: "Key Version Per Month"
     hours_units: 1
     months: 12
     notes: "TDE keys for 3 databases + DR + backups"
