@@ -184,6 +184,43 @@ class DemoDeckGenerator(OraclePresBase):
 
         return slide
 
+    def add_comparison_table_slide(self, title, rows):
+        """Two-column comparison: Generic LLM vs This Skill."""
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title, margin=self.MARGIN)
+
+        n = len(rows) + 1
+        row_h = min(0.58, 5.0 / max(n, 1))
+        table = self._add_table(
+            slide, n, 3,
+            self.MARGIN, Inches(1.35),
+            Inches(12.3), Inches(row_h * n),
+        )
+        table.columns[0].width = Inches(2.8)
+        table.columns[1].width = Inches(4.75)
+        table.columns[2].width = Inches(4.75)
+
+        headers = ["", "Generic LLM (ChatGPT, etc.)", "OCI Deal Accelerator"]
+        header_colors = [Colors.TEAL, Colors.ORACLE_RED, Colors.FOREST]
+        for j, (h, hc) in enumerate(zip(headers, header_colors)):
+            self._style_table_cell(
+                table.cell(0, j), h, font_size=10, bold=True,
+                color=Colors.WHITE, bg_color=hc,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        for i, (aspect, generic, skill) in enumerate(rows):
+            ri = i + 1
+            bg = Colors.TABLE_ALT_ROW if ri % 2 == 0 else None
+            self._style_table_cell(table.cell(ri, 0), aspect, font_size=10,
+                                   bold=True, bg_color=bg)
+            self._style_table_cell(table.cell(ri, 1), generic, font_size=9,
+                                   bg_color=bg)
+            self._style_table_cell(table.cell(ri, 2), skill, font_size=9,
+                                   bg_color=bg)
+
+        return slide
+
     def add_divider(self, text):
         slide = self._add_layout_slide(Layouts.DIVIDER_DARK)
         self._set_placeholder(slide, 0, text)
@@ -206,20 +243,51 @@ def build_demo_deck(output_path):
     # ── SLIDE 3: The Aha Moment (1:00-2:00) ──
     gen.add_before_after_slide()
 
-    # ── SLIDE 4: What Is It (2:00-3:00) ──
+    # ── SLIDE 4: Why Not Just Use ChatGPT? (2:00-3:30) ──
+    gen.add_comparison_table_slide(
+        '"Can\'t I Just Ask ChatGPT to Make Me a Deck?"',
+        [
+            ("Pricing",
+             "Training data from 2024. Invents SKUs. No discount calc. Can't generate a BOM.",
+             "160+ SKUs auto-refreshed from Oracle API. Real PAYG/BYOL. BOM + AppCA export."),
+            ("Architecture",
+             "Generic diagrams. Suggests services that don't exist or don't apply.",
+             "Patterns from real deployments. Knows ExaCS needs 3+ storage for IORM."),
+            ("Field gotchas",
+             "Doesn't know DEP takes 3 weeks to provision, or that ADG must be disabled first.",
+             "8+ validated findings from real engagements, with workarounds and SR refs."),
+            ("Competitive",
+             "Tends to be either biased or generic. No real cost comparison data.",
+             "Honest pros/cons per service. BYOL 50-75% cheaper data. Knows where AWS wins."),
+            ("WA validation",
+             "Gives generic 'best practices' list. No scoring, no gap analysis.",
+             "80+ checks across 5 pillars. Automated scoring. Actionable gap report."),
+            ("Compliance",
+             "Generic SOX/PCI advice. Doesn't know OCI-specific controls.",
+             "OCI Vault for TDE, Unified Auditing, compartment isolation — mapped to frameworks."),
+            ("Output format",
+             "Markdown or basic text. Manual copy-paste to slides.",
+             "Oracle FY26 .pptx template, .drawio, branded .pdf, .xlsx — ready to present."),
+            ("Improves over time",
+             "Frozen at training cutoff. Learns nothing from your engagements.",
+             "Every SA adds findings. Pricing refreshes. KB compounds with every deal."),
+        ],
+    )
+
+    # ── SLIDE 5: What Is It (3:30-4:00) ──
     gen.add_content_slide(
         "OCI Deal Accelerator — What Is It?",
         [
             "An AI skill (system prompt + knowledge base + tools) for any LLM with tool-use and 100K+ context",
             "Works on Claude, Codex, GPT, Gemini — any model that can read files + run Python",
+            "The LLM is the engine. The KB + tools are the fuel. The SA is the driver.",
             "Aligned with ECAL framework: Define > Design > Deliver",
-            "40+ YAML files of field knowledge (services, sizing, pricing, patterns, gotchas)",
             "7 Python generators: .pptx, .drawio, .pdf, .xlsx, WA scorecard, BOM, AppCA",
             "14 capabilities accessible via natural language — not a chatbot, a domain-specific SA tool",
         ],
     )
 
-    # ── SLIDE 5: Divider — Live Demo (3:00) ──
+    # ── SLIDE 6: Divider — Live Demo (4:00) ──
     gen.add_divider("Live Demo: 14 Capabilities")
 
     # ── SLIDE 6: Prompts 1-7 (3:00-6:00) ──
