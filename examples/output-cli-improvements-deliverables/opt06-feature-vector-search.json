@@ -1,0 +1,86 @@
+[
+  {
+    "feature": "AI Vector Search (HNSW)",
+    "category": "developer",
+    "compatibility": [
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "HNSW indexes are node-local on multi-node RAC. Works well up to\n~50M vectors on single node (\u226424 ECPUs). At 100M+ on multi-node\n(\u226564 ECPUs), requires hash-partitioned vector table with LOCAL\nHNSW index for <50ms P95. See FF-202603-008.\n"
+      },
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "26ai",
+        "status": "UNTESTED",
+        "notes": "Check if distributed HNSW is added in 26ai. Expected to remain node-local."
+      },
+      {
+        "deployment": "ADB-S Elastic Pool",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "Same node-local limitation as ADB-S Serverless."
+      },
+      {
+        "deployment": "ADB on Dedicated Exadata",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "Same limitation. Dedicated infra doesn't change HNSW locality."
+      },
+      {
+        "deployment": "Exadata Cloud Service",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "RAC with HNSW has same node-local constraint. Partitioning workaround applies."
+      },
+      {
+        "deployment": "Base DB Service (EE)",
+        "version": "23ai",
+        "status": "NOT_AVAIL",
+        "notes": "AI Vector Search requires 23ai. Available in EE but HNSW performance limited without Exadata storage."
+      }
+    ]
+  },
+  {
+    "feature": "AI Vector Search (IVF)",
+    "category": "developer",
+    "compatibility": [
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "23ai",
+        "status": "GA",
+        "notes": "IVF (Inverted File) indexes ARE distributed across RAC nodes.\nWorks at 100M+ scale without partitioning. However, IVF has\nlower recall than HNSW at same latency budget. Trade-off:\nIVF for scale without redesign, HNSW+partitioning for best recall.\n"
+      },
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "26ai",
+        "status": "UNTESTED",
+        "notes": ""
+      },
+      {
+        "deployment": "ADB-S Elastic Pool",
+        "version": "23ai",
+        "status": "GA",
+        "notes": "Same as ADB-S Serverless."
+      },
+      {
+        "deployment": "ADB on Dedicated Exadata",
+        "version": "23ai",
+        "status": "GA",
+        "notes": ""
+      },
+      {
+        "deployment": "Exadata Cloud Service",
+        "version": "23ai",
+        "status": "GA",
+        "notes": "IVF distributed across RAC nodes. Exadata storage accelerates scans."
+      },
+      {
+        "deployment": "Base DB Service (EE)",
+        "version": "23ai",
+        "status": "NOT_AVAIL",
+        "notes": "AI Vector Search requires 23ai. Available in EE but performance limited without Exadata."
+      }
+    ]
+  }
+]

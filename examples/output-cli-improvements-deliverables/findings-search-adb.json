@@ -1,0 +1,125 @@
+[
+  {
+    "id": "FF-202603-008",
+    "date": "2026-03-14",
+    "contributor": {
+      "name": "Diego Cabrera",
+      "team": "Field Architecture",
+      "client": "Vector Search Customer",
+      "context": "AI Vector Search engagement",
+      "confidence": "validated"
+    },
+    "product": "ADB-S",
+    "version": "23ai",
+    "severity": "HIGH",
+    "category": "limitation",
+    "summary": "Distributed HNSW indexes not available \u2014 100M+ vector search requires partitioning workaround",
+    "detail": "ADB-S AI Vector Search supports HNSW indexes but they are node-local on\nmulti-node RAC (\u226564 ECPUs). At 100M+ vectors, queries on a 2-node RAC\nmiss vectors on the other node. Results are either incomplete or require\ncross-node scan that blows P95 >200ms.\n\nWorkaround from internal DB PM team: hash-partition vector table on\nvector_id, create partition-local HNSW index. Queries hit single\npartition on single node, maintaining <50ms at 100M scale.\n\nRequires table redesign \u2014 cannot be applied to existing unpartitioned\nvector tables without data reload.\n",
+    "workaround": "Hash-partition vector table by vector_id. Create HNSW index as LOCAL\n(partition-level). Ensure partition pruning in queries.\nSource: internal DB PM team contact [name].\nValidated on ADB-S 23ai with 120M vectors, P95 = 38ms on 64 ECPU.\n",
+    "oracle_sr": "",
+    "status": "acknowledged",
+    "resolved_date": null,
+    "resolution": null,
+    "affects_matrix": "AI Vector Search (HNSW)",
+    "tags": [
+      "vector-search",
+      "hnsw",
+      "distributed",
+      "rac",
+      "partitioning",
+      "100m",
+      "latency",
+      "ai-vector-search"
+    ]
+  },
+  {
+    "id": "FF-202603-002",
+    "date": "2026-03-08",
+    "contributor": {
+      "name": "Diego Cabrera",
+      "team": "Field Architecture",
+      "client": "Strategic Migration Customer",
+      "context": "Production migration",
+      "confidence": "validated"
+    },
+    "product": "ADB-S Dedicated Elastic Pool (DEP)",
+    "version": "23ai",
+    "severity": "HIGH",
+    "category": "limitation",
+    "summary": "ADG must be disabled before joining Dedicated Elastic Pool",
+    "detail": "When attempting to add an ADB-S instance with active Autonomous Data Guard\nto a Dedicated Elastic Pool, the operation fails. ADG must be explicitly\ndisabled before the instance can join the DEP. This is a known issue\nacknowledged by Oracle but not prominently documented.\n\nImpact: requires a brief HA gap during DEP onboarding. Must coordinate\nwith the customer's change window.\n",
+    "workaround": "Disable ADG \u2192 join DEP \u2192 re-enable ADG. Plan for ~15 min HA gap.",
+    "oracle_sr": "",
+    "status": "acknowledged",
+    "resolved_date": null,
+    "resolution": null,
+    "affects_matrix": "Elastic Pool Membership",
+    "tags": [
+      "dep",
+      "adg",
+      "elastic-pool",
+      "ha",
+      "limitation"
+    ]
+  },
+  {
+    "id": "FF-202603-004",
+    "date": "2026-03-01",
+    "contributor": {
+      "name": "Diego Cabrera",
+      "team": "Field Architecture",
+      "client": "Strategic Migration Customer",
+      "context": "Production migration",
+      "confidence": "validated"
+    },
+    "product": "ADB-S",
+    "version": "23ai",
+    "severity": "MEDIUM",
+    "category": "gotcha",
+    "summary": "DEP provisioning takes days to weeks depending on capacity",
+    "detail": "Dedicated Elastic Pool provisioning is NOT instant like ADB-S Serverless.\nIt requires physical Exadata infrastructure allocation. Lead time varies\nfrom 3 days (if capacity available in region) to 2-3 weeks (if capacity\nneeds to be provisioned).\n\nBilling starts only at AVAILABLE state, not at request time.\nCo-location of existing ADB-S instances happens at the next maintenance\nwindow after joining, not immediately.\n",
+    "workaround": "Request DEP early in the project timeline. Don't make it a critical-path dependency in week 1.",
+    "oracle_sr": "",
+    "status": "acknowledged",
+    "resolved_date": null,
+    "resolution": null,
+    "affects_matrix": "Elastic Pool Membership",
+    "tags": [
+      "dep",
+      "provisioning",
+      "lead-time",
+      "capacity",
+      "planning"
+    ]
+  },
+  {
+    "id": "FF-202603-007",
+    "date": "2026-02-10",
+    "contributor": {
+      "name": "Diego Cabrera",
+      "team": "Field Architecture",
+      "client": "Pepe SRL",
+      "context": "Discovery engagement",
+      "confidence": "validated"
+    },
+    "product": "ADB-S",
+    "version": "23ai",
+    "severity": "INFO",
+    "category": "gotcha",
+    "summary": "ADB-S Serverless RAC node split threshold at 64 ECPUs",
+    "detail": "ADB-S Serverless runs on 1 RAC node at \u226424 ECPUs and splits to 2 nodes\nat 64 ECPUs (16 cpu_count each). The gv$instance view only shows nodes\nwhere the PDB is open.\n\nThis affects connection pooling behavior and session distribution.\nApplications should use UCP or JDBC connection pool with FAN events\nto handle the multi-node scenario properly.\n",
+    "workaround": "Ensure connection pool configuration handles multi-node. Use UCP with FAN.",
+    "oracle_sr": "",
+    "status": "acknowledged",
+    "resolved_date": null,
+    "resolution": null,
+    "affects_matrix": null,
+    "tags": [
+      "adb-s",
+      "rac",
+      "ecpu",
+      "node-split",
+      "connection-pooling"
+    ]
+  }
+]

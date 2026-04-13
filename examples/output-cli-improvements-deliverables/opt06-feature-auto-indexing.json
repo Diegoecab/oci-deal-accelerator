@@ -1,0 +1,50 @@
+[
+  {
+    "feature": "Auto Indexing",
+    "category": "auto_management",
+    "compatibility": [
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "Creates indexes HIDDEN by default. Instantly reversible. DML costing prevents over-indexing. Deduplication with manually created indexes."
+      },
+      {
+        "deployment": "ADB-S Serverless",
+        "version": "26ai",
+        "status": "GA",
+        "notes": "Improved in 26ai \u2014 better cost model, fewer false positives."
+      },
+      {
+        "deployment": "ADB-S Elastic Pool",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "Same as ADB-S Serverless."
+      },
+      {
+        "deployment": "ADB Dedicated Elastic Pool (DEP)",
+        "version": "23ai",
+        "status": "GA_CAVEAT",
+        "notes": "Available but less tested in DEP."
+      },
+      {
+        "deployment": "ADB on Dedicated Exadata",
+        "version": "23ai",
+        "status": "GA",
+        "notes": "Fully supported."
+      },
+      {
+        "deployment": "Exadata Cloud Service",
+        "version": "23ai",
+        "status": "NOT_AVAIL",
+        "notes": "Not an ADB feature. Use manual indexing."
+      },
+      {
+        "deployment": "Base DB Service (EE)",
+        "version": "23ai",
+        "status": "NOT_AVAIL",
+        "notes": ""
+      }
+    ]
+  }
+]

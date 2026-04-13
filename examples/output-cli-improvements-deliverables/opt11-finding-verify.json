@@ -1,0 +1,33 @@
+[
+  {
+    "id": "FF-202604-001",
+    "date": "2026-04-12",
+    "contributor": {
+      "name": "Test SA",
+      "team": "Validation",
+      "date": "2026-04-12",
+      "confidence": "observed",
+      "client": "Test Client",
+      "context": "CLI validation"
+    },
+    "reported_by": "Test SA",
+    "product": "OCI Queue",
+    "version": "GA",
+    "severity": "LOW",
+    "category": "gotcha",
+    "summary": "Queue message visibility timeout resets on failed processing \u2014 must handle idempotently",
+    "detail": "When a consumer fails to process a message within the visibility timeout, the message becomes visible again. If the consumer partially processed it, you get duplicate processing.",
+    "workaround": "Implement idempotent consumers. Use message deduplication ID.",
+    "oracle_sr": "",
+    "status": "open",
+    "resolved_date": null,
+    "resolution": null,
+    "affects_matrix": null,
+    "tags": [
+      "queue",
+      "messaging",
+      "idempotency"
+    ],
+    "confirmations": []
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "query": "ADB-S vs AWS Aurora / Azure SQL",
+  "aws_database_mappings": [],
+  "azure_database_mappings": [
+    {
+      "oci": "ADB-S",
+      "azure": "Azure SQL Managed Instance / Azure Database for PostgreSQL",
+      "oci_advantage": "ADB-S runs actual Oracle Database. Azure SQL MI is SQL Server only.\nNo native Oracle database service on Azure.\nOracle on Azure VMs loses Exadata performance and autonomous operations.\n",
+      "azure_advantage": "Native SQL Server support if migrating from SQL Server."
+    },
+    {
+      "oci": "ExaCS",
+      "azure": "Oracle Database@Azure (ExaCS in Azure datacenters)",
+      "notes": "Oracle Database@Azure is ExaCS running in Azure datacenters with\ndirect connectivity to Azure services. Available in select regions.\nThis is a partnership offering, not a competitive comparison.\n"
+    }
+  ],
+  "common_objections": [
+    {
+      "id": "OBJ-001",
+      "category": "market",
+      "objection": "OCI is a niche cloud \u2014 AWS/Azure are the leaders",
+      "response": "OCI is the #4 cloud globally and growing fastest in database PaaS.\nFor Oracle database workloads specifically, OCI is the leader:\n- Only cloud with Exadata hardware\n- Only cloud with Autonomous Database\n- Best Oracle license portability\nThe question isn't \"best cloud overall\" but \"best cloud for this workload.\"\n",
+      "evidence": "Gartner, IDC reports on cloud database market"
+    },
+    {
+      "id": "OBJ-002",
+      "category": "risk",
+      "objection": "What if Oracle EOLs or changes OCI pricing?",
+      "response": "OCI pricing has only decreased since launch. Oracle's cloud investment\nis $50B+ in CapEx. OCI is Oracle's strategic platform \u2014 not a side project.\nContractual pricing protection exists via Annual Flex and Universal Credits.\n",
+      "mitigation": "Use annual flex contracts with pricing guarantees"
+    },
+    {
+      "id": "OBJ-003",
+      "category": "skills",
+      "objection": "Our team has no OCI experience",
+      "response": "ADB-S reduces DBA workload by 80% (no patching, tuning, scaling).\nOCI console follows familiar cloud patterns. Terraform provider is mature.\nOracle provides free training and certification. Typical ramp-up is 2-4 weeks.\n",
+      "mitigation": "Include training budget in migration plan"
+    },
+    {
+      "id": "OBJ-004",
+      "category": "features",
+      "objection": "OCI doesn't have as many services as AWS",
+      "response": "True for breadth (AWS has 200+ services). For database and enterprise\nworkloads, OCI feature parity is strong. Key services are GA:\n- Compute, networking, storage, Kubernetes, serverless\n- Monitoring, logging, IAM, security\n- Queue, Streaming, API Gateway\nWhat matters is whether OCI has what *you* need, not a raw count.\n"
+    }
+  ]
+}

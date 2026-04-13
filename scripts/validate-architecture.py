@@ -371,8 +371,8 @@ def main():
     )
     parser.add_argument(
         "--profile",
-        required=True,
-        help="Path to workload profile YAML",
+        default=None,
+        help="Path to workload profile YAML (optional; defaults to minimal profile)",
     )
     parser.add_argument(
         "--architecture",
@@ -381,8 +381,8 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default="scorecard-output.yaml",
-        help="Output scorecard file path",
+        default=None,
+        help="Output scorecard file path (default: print to stdout)",
     )
     parser.add_argument(
         "--format",
@@ -393,7 +393,15 @@ def main():
 
     args = parser.parse_args()
 
-    profile = load_yaml(args.profile)
+    if args.profile:
+        profile = load_yaml(args.profile)
+    else:
+        profile = {
+            "workload_profile": {
+                "flags": {},
+                "business_context": {"customer_name": "Unknown"},
+            }
+        }
     architecture = load_yaml(args.architecture)
 
     customer = (
@@ -414,23 +422,26 @@ def main():
     else:
         output = yaml.dump(scorecard, default_flow_style=False, sort_keys=False)
 
-    with open(args.output, "w") as f:
-        f.write(output)
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write(output)
 
-    # Print summary
-    sc = scorecard["well_architected_scorecard"]
-    print(f"\nOCI Well-Architected Scorecard")
-    print(f"{'=' * 50}")
-    print(f"Overall Status: {sc['overall_status']}")
-    print(f"Checks: {sc['summary']['total_passed']}/{sc['summary']['total_checks']} passed")
-    print(f"Gaps: {sc['summary']['total_gaps']} "
-          f"(HIGH: {sc['summary']['high_severity_gaps']}, "
-          f"MEDIUM: {sc['summary']['medium_severity_gaps']}, "
-          f"LOW: {sc['summary']['low_severity_gaps']})")
-    print(f"\nPillar Results:")
-    for pid, p in sc["pillars"].items():
-        print(f"  {pid}: {p['status']} ({p['checks_passed']}/{p['checks_total']})")
-    print(f"\nScorecard written to: {args.output}")
+        # Print summary to terminal when output goes to file
+        sc = scorecard["well_architected_scorecard"]
+        print(f"\nOCI Well-Architected Scorecard")
+        print(f"{'=' * 50}")
+        print(f"Overall Status: {sc['overall_status']}")
+        print(f"Checks: {sc['summary']['total_passed']}/{sc['summary']['total_checks']} passed")
+        print(f"Gaps: {sc['summary']['total_gaps']} "
+              f"(HIGH: {sc['summary']['high_severity_gaps']}, "
+              f"MEDIUM: {sc['summary']['medium_severity_gaps']}, "
+              f"LOW: {sc['summary']['low_severity_gaps']})")
+        print(f"\nPillar Results:")
+        for pid, p in sc["pillars"].items():
+            print(f"  {pid}: {p['status']} ({p['checks_passed']}/{p['checks_total']})")
+        print(f"\nScorecard written to: {args.output}")
+    else:
+        print(output)
 
 
 if __name__ == "__main__":

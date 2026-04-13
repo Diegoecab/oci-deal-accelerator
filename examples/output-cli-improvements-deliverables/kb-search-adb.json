@@ -1,0 +1,206 @@
+[
+  {
+    "file": "kb/architecture-center/catalog.yaml",
+    "matches": [
+      {
+        "line": 25,
+        "text": "- title: \"Deploy Oracle Autonomous Database on Oracle Database@Azure\""
+      },
+      {
+        "line": 267,
+        "text": "- title: \"Deploy Oracle Autonomous Database on Oracle Database@Google Cloud\""
+      },
+      {
+        "line": 427,
+        "text": "- title: \"Migrate on-premises Oracle Database to Autonomous Database\""
+      },
+      {
+        "line": 463,
+        "text": "- title: \"Migrate a PeopleSoft database to Oracle Autonomous Database\""
+      },
+      {
+        "line": 623,
+        "text": "- title: \"Move Oracle Forms applications to Oracle APEX on an Oracle Autonomous "
+      },
+      {
+        "line": 635,
+        "text": "- title: \"Stream Kafka topics to Oracle Autonomous Database using Oracle Integra"
+      },
+      {
+        "line": 795,
+        "text": "- title: \"Implement Oracle Data Safe for Exadata and Autonomous Databases\""
+      },
+      {
+        "line": 1140,
+        "text": "- title: \"Deploy a microservices-based application in Kubernetes connected to an"
+      },
+      {
+        "line": 1226,
+        "text": "- title: \"Deploy JD Edwards EnterpriseOne with Oracle Autonomous Database on Ded"
+      },
+      {
+        "line": 1262,
+        "text": "- title: \"Run PeopleSoft ERP and Autonomous Database in an HA multicloud deploym"
+      }
+    ]
+  },
+  {
+    "file": "kb/competitive/aws-mapping.yaml",
+    "matches": [
+      {
+        "line": 32,
+        "text": "- \"Autonomous Database \u2014 no equivalent in AWS\""
+      },
+      {
+        "line": 81,
+        "text": "- \"Data Safe included free for Autonomous Database\""
+      }
+    ]
+  },
+  {
+    "file": "kb/competitive/common-objections.yaml",
+    "matches": [
+      {
+        "line": 12,
+        "text": "- Only cloud with Autonomous Database"
+      }
+    ]
+  },
+  {
+    "file": "kb/patterns/database-ha-adb-s.yaml",
+    "matches": [
+      {
+        "line": 2,
+        "text": "# Composable architecture block for Autonomous Database Serverless HA"
+      },
+      {
+        "line": 10,
+        "text": "Autonomous Database Serverless (ADB-S) provides built-in high availability throu"
+      }
+    ]
+  },
+  {
+    "file": "kb/pricing/oci-sku-catalog.yaml",
+    "matches": [
+      {
+        "line": 462,
+        "text": "display_name: Oracle Cloud Infrastructure - Autonomous Database & Exadata"
+      },
+      {
+        "line": 465,
+        "text": "product: Oracle Autonomous Database (ATP or ADW) - ECPU (2 ECPU minimum)"
+      },
+      {
+        "line": 471,
+        "text": "product: Oracle Autonomous Database (ATP or ADW) - BYOL ECPU (2 ECPU minimum)"
+      },
+      {
+        "line": 477,
+        "text": "product: Oracle Autonomous Database Storage for Transaction Processing (ATP), us"
+      },
+      {
+        "line": 483,
+        "text": "product: Oracle Autonomous Database Storage for Data Warehouse (ADW), using ECPU"
+      },
+      {
+        "line": 489,
+        "text": "product: Oracle Autonomous Database Backup Storage (ATP or ADW), using ECPU"
+      }
+    ]
+  },
+  {
+    "file": "kb/services/adb-dedicated.yaml",
+    "matches": [
+      {
+        "line": 3,
+        "text": "service: Autonomous Database Dedicated (ADB-D)"
+      },
+      {
+        "line": 8,
+        "text": "what: Autonomous Database on dedicated Exadata infrastructure. Provides isolatio"
+      }
+    ]
+  },
+  {
+    "file": "kb/services/adb-elastic-pool.yaml",
+    "matches": [
+      {
+        "line": 3,
+        "text": "service: Autonomous Database Serverless Elastic Pool"
+      }
+    ]
+  },
+  {
+    "file": "kb/services/adb-serverless.yaml",
+    "matches": [
+      {
+        "line": 1,
+        "text": "# OCI Service: Autonomous Database Serverless (ADB-S)"
+      },
+      {
+        "line": 5,
+        "text": "name: \"Autonomous Database Serverless (ADB-S)\""
+      },
+      {
+        "line": 38,
+        "text": "name: \"Autonomous Database Serverless (ADB-S)\""
+      },
+      {
+        "line": 47,
+        "text": "name: \"Autonomous Database on Dedicated Exadata (ADB-D)\""
+      }
+    ]
+  },
+  {
+    "file": "kb/services/database-at-aws.yaml",
+    "matches": [
+      {
+        "line": 32,
+        "text": "notes: \"Autonomous Database on dedicated Exadata \u2014 NOT serverless\""
+      },
+      {
+        "line": 37,
+        "text": "- name: \"Autonomous Database Serverless (ADB-S)\""
+      }
+    ]
+  },
+  {
+    "file": "kb/services/exadata-cloud.yaml",
+    "matches": [
+      {
+        "line": 20,
+        "text": "- \"Small workloads under 16 OCPUs \u2014 use Autonomous Database Serverless (ADB-S) o"
+      }
+    ]
+  },
+  {
+    "file": "kb/services/oci-networking-core.yaml",
+    "matches": [
+      {
+        "line": 46,
+        "text": "description: \"Private pathway from a VCN to supported OCI services (e.g., Object"
+      },
+      {
+        "line": 84,
+        "text": "description: \"Resources in private subnets cannot reach OCI services (Object Sto"
+      }
+    ]
+  },
+  {
+    "file": "kb/well-architected/security-compliance.yaml",
+    "matches": [
+      {
+        "line": 148,
+        "text": "description: \"Private endpoints for Autonomous Database\""
+      },
+      {
+        "line": 150,
+        "text": "pass_if: \"Autonomous Database configured with private endpoints\""
+      },
+      {
+        "line": 151,
+        "text": "gap_if: \"Autonomous Database using public endpoints\""
+      }
+    ]
+  }
+]

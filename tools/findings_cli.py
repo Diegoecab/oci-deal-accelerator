@@ -28,6 +28,7 @@ Usage:
 
 import argparse
 import difflib
+import json
 import os
 import sys
 from collections import Counter
@@ -378,6 +379,10 @@ def cmd_list(args: argparse.Namespace) -> None:
         category=getattr(args, "category", None),
     )
 
+    if getattr(args, "json_output", False):
+        print(json.dumps(results, indent=2, default=str))
+        return
+
     if not results:
         print("No findings match the given filters.")
         return
@@ -400,6 +405,21 @@ def cmd_list(args: argparse.Namespace) -> None:
 def cmd_search(args: argparse.Namespace) -> None:
     """Full-text search."""
     results = search(args.query)
+
+    # Apply optional filters (mirrors list subcommand)
+    results = filter_findings(
+        results,
+        severity=getattr(args, "severity", None),
+        product=getattr(args, "product", None),
+        tag=getattr(args, "tag", None),
+        client=getattr(args, "client", None),
+        status=getattr(args, "status", None),
+        category=getattr(args, "category", None),
+    )
+
+    if getattr(args, "json_output", False):
+        print(json.dumps(results, indent=2, default=str))
+        return
 
     if not results:
         print(f"No findings matching '{args.query}'.")
@@ -600,6 +620,10 @@ def cmd_stats(args: argparse.Namespace) -> None:
     """Display summary statistics."""
     s = stats()
 
+    if getattr(args, "json_output", False):
+        print(json.dumps(s, indent=2))
+        return
+
     print(f"Total findings: {s['total']}\n")
 
     print("By Severity:")
@@ -640,10 +664,18 @@ def build_parser() -> argparse.ArgumentParser:
     p_list.add_argument("--client", help="Filter by client (partial match).")
     p_list.add_argument("--status", help="Filter by status.")
     p_list.add_argument("--category", help="Filter by category.")
+    p_list.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
 
     # --- search ---
     p_search = subparsers.add_parser("search", help="Full-text search.")
     p_search.add_argument("query", help="Search term.")
+    p_search.add_argument("--severity", help="Filter by severity.")
+    p_search.add_argument("--product", help="Filter by product (partial match).")
+    p_search.add_argument("--tag", help="Filter by tag.")
+    p_search.add_argument("--client", help="Filter by client (partial match).")
+    p_search.add_argument("--status", help="Filter by status.")
+    p_search.add_argument("--category", help="Filter by category.")
+    p_search.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
 
     # --- add ---
     p_add = subparsers.add_parser("add", help="Add a new finding.")
@@ -685,7 +717,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("aer", help="After-Engagement Review (interactive).")
 
     # --- stats ---
-    subparsers.add_parser("stats", help="Show summary statistics.")
+    p_stats = subparsers.add_parser("stats", help="Show summary statistics.")
+    p_stats.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
 
     return parser
 

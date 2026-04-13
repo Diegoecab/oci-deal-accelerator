@@ -22,6 +22,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -41,6 +42,8 @@ GOVERNANCE_PATH = os.path.join(PROJECT_ROOT, "config", "kb-governance.yaml")
 OWNERS_PATH = os.path.join(PROJECT_ROOT, "config", "kb-owners.yaml")
 TRACKER_PATH = os.path.join(PROJECT_ROOT, "kb", "field-findings", "tracker.yaml")
 MATRIX_PATH = os.path.join(PROJECT_ROOT, "kb", "compatibility", "adb-feature-matrix.yaml")
+ARCH_CATALOG_PATH = os.path.join(KB_ROOT, "architecture-center", "catalog.yaml")
+ECAL_CATALOG_PATH = os.path.join(KB_ROOT, "patterns", "ecal-artefacts-catalog.yaml")
 
 _RESET = "\033[0m"
 _GREEN = "\033[32m"
@@ -69,7 +72,13 @@ def _load_yaml(path: str) -> Optional[Dict[str, Any]]:
     if not os.path.isfile(resolved):
         return None
     with open(resolved, "r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        docs = list(yaml.safe_load_all(fh))
+    # Merge multi-document YAML (front matter + body) into single dict
+    merged: Dict[str, Any] = {}
+    for doc in docs:
+        if isinstance(doc, dict):
+            merged.update(doc)
+    return merged or None
 
 
 def _parse_date(d: Any) -> Optional[date]:
@@ -401,6 +410,14 @@ def cmd_search(args: argparse.Namespace) -> None:
                     matches.append((i, line.strip()[:80]))
             results.append((rel, matches))
 
+    if getattr(args, "json_output", False):
+        json_results = [
+            {"file": fp, "matches": [{"line": ln, "text": txt} for ln, txt in ms]}
+            for fp, ms in results
+        ]
+        print(json.dumps(json_results, indent=2))
+        return
+
     if not results:
         print(f"No results for '{args.query}'.")
         return
@@ -439,6 +456,197 @@ def cmd_owners(args: argparse.Namespace) -> None:
 
 
 # =============================================================================
+# Architecture Center search command
+# =============================================================================
+
+def cmd_arch_search(args: argparse.Namespace) -> None:
+    """Search Architecture Center catalog by services and/or tags."""
+    data = _load_yaml(ARCH_CATALOG_PATH)
+    if not data or "entries" not in data:
+        print("Error: Architecture catalog not found or empty.", file=sys.stderr)
+        sys.exit(1)
+
+    results = data["entries"]
+
+    # Filter by services (OR match, case-insensitive)
+    if args.services:
+        svc_set = {s.lower() for s in args.services}
+        results = [
+            e for e in results
+            if svc_set & {s.lower() for s in e.get("services", [])}
+        ]
+
+    # Filter by tags (OR match, case-insensitive)
+    if args.tags:
+        tag_set = {t.lower() for t in args.tags}
+        results = [
+            e for e in results
+            if tag_set & {t.lower() for t in e.get("tags", [])}
+        ]
+
+    # Optional text search across title + summary
+    if args.query:
+        q = args.query.lower()
+        results = [
+            e for e in results
+            if q in e.get("title", "").lower() or q in e.get("summary", "").lower()
+        ]
+
+    if getattr(args, "json_output", False):
+        print(json.dumps(results, indent=2, default=str))
+        return
+
+    if not results:
+        print("No matching architecture references found.")
+        return
+
+    print(f"Found {len(results)} architecture reference(s):\n")
+    for e in results:
+        svcs = ", ".join(e.get("services", []))
+        tags = ", ".join(e.get("tags", []))
+        print(f"  {_c(e.get('title', ''), _CYAN)}")
+        print(f"    Services: {svcs}")
+        print(f"    Tags: {tags}")
+        print(f"    URL: {e.get('url', 'N/A')}")
+        if e.get("terraform"):
+            print(f"    Terraform: {e['terraform']}")
+        print()
+
+
+# =============================================================================
+# ECAL score command
+# =============================================================================
+
+def _load_ecal_artefacts() -> List[Dict[str, Any]]:
+    """Load and flatten all ECAL artefacts from the catalog."""
+    data = _load_yaml(ECAL_CATALOG_PATH)
+    if not data:
+        return []
+
+    artefacts = []
+    for phase in ["define", "design", "deliver"]:
+        phase_data = data.get(phase, {})
+        if not isinstance(phase_data, dict):
+            continue
+        for step, items in phase_data.items():
+            if not isinstance(items, list):
+                continue
+            for item in items:
+                if isinstance(item, dict) and "id" in item:
+                    item["_phase"] = phase
+                    item["_step"] = step
+                    artefacts.append(item)
+    return artefacts
+
+
+def cmd_ecal_score(args: argparse.Namespace) -> None:
+    """Evaluate engagement readiness against ECAL 3.1 artefacts."""
+    artefacts = _load_ecal_artefacts()
+    if not artefacts:
+        print("Error: Could not load ECAL artefacts catalog.", file=sys.stderr)
+        sys.exit(1)
+
+    summary_lower = args.summary.lower()
+    summary_words = set(summary_lower.split())
+    stopwords = {
+        "the", "a", "an", "and", "or", "for", "to", "in", "of", "is",
+        "with", "on", "at", "by", "as", "it", "be", "this", "that", "from",
+    }
+
+    # Filter by phase if specified
+    if args.phase:
+        artefacts = [a for a in artefacts if a.get("_phase") == args.phase]
+
+    scored = []
+    for art in artefacts:
+        name_lower = art.get("name", "").lower()
+        what_lower = art.get("what", "").lower()
+        id_lower = art.get("id", "").lower()
+
+        # Check if artefact name or ID appears in summary
+        name_match = name_lower in summary_lower
+        id_match = id_lower in summary_lower
+
+        # Keyword overlap with the "what" field
+        what_words = set(what_lower.split()) - stopwords
+        meaningful_overlap = summary_words & what_words
+
+        if name_match or id_match:
+            relevance = "mentioned"
+        elif len(meaningful_overlap) >= 3:
+            relevance = "likely_relevant"
+        elif len(meaningful_overlap) >= 1:
+            relevance = "possibly_relevant"
+        else:
+            relevance = "none"
+
+        scored.append({
+            "id": art.get("id"),
+            "name": art.get("name"),
+            "phase": art.get("_phase"),
+            "step": art.get("_step"),
+            "skill_support": art.get("skill_support"),
+            "customer_facing": art.get("customer_facing"),
+            "relevance": relevance,
+        })
+
+    # Compute summary stats
+    mentioned = [s for s in scored if s["relevance"] == "mentioned"]
+    likely = [s for s in scored if s["relevance"] == "likely_relevant"]
+    possibly = [s for s in scored if s["relevance"] == "possibly_relevant"]
+    not_covered = [s for s in scored if s["relevance"] == "none"]
+    relevant = [s for s in scored if s["relevance"] != "none"]
+    auto_gen = [s for s in relevant if s["skill_support"] == "auto_generate"]
+    assist = [s for s in relevant if s["skill_support"] == "assist"]
+
+    if getattr(args, "json_output", False):
+        output = {
+            "summary": {
+                "total_artefacts": len(scored),
+                "mentioned": len(mentioned),
+                "likely_relevant": len(likely),
+                "possibly_relevant": len(possibly),
+                "not_covered": len(not_covered),
+                "skill_auto_generate": len(auto_gen),
+                "skill_assist": len(assist),
+            },
+            "artefacts": scored,
+        }
+        print(json.dumps(output, indent=2, default=str))
+        return
+
+    # Text output
+    print(f"\n{_c('ECAL 3.1 READINESS ASSESSMENT', _BOLD)}")
+    print("=" * 50)
+    print(f"\nArtefacts assessed: {len(scored)}")
+    print(f"  Mentioned in summary: {_c(str(len(mentioned)), _GREEN)}")
+    print(f"  Likely relevant:      {_c(str(len(likely)), _YELLOW)}")
+    print(f"  Possibly relevant:    {str(len(possibly))}")
+    print(f"  Not covered:          {_c(str(len(not_covered)), _RED)}")
+    print(f"\nSkill can auto-generate: {len(auto_gen)} relevant artefact(s)")
+    print(f"Skill can assist:        {len(assist)} relevant artefact(s)")
+
+    if mentioned or likely:
+        print(f"\n{'ID':<10} {'Phase':<8} {'Name':<35} {'Support':<15} Relevance")
+        print("-" * 85)
+        for s in mentioned + likely:
+            rel_color = _GREEN if s["relevance"] == "mentioned" else _YELLOW
+            print(
+                f"{s['id']:<10} {s['phase']:<8} "
+                f"{str(s['name']):<35} {str(s['skill_support']):<15} "
+                f"{_c(s['relevance'], rel_color)}"
+            )
+
+    if not_covered:
+        print(f"\nNot covered ({len(not_covered)} artefact(s)) — consider adding to engagement:")
+        for s in not_covered[:10]:
+            cf = " [customer-facing]" if s.get("customer_facing") else ""
+            print(f"  {s['id']} {s['name']}{cf}")
+        if len(not_covered) > 10:
+            print(f"  ... and {len(not_covered) - 10} more (use --json for full list)")
+
+
+# =============================================================================
 # CLI entry point
 # =============================================================================
 
@@ -469,9 +677,23 @@ def build_parser() -> argparse.ArgumentParser:
     # --- search ---
     p_search = subparsers.add_parser("search", help="Search across all KB files.")
     p_search.add_argument("query", help="Search term.")
+    p_search.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
 
     # --- owners ---
     subparsers.add_parser("owners", help="Show domain owners.")
+
+    # --- arch-search ---
+    p_arch = subparsers.add_parser("arch-search", help="Search Architecture Center catalog.")
+    p_arch.add_argument("query", nargs="?", default=None, help="Optional text search term.")
+    p_arch.add_argument("--services", nargs="+", help="Filter by service names (e.g., adb-s exacs).")
+    p_arch.add_argument("--tags", nargs="+", help="Filter by tags (e.g., ha-dr multicloud).")
+    p_arch.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
+
+    # --- ecal-score ---
+    p_ecal = subparsers.add_parser("ecal-score", help="ECAL engagement readiness assessment.")
+    p_ecal.add_argument("--summary", required=True, help="Text describing the engagement.")
+    p_ecal.add_argument("--phase", choices=["define", "design", "deliver"], help="Limit to a specific ECAL phase.")
+    p_ecal.add_argument("--json", action="store_true", dest="json_output", help="Output as JSON.")
 
     return parser
 
@@ -495,6 +717,10 @@ def main() -> None:
         cmd_search(args)
     elif args.command == "owners":
         cmd_owners(args)
+    elif args.command == "arch-search":
+        cmd_arch_search(args)
+    elif args.command == "ecal-score":
+        cmd_ecal_score(args)
     else:
         parser.print_help()
         sys.exit(1)

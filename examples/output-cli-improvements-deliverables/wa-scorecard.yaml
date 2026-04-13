@@ -1,0 +1,241 @@
+well_architected_scorecard:
+  overall_status: GAPS_IDENTIFIED
+  generated_date: '2026-04-12T22:40:14.045613'
+  architecture_name: examples/meli-kvs-wa-architecture.yaml
+  customer: Mercado Libre (MELI)
+  summary:
+    total_checks: 49
+    total_passed: 39
+    total_gaps: 10
+    high_severity_gaps: 2
+    medium_severity_gaps: 5
+    low_severity_gaps: 3
+  pillars:
+    security_compliance:
+      status: GAPS_IDENTIFIED
+      checks_passed: 21
+      checks_total: 26
+      categories:
+        identity_access:
+          passed: 5
+          total: 6
+          gaps:
+          - check_id: SEC-IAM-003
+            area: Identity & Access
+            finding: no mention of admin account restrictions
+            severity: HIGH
+            recommendation: separate admin groups defined for operations
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        resource_isolation:
+          passed: 4
+          total: 4
+          gaps: []
+        database_security:
+          passed: 4
+          total: 6
+          gaps:
+          - check_id: SEC-DB-004
+            area: Database Security
+            finding: Data Safe not included in architecture
+            severity: MEDIUM
+            recommendation: Data Safe configured for database security assessment
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+          - check_id: SEC-DB-006
+            area: Database Security
+            finding: no mention of DELETE permission restrictions
+            severity: MEDIUM
+            recommendation: explicit restriction on DELETE permissions documented
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        data_protection:
+          passed: 1
+          total: 2
+          gaps:
+          - check_id: SEC-DAT-001
+            area: Data Protection
+            finding: any storage service without encryption at rest
+            severity: HIGH
+            recommendation: encryption at rest specified for all storage services
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+        network_security:
+          passed: 4
+          total: 4
+          gaps: []
+        monitoring_audit:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: SEC-MON-003
+            area: Monitoring & Audit
+            finding: no VCN Flow Logs configured
+            severity: MEDIUM
+            recommendation: VCN Flow Logs enabled for critical subnets
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+    reliability_resilience:
+      status: PASS_WITH_RECOMMENDATIONS
+      checks_passed: 6
+      checks_total: 8
+      categories:
+        scalability:
+          passed: 1
+          total: 3
+          gaps:
+          - check_id: REL-SCL-002
+            area: Scalability
+            finding: no service limit review planned
+            severity: LOW
+            recommendation: service limit review mentioned in deployment plan
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+          - check_id: REL-SCL-003
+            area: Scalability
+            finding: critical production workloads without capacity reservations
+            severity: MEDIUM
+            recommendation: capacity reservations specified for critical compute
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+        fault_tolerant_networking:
+          passed: 0
+          total: 0
+          gaps: []
+        data_backup:
+          passed: 3
+          total: 3
+          gaps: []
+        data_replication:
+          passed: 2
+          total: 2
+          gaps: []
+        disaster_recovery:
+          passed: 0
+          total: 0
+          gaps: []
+    performance_cost:
+      status: PASS_WITH_RECOMMENDATIONS
+      checks_passed: 4
+      checks_total: 5
+      categories:
+        compute_sizing:
+          passed: 1
+          total: 1
+          gaps: []
+        storage_strategy:
+          passed: 0
+          total: 0
+          gaps: []
+        network_tuning:
+          passed: 0
+          total: 0
+          gaps: []
+        cost_management:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: PERF-CST-006
+            area: Cost Management
+            finding: non-prod environments running same shapes as production 24/7
+            severity: LOW
+            recommendation: non-prod environments use reduced shapes or have schedules
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+    operational_efficiency:
+      status: PASS_WITH_RECOMMENDATIONS
+      checks_passed: 8
+      checks_total: 10
+      categories:
+        deployment_strategy:
+          passed: 1
+          total: 2
+          gaps:
+          - check_id: OPS-DEP-004
+            area: Deployment Strategy
+            finding: different provisioning methods across environments
+            severity: MEDIUM
+            recommendation: same IaC templates used across environments with variable
+              overrides
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+        workload_monitoring:
+          passed: 4
+          total: 4
+          gaps: []
+        os_management:
+          passed: 0
+          total: 0
+          gaps: []
+        operations_support:
+          passed: 3
+          total: 4
+          gaps:
+          - check_id: OPS-SUP-001
+            area: Operations Support
+            finding: no support plan consideration
+            severity: LOW
+            recommendation: Oracle support plan level specified and matches criticality
+            wa_reference: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+    distributed_cloud:
+      status: PASS
+      checks_passed: 0
+      checks_total: 0
+      categories:
+        dc_deployment_strategy:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_integration:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_compliance:
+          passed: 0
+          total: 0
+          gaps: []
+        dc_operations:
+          passed: 0
+          total: 0
+          gaps: []
+  action_items:
+    high_priority:
+    - check_id: SEC-IAM-003
+      pillar: Identity & Access
+      finding: no mention of admin account restrictions
+      recommendation: separate admin groups defined for operations
+    - check_id: SEC-DAT-001
+      pillar: Data Protection
+      finding: any storage service without encryption at rest
+      recommendation: encryption at rest specified for all storage services
+    medium_priority:
+    - check_id: SEC-DB-004
+      pillar: Database Security
+      finding: Data Safe not included in architecture
+      recommendation: Data Safe configured for database security assessment
+    - check_id: SEC-DB-006
+      pillar: Database Security
+      finding: no mention of DELETE permission restrictions
+      recommendation: explicit restriction on DELETE permissions documented
+    - check_id: SEC-MON-003
+      pillar: Monitoring & Audit
+      finding: no VCN Flow Logs configured
+      recommendation: VCN Flow Logs enabled for critical subnets
+    - check_id: REL-SCL-003
+      pillar: Scalability
+      finding: critical production workloads without capacity reservations
+      recommendation: capacity reservations specified for critical compute
+    - check_id: OPS-DEP-004
+      pillar: Deployment Strategy
+      finding: different provisioning methods across environments
+      recommendation: same IaC templates used across environments with variable overrides
+    low_priority:
+    - check_id: REL-SCL-002
+      pillar: Scalability
+      finding: no service limit review planned
+      recommendation: service limit review mentioned in deployment plan
+    - check_id: PERF-CST-006
+      pillar: Cost Management
+      finding: non-prod environments running same shapes as production 24/7
+      recommendation: non-prod environments use reduced shapes or have schedules
+    - check_id: OPS-SUP-001
+      pillar: Operations Support
+      finding: no support plan consideration
+      recommendation: Oracle support plan level specified and matches criticality
+  references:
+    framework: https://docs.oracle.com/en/solutions/oci-best-practices/index.html
+    security: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-security-and-compliance1.html
+    reliability: https://docs.oracle.com/en/solutions/oci-best-practices/reliable-and-resilient-cloud-topology-practices1.html
+    operations: https://docs.oracle.com/en/solutions/oci-best-practices/best-practices-operating-cloud-deployments-efficiency.html
+    distributed: https://docs.oracle.com/en/solutions/oci-best-practices/effective-strategies-distributed-cloud-implementation1.html

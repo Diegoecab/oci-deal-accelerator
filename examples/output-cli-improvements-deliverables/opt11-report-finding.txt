@@ -1,0 +1,5 @@
+WARNING: Unknown tag 'queue'. Not in taxonomy.
+WARNING: Unknown tag 'messaging'. Did you mean 'sizing'?
+WARNING: Unknown tag 'idempotency'. Did you mean 'latency'?
+
+Added: FF-202604-001  [LOW]  Queue message visibility timeout resets on failed processing — must handle idempotently

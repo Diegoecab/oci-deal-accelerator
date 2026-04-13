@@ -1,0 +1,26 @@
+{
+  "total": 8,
+  "by_severity": {
+    "HIGH": 2,
+    "MEDIUM": 4,
+    "LOW": 1,
+    "INFO": 1
+  },
+  "by_product": {
+    "ADB-S": 4,
+    "OCI CLI": 1,
+    "ADB-S Dedicated Elastic Pool (DEP)": 2,
+    "OCI DMS": 1
+  },
+  "by_status": {
+    "acknowledged": 5,
+    "open": 2,
+    "monitoring": 1
+  },
+  "by_category": {
+    "limitation": 3,
+    "bug": 1,
+    "undocumented": 1,
+    "gotcha": 3
+  }
+}

@@ -633,15 +633,19 @@ class OCIDeckGenerator(OraclePresBase):
             col_x += Inches(3.2)
 
     def add_environment_catalogue_slide(self, environments: list,
-                                       cost_notes: list = None):
+                                       cost_notes=None):
         """Environment Catalogue slide — Prod/Pre-Prod/Dev-Test/DR per workload.
 
-        environments: list of {"environment": str, "tier": str,
-                              "databases": str, "ocpus": str, "isolation": str}
-        cost_notes: optional list of cost optimization notes
+        environments: list of {"name"|"environment": str, "sizing": str,
+                              "isolation": str, "cost_pct": int}
+        cost_notes: optional list of strings or single string
         """
         slide = self._add_blank_slide()
         self._add_title_bar(slide, "Environment Catalogue", margin=self.MARGIN)
+
+        # Normalize cost_notes to a list
+        if isinstance(cost_notes, str):
+            cost_notes = [s.strip() for s in cost_notes.split(".") if s.strip()]
 
         rows = len(environments) + 1
         table = self._add_table(
@@ -650,28 +654,65 @@ class OCIDeckGenerator(OraclePresBase):
             Inches(12), Inches(0.4 * rows),
         )
 
-        table.columns[0].width = Inches(2.2)
-        table.columns[1].width = Inches(1.8)
-        table.columns[2].width = Inches(2.5)
-        table.columns[3].width = Inches(1.5)
-        table.columns[4].width = Inches(4.0)
+        # Detect schema: new (name/sizing/isolation/cost_pct) vs legacy (environment/tier/databases/ocpus/isolation)
+        sample = environments[0] if environments else {}
+        use_new_schema = "sizing" in sample or "cost_pct" in sample
 
-        headers = ["Environment", "Tier", "Databases", "OCPUs", "Isolation"]
-        for j, h in enumerate(headers):
-            self._style_table_cell(
-                table.cell(0, j), h, font_size=11, bold=True,
-                color=Colors.WHITE, bg_color=Colors.TEAL,
-                alignment=PP_ALIGN.CENTER,
+        if use_new_schema:
+            table = self._add_table(
+                slide, rows, 4,
+                self.MARGIN, Inches(1.2),
+                Inches(12), Inches(0.4 * rows),
             )
+            table.columns[0].width = Inches(2.5)
+            table.columns[1].width = Inches(5.0)
+            table.columns[2].width = Inches(2.5)
+            table.columns[3].width = Inches(2.0)
 
-        for i, env in enumerate(environments):
-            row_idx = i + 1
-            bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
-            self._style_table_cell(table.cell(row_idx, 0), env.get("environment", ""), font_size=10, bold=True, bg_color=bg)
-            self._style_table_cell(table.cell(row_idx, 1), env.get("tier", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 2), env.get("databases", ""), font_size=10, bg_color=bg)
-            self._style_table_cell(table.cell(row_idx, 3), env.get("ocpus", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 4), env.get("isolation", ""), font_size=10, bg_color=bg)
+            headers = ["Environment", "Sizing", "Isolation", "Cost %"]
+            for j, h in enumerate(headers):
+                self._style_table_cell(
+                    table.cell(0, j), h, font_size=11, bold=True,
+                    color=Colors.WHITE, bg_color=Colors.TEAL,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
+            for i, env in enumerate(environments):
+                row_idx = i + 1
+                bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+                self._style_table_cell(table.cell(row_idx, 0), env.get("name", env.get("environment", "")), font_size=10, bold=True, bg_color=bg)
+                self._style_table_cell(table.cell(row_idx, 1), env.get("sizing", ""), font_size=10, bg_color=bg)
+                self._style_table_cell(table.cell(row_idx, 2), env.get("isolation", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+                cost_pct = env.get("cost_pct", "")
+                self._style_table_cell(table.cell(row_idx, 3), f"{cost_pct}%" if cost_pct != "" else "", font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+        else:
+            table = self._add_table(
+                slide, rows, 5,
+                self.MARGIN, Inches(1.2),
+                Inches(12), Inches(0.4 * rows),
+            )
+            table.columns[0].width = Inches(2.2)
+            table.columns[1].width = Inches(1.8)
+            table.columns[2].width = Inches(2.5)
+            table.columns[3].width = Inches(1.5)
+            table.columns[4].width = Inches(4.0)
+
+            headers = ["Environment", "Tier", "Databases", "OCPUs", "Isolation"]
+            for j, h in enumerate(headers):
+                self._style_table_cell(
+                    table.cell(0, j), h, font_size=11, bold=True,
+                    color=Colors.WHITE, bg_color=Colors.TEAL,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
+            for i, env in enumerate(environments):
+                row_idx = i + 1
+                bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+                self._style_table_cell(table.cell(row_idx, 0), env.get("environment", ""), font_size=10, bold=True, bg_color=bg)
+                self._style_table_cell(table.cell(row_idx, 1), env.get("tier", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+                self._style_table_cell(table.cell(row_idx, 2), env.get("databases", ""), font_size=10, bg_color=bg)
+                self._style_table_cell(table.cell(row_idx, 3), env.get("ocpus", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+                self._style_table_cell(table.cell(row_idx, 4), env.get("isolation", ""), font_size=10, bg_color=bg)
 
         if cost_notes:
             notes_y = Inches(1.2) + Inches(0.4 * rows) + Inches(0.3)
@@ -841,71 +882,81 @@ class OCIDeckGenerator(OraclePresBase):
 
     def add_migration_slide(self, phases: list, tools: list = None,
                             downtime: str = ""):
-        """Slide 9: Migration Approach.
+        """Migration Approach slide.
 
-        phases: list of {"name": str, "weeks": str, "tasks": [...]}
+        phases: list of {"name": str, "duration"|"weeks": str,
+                        "milestones"|"tasks": [...]}
         """
         slide = self._add_blank_slide()
         self._add_title_bar(slide, "Migration Approach", margin=self.MARGIN)
 
-        y = Inches(1.3)
-        phase_colors = [Colors.TEAL, Colors.ORACLE_RED, Colors.BURNT_ORANGE, Colors.FOREST]
+        phase_colors = [Colors.TEAL, Colors.BURNT_ORANGE, Colors.FOREST, Colors.PURPLE]
 
-        # Phase timeline bars
-        bar_left = Inches(2.5)
-        bar_width = Inches(9.5)
+        n = len(phases)
+        # Scale spacing to fit all phases: leave room for tools/downtime at bottom
+        avail = 5.0  # inches available for phases (from y=1.3 to ~6.3)
+        step = min(1.1, avail / max(n, 1))
+
+        y = Inches(1.3)
+        bar_left = Inches(2.8)
+        bar_width = Inches(9.2)
+
         for i, phase in enumerate(phases):
             color = phase_colors[i % len(phase_colors)]
+            duration = phase.get("duration", phase.get("weeks", ""))
+            milestones = phase.get("milestones", phase.get("tasks", []))
 
-            # Phase label
+            # Phase label (left of bar)
             self._add_textbox(
                 slide, self.MARGIN, y,
-                Inches(2), Inches(0.45),
-                text=phase["name"], font_size=13, bold=True,
+                Inches(2.3), Inches(0.4),
+                text=phase["name"], font_size=11, bold=True,
             )
 
-            # Phase bar
+            # Colored phase bar with duration
             bar = self._add_rect(
-                slide, bar_left, y + Inches(0.05),
-                bar_width * 0.9, Inches(0.4),
+                slide, bar_left, y + Inches(0.02),
+                bar_width * 0.9, Inches(0.36),
                 fill_color=color,
             )
-            bar.text_frame.paragraphs[0].text = phase.get("weeks", "")
-            bar.text_frame.paragraphs[0].font.size = Pt(12)
+            bar.text_frame.paragraphs[0].text = duration
+            bar.text_frame.paragraphs[0].font.size = Pt(11)
             bar.text_frame.paragraphs[0].font.color.rgb = Colors.WHITE
             bar.text_frame.paragraphs[0].font.name = self.FONT
             bar.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
 
-            # Tasks below bar
-            if phase.get("tasks"):
-                tasks_text = "  •  ".join(phase["tasks"][:4])
+            # Milestones/tasks below bar (compact)
+            if milestones:
+                tasks_text = "  •  ".join(str(m) for m in milestones[:4])
                 self._add_textbox(
-                    slide, bar_left, y + Inches(0.48),
-                    bar_width, Inches(0.38),
-                    text=tasks_text, font_size=11, italic=True,
+                    slide, bar_left, y + Inches(0.40),
+                    bar_width, Inches(0.30),
+                    text=tasks_text, font_size=9, italic=True,
                     color=Colors.SECONDARY_TEXT,
                 )
 
-            y += Inches(1.1)
+            y += Inches(step)
 
         # Tools
         if tools:
-            y += Inches(0.2)
+            y = max(y, Inches(1.3 + avail)) + Inches(0.15)
             self._add_textbox(
                 slide, self.MARGIN, y,
                 Inches(12), Inches(0.35),
-                text=f"Migration Tools: {', '.join(tools)}",
-                font_size=11, bold=True, color=Colors.TEAL,
+                text=f"Migration Tools: {', '.join(tools[:4])}",
+                font_size=10, bold=True, color=Colors.TEAL,
             )
+            y += Inches(0.35)
 
         # Downtime approach
         if downtime:
-            y += Inches(0.5)
+            if not tools:
+                y = max(y, Inches(1.3 + avail)) + Inches(0.15)
             self._add_textbox(
                 slide, self.MARGIN, y,
                 Inches(12), Inches(0.35),
                 text=f"Downtime Approach: {downtime}",
-                font_size=11, color=Colors.PRIMARY_TEXT,
+                font_size=10, color=Colors.PRIMARY_TEXT,
             )
 
     def add_operational_raci_slide(self, raci_items: list,
