@@ -289,35 +289,60 @@ def build_demo_deck(output_path):
         ],
     )
 
-    # ── SLIDE 8: Architecture (8:30-9:00) ──
+    # ── SLIDE 8: The KB Is the Moat (7:30-8:15) ──
     gen.add_content_slide(
-        "How It Works — Under the Hood",
+        "The Knowledge Base Is the Moat",
         [
-            "SKILL.md: 400-line system prompt with ECAL-aligned workflow rules",
-            "kb/: 40+ YAML files — services, sizing, pricing (auto-refreshed), patterns, gotchas",
-            "tools/: 7 Python generators that produce real files, not markdown",
-            "Oracle FY26 .pptx template with Redwood design system colors",
-            "scripts/: WA validation engine against 5-pillar framework (80+ checks)",
-            "Field findings tracker with contributor attribution + confidence levels",
-            "SKU catalog refreshed from Oracle public pricing API",
+            "40+ YAML files of FIELD knowledge — not regurgitated docs, real experience",
+            "Services: what each OCI service does, when to use it, gotchas, sizing rules",
+            "Patterns: composable architecture blocks (HA, DR, networking, security baselines)",
+            "Pricing: 160+ SKUs auto-refreshed from Oracle public API (refresh_sku_catalog.py)",
+            "Field findings: production issues with workarounds, contributor attribution, confidence levels",
+            "Competitive: honest AWS/Azure mapping with real advantage/disadvantage per service",
+            "Architecture Center: 123 curated reference architectures with service + tag filtering",
+            "",
+            "Without the KB, the AI is just another chatbot. With it, it's a domain expert.",
         ],
-        note="Everything is composable: patterns combine, KB is the moat, field experience > documentation"
     )
 
-    # ── SLIDE 9: Key Takeaways (9:00-9:30) ──
+    # ── SLIDE 9: Auto-refresh + Collaborative Model (8:15-9:00) ──
+    gen.add_content_slide(
+        "Self-Updating KB + Collaborative Field Intelligence",
+        [
+            "AUTO-REFRESH — pricing stays current without manual intervention:",
+            "   python refresh_sku_catalog.py --refresh --diff   # updates 160+ SKUs from Oracle API",
+            "   python refresh_arch_catalog.py --whats-new       # crawls Architecture Center for new entries",
+            "",
+            "COLLABORATIVE — every SA contributes, everyone benefits:",
+            "   findings_cli.py add --product ExaCS --severity HIGH --summary '...'",
+            "   Each finding has: contributor, team, client, confidence, confirmations[]",
+            "   Other SAs can confirm: findings_cli.py confirm FF-202603-001 --name '...'",
+            "",
+            "GOVERNANCE — quality stays high as the KB grows:",
+            "   kb_cli.py health      # freshness dashboard: 63 files, stale detection",
+            "   kb_cli.py stats stale # reports files older than review cadence",
+            "   Every file has last_verified date + domain owner in kb-owners.yaml",
+            "",
+            "The KB compounds: every engagement makes the next one faster and better.",
+        ],
+    )
+
+    # ── SLIDE 10: Key Takeaways (9:00-9:30) ──
     gen.add_content_slide(
         "Key Takeaways",
         [
             "85% time reduction: from 2-3 days to 2 hours per proposal",
             "Higher quality: every proposal is WA-validated with 5-pillar scoring",
-            "Field knowledge compounds: gotchas and findings feed back into the KB",
-            "ECAL-aligned: Define > Design > Deliver with artefact tracking",
-            "Real deliverables: .pptx, .drawio, .pdf, .xlsx — not chat summaries",
+            "The KB is the moat: field experience > documentation > AI hallucination",
+            "Self-updating: pricing + architectures refresh automatically",
+            "Collaborative: every SA's gotcha becomes everyone's advantage",
+            "ECAL-aligned: Define > Design > Deliver with 60-artefact tracking",
+            "Real deliverables: .pptx, .drawio, .pdf, .xlsx, BOM, AppCA — not chat summaries",
             "SA stays in control: AI generates, architect reviews and refines",
         ],
     )
 
-    # ── SLIDE 10: Closing ──
+    # ── SLIDE 11: Closing ──
     gen.add_closing_slide(
         name="OCI Deal Accelerator",
         title="github.com/your-org/oci-deal-accelerator",
