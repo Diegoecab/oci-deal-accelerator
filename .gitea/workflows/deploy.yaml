@@ -1,0 +1,46 @@
+name: Deploy Skill to OCI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.OCI_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.OCI_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync skill to server
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            --exclude='.git' \
+            --exclude='.gitea' \
+            ./ ubuntu@${{ secrets.OCI_HOST }}:/home/ubuntu/oci-deal-accelerator-oracle/oci-deal-accelerator/
+
+      - name: Restart containers
+        run: |
+          ssh -i ~/.ssh/deploy_key ubuntu@${{ secrets.OCI_HOST }} '
+            cd /home/ubuntu/skills-platform &&
+            docker compose -f docker-compose.prod.yaml restart tools-service mcp-deal-accelerator
+          '
+
+      - name: Wait for healthy
+        run: |
+          ssh -i ~/.ssh/deploy_key ubuntu@${{ secrets.OCI_HOST }} '
+            timeout 60 bash -c "
+              until docker inspect --format=\"{{.State.Health.Status}}\" mcp-deal-accelerator 2>/dev/null | grep -q healthy; do
+                sleep 3
+              done
+            "
+          '
