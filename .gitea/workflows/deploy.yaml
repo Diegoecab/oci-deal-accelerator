@@ -24,11 +24,13 @@ jobs:
 
       - name: Sync skill to server
         run: |
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key" \
-            --exclude='.git' \
-            --exclude='.gitea' \
-            ./ ubuntu@${{ secrets.OCI_HOST }}:/home/ubuntu/oci-deal-accelerator-oracle/oci-deal-accelerator/
+          tar --exclude='.git' --exclude='.gitea' -czf /tmp/skill.tar.gz .
+          scp -i ~/.ssh/deploy_key /tmp/skill.tar.gz ubuntu@${{ secrets.OCI_HOST }}:/tmp/skill.tar.gz
+          ssh -i ~/.ssh/deploy_key ubuntu@${{ secrets.OCI_HOST }} '
+            rm -rf /home/ubuntu/oci-deal-accelerator-oracle/oci-deal-accelerator/*
+            tar -xzf /tmp/skill.tar.gz -C /home/ubuntu/oci-deal-accelerator-oracle/oci-deal-accelerator/
+            rm /tmp/skill.tar.gz
+          '
 
       - name: Restart containers
         run: |
