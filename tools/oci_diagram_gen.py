@@ -913,8 +913,13 @@ class OCIDiagramGenerator:
 
         # Customize per connection type
         if conn_type == "fastconnect":
-            # Bidirectional
+            # Bidirectional, thicker line
             edge.line_end_source = "open"
+            edge.strokeWidth = 2
+        elif conn_type == "network":
+            # Network connections: thicker, teal color
+            edge.strokeColor = "#2C5967"
+            edge.strokeWidth = 2
         elif conn_type == "adg":
             # Dashed (ADG replication) — toolkit pattern: 8 4
             edge.pattern = "dashed_small"
@@ -927,7 +932,11 @@ class OCIDiagramGenerator:
             # Dashed (ETL/streaming) — toolkit pattern: 6 4
             edge.pattern = "dashed_small"
             extra_style += "dashPattern=6 4;"
-        # "standard" and "db" use solid line defaults — no changes needed
+        elif conn_type == "internal":
+            # Internal/management connections: lighter, thinner
+            edge.strokeColor = "#9E9892"
+            extra_style += "dashPattern=4 4;"
+        # "standard", "data", and "db" use solid line defaults
 
         # Add waypoints if provided
         if waypoints:
@@ -1215,30 +1224,56 @@ class OCIDiagramGenerator:
                     w=vcn_w, h=vcn_h,
                 )
 
-                # Auto-layout subnets VERTICALLY (stacked top-to-bottom).
-                # Matches Oracle reference architecture style: subnets span the
-                # full VCN width and stack vertically, one on top of another.
-                # (Confirmed from 11 Oracle Architecture Center reference diagrams)
-                # subnet_y=32: leaves ~10px gap below the VCN label (12pt bold ≈22px).
+                # ── GATEWAY-AWARE AUTO-LAYOUT ──
+                # Step 1: Place gateways on the LEFT EDGE of the VCN.
+                # Step 2: Offset subnets RIGHT to avoid overlap with gateways.
+                # Step 3: Stack subnets vertically (top-to-bottom).
+                # This matches Oracle ref arch style: gateways on VCN boundary,
+                # subnets fill the remaining width.
+
+                gateways = vcn.get("gateways", [])
+                gw_lane_w = 0  # width reserved for gateway column
+
+                if gateways:
+                    # Calculate gateway lane width (max gateway width + padding)
+                    gw_lane_w = max(gw.get("w", 110) for gw in gateways) + 20
+
+                    # Place gateways vertically centered in VCN
+                    total_gw_h = sum(gw.get("h", 70) for gw in gateways) + 8 * max(0, len(gateways) - 1)
+                    gw_start_y = max(32, (vcn_h - total_gw_h) // 2)
+                    gy = gw_start_y
+                    for gw in gateways:
+                        gw_id = gw.get("id", gen._next_id())
+                        gw_w = gw.get("w", 110)
+                        gw_h = gw.get("h", 70)
+                        gw_x = gw.get("x", 10)
+                        gw_y = gw.get("y", gy)
+                        label = gw["label"].replace("\\n", "\n")
+                        gen.add_service(
+                            gw_id, label, gw["type"],
+                            vcn["id"], gw_x, gw_y, gw_w, gw_h,
+                        )
+                        gy = gw_y + gw_h + 8
+
+                # Subnet horizontal offset: push right if gateways present
+                subnet_x = 8 + gw_lane_w
+                subnet_avail_w = vcn_w - subnet_x - 8  # remaining width for subnets
+
+                # Stack subnets vertically (top-to-bottom)
                 subnet_y = 32
                 for subnet in vcn.get("subnets", []):
-                    # Default width = full VCN width minus 16px padding (8px each side)
-                    sw = subnet.get("w", vcn_w - 16)
+                    sw = subnet.get("w", subnet_avail_w)
                     sh = subnet.get("h", 120)
                     gen.add_subnet(
                         subnet["id"], subnet["label"],
-                        vcn["id"], 8, subnet_y, sw, sh,
+                        vcn["id"], subnet_x, subnet_y, sw, sh,
                     )
 
                     # Auto-layout services HORIZONTALLY within subnet, centered.
-                    # Oracle style: services are centered left-to-right within each
-                    # subnet row, not left-aligned. Single service → centered in subnet.
-                    svc_top = 30  # vertical offset below subnet label
+                    svc_top = 30
                     subnet_svcs = subnet.get("services", [])
-                    # Compute each service width upfront to center the group
                     svc_widths = [svc.get("w", min(sw - 30, 150)) for svc in subnet_svcs]
                     total_svc_w = sum(svc_widths) + 16 * max(0, len(svc_widths) - 1)
-                    # Center the service group; minimum 15px left padding
                     svc_x = max(15, (sw - total_svc_w) // 2)
                     for svc, svc_w in zip(subnet_svcs, svc_widths):
                         svc_id = svc.get("id", gen._next_id())
@@ -1252,22 +1287,6 @@ class OCIDiagramGenerator:
                         svc_x += svc_w + 16
 
                     subnet_y += sh + 14
-
-                # Gateways on left side of VCN, stacked vertically
-                gx = 10
-                gy = 40
-                for gw in vcn.get("gateways", []):
-                    gw_id = gw.get("id", gen._next_id())
-                    gw_w = gw.get("w", 110)
-                    gw_h = gw.get("h", 70)
-                    gw_x = gw.get("x", gx)
-                    gw_y = gw.get("y", gy)
-                    label = gw["label"].replace("\\n", "\n")
-                    gen.add_service(
-                        gw_id, label, gw["type"],
-                        vcn["id"], gw_x, gw_y, gw_w, gw_h,
-                    )
-                    gy = gw_y + gw_h + 8
 
             # Compartments inside region — can contain VCNs
             for comp in region.get("compartments", []):
