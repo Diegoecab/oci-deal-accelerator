@@ -938,6 +938,44 @@ class OCIDiagramGenerator:
             extra_style += "dashPattern=4 4;"
         # "standard", "data", and "db" use solid line defaults
 
+        # ── Auto-port detection ──
+        # Calculate exit/entry ports based on relative positions of source and
+        # target. This prevents draw.io's auto-router from creating crossing
+        # arrows — instead, edges exit/enter from the geometrically correct side.
+        src_pos = self._abs_positions.get(source)
+        tgt_pos = self._abs_positions.get(target)
+        if src_pos and tgt_pos:
+            src_obj_w = getattr(src_obj, 'width', 100) or 100
+            src_obj_h = getattr(src_obj, 'height', 60) or 60
+            # Center points
+            sx = src_pos[0] + src_obj_w / 2
+            sy = src_pos[1] + src_obj_h / 2
+            tgt_obj_w = getattr(tgt_obj, 'width', 100) or 100
+            tgt_obj_h = getattr(tgt_obj, 'height', 60) or 60
+            tx = tgt_pos[0] + tgt_obj_w / 2
+            ty = tgt_pos[1] + tgt_obj_h / 2
+
+            dx = tx - sx
+            dy = ty - sy
+
+            # Determine dominant direction and set ports.
+            # Use 1.5x threshold: prefer vertical within same container (natural
+            # top-down flow), only go horizontal when clearly side-by-side.
+            # This matches Oracle ref arch style where subnets stack vertically
+            # and connections flow down between them.
+            if abs(dx) > abs(dy) * 1.5:
+                # Clearly horizontal: exit right → enter left (or vice versa)
+                if dx > 0:
+                    extra_style += "exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
+                else:
+                    extra_style += "exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;"
+            else:
+                # Vertical or diagonal: exit bottom → enter top (or vice versa)
+                if dy > 0:
+                    extra_style += "exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+                else:
+                    extra_style += "exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
+
         # Add waypoints if provided
         if waypoints:
             for wx, wy in waypoints:
