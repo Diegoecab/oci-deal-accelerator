@@ -1,0 +1,175 @@
+{
+  "summary": {
+    "total_artefacts": 18,
+    "mentioned": 2,
+    "likely_relevant": 0,
+    "possibly_relevant": 9,
+    "not_covered": 7,
+    "skill_auto_generate": 5,
+    "skill_assist": 2
+  },
+  "artefacts": [
+    {
+      "id": "DEF-01",
+      "name": "Customer Profile",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "assist",
+      "customer_facing": false,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEF-02",
+      "name": "Strategy Map",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "assist",
+      "customer_facing": false,
+      "relevance": "none"
+    },
+    {
+      "id": "DEF-03",
+      "name": "Point of View (PoV)",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "auto_generate",
+      "customer_facing": false,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEF-04",
+      "name": "Ideation Workshop",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEF-05",
+      "name": "Business Case",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "auto_generate",
+      "customer_facing": true,
+      "relevance": "mentioned"
+    },
+    {
+      "id": "DEF-06",
+      "name": "Value Story",
+      "phase": "define",
+      "step": "ideate",
+      "skill_support": "auto_generate",
+      "customer_facing": true,
+      "relevance": "mentioned"
+    },
+    {
+      "id": "DEF-07",
+      "name": "Value Story Delivery",
+      "phase": "define",
+      "step": "validate",
+      "skill_support": "assist",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEF-08",
+      "name": "Joint Engagement Plan (JEP)",
+      "phase": "define",
+      "step": "plan",
+      "skill_support": "auto_generate",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DES-35",
+      "name": "Solution Proposal",
+      "phase": "design",
+      "step": "confirm",
+      "skill_support": "auto_generate",
+      "customer_facing": true,
+      "relevance": "none"
+    },
+    {
+      "id": "DES-36",
+      "name": "Partner / Services Proposal",
+      "phase": "design",
+      "step": "confirm",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "none"
+    },
+    {
+      "id": "DES-37",
+      "name": "RFx Response",
+      "phase": "design",
+      "step": "confirm",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "none"
+    },
+    {
+      "id": "DES-38",
+      "name": "Commercial Agreement",
+      "phase": "design",
+      "step": "confirm",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "none"
+    },
+    {
+      "id": "DEL-17",
+      "name": "Cloud Operating Framework",
+      "phase": "deliver",
+      "step": "operate",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEL-18",
+      "name": "OCI Operationalization Framework",
+      "phase": "deliver",
+      "step": "operate",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "none"
+    },
+    {
+      "id": "DEL-19",
+      "name": "Retrospective",
+      "phase": "deliver",
+      "step": "improve",
+      "skill_support": "auto_generate",
+      "customer_facing": false,
+      "relevance": "none"
+    },
+    {
+      "id": "DEL-20",
+      "name": "Value Realization",
+      "phase": "deliver",
+      "step": "improve",
+      "skill_support": "auto_generate",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEL-21",
+      "name": "Customer Success Story",
+      "phase": "deliver",
+      "step": "improve",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    },
+    {
+      "id": "DEL-22",
+      "name": "Improvement Actions",
+      "phase": "deliver",
+      "step": "improve",
+      "skill_support": "reference",
+      "customer_facing": true,
+      "relevance": "possibly_relevant"
+    }
+  ]
+}

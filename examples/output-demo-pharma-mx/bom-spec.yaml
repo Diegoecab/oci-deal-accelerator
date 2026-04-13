@@ -1,0 +1,71 @@
+# Prompt 13: BOM generator
+# ExaCS X11M Half Rack + ADB-S + networking + security
+
+metadata:
+  customer: "PharmaCorp Mexico"
+  prepared_by: "Carlos Mendoza — Solutions Architect"
+  date: "2026-04-12"
+  currency: "USD"
+  contract_months: 12
+  discount_pct: 0.45
+  notes: "ExaCS BYOL — customer has existing Oracle DB EE licenses"
+
+line_items:
+  # ExaCS Production — Queretaro
+  - category: "Exadata Cloud Service"
+    product: "ExaCS X11M Half Rack — DB Server"
+    sku: "B92459"
+    qty: 4
+    unit: "OCPU per hour"
+    hours_units: 744
+    months: 12
+    notes: "4 DB servers, 128 ECPUs each, BYOL"
+
+  - category: "Exadata Cloud Service"
+    product: "ExaCS X11M Half Rack — Storage Server"
+    sku: "B92460"
+    qty: 6
+    unit: "per hour"
+    hours_units: 744
+    months: 12
+    notes: "6 storage servers"
+
+  # ADB-S
+  - category: "Autonomous Database"
+    product: "ADB-S Serverless ECPU"
+    sku: "B97472"
+    qty: 32
+    unit: "ECPU per hour"
+    hours_units: 744
+    months: 12
+    notes: "32 ECPU for DW migration (Phase 2)"
+
+  # Storage
+  - category: "Block Storage"
+    product: "Block Volume Performance Units"
+    sku: "B91628"
+    qty: 50000
+    unit: "GB per month"
+    hours_units: 1
+    months: 12
+    notes: "50TB block storage"
+
+  # Networking
+  - category: "Networking"
+    product: "FastConnect 10Gbps"
+    sku: "B91960"
+    qty: 2
+    unit: "port per hour"
+    hours_units: 744
+    months: 12
+    notes: "Dual 10Gbps circuits"
+
+  # Security
+  - category: "Security"
+    product: "OCI Vault — Key Management"
+    sku: "B92098"
+    qty: 10
+    unit: "key version per month"
+    hours_units: 1
+    months: 12
+    notes: "TDE keys for 3 databases + DR + backups"

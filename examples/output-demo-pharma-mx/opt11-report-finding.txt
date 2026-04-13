@@ -1,0 +1,4 @@
+WARNING: Unknown tag 'iorm'. Not in taxonomy.
+WARNING: Unknown tag 'storage'. Not in taxonomy.
+
+Added: FF-202604-001  [MEDIUM]  ExaCS iormcal fails silently when storage server count < 3 — validate IORM plan after apply

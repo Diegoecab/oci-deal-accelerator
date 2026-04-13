@@ -1,0 +1,300 @@
+[
+  {
+    "title": "Oracle MAA for Oracle Database@Azure",
+    "url": "https://docs.oracle.com/en/solutions/oracle-maa-db-at-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-05",
+    "services": [
+      "exacs",
+      "adg",
+      "vault",
+      "azure"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr",
+      "autonomous"
+    ],
+    "summary": "Cross-AZ Data Guard on ExaCS in Database@Azure. Active Data Guard recommended for cross-AZ replication (block repair, app continuity, read offload). Backups to Autonomous Recovery Service.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement disaster recovery with local and regional standbys on Oracle Database@Azure",
+    "url": "https://docs.oracle.com/en/solutions/local-regional-standby-dr-db-at-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-05",
+    "services": [
+      "exacs",
+      "adg",
+      "azure",
+      "fsdr"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr"
+    ],
+    "summary": "Local standby for HA within same region, regional standby for DR across Azure regions. Uses Active Data Guard with Fast-Start Failover. Recommends Full Stack DR service for automated failover orchestration.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement disaster recovery with multi-region standby on Oracle Database@Azure",
+    "url": "https://docs.oracle.com/en/solutions/multi-region-standby-dr-db-at-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-04",
+    "services": [
+      "exacs",
+      "adg",
+      "azure"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr"
+    ],
+    "summary": "Multi-region DR for ExaCS on Database@Azure using Data Guard. Cross-region standby with switchover/failover capabilities. Includes network topology for Azure-to-Azure cross-region connectivity.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement cross-region disaster recovery for Exadata Database on Oracle Database@Azure",
+    "url": "https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-01",
+    "services": [
+      "exacs",
+      "adg",
+      "azure",
+      "fsdr"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr"
+    ],
+    "summary": "Cross-region DR for ExaCS on Database@Azure. OCI-managed networks for peering (better performance, first 10 TB/month free). Data Guard for cross-region replication, FSDR for automated failover orchestration.\n",
+    "terraform": "https://github.com/oracle-quickstart/oci-multicloud-azure"
+  },
+  {
+    "title": "Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions",
+    "url": "https://docs.oracle.com/en/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-02",
+    "services": [
+      "exacs",
+      "adg",
+      "azure"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr"
+    ],
+    "summary": "Far Sync instance for zero data loss protection across Azure regions. Synchronous redo transport to Far Sync, async to remote standby. Eliminates performance impact of synchronous shipping over long distances.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement Oracle Database Autonomous Recovery Service with Oracle Database@Azure",
+    "url": "https://docs.oracle.com/en/solutions/implement-recovery-service-db-at-azure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-01",
+    "services": [
+      "exacs",
+      "azure"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "azure",
+      "ha-dr"
+    ],
+    "summary": "Autonomous Recovery Service for ExaCS backups on Database@Azure. Automated backup management with real-time protection and point-in-time recovery capabilities.\n",
+    "terraform": null
+  },
+  {
+    "title": "Deploy Active Data Guard Far Sync to protect data across Oracle Database@AWS regions",
+    "url": "https://docs.oracle.com/en/solutions/dr-active-dg-farsync-db-at-aws/index.html",
+    "type": "reference-architecture",
+    "date": "2025-09",
+    "services": [
+      "exacs",
+      "adg",
+      "aws"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "aws",
+      "ha-dr"
+    ],
+    "summary": "Far Sync instance for zero data loss protection across AWS regions. Synchronous redo to local Far Sync, asynchronous to remote standby. Requires cross-region AWS networking for redo transport.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement disaster recovery with local and regional standbys on Oracle Database@AWS",
+    "url": "https://docs.oracle.com/en/solutions/dr-local-regional-standby-db-at-aws/index.html",
+    "type": "reference-architecture",
+    "date": "2025-09",
+    "services": [
+      "exacs",
+      "adg",
+      "aws",
+      "fsdr"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "aws",
+      "ha-dr"
+    ],
+    "summary": "Local standby for HA within same AWS region, regional standby for DR. Active Data Guard with Fast-Start Failover for automated failover. Full Stack DR service for cross-service failover orchestration.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement disaster recovery with cross-zonal Data Guard on Oracle Database@AWS",
+    "url": "https://docs.oracle.com/en/solutions/cross-zone-dr-db-at-aws/index.html",
+    "type": "reference-architecture",
+    "date": "2025-08",
+    "services": [
+      "exacs",
+      "adg",
+      "aws"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "aws",
+      "ha-dr"
+    ],
+    "summary": "Cross-AZ Data Guard on Database@AWS for HA. Synchronous redo transport between AZs for zero data loss. Fast-Start Failover for automatic database switchover on failure.\n",
+    "terraform": null
+  },
+  {
+    "title": "Implement disaster recovery with cross-regional Data Guard on Oracle Database@AWS",
+    "url": "https://docs.oracle.com/en/solutions/implement-dr-cross-region-dg-odb-aws/index.html",
+    "type": "reference-architecture",
+    "date": "2025-08",
+    "services": [
+      "exacs",
+      "adg",
+      "aws"
+    ],
+    "tags": [
+      "database",
+      "multicloud",
+      "aws",
+      "ha-dr"
+    ],
+    "summary": "Cross-region Data Guard on Database@AWS for DR. Asynchronous redo transport for cross-region replication. Planned switchover for maintenance, forced failover for disaster scenarios.\n",
+    "terraform": null
+  },
+  {
+    "title": "Migrate Oracle RAC Databases to OCI",
+    "url": "https://docs.oracle.com/en/solutions/ensure-ha-migrate-vmware-workloads-to-oci/migrate-oracle-rac-databases1.html",
+    "type": "reference-architecture",
+    "date": "2025-01",
+    "services": [
+      "exacs",
+      "exascale",
+      "adb-d",
+      "base-db"
+    ],
+    "tags": [
+      "database",
+      "migration",
+      "ha-dr"
+    ],
+    "summary": "Compares 4 RAC migration targets: ExaCS Dedicated, Exascale, ADB-D, and 2-node RAC on Base DB. ExaCS recommended for full RAC feature parity. Exascale for 23ai-only without dedicated infra commitment.\n",
+    "terraform": null
+  },
+  {
+    "title": "Configure Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure",
+    "url": "https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/index.html",
+    "type": "reference-architecture",
+    "date": "2025-07",
+    "services": [
+      "exacs",
+      "adg"
+    ],
+    "tags": [
+      "database",
+      "ha-dr"
+    ],
+    "summary": "Data Guard configuration for ExaCS Dedicated. Active Data Guard for read offload and automatic failover. Cross-region standby for DR with Fast-Start Failover for automated switchover.\n",
+    "terraform": null
+  },
+  {
+    "title": "Back up from Exadata on Dedicated Infrastructure to Zero Data Loss Autonomous Recovery",
+    "url": "https://docs.oracle.com/en/solutions/back-up-exadata-dedicated-zero-data-loss-recovery/index.html",
+    "type": "reference-architecture",
+    "date": "2025-07",
+    "services": [
+      "exacs"
+    ],
+    "tags": [
+      "database",
+      "ha-dr"
+    ],
+    "summary": "Autonomous Recovery Service for ExaCS backups. Automated backup management with real-time redo protection. Validates backup recoverability automatically.\n",
+    "terraform": null
+  },
+  {
+    "title": "Configure a standby database for disaster recovery using Oracle Exadata Database Service on Cloud@Customer",
+    "url": "https://docs.oracle.com/en/solutions/exadata-cloud-at-customer-standby/index.html",
+    "type": "reference-architecture",
+    "date": "2025-07",
+    "services": [
+      "exacs",
+      "adg"
+    ],
+    "tags": [
+      "database",
+      "ha-dr"
+    ],
+    "summary": "Data Guard standby on ExaCS Cloud@Customer for hybrid DR. On-premises primary with cloud standby, or cloud primary with on-premises standby for data sovereignty requirements.\n",
+    "terraform": null
+  },
+  {
+    "title": "Learn about maximum availability architecture for PeopleSoft",
+    "url": "https://docs.oracle.com/en/solutions/learn-about-maa-for-peoplesoft/index.html",
+    "type": "reference-architecture",
+    "date": "2024-08",
+    "services": [
+      "exacs",
+      "adg",
+      "load-balancer",
+      "compute"
+    ],
+    "tags": [
+      "application",
+      "ha-dr",
+      "peoplesoft"
+    ],
+    "summary": "MAA for PeopleSoft on OCI. Active Data Guard for database HA/DR, multi-instance PIA behind Load Balancer, Process Scheduler on multiple nodes for batch processing resilience.\n",
+    "terraform": null
+  },
+  {
+    "title": "Provision and deploy a maximum availability solution for PeopleSoft on Oracle Cloud",
+    "url": "https://docs.oracle.com/en/solutions/deploy-maa-for-peoplesoft-on-oci/index.html",
+    "type": "reference-architecture",
+    "date": "2024-08",
+    "services": [
+      "exacs",
+      "adg",
+      "load-balancer",
+      "compute"
+    ],
+    "tags": [
+      "application",
+      "ha-dr",
+      "peoplesoft"
+    ],
+    "summary": "Step-by-step PeopleSoft MAA deployment on OCI. Terraform stacks for infrastructure provisioning, Data Guard configuration, and PeopleSoft application tier setup.\n",
+    "terraform": null
+  }
+]

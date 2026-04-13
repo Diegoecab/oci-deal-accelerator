@@ -1,0 +1,54 @@
+# Prompt 2: Architecture diagram
+# ExaCS dual-region with Data Guard, Hub-Spoke, dual FastConnect
+
+title: "PharmaCorp Mexico — ExaCS Migration Architecture"
+
+regions:
+  - name: "Queretaro (Primary)"
+    availability_domains:
+      - name: "AD-1"
+        subnets:
+          - name: "DB Subnet (Private)"
+            services:
+              - name: "ExaCS X11M"
+                type: "database"
+                notes: "3 DBs: EBS R12, SAP, DW"
+          - name: "App Subnet (Private)"
+            services:
+              - name: "EBS App Tier"
+                type: "compute"
+              - name: "Bastion"
+                type: "security"
+          - name: "Public Subnet"
+            services:
+              - name: "WAF"
+                type: "security"
+                notes: "Protects EBS web tier"
+    hub_services:
+      - name: "DRG"
+        type: "networking"
+      - name: "OCI Vault"
+        type: "security"
+      - name: "OCI Audit + Logging"
+        type: "observability"
+
+  - name: "Sao Paulo (DR)"
+    availability_domains:
+      - name: "AD-1"
+        subnets:
+          - name: "DB Subnet (Private)"
+            services:
+              - name: "ExaCS Standby"
+                type: "database"
+                notes: "Data Guard: EBS + SAP"
+
+connections:
+  - from: "Mexico City DC"
+    to: "DRG (Queretaro)"
+    type: "FastConnect 10Gbps Dual"
+  - from: "ExaCS X11M"
+    to: "ExaCS Standby"
+    type: "Data Guard (async redo)"
+  - from: "DRG"
+    to: "Sao Paulo VCN"
+    type: "Remote peering"
