@@ -1,54 +1,229 @@
+# OCI Deal Accelerator — Architecture Diagram Spec
+# Demo: PharmaCorp Mexico — ExaCS dual-region with Data Guard
 # Prompt 2: Architecture diagram
-# ExaCS dual-region with Data Guard, Hub-Spoke, dual FastConnect
 
 title: "PharmaCorp Mexico — ExaCS Migration Architecture"
 
-regions:
-  - name: "Queretaro (Primary)"
-    availability_domains:
-      - name: "AD-1"
-        subnets:
-          - name: "DB Subnet (Private)"
-            services:
-              - name: "ExaCS X11M"
-                type: "database"
-                notes: "3 DBs: EBS R12, SAP, DW"
-          - name: "App Subnet (Private)"
-            services:
-              - name: "EBS App Tier"
-                type: "compute"
-              - name: "Bastion"
-                type: "security"
-          - name: "Public Subnet"
-            services:
-              - name: "WAF"
-                type: "security"
-                notes: "Protects EBS web tier"
-    hub_services:
-      - name: "DRG"
-        type: "networking"
-      - name: "OCI Vault"
-        type: "security"
-      - name: "OCI Audit + Logging"
-        type: "observability"
+# External actors
+external:
+  - id: "mexico_dc"
+    label: "Mexico City\nData Center"
+    icon: "user"
+    x: 30
+    y: 280
+    w: 50
+    h: 60
 
-  - name: "Sao Paulo (DR)"
-    availability_domains:
-      - name: "AD-1"
-        subnets:
-          - name: "DB Subnet (Private)"
-            services:
-              - name: "ExaCS Standby"
-                type: "database"
-                notes: "Data Guard: EBS + SAP"
+# OCI Tenancy
+tenancy:
+  label: "Oracle Cloud Infrastructure"
+  x: 280
+  y: 80
+  w: 1500
+  h: 700
 
+  regions:
+    # ── Primary Region: Queretaro ──
+    - id: "region_qro"
+      label: "Region — Queretaro (Primary)"
+      primary: true
+      x: 15
+      y: 40
+      w: 900
+      h: 640
+
+      vcns:
+        # Hub VCN
+        - id: "vcn_hub"
+          label: "Hub VCN (10.0.0.0/16)"
+          x: 15
+          y: 45
+          w: 870
+          h: 570
+
+          subnets:
+            - id: "subnet_db"
+              label: "Database Subnet (Private) — 10.0.1.0/24"
+              h: 180
+              services:
+                - id: "exacs_prod"
+                  label: "ExaCS X11M\nQuarter Rack\n(EBS + SAP + DW)"
+                  type: "exacs"
+                  w: 180
+                  h: 90
+                - id: "vault"
+                  label: "OCI Vault\nTDE Keys\n(FIPS 140-2 L3)"
+                  type: "vault"
+                  w: 140
+                  h: 90
+                - id: "dbmgmt"
+                  label: "Database\nManagement"
+                  type: "monitoring"
+                  w: 120
+                  h: 90
+
+            - id: "subnet_app"
+              label: "Application Subnet (Private) — 10.0.2.0/24"
+              h: 140
+              services:
+                - id: "ebs_app"
+                  label: "EBS R12\nApp Tier\n(2x VM.Standard)"
+                  type: "compute"
+                  w: 160
+                  h: 80
+                - id: "bastion"
+                  label: "Bastion\nService"
+                  type: "bastion"
+                  w: 120
+                  h: 80
+
+            - id: "subnet_pub"
+              label: "Public Subnet — 10.0.0.0/24"
+              h: 120
+              services:
+                - id: "waf"
+                  label: "WAF\n(EBS Web Tier)"
+                  type: "waf"
+                  w: 120
+                  h: 70
+                - id: "lb"
+                  label: "Load\nBalancer"
+                  type: "load-balancer"
+                  w: 120
+                  h: 70
+
+            - id: "subnet_mgmt"
+              label: "Management Subnet (Private) — 10.0.3.0/24"
+              h: 110
+              services:
+                - id: "monitoring"
+                  label: "OCI\nMonitoring"
+                  type: "monitoring"
+                  w: 120
+                  h: 65
+                - id: "logging"
+                  label: "OCI Audit\n+ Logging"
+                  type: "logging"
+                  w: 120
+                  h: 65
+                - id: "events"
+                  label: "OCI Events\n+ Notifications"
+                  type: "events"
+                  w: 140
+                  h: 65
+
+          gateways:
+            - id: "drg"
+              label: "DRG\n(Hub)"
+              type: "drg"
+              w: 100
+              h: 70
+            - id: "sgw"
+              label: "Service\nGateway"
+              type: "service_gateway"
+              w: 110
+              h: 70
+
+    # ── DR Region: Sao Paulo ──
+    - id: "region_gru"
+      label: "Region — São Paulo (DR)"
+      x: 940
+      y: 40
+      w: 540
+      h: 450
+
+      vcns:
+        - id: "vcn_dr"
+          label: "DR VCN (10.1.0.0/16)"
+          x: 15
+          y: 45
+          w: 510
+          h: 380
+
+          subnets:
+            - id: "subnet_dr_db"
+              label: "DB Subnet (Private) — 10.1.1.0/24"
+              h: 180
+              services:
+                - id: "exacs_dr"
+                  label: "ExaCS Standby\n(Data Guard)\nEBS + SAP"
+                  type: "exacs"
+                  w: 180
+                  h: 90
+                - id: "fsdr"
+                  label: "Full Stack DR\n(FSDR)\nOrchestrator"
+                  type: "fsdr"
+                  w: 140
+                  h: 90
+
+            - id: "subnet_dr_backup"
+              label: "Backup Subnet — 10.1.2.0/24"
+              h: 120
+              services:
+                - id: "obj_storage"
+                  label: "Object Storage\n50TB RMAN\nBackups (DW)"
+                  type: "object-storage"
+                  w: 160
+                  h: 70
+
+# Connections
 connections:
-  - from: "Mexico City DC"
-    to: "DRG (Queretaro)"
-    type: "FastConnect 10Gbps Dual"
-  - from: "ExaCS X11M"
-    to: "ExaCS Standby"
-    type: "Data Guard (async redo)"
-  - from: "DRG"
-    to: "Sao Paulo VCN"
-    type: "Remote peering"
+  - id: "conn_fc1"
+    label: "FastConnect\n10Gbps (Primary)"
+    type: "network"
+    from: "mexico_dc"
+    to: "drg"
+
+  - id: "conn_fc2"
+    label: "FastConnect\n10Gbps (Redundant)"
+    type: "network"
+    from: "mexico_dc"
+    to: "drg"
+
+  - id: "conn_drg_dr"
+    label: "Remote Peering"
+    type: "network"
+    from: "drg"
+    to: "exacs_dr"
+
+  - id: "conn_dg"
+    label: "Data Guard\n(Redo Shipping)"
+    type: "data"
+    from: "exacs_prod"
+    to: "exacs_dr"
+
+  - id: "conn_vault"
+    label: "TDE Keys"
+    type: "internal"
+    from: "vault"
+    to: "exacs_prod"
+
+  - id: "conn_waf_lb"
+    label: "HTTPS"
+    type: "data"
+    from: "waf"
+    to: "lb"
+
+  - id: "conn_lb_ebs"
+    label: "HTTP"
+    type: "data"
+    from: "lb"
+    to: "ebs_app"
+
+  - id: "conn_ebs_db"
+    label: "Oracle Net"
+    type: "data"
+    from: "ebs_app"
+    to: "exacs_prod"
+
+  - id: "conn_fsdr_dg"
+    label: "Failover\nOrchestration"
+    type: "internal"
+    from: "fsdr"
+    to: "exacs_dr"
+
+  - id: "conn_backup"
+    label: "RMAN Backup\n(DW)"
+    type: "data"
+    from: "exacs_prod"
+    to: "obj_storage"
