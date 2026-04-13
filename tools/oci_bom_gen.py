@@ -683,13 +683,17 @@ class OCIBomGenerator:
 
         gen.load_catalog(catalog_path)
 
+        # Global discount from metadata — used as fallback for line items without explicit discount
+        bom_meta = bom.get("metadata", {})
+        global_discount = bom_meta.get("discount_pct", bom.get("discount_pct", 0.0))
+
         for item in bom.get("line_items", []):
             gen.add_line_item(
                 sku=str(item["sku"]),
                 qty=item.get("qty", 0),
                 hours_units=item.get("hours_units"),
                 months=item.get("months", 12),
-                discount=item.get("discount", 0.0),
+                discount=item.get("discount", global_discount),
                 custom_label=item.get("custom_label", ""),
                 custom_note=item.get("custom_note", ""),
             )
