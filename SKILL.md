@@ -252,6 +252,32 @@ Full tier definitions and artifact matrix: [docs/engagement-tiers.md](docs/engag
 
 **Step 1 — Ideate:** Parse discovery notes into a **Workload Profile** (`templates/workload-profile.yaml`). Formulate a value hypothesis: "If we [technical action], the customer achieves [business outcome]." Use `kb/patterns/business-patterns.yaml` for proven business-level patterns.
 
+**Step 1b — Extraction Receipt (MANDATORY).** After parsing discovery notes, present an extraction receipt to the user BEFORE proceeding. This ensures the architecture is built on confirmed facts, not assumptions:
+  ```
+  📋 Extraction Receipt
+  ━━━━━━━━━━━━━━━━━━━━
+
+  From your input I extracted:
+
+  CONFIRMED (explicitly stated):
+  • [field]: [value] — source: "[exact quote or reference from notes]"
+  • [field]: [value] — source: "[exact quote or reference from notes]"
+
+  INFERRED (not stated, derived from context):
+  • [field]: [value] — reason: "[why I inferred this]"
+
+  MISSING (needed but not provided):
+  • [field] — needed for: [which artifact or decision needs it]
+
+  ━━━━━━━━━━━━━━━━━━━━
+  Confirm, correct, or fill gaps before I proceed.
+  ```
+  Rules:
+  - Every field in the workload profile that you populate must appear in either CONFIRMED or INFERRED.
+  - Do NOT proceed to Step 2 until the user confirms the receipt.
+  - If the user provides additional data, update the receipt and re-confirm.
+  - When generating the workload-profile.yaml, tag each field with `source: customer` (confirmed), `source: inferred`, or `source: default` so the SA knows what to validate with the customer.
+
 **Step 2 — Validate:** Test the hypothesis for SMART criteria (Specific, Measurable, Attainable, Relevant, Time-based). Identify gaps. Check technical feasibility against `kb/services/` and `kb/compatibility/`.
 
 **Step 3 — Service Tiering:** After parsing databases, assign each workload a tier (Platinum/Gold/Silver/Bronze) based on SLA requirements, compliance needs, and business criticality. Use the auto-assignment rules in `kb/patterns/service-tiering.yaml`. Present the assignment and ask the architect to confirm or adjust.
@@ -285,7 +311,7 @@ Capture enough about current state to architect the future. Frame the problem �
 
 1. **Select services** from `kb/services/` across the full OCI catalog
 2. **Dimension each service** using `kb/sizing/` rules. For Oracle DBs, use AWR metrics if available. Apply conversion ratios. For ADB-S, size base OCPUs for P75.
-3. **Compose topology** from `kb/patterns/` blocks. Check conflicts, add implied dependencies, apply compliance overlays. Use `kb/patterns/application-patterns.yaml` for workload-type guidance.
+3. **Compose topology** from `kb/patterns/` blocks. Check conflicts and apply compliance overlays. Use `kb/patterns/application-patterns.yaml` for workload-type guidance. **Do NOT silently add components** — only add technical dependencies from the closed whitelist in the Guardrails section below. Everything else must be proposed as optional in the pre-generation review.
 4. **Architecture Principles** — Select applicable principles from `kb/patterns/architecture-principles.yaml` based on the workload profile. Check `applies_when` conditions. Include in the deck as a governance slide.
 5. **Environment Catalogue** — Expand each workload into environments (Prod/Pre-Prod/Dev-Test/DR) using the tier templates in `kb/patterns/environment-catalogue.yaml`. Apply cost optimization rules. Include in the deck and in the cost estimate.
 6. **Design deployment** — environment strategy, IaC approach, CI/CD pipeline
@@ -307,6 +333,28 @@ Capture enough about current state to architect the future. Frame the problem �
 - Note deviations from the reference architecture in the Risk Register
 
 #### Confirm (Solution Proposal)
+
+**Completeness gate (MANDATORY before generating artifacts).** Before calling any generation tool (deck, diagram, BOM, PDF), verify that critical fields are populated based on engagement tier:
+
+| Field | Small | Standard | Complex |
+|---|---|---|---|
+| customer_name | required | required | required |
+| workload_type | required | required | required |
+| databases (type + count) | required | required | required |
+| primary_region | required | required | required |
+| compliance_frameworks | — | required | required |
+| RTO / RPO | — | required | required |
+| team_size | — | required | required |
+| current_infrastructure | — | required | required |
+| migration_driver | — | required | required |
+| environment_strategy | — | — | required |
+| operational_model | — | — | required |
+| multi_region_topology | — | — | required |
+| data_residency | — | — | required |
+
+- If **required** fields are missing: ask the user before generating.
+- If **optional** fields are missing: list them as assumptions in the output (e.g., "Assumed: PAYG pricing, single environment, no compliance requirements").
+- Fields tagged `source: inferred` in the workload profile count as populated but should be flagged as assumptions.
 
 Assemble all design work into a proposal. Ensure all propositions are **SMART**. Quality matters — it must look professional.
 
@@ -416,23 +464,49 @@ KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, fr
 
 ## Guardrails
 
-- **Only what the user asked for.** Never add services, components, or features the user did not request — this includes observability (Monitoring, Logging, Events), security services (Data Safe, Vault, Cloud Guard, WAF), sizing details, connection types (RPC, peering), and any "nice to have" additions. Adding unrequested components wastes the architect's time and erodes trust.
+- **Only what the user asked for.** Never add services, components, or features the user did not request — this includes observability (Monitoring, Logging, Events), security services (Data Safe, Vault, Cloud Guard, WAF), sizing details, connection types (RPC, peering), and any "nice to have" additions. Adding unrequested components wastes the architect's time and erodes trust. The ONLY exception is the closed whitelist of technical dependencies below.
+
+- **Technical dependency whitelist (closed — nothing else is auto-added):**
+
+  | If the user requests… | Auto-include | Reason |
+  |---|---|---|
+  | FastConnect | DRG | FastConnect terminates on DRG — cannot work without it |
+  | VPN Connect | DRG | IPSec tunnels terminate on DRG |
+  | ADB-S / ExaCS with backup to Object Storage | Service Gateway | Backup traffic requires SGW for Oracle Services Network |
+  | Any service in a public subnet | Internet Gateway | Public subnet routing requires IGW |
+  | Any private subnet service needing internet egress | NAT Gateway | Private-to-internet routing requires NAT |
+  | Cross-region DR (Data Guard, FSDR) | Remote Peering Connection (RPC) | Cross-region VCN connectivity requires RPC on both DRGs |
+
+  Everything NOT in this table — including Monitoring, Logging, Events, Vault, Data Safe, WAF, Cloud Guard, Bastion, management subnets, compartment boundaries — requires explicit user approval via the pre-generation review.
+
 - **Ask, don't guess.** When requirements are ambiguous or incomplete, ask a clarifying question instead of filling in assumptions. A 10-second question saves a 10-minute redo.
-- **Pre-generation review.** Before generating any diagram or architecture artifact, confirm the component list with the user. Present what you understood and suggest optional additions they can approve or reject:
-  ```
-  I'll generate a diagram with:
-  ✅ [list of explicitly requested components]
 
-  Want me to also include any of these?
-  • Observability subnet
-  • Compartment boundaries
-  • Security services (Data Safe, Vault)
-  • Gateways (IGW, NAT, SGW)
-  • [other relevant options based on context]
-
-  Or just generate with the above?
+- **MANDATORY pre-generation review.** Before generating ANY diagram, deck, or architecture artifact, you MUST confirm the component list with the user. Never skip this step. Present three clearly separated sections:
   ```
-  This takes 5 seconds to confirm and prevents rework.
+  I'll generate with:
+
+  REQUESTED (from your input):
+  ✅ [only components explicitly mentioned by the user]
+
+  TECHNICAL DEPENDENCIES (auto-added per whitelist):
+  ⚙️ [only items from the whitelist table above, with reason]
+
+  OPTIONAL — want me to add any of these?
+  ○ Observability (Monitoring, Logging, Events)
+  ○ Security services (Vault, Data Safe, WAF, Cloud Guard)
+  ○ Management subnet
+  ○ Compartment boundaries
+  ○ Bastion / jump host
+  ○ [other relevant options based on context]
+
+  Generate with the above, or adjust?
+  ```
+  Wait for the user's response before generating. If the user says "just generate" or equivalent, proceed with only REQUESTED + TECHNICAL DEPENDENCIES (no optionals).
+
+- **Source attribution.** When the user provides documents, URLs, meeting notes, or external data:
+  - Cite the source when extracting data: "From [document/source]: [extracted fact]"
+  - Clearly separate facts from the source vs. your own inferences
+  - If the source contradicts the internal KB, flag the conflict explicitly and let the architect decide
 
 ## What You Do NOT Do
 
