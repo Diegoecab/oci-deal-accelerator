@@ -43,7 +43,7 @@ If the command fails (not a git repo, no network, MCP deployment), silently skip
 
 #### Check 3: KB freshness
 
-Run `python3 tools/kb_freshness.py --check --json 2>/dev/null` and parse the JSON output. Behavior:
+Run `make kb-check 2>/dev/null` and parse the JSON output. Behavior:
 
 - **`stale_count == 0`** → no banner.
 - **`stale_count > 0` and at least one file has `refreshable: true`** → prepend banner and ask inline:
@@ -53,8 +53,8 @@ Run `python3 tools/kb_freshness.py --check --json 2>/dev/null` and parse the JSO
       <M> can be auto-refreshed. Refresh now? [y/N]
   ```
 
-  - `y` / `yes` / `sí` → run `python3 tools/kb_freshness.py --auto-refresh`, then show menu.
-  - Anything else → show menu with one-line reminder: `⚠️ <N> KB file(s) stale — run python3 tools/kb_freshness.py --auto-refresh later.`
+  - `y` / `yes` / `sí` → run `make freshness-refresh`, then show menu.
+  - Anything else → show menu with one-line reminder: `⚠️ <N> KB file(s) stale — run make freshness-refresh later.`
 
 - **`stale_count > 0` but no `refreshable: true`** → non-blocking info banner, then show menu directly:
 
@@ -62,7 +62,7 @@ Run `python3 tools/kb_freshness.py --check --json 2>/dev/null` and parse the JSO
   ⚠️  KB freshness: <N> file(s) need manual review (oldest: <file> — <age_days>d).
   ```
 
-If `kb_freshness.py` errors out (exit ≠ 0, missing python, missing tool), **silently skip** — no error output, no banner, no mention of failure.
+If `make kb-check` errors out (exit ≠ 0, missing make, missing Python, missing tool), **silently skip** — no error output, no banner, no mention of failure.
 
 ### Welcome Message
 

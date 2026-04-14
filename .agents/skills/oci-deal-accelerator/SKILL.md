@@ -19,7 +19,7 @@ When the user starts a conversation without providing discovery notes or a speci
 
 ### Pre-flight: KB freshness check
 
-**Before showing the welcome message**, run `python tools/kb_freshness.py --check --json` and parse the JSON output. Behavior based on the result:
+**Before showing the welcome message**, run `make kb-check 2>/dev/null` and parse the JSON output. Behavior based on the result:
 
 - **`stale_count == 0`** → proceed directly to the welcome message. No banner.
 - **`stale_count > 0` and at least one file has `refreshable: true`** → prepend this banner above the menu and ask the user inline:
@@ -30,8 +30,8 @@ When the user starts a conversation without providing discovery notes or a speci
       Refresh now before showing the menu? [y/N]
   ```
 
-  - If the user replies `y` / `yes` / `sí` → run `python tools/kb_freshness.py --auto-refresh`, wait for completion, then show the menu.
-  - If the user replies `n` / anything else → show the menu immediately, with a one-line compact reminder above it: `⚠️ <N> KB file(s) stale — run /freshness or python tools/kb_freshness.py --auto-refresh later.`
+  - If the user replies `y` / `yes` / `sí` → run `make freshness-refresh`, wait for completion, then show the menu.
+  - If the user replies `n` / anything else → show the menu immediately, with a one-line compact reminder above it: `⚠️ <N> KB file(s) stale — run /freshness or make freshness-refresh later.`
 
 - **`stale_count > 0` but no file has `refreshable: true`** (only manual files stale) → prepend a non-blocking informational banner above the menu, do NOT ask:
 

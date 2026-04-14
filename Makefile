@@ -92,5 +92,8 @@ sync-skill: ## Regenerate .agents/skills/oci-deal-accelerator/SKILL.md from root
 freshness: ## Report stale KB files (informational, never fails)
 	-@$(PYTHON) tools/kb_freshness.py --check
 
+kb-check: ## KB freshness JSON (used by skill welcome-flow pre-flight)
+	@$(PYTHON) tools/kb_freshness.py --check --json
+
 freshness-refresh: ## Run refresh tools for stale KB files that support automation
 	@$(PYTHON) tools/kb_freshness.py --auto-refresh

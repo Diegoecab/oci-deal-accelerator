@@ -198,7 +198,7 @@ When the user starts a conversation without providing discovery notes or a speci
 
 **MANDATORY:** Use the `Read` tool to open `SKILL.md` and read the entire `## Welcome Flow` section **before** showing anything to the user. Reproduce the welcome banner and the 14-option capability menu **verbatim** from that file. Do NOT paraphrase, reorder, summarize, translate, or reconstruct the menu from memory, folder structure, or prior conversations. If `SKILL.md` cannot be read for any reason, tell the user instead of improvising a menu.
 
-**Pre-flight check (also defined in SKILL.md):** Before showing the welcome message, run `python tools/kb_freshness.py --check --json`. If `stale_count > 0`, follow the banner-and-prompt logic in SKILL.md § Welcome Flow → Pre-flight. If the tool errors, silently skip the banner — never block the user.
+**Pre-flight check (also defined in SKILL.md):** Before showing the welcome message, run `make kb-check 2>/dev/null`. If `stale_count > 0`, follow the banner-and-prompt logic in SKILL.md § Welcome Flow → Pre-flight. If the tool errors, silently skip the banner — never block the user.
 
 Then:
 
