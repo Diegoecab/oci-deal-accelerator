@@ -909,6 +909,7 @@ class OCIDiagramGenerator:
         # - NO elbow=vertical (it conflicts with orthogonal + port constraints)
         extra_style = (
             "edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;"
+            "jettySize=auto;"
             "jumpStyle=arc;jumpSize=8;"
             "endFill=0;startFill=0;"
             "labelBackgroundColor=#FFFFFF;labelBorderColor=none;"
@@ -1121,6 +1122,57 @@ class OCIDiagramGenerator:
             if pattern in xml:
                 xml = xml.replace(pattern, f'id="{edge_id}" style="{extra_style}')
 
+        # ── Edge label offset injection ──
+        # Push labels away from the edge midpoint to avoid overlapping with
+        # source/target icons.  Uses mxGeometry relative positioning:
+        #   x: position along edge (-1=source, 0=center, 1=target)
+        #   <mxPoint as="offset">: absolute pixel offset from that position
+        # Horizontal edges: push label 15px above the line (offset y=-15)
+        # Vertical edges: push label 15px to the right (offset x=15)
+        for edge_id, (src_id, tgt_id) in self._edge_objects.items():
+            src_pos = self._abs_positions.get(src_id)
+            tgt_pos = self._abs_positions.get(tgt_id)
+            if not src_pos or not tgt_pos:
+                continue
+            src_obj = self._objects.get(src_id)
+            tgt_obj = self._objects.get(tgt_id)
+            if not src_obj or not tgt_obj:
+                continue
+            sx = src_pos[0] + (getattr(src_obj, 'width', 100) or 100) / 2
+            sy = src_pos[1] + (getattr(src_obj, 'height', 60) or 60) / 2
+            tx = tgt_pos[0] + (getattr(tgt_obj, 'width', 100) or 100) / 2
+            ty = tgt_pos[1] + (getattr(tgt_obj, 'height', 60) or 60) / 2
+            dx = tx - sx
+            dy = ty - sy
+            is_horiz = abs(dx) > abs(dy) * 1.5
+            if is_horiz:
+                offset_x, offset_y = 0, -15
+            else:
+                offset_x, offset_y = 15, 0
+            # Find the edge's mxGeometry and inject label offset.
+            # drawpyo emits: <mxGeometry relative="1" as="geometry" />
+            # We replace with expanded form containing offset point.
+            new_geo = (
+                f'<mxGeometry x="-0.2" y="0" relative="1" as="geometry">'
+                f'<mxPoint x="{offset_x}" y="{offset_y}" as="offset" />'
+                f'</mxGeometry>'
+            )
+            # Match both self-closing variants that drawpyo may produce
+            for old_geo in [
+                '<mxGeometry relative="1" as="geometry" />',
+                '<mxGeometry relative="1" as="geometry"/>',
+            ]:
+                marker = f'id="{edge_id}"'
+                if marker in xml and old_geo in xml:
+                    # Only replace the mxGeometry that belongs to THIS edge
+                    # Find the edge cell, then replace its geometry
+                    idx = xml.find(marker)
+                    if idx >= 0:
+                        geo_idx = xml.find(old_geo, idx)
+                        if geo_idx >= 0 and geo_idx - idx < 2000:  # sanity: within same cell
+                            xml = xml[:geo_idx] + new_geo + xml[geo_idx + len(old_geo):]
+                            break
+
         # Inject raw icon stencil cells before </root>
         if self._raw_cells:
             inject = "\n".join(f"        {c}" for c in self._raw_cells)
@@ -1131,6 +1183,17 @@ class OCIDiagramGenerator:
             placeholder = f"__DRAWPYO_{cell_id}__"
             if placeholder in xml:
                 xml = xml.replace(placeholder, str(obj.id))
+
+        # Inject container=1;collapsible=0 into container styles via XML.
+        # drawpyo doesn't support 'container' as a settable property, so we
+        # append it to the style string in the final XML.
+        for container_marker in ["arcSize=1;", "arcSize=5;", "arcSize=3;",
+                                 "perimeterSpacing=0;", "spacingTop=4;"]:
+            # Only add to styles that already contain these OCI container markers
+            # and don't already have container=1
+            old = f'{container_marker}"'
+            new = f'{container_marker}container=1;collapsible=0;"'
+            xml = xml.replace(old, new)
 
         # Sanitize: no pure white in OCI palette
         xml = xml.replace('fill="#ffffff"', 'fill="#FCFBFA"')
@@ -1221,33 +1284,130 @@ class OCIDiagramGenerator:
                                     cloud_id, cx, cy, svc_w, svc_h)
                 cy += svc_h + 20
 
-        # Tenancy
+        # Tenancy — auto-size from regions if w/h not specified in spec
         tenancy_spec = spec.get("tenancy", {})
         tenancy_x = tenancy_spec.get("x", 30)
         tenancy_y = tenancy_spec.get("y", 80)
-        tenancy_w = tenancy_spec.get("w", 1850)
-        tenancy_h = tenancy_spec.get("h", 720)
+
+        # Pre-calculate tenancy size from region content if not explicit
+        if "w" not in tenancy_spec or "h" not in tenancy_spec:
+            regions = tenancy_spec.get("regions", [])
+            max_region_right = 0
+            max_region_bottom = 0
+            region_x_cursor = 15
+            for r in regions:
+                # Estimate region dimensions (will be refined when regions are created)
+                r_vcns = r.get("vcns", [])
+                r_has_drg = any(
+                    gw.get("type") in ("drg", "dynamic_routing_gateway")
+                    for v in r_vcns for gw in v.get("gateways", [])
+                )
+                drg_w = 120 if r_has_drg else 0
+                # Quick subnet height calc
+                total_sub_h = 0
+                max_sub_w = 300
+                for v in r_vcns:
+                    for s in v.get("subnets", []):
+                        total_sub_h += s.get("h", 120) + 14
+                        svcs = s.get("services", [])
+                        row_w = sum(sv.get("w", 150) for sv in svcs) + 16 * max(0, len(svcs) - 1) + 30
+                        max_sub_w = max(max_sub_w, row_w)
+                    # VCN-internal gateways
+                    vcn_gws = [gw for gw in v.get("gateways", [])
+                               if gw.get("type") not in ("drg", "dynamic_routing_gateway")]
+                    if vcn_gws:
+                        max_sub_w += max(gw.get("w", 110) for gw in vcn_gws) + 20
+
+                est_rw = max_sub_w + drg_w + 80
+                est_rh = total_sub_h + 80
+
+                rx_val = r.get("x", region_x_cursor)
+                ry_val = r.get("y", 40)
+                max_region_right = max(max_region_right, rx_val + est_rw)
+                max_region_bottom = max(max_region_bottom, ry_val + est_rh)
+                region_x_cursor = max_region_right + 20
+
+            tenancy_w = tenancy_spec.get("w", max(max_region_right + 30, 600))
+            tenancy_h = tenancy_spec.get("h", max(max_region_bottom + 30, 400))
+        else:
+            tenancy_w = tenancy_spec["w"]
+            tenancy_h = tenancy_spec["h"]
+
         gen.add_tenancy(
             "tenancy",
             tenancy_spec.get("label", "Oracle Cloud Infrastructure"),
             x=tenancy_x, y=tenancy_y, w=tenancy_w, h=tenancy_h,
         )
 
-        # Regions
+        # Regions — auto-size containers from content when spec doesn't override
+        region_x_cursor = 15  # tracks right edge for auto-positioning next region
         for region in tenancy_spec.get("regions", []):
             is_primary = region.get("primary", False)
-            rx = region.get("x", 15 if is_primary else 1195)
-            # ry default 40: ~18px below tenancy label (12pt bold) + comfortable padding
+            rx = region.get("x", region_x_cursor)
             ry = region.get("y", 40)
-            rw = region.get("w", 1140 if is_primary else 640)
-            rh = region.get("h", 670 if is_primary else 480)
+
+            # ── Pre-calculate content size for auto-sizing ──
+            # Walk all VCNs → subnets → services to compute minimum dimensions
+            region_vcns = region.get("vcns", [])
+            auto_rw, auto_rh = 640 if not is_primary else 1140, 480 if not is_primary else 670
+
+            if region_vcns:
+                # Calculate total height needed from subnets + gateways
+                for vcn in region_vcns:
+                    gateways = vcn.get("gateways", [])
+                    # Separate DRG from VCN-internal gateways (IGW, NAT, SGW)
+                    drg_gateways = [gw for gw in gateways if gw.get("type") in ("drg", "dynamic_routing_gateway")]
+                    vcn_gateways = [gw for gw in gateways if gw.get("type") not in ("drg", "dynamic_routing_gateway")]
+
+                    gw_lane_w = 0
+                    if vcn_gateways:
+                        gw_lane_w = max(gw.get("w", 110) for gw in vcn_gateways) + 20
+
+                    subnets = vcn.get("subnets", [])
+                    total_subnet_h = sum(s.get("h", 120) for s in subnets) + 14 * max(0, len(subnets) - 1)
+
+                    # Max service width across all subnets
+                    max_svc_row_w = 0
+                    for subnet in subnets:
+                        svcs = subnet.get("services", [])
+                        row_w = sum(svc.get("w", 150) for svc in svcs) + 16 * max(0, len(svcs) - 1) + 30
+                        max_svc_row_w = max(max_svc_row_w, row_w)
+
+                    # VCN needs: gw_lane + max(subnet_content_w, specified_w) + margins
+                    content_w = gw_lane_w + max(max_svc_row_w, 300) + 40
+                    content_h = total_subnet_h + 60  # 32 top + 28 bottom padding
+
+                    # Also account for gateway column height
+                    if vcn_gateways:
+                        total_gw_h = sum(gw.get("h", 70) for gw in vcn_gateways) + 8 * max(0, len(vcn_gateways) - 1) + 64
+                        content_h = max(content_h, total_gw_h)
+
+                    # Store calculated VCN dimensions for use below
+                    vcn["_auto_w"] = content_w
+                    vcn["_auto_h"] = content_h
+                    vcn["_drg_gateways"] = drg_gateways
+                    vcn["_vcn_gateways"] = vcn_gateways
+
+                # Region size = VCN size + margins + DRG lane
+                total_vcn_w = max(v.get("_auto_w", 600) for v in region_vcns)
+                total_vcn_h = max(v.get("_auto_h", 400) for v in region_vcns)
+                # DRG lane on left edge of region (outside VCN)
+                has_drg = any(v.get("_drg_gateways") for v in region_vcns)
+                drg_lane_w = 120 if has_drg else 0
+                auto_rw = total_vcn_w + drg_lane_w + 50  # margins
+                auto_rh = total_vcn_h + 70  # 45 top (label) + 25 bottom
+
+            # Use spec dimensions if explicitly provided, otherwise auto-calculated
+            rw = region.get("w", auto_rw)
+            rh = region.get("h", auto_rh)
 
             gen.add_region(
                 region["id"],
                 region["label"],
                 "tenancy", rx, ry, rw, rh,
             )
-
+            # Advance cursor for next region positioning
+            region_x_cursor = rx + rw + 20
 
             # Availability Domains (optional)
             for ad in region.get("availability_domains", []):
@@ -1257,39 +1417,49 @@ class OCIDiagramGenerator:
                     w=ad.get("w", rw - 30), h=ad.get("h", rh - 70),
                 )
 
-            # VCNs
-            for vcn in region.get("vcns", []):
+            # ── DRG placement: OUTSIDE VCN, INSIDE region ──
+            # Oracle ref arch pattern: DRG sits in the region between external
+            # actors and VCNs, not inside any VCN.
+            has_drg = any(v.get("_drg_gateways") for v in region_vcns)
+            drg_lane_w = 120 if has_drg else 0
+            for vcn in region_vcns:
+                for drg in vcn.get("_drg_gateways", []):
+                    drg_id = drg.get("id", gen._next_id())
+                    drg_w = drg.get("w", 90)
+                    drg_h = drg.get("h", 60)
+                    # Position: left edge of region, vertically centered
+                    drg_x = 15
+                    drg_y = max(45, (rh - drg_h) // 2)
+                    label = drg["label"].replace("\\n", "\n")
+                    gen.add_service(
+                        drg_id, label, drg["type"],
+                        region["id"], drg_x, drg_y, drg_w, drg_h,
+                    )
+
+            # VCNs — offset right if DRG lane present
+            vcn_offset_x = drg_lane_w + 15
+            for vcn in region_vcns:
                 vcn_parent = vcn.get("parent", region["id"])
-                vcn_w = vcn.get("w", rw - 30)
-                vcn_h = vcn.get("h", rh - 70)
+                vcn_w = vcn.get("w", vcn.get("_auto_w", rw - vcn_offset_x - 15))
+                vcn_h = vcn.get("h", vcn.get("_auto_h", rh - 70))
                 gen.add_vcn(
                     vcn["id"],
                     f"VCN {vcn['label']}",
                     vcn_parent,
-                    # y default 45: leaves proper gap below the region label (12pt ≈22px + padding)
-                    x=vcn.get("x", 15), y=vcn.get("y", 45),
+                    x=vcn.get("x", vcn_offset_x), y=vcn.get("y", 45),
                     w=vcn_w, h=vcn_h,
                 )
 
-                # ── GATEWAY-AWARE AUTO-LAYOUT ──
-                # Step 1: Place gateways on the LEFT EDGE of the VCN.
-                # Step 2: Offset subnets RIGHT to avoid overlap with gateways.
-                # Step 3: Stack subnets vertically (top-to-bottom).
-                # This matches Oracle ref arch style: gateways on VCN boundary,
-                # subnets fill the remaining width.
+                # ── VCN-internal gateways (IGW, NAT, SGW — NOT DRG) ──
+                vcn_gateways = vcn.get("_vcn_gateways", [])
+                gw_lane_w = 0
 
-                gateways = vcn.get("gateways", [])
-                gw_lane_w = 0  # width reserved for gateway column
-
-                if gateways:
-                    # Calculate gateway lane width (max gateway width + padding)
-                    gw_lane_w = max(gw.get("w", 110) for gw in gateways) + 20
-
-                    # Place gateways vertically centered in VCN
-                    total_gw_h = sum(gw.get("h", 70) for gw in gateways) + 8 * max(0, len(gateways) - 1)
+                if vcn_gateways:
+                    gw_lane_w = max(gw.get("w", 110) for gw in vcn_gateways) + 20
+                    total_gw_h = sum(gw.get("h", 70) for gw in vcn_gateways) + 8 * max(0, len(vcn_gateways) - 1)
                     gw_start_y = max(32, (vcn_h - total_gw_h) // 2)
                     gy = gw_start_y
-                    for gw in gateways:
+                    for gw in vcn_gateways:
                         gw_id = gw.get("id", gen._next_id())
                         gw_w = gw.get("w", 110)
                         gw_h = gw.get("h", 70)
@@ -1302,9 +1472,9 @@ class OCIDiagramGenerator:
                         )
                         gy = gw_y + gw_h + 8
 
-                # Subnet horizontal offset: push right if gateways present
+                # Subnet horizontal offset: push right if VCN gateways present
                 subnet_x = 8 + gw_lane_w
-                subnet_avail_w = vcn_w - subnet_x - 8  # remaining width for subnets
+                subnet_avail_w = vcn_w - subnet_x - 8
 
                 # Stack subnets vertically (top-to-bottom)
                 subnet_y = 32
@@ -1441,8 +1611,28 @@ class OCIDiagramGenerator:
                 )
                 opx += svc_w + 12
 
-        # Connections
-        for conn in spec.get("connections", []):
+        # Connections — merge duplicate from/to pairs (e.g., dual FastConnect)
+        # into a single edge with combined label
+        connections = spec.get("connections", [])
+        seen_pairs = {}  # (from, to) -> index in deduped list
+        deduped = []
+        for conn in connections:
+            pair = (conn["from"], conn["to"])
+            if pair in seen_pairs:
+                # Merge: combine labels
+                existing = deduped[seen_pairs[pair]]
+                old_label = existing.get("label", "")
+                new_label = conn.get("label", "")
+                if old_label and new_label and old_label != new_label:
+                    existing["label"] = f"{old_label}\n+ {new_label}"
+                elif new_label and not old_label:
+                    existing["label"] = new_label
+                # Upgrade: if either is "Dual", keep it in label
+            else:
+                seen_pairs[pair] = len(deduped)
+                deduped.append(dict(conn))
+
+        for conn in deduped:
             conn_id = conn.get("id", gen._next_id())
             gen.add_connection(
                 conn_id, conn.get("label"), conn["type"],

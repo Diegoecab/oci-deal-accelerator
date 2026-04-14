@@ -1,13 +1,15 @@
 # OCI Deal Accelerator — Architecture Diagram Spec
 # Demo: PharmaCorp Mexico — ExaCS dual-region with Data Guard
-# Layout: Left-to-right flow, ref arch style
-# Mexico DC → FastConnect → Queretaro (DB subnet) → DR Sao Paulo
+# Prompt: "ExaCS en Queretaro (prod) + Standby con Data Guard en Sao Paulo,
+#          Hub-Spoke networking con DRG, FastConnect 10Gbps dual desde Mexico City,
+#          bastion en public subnet, WAF para apps web, Vault para TDE keys."
 #
-# This example only includes components the user explicitly requested:
-#   ExaCS (prod + DR), Hub-Spoke networking with DRG, FastConnect 10Gbps,
-#   Bastion in public subnet.
-# DRG and Service Gateway are auto-added per technical dependency whitelist.
-# Monitoring, Logging, Events, WAF, Vault, EBS — NOT included (not requested).
+# REQUESTED by user: ExaCS (prod+DR), DRG, FastConnect dual, Bastion, WAF, Vault
+# TECHNICAL DEPENDENCIES (whitelist): SGW (ExaCS backup), IGW (public subnet)
+# NOT included: EBS, Monitoring, Logging, Events, FSDR, Object Storage (not requested)
+#
+# Container sizes: omitted to let auto-sizing calculate from content.
+# DRG: listed in gateways — generator places it OUTSIDE VCN, INSIDE region.
 
 title: "PharmaCorp Mexico — ExaCS Migration Architecture"
 
@@ -17,7 +19,7 @@ external:
     label: "Mexico City\nData Center"
     icon: "user"
     x: 30
-    y: 320
+    y: 250
     w: 60
     h: 70
 
@@ -26,144 +28,108 @@ tenancy:
   label: "Oracle Cloud Infrastructure"
   x: 200
   y: 60
-  w: 1650
-  h: 780
 
   regions:
     # ── Primary Region: Queretaro ──
     - id: "region_qro"
       label: "Region — Queretaro (Primary)"
       primary: true
-      x: 15
-      y: 40
-      w: 1050
-      h: 720
 
       vcns:
         - id: "vcn_hub"
           label: "Hub VCN (10.0.0.0/16)"
-          x: 15
-          y: 45
-          w: 1020
-          h: 650
 
           subnets:
-            # Public subnet — bastion access
+            # Public subnet — WAF + Bastion (both requested)
             - id: "subnet_pub"
               label: "Public Subnet — 10.0.0.0/24"
               h: 120
               services:
+                - id: "waf"
+                  label: "WAF\n(Web Apps)"
+                  type: "waf"
+                  w: 120
+                  h: 70
                 - id: "bastion"
                   label: "Bastion\nService"
                   type: "bastion"
                   w: 120
                   h: 70
 
-            # DB subnet — main workload
+            # DB subnet — ExaCS + Vault (both requested)
             - id: "subnet_db"
               label: "Database Subnet (Private) — 10.0.1.0/24"
-              h: 150
+              h: 130
               services:
                 - id: "exacs_prod"
                   label: "ExaCS X11M\nQuarter Rack\n(Production)"
                   type: "exacs"
                   w: 200
-                  h: 90
+                  h: 80
+                - id: "vault"
+                  label: "OCI Vault\nTDE Keys"
+                  type: "vault"
+                  w: 140
+                  h: 80
 
           gateways:
-            # Auto-added per whitelist: FastConnect requires DRG
+            # DRG — generator places this OUTSIDE VCN, INSIDE region
             - id: "drg"
               label: "DRG"
               type: "drg"
               w: 90
               h: 60
-            # Auto-added per whitelist: ExaCS backup requires SGW
+            # IGW — whitelist: public subnet requires it
+            - id: "igw"
+              label: "Internet\nGateway"
+              type: "igw"
+              w: 100
+              h: 60
+            # SGW — whitelist: ExaCS backup requires it
             - id: "sgw"
               label: "Service\nGateway"
               type: "service_gateway"
               w: 100
               h: 60
 
-    # ── DR Region: Sao Paulo (right side) ──
+    # ── DR Region: Sao Paulo ──
     - id: "region_gru"
       label: "Region — São Paulo (DR)"
-      x: 1090
-      y: 40
-      w: 540
-      h: 540
 
       vcns:
         - id: "vcn_dr"
           label: "DR VCN (10.1.0.0/16)"
-          x: 15
-          y: 45
-          w: 510
-          h: 470
 
           subnets:
             - id: "subnet_dr_db"
               label: "DB Subnet (Private) — 10.1.1.0/24"
-              h: 200
+              h: 130
               services:
                 - id: "exacs_dr"
                   label: "ExaCS Standby\n(Data Guard)"
                   type: "exacs"
                   w: 200
-                  h: 100
+                  h: 80
 
 # Connections
 connections:
-  # Entry: DC → DRG (FastConnect)
-  - id: "conn_fc"
+  # FastConnect dual from Mexico City → DRG (will be merged into single edge)
+  - id: "conn_fc1"
     label: "FastConnect 10Gbps\n(Dual Redundant)"
-    type: "network"
+    type: "fastconnect"
     from: "mexico_dc"
     to: "drg"
 
-  # DR: ExaCS Prod → ExaCS Standby (Data Guard)
+  # Vault → ExaCS (TDE keys)
+  - id: "conn_vault"
+    label: "TDE Keys"
+    type: "internal"
+    from: "vault"
+    to: "exacs_prod"
+
+  # Data Guard: Prod → DR
   - id: "conn_dg"
     label: "Data Guard\n(Redo Shipping)"
     type: "data"
     from: "exacs_prod"
     to: "exacs_dr"
-
-# ──────────────────────────────────────────────────────────────
-# OPTIONAL — add if the user approves during pre-generation review:
-#
-# Security:
-#   - id: "vault"
-#     label: "OCI Vault\nTDE Keys"
-#     type: "vault"
-#
-#   - id: "waf"
-#     label: "WAF"
-#     type: "waf"
-#
-# Observability:
-#   - id: "monitoring"
-#     label: "OCI Monitoring"
-#     type: "monitoring"
-#
-#   - id: "logging"
-#     label: "OCI Audit + Logging"
-#     type: "logging"
-#
-#   - id: "events"
-#     label: "OCI Events + Notifications"
-#     type: "events"
-#
-# Application tier (only if customer has app servers):
-#   - id: "ebs_app"
-#     label: "EBS R12 App Tier"
-#     type: "compute"
-#
-# DR orchestration:
-#   - id: "fsdr"
-#     label: "Full Stack DR (FSDR)"
-#     type: "fsdr"
-#
-# Backup:
-#   - id: "obj_storage"
-#     label: "Object Storage\nRMAN Backups"
-#     type: "object-storage"
-# ──────────────────────────────────────────────────────────────
