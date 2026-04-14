@@ -131,6 +131,34 @@ During **Phase 2 (DESIGN)**, the skill automatically matches the proposed archit
 python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
 python tools/refresh_arch_catalog.py --url <url>       # add a single entry
 python tools/refresh_arch_catalog.py --validate        # validate catalog integrity
+python tools/refresh_arch_catalog.py --check-links     # check for broken URLs (404s, redirects)
+```
+
+### KB Health & Freshness
+
+The KB is automatically monitored for staleness and broken links:
+
+| Check | How | When |
+|---|---|---|
+| **Broken links** | `python tools/refresh_arch_catalog.py --check-links` | Weekly (CI), or on demand |
+| **Stale prices** | `python tools/refresh_sku_catalog.py --validate` | Weekly (CI), or on demand |
+| **KB freshness** | `python tools/kb_freshness.py --check` | On skill startup (pre-flight) |
+| **Diagram quality** | `python scripts/validate-diagram.py <file.drawio>` | After every diagram generation |
+
+**Automated CI/CD:**
+- **Deploy workflow** (`.gitea/workflows/deploy.yaml`) — auto-deploys to MCP server on every push to `main`
+- **KB health workflow** (`.gitea/workflows/kb-health.yaml`) — runs every Monday 8am UTC, checks all catalog URLs and SKU freshness, reports broken links as artifacts
+
+To run KB health manually:
+```bash
+# Check all 123 Architecture Center URLs for 404s
+python tools/refresh_arch_catalog.py --check-links
+
+# Fix broken links: re-crawl What's New for updated URLs
+python tools/refresh_arch_catalog.py --whats-new
+
+# Refresh stale pricing from Oracle API
+python tools/refresh_sku_catalog.py --refresh --diff
 ```
 
 ### Feature Compatibility Matrix
@@ -296,12 +324,16 @@ python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case
 # Architecture diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
 
+# Validate diagram quality (icon sizes, overlaps, container overflow)
+python scripts/validate-diagram.py arch.drawio
+
 # Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
 
 # Architecture Center catalog
 python tools/refresh_arch_catalog.py --validate
 python tools/refresh_arch_catalog.py --whats-new
+python tools/refresh_arch_catalog.py --check-links
 
 # Feature compatibility
 python tools/feature_matrix_cli.py check "Auto Scaling" adb_s 23ai

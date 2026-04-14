@@ -273,13 +273,71 @@ def validate_catalog():
     return errors == 0
 
 
+def check_links():
+    """Check all catalog URLs for broken links (HTTP HEAD requests)."""
+    data = load_catalog()
+    entries = data.get("entries", [])
+    broken = []
+    redirected = []
+    ok_count = 0
+
+    print(f"Checking {len(entries)} URLs...")
+    for i, entry in enumerate(entries):
+        url = entry.get("url", "")
+        title = entry.get("title", "UNKNOWN")
+        if not url:
+            continue
+        try:
+            resp = requests.head(url, timeout=10, allow_redirects=True)
+            if resp.status_code == 404:
+                broken.append((title, url))
+                print(f"  ❌ 404: {title}")
+            elif resp.status_code in (301, 302) or resp.url != url:
+                redirected.append((title, url, resp.url))
+                print(f"  ↪️  Redirect: {title} → {resp.url}")
+                ok_count += 1
+            elif resp.status_code < 400:
+                ok_count += 1
+            else:
+                broken.append((title, url))
+                print(f"  ⚠️  {resp.status_code}: {title}")
+        except requests.RequestException as e:
+            broken.append((title, url))
+            print(f"  ⚠️  Error: {title} — {e}")
+        # Rate limit: 200ms between requests
+        time.sleep(0.2)
+
+    print(f"\n{'='*60}")
+    print(f"Results: {ok_count} OK, {len(broken)} broken, {len(redirected)} redirected")
+
+    if broken:
+        print(f"\n❌ Broken links ({len(broken)}):")
+        for title, url in broken:
+            print(f"  - {title}")
+            print(f"    {url}")
+
+    if redirected:
+        print(f"\n↪️  Redirected ({len(redirected)}):")
+        for title, old, new in redirected:
+            print(f"  - {title}")
+            print(f"    OLD: {old}")
+            print(f"    NEW: {new}")
+
+    return len(broken) == 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Refresh Architecture Center catalog")
     parser.add_argument("--url", help="Fetch a single URL and print YAML entry")
     parser.add_argument("--whats-new", action="store_true", help="Crawl What's New pages for new entries")
     parser.add_argument("--validate", action="store_true", help="Validate existing catalog")
+    parser.add_argument("--check-links", action="store_true", help="Check all URLs for 404s and redirects")
     parser.add_argument("--output", default=CATALOG_PATH, help="Output file path")
     args = parser.parse_args()
+
+    if args.check_links:
+        ok = check_links()
+        sys.exit(0 if ok else 1)
 
     if args.validate:
         ok = validate_catalog()

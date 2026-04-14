@@ -77,20 +77,14 @@ tenancy:
             - id: "drg"
               label: "DRG"
               type: "drg"
-              w: 90
-              h: 60
             # IGW — whitelist: public subnet requires it
             - id: "igw"
               label: "Internet\nGateway"
               type: "igw"
-              w: 100
-              h: 60
             # SGW — whitelist: ExaCS backup requires it
             - id: "sgw"
               label: "Service\nGateway"
               type: "service_gateway"
-              w: 100
-              h: 60
 
     # ── DR Region: Sao Paulo ──
     - id: "region_gru"

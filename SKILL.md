@@ -15,32 +15,54 @@ You follow the **Oracle ECAL framework** (Define → Design → Deliver) to prod
 
 When the user starts a conversation without providing discovery notes or a specific request, present the welcome message and capability menu.
 
-### Pre-flight: KB freshness check
+### Pre-flight checks
 
-**Before showing the welcome message**, run `python tools/kb_freshness.py --check --json` and parse the JSON output. Behavior based on the result:
+Run these checks silently **before** showing the welcome message. **CRITICAL:** Never show command execution, tool output, or errors to the user. If any check fails, silently skip it and proceed to the welcome message. These checks are informational — they NEVER block the user.
 
-- **`stale_count == 0`** → proceed directly to the welcome message. No banner.
-- **`stale_count > 0` and at least one file has `refreshable: true`** → prepend this banner above the menu and ask the user inline:
+#### Check 1: KB changelog banner
+
+Read the file `kb/CHANGELOG.md` and extract the **most recent date and first bullet point**. If the file exists and has entries, prepend a one-line banner above the welcome message:
+
+```
+📢 KB updated (<date>): <first bullet summary>
+```
+
+Example: `📢 KB updated (Apr 14): Diagram generator calibrated from 37 Oracle ref architectures`
+
+If the file is missing or empty, skip — no banner.
+
+#### Check 2: Local repo updates (git users only)
+
+Run `git fetch --dry-run origin main 2>/dev/null`. If the output contains any text (meaning there are remote commits not yet pulled), prepend this banner:
+
+```
+📢 KB updates available — run `git pull` to get latest prices and fixes.
+```
+
+If the command fails (not a git repo, no network, MCP deployment), silently skip. This check is only relevant for users running the skill from a local git clone.
+
+#### Check 3: KB freshness
+
+Run `python3 tools/kb_freshness.py --check --json 2>/dev/null` and parse the JSON output. Behavior:
+
+- **`stale_count == 0`** → no banner.
+- **`stale_count > 0` and at least one file has `refreshable: true`** → prepend banner and ask inline:
 
   ```
   ⚠️  KB freshness: <N> file(s) outdated (oldest: <file> — <age_days>d).
-      <M> can be auto-refreshed (SKU catalog, Architecture Center).
-      Refresh now before showing the menu? [y/N]
+      <M> can be auto-refreshed. Refresh now? [y/N]
   ```
 
-  - If the user replies `y` / `yes` / `sí` → run `python tools/kb_freshness.py --auto-refresh`, wait for completion, then show the menu.
-  - If the user replies `n` / anything else → show the menu immediately, with a one-line compact reminder above it: `⚠️ <N> KB file(s) stale — run /freshness or python tools/kb_freshness.py --auto-refresh later.`
+  - `y` / `yes` / `sí` → run `python3 tools/kb_freshness.py --auto-refresh`, then show menu.
+  - Anything else → show menu with one-line reminder: `⚠️ <N> KB file(s) stale — run python3 tools/kb_freshness.py --auto-refresh later.`
 
-- **`stale_count > 0` but no file has `refreshable: true`** (only manual files stale) → prepend a non-blocking informational banner above the menu, do NOT ask:
+- **`stale_count > 0` but no `refreshable: true`** → non-blocking info banner, then show menu directly:
 
   ```
   ⚠️  KB freshness: <N> file(s) need manual review (oldest: <file> — <age_days>d).
-      No automated refresh available — see kb/README.md for review process.
   ```
 
-  Then show the menu directly.
-
-**Important**: this check is informational, not gating. If `kb_freshness.py` errors out (exit 2 or missing tool), silently fall back to showing the welcome message — never block the user on tooling failures.
+If `kb_freshness.py` errors out (exit ≠ 0, missing python, missing tool), **silently skip** — no error output, no banner, no mention of failure.
 
 ### Welcome Message
 

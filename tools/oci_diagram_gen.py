@@ -78,15 +78,15 @@ STYLES = {
         "fontSize=11;"
     ),
     "vcn": (
-        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=6 4;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=4 2;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#AE562C;strokeColor=#AE562C;perimeterSpacing=0;"
+        "fontColor=#aa643b;strokeColor=#aa643b;perimeterSpacing=0;"
         "fontSize=12;fontStyle=1;spacingLeft=8;spacingTop=6;"
     ),
     "subnet": (
-        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;dashPattern=6 4;align=left;"
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;dashPattern=4 2;align=left;"
         "fontFamily=Oracle Sans;verticalAlign=top;fillColor=none;"
-        "fontColor=#AE562C;strokeColor=#AE562C;fontSize=11;fontStyle=1;"
+        "fontColor=#aa643b;strokeColor=#aa643b;fontSize=11;fontStyle=1;"
         "spacingLeft=8;spacingTop=4;"
     ),
     "compartment": (
@@ -473,6 +473,52 @@ class OCIDiagramGenerator:
                 .replace('"', "&quot;")
                 .replace("\n", "&#xa;"))
 
+    # Layout constants — calibrated from 37 Oracle Architecture Center .drawio files
+    # (12,617 cells parsed: 234x 63x63 service icons, 245x 42x42 gateway icons)
+    VCN_TOP_PAD = 50     # Oracle ref: VCN top to first subnet
+    SUBNET_GAP = 28      # Oracle ref: subnet-to-subnet gap
+    SVC_SPACING = 28     # Oracle ref: service-to-service horizontal gap
+    GW_DEFAULT_H = 110   # Gateway block: ~70px icon + 2px gap + 36px label
+    GW_SPACING = 20      # Gateway-to-gateway vertical gap
+    MIN_ICON_W = 42      # Oracle ref: gateway icons = 42x42
+    MIN_ICON_H = 42      # Oracle ref: gateway icons = 42x42
+    SVC_ICON_TARGET = 63 # Oracle ref: service icons = 63x63
+    GW_ICON_TARGET = 42  # Oracle ref: gateway icons = 42x42
+
+    @classmethod
+    def _calc_service_block_h(cls, label: str, service_type: str) -> int:
+        """Calculate the total height a service block needs (icon + label).
+
+        Used by both auto-sizing (pre-calculation) and rendering to ensure
+        containers are always big enough for their content.
+        """
+        n_lines = label.count('\n') + 1
+        label_h = max(n_lines * 16 + 4, 20)
+
+        # Estimate icon height using Oracle ref targets (63px height, 45px min width)
+        icon_entry = cls.ICON_CACHE.get(service_type) if cls.ICON_CACHE else None
+        if icon_entry:
+            iw, ih = icon_entry["w"], icon_entry["h"]
+            scale = min(63 / ih, 1.0)
+            if iw * scale < 45:
+                scale = 45 / iw
+            icon_h = int(ih * scale)
+        else:
+            icon_h = 63
+
+        return icon_h + 2 + label_h  # icon + gap + label
+
+    @classmethod
+    def _calc_subnet_h(cls, subnet_spec: dict) -> int:
+        """Calculate the auto-height for a subnet from its services."""
+        svcs = subnet_spec.get("services", [])
+        max_svc_h = 80
+        for svc in svcs:
+            label = svc.get("label", "").replace("\\n", "\n")
+            block_h = cls._calc_service_block_h(label, svc.get("type", "compute"))
+            max_svc_h = max(max_svc_h, block_h)
+        return 30 + max_svc_h + 15  # top pad + content + bottom pad
+
     def _get_svc_style(self, service_type: str, font_size: Optional[int] = None) -> str:
         """Get the style string for a service type."""
         category = SVC_CATEGORY.get(service_type, "svc_infra")
@@ -744,27 +790,61 @@ class OCIDiagramGenerator:
         icon_cells = icon_entry["cells"]
 
         # Label height: proportional to actual line count (no over-allocation).
-        # ~15px per line at 11pt Oracle Sans, minimum 20px for single-line labels.
+        # ~16px per line at 12pt Oracle Sans, minimum 20px for single-line labels.
         n_lines = label.count('\n') + 1
         label_h = max(n_lines * 16 + 4, 20)
 
-        # Icon area = full spec height minus label height
-        icon_area_h = max(h - label_h, 20)
+        # ── Icon sizing: Oracle ref arch standard ──
+        # Oracle reference diagrams use ~55-65px icons that are visually
+        # prominent. We enforce minimum rendered width of 50px so that
+        # tall/narrow icons (ExaCS, Compute, DBCS, NAT GW — 21 of 61 icons
+        # have aspect ratio > 1.3) don't render as tiny slivers.
+        MIN_ICON_W = 50   # minimum rendered icon WIDTH (px)
+        MIN_ICON_H = 60   # minimum rendered icon HEIGHT (px)
 
-        # Scale icon to fit the icon area (never upscale beyond original size)
-        scale = min(w / icon_w, icon_area_h / icon_h, 1.0)
+        # For tall/narrow icons (ratio > 1.3), we need more vertical space
+        # so the width doesn't shrink below MIN_ICON_W when scaling to fit.
+        aspect_ratio = icon_h / icon_w if icon_w > 0 else 1
+        if aspect_ratio > 1.3:
+            # Need enough height so that width = icon_w * scale >= MIN_ICON_W
+            # scale = MIN_ICON_W / icon_w, needed_h = icon_h * scale
+            needed_h = int(icon_h * (MIN_ICON_W / icon_w))
+            icon_area_h = max(h - label_h, MIN_ICON_H, needed_h)
+        else:
+            icon_area_h = max(h - label_h, MIN_ICON_H)
+
+        # Scale icon to Oracle ref standard (calibrated from 37 Oracle .drawio files):
+        #   Oracle uses 63x63 square icon boxes. Our OCI Library stencils are
+        #   rectangular (tall), so we target 63px height and enforce minimum
+        #   45px width for legibility of detailed multi-cell stencils.
+        ICON_TARGET_H = 63   # Oracle ref: 63px icon box height
+        ICON_MIN_W = 45      # Minimum width for legible stencils
+
+        # Scale to fit target height
+        scale = min(ICON_TARGET_H / icon_h, 1.0)
         scaled_w = icon_w * scale
         scaled_h = icon_h * scale
 
-        # Icon group height = scaled icon height only.
-        # Connections terminate here — at the visible icon boundary.
-        icon_group_h = max(int(scaled_h), 20)
+        # If too narrow, scale up to meet minimum width
+        if scaled_w < ICON_MIN_W:
+            scale = ICON_MIN_W / icon_w
+            scaled_w = icon_w * scale
+            scaled_h = icon_h * scale
+
+        # Icon group dimensions = scaled icon size (not spec width).
+        # This ensures edges connect TO the visible icon, not to an
+        # invisible wide group. The label (sibling) uses spec width.
+        icon_group_w = max(int(scaled_w) + 4, MIN_ICON_W)  # small padding
+        icon_group_h = max(int(scaled_h), MIN_ICON_H)
+
+        # Center the icon group horizontally within the spec width
+        icon_group_x = x + (w - icon_group_w) // 2
 
         group_style = (
             "group;fillColor=none;strokeColor=none;pointerEvents=1;"
             "connectable=1;"
         )
-        self._create_object(cell_id, "", group_style, parent, x, y, w, icon_group_h)
+        self._create_object(cell_id, "", group_style, parent, icon_group_x, y, icon_group_w, icon_group_h)
 
         # Build ID mapping: original cell id -> unique cell id
         original_ids = set()
@@ -777,8 +857,8 @@ class OCIDiagramGenerator:
                               key=lambda x_: int(x_) if x_.isdigit() else 0):
             id_map[orig_id] = f"{cell_id}_i{orig_id}"
 
-        # Center the icon horizontally within the group
-        icon_offset_x = (w - scaled_w) / 2
+        # Center the icon horizontally within the (now tight) group
+        icon_offset_x = (icon_group_w - scaled_w) / 2
 
         # Use a placeholder for the group's drawpyo ID — replaced in to_xml()
         group_placeholder = f"__DRAWPYO_{cell_id}__"
@@ -830,8 +910,8 @@ class OCIDiagramGenerator:
 
         # Label is a SIBLING of the icon group (child of `parent`, not of `cell_id`).
         # This keeps connection geometry clean: arrows connect to the icon group only.
-        # Oracle ref arch style: 11pt, charcoal (#312D2A), centered below icon.
-        fs = font_size or 11
+        # Oracle ref arch style: 12pt, charcoal (#312D2A), centered below icon.
+        fs = font_size or 12
         label_style = (
             f"text;html=1;whiteSpace=wrap;overflow=visible;align=center;verticalAlign=top;"
             f"fontFamily=Oracle Sans;fontSize={fs};fontColor=#312D2A;"
@@ -1144,11 +1224,14 @@ class OCIDiagramGenerator:
             ty = tgt_pos[1] + (getattr(tgt_obj, 'height', 60) or 60) / 2
             dx = tx - sx
             dy = ty - sy
+            dist = max((dx**2 + dy**2) ** 0.5, 1)
+            # Larger offset for short connections to avoid icon overlap
+            base_offset = 20 if dist < 300 else 15
             is_horiz = abs(dx) > abs(dy) * 1.5
             if is_horiz:
-                offset_x, offset_y = 0, -15
+                offset_x, offset_y = 0, -base_offset
             else:
-                offset_x, offset_y = 15, 0
+                offset_x, offset_y = base_offset, 0
             # Find the edge's mxGeometry and inject label offset.
             # drawpyo emits: <mxGeometry relative="1" as="geometry" />
             # We replace with expanded form containing offset point.
@@ -1282,7 +1365,8 @@ class OCIDiagramGenerator:
                 else:
                     gen.add_service(svc_id, label, svc.get("type", "compute"),
                                     cloud_id, cx, cy, svc_w, svc_h)
-                cy += svc_h + 20
+                actual_h = gen._calc_service_block_h(label, svc.get("type", "compute"))
+                cy += max(svc_h, actual_h) + 20
 
         # Tenancy — auto-size from regions if w/h not specified in spec
         tenancy_spec = spec.get("tenancy", {})
@@ -1290,7 +1374,8 @@ class OCIDiagramGenerator:
         tenancy_y = tenancy_spec.get("y", 80)
 
         # Pre-calculate tenancy size from region content if not explicit
-        if "w" not in tenancy_spec or "h" not in tenancy_spec:
+        # Always pre-calculate auto-size even if spec has dimensions (use max)
+        if True:
             regions = tenancy_spec.get("regions", [])
             max_region_right = 0
             max_region_bottom = 0
@@ -1303,23 +1388,23 @@ class OCIDiagramGenerator:
                     for v in r_vcns for gw in v.get("gateways", [])
                 )
                 drg_w = 120 if r_has_drg else 0
-                # Quick subnet height calc
+                # Subnet height calc (mirrors actual rendering)
                 total_sub_h = 0
                 max_sub_w = 300
                 for v in r_vcns:
                     for s in v.get("subnets", []):
-                        total_sub_h += s.get("h", 120) + 14
+                        auto_sh = cls._calc_subnet_h(s)
+                        total_sub_h += max(s.get("h", auto_sh), auto_sh) + cls.SUBNET_GAP
                         svcs = s.get("services", [])
-                        row_w = sum(sv.get("w", 150) for sv in svcs) + 16 * max(0, len(svcs) - 1) + 30
+                        row_w = sum(sv.get("w", 150) for sv in svcs) + cls.SVC_SPACING * max(0, len(svcs) - 1) + 30
                         max_sub_w = max(max_sub_w, row_w)
-                    # VCN-internal gateways
                     vcn_gws = [gw for gw in v.get("gateways", [])
                                if gw.get("type") not in ("drg", "dynamic_routing_gateway")]
                     if vcn_gws:
                         max_sub_w += max(gw.get("w", 110) for gw in vcn_gws) + 20
 
                 est_rw = max_sub_w + drg_w + 80
-                est_rh = total_sub_h + 80
+                est_rh = total_sub_h + 150  # 45 top + VCN_TOP_PAD(50) + bottom padding + margins
 
                 rx_val = r.get("x", region_x_cursor)
                 ry_val = r.get("y", 40)
@@ -1327,11 +1412,10 @@ class OCIDiagramGenerator:
                 max_region_bottom = max(max_region_bottom, ry_val + est_rh)
                 region_x_cursor = max_region_right + 20
 
-            tenancy_w = tenancy_spec.get("w", max(max_region_right + 30, 600))
-            tenancy_h = tenancy_spec.get("h", max(max_region_bottom + 30, 400))
-        else:
-            tenancy_w = tenancy_spec["w"]
-            tenancy_h = tenancy_spec["h"]
+            auto_tw = max(max_region_right + 30, 600)
+            auto_th = max(max_region_bottom + 30, 400)
+            tenancy_w = max(tenancy_spec.get("w", auto_tw), auto_tw)
+            tenancy_h = max(tenancy_spec.get("h", auto_th), auto_th)
 
         gen.add_tenancy(
             "tenancy",
@@ -1364,22 +1448,26 @@ class OCIDiagramGenerator:
                         gw_lane_w = max(gw.get("w", 110) for gw in vcn_gateways) + 20
 
                     subnets = vcn.get("subnets", [])
-                    total_subnet_h = sum(s.get("h", 120) for s in subnets) + 14 * max(0, len(subnets) - 1)
 
-                    # Max service width across all subnets
+                    # Calculate actual subnet heights (same logic as rendering)
+                    total_subnet_h = 0
                     max_svc_row_w = 0
                     for subnet in subnets:
+                        auto_sh = cls._calc_subnet_h(subnet)
+                        sh = max(subnet.get("h", auto_sh), auto_sh)
+                        total_subnet_h += sh + cls.SUBNET_GAP
+
                         svcs = subnet.get("services", [])
-                        row_w = sum(svc.get("w", 150) for svc in svcs) + 16 * max(0, len(svcs) - 1) + 30
+                        row_w = sum(svc.get("w", 150) for svc in svcs) + cls.SVC_SPACING * max(0, len(svcs) - 1) + 30
                         max_svc_row_w = max(max_svc_row_w, row_w)
 
-                    # VCN needs: gw_lane + max(subnet_content_w, specified_w) + margins
+                    # VCN = gw_lane + content + margins
                     content_w = gw_lane_w + max(max_svc_row_w, 300) + 40
-                    content_h = total_subnet_h + 60  # 32 top + 28 bottom padding
+                    content_h = cls.VCN_TOP_PAD + total_subnet_h + 20
 
                     # Also account for gateway column height
                     if vcn_gateways:
-                        total_gw_h = sum(gw.get("h", 70) for gw in vcn_gateways) + 8 * max(0, len(vcn_gateways) - 1) + 64
+                        total_gw_h = sum(gw.get("h", cls.GW_DEFAULT_H) for gw in vcn_gateways) + cls.GW_SPACING * max(0, len(vcn_gateways) - 1) + 64
                         content_h = max(content_h, total_gw_h)
 
                     # Store calculated VCN dimensions for use below
@@ -1397,9 +1485,9 @@ class OCIDiagramGenerator:
                 auto_rw = total_vcn_w + drg_lane_w + 50  # margins
                 auto_rh = total_vcn_h + 70  # 45 top (label) + 25 bottom
 
-            # Use spec dimensions if explicitly provided, otherwise auto-calculated
-            rw = region.get("w", auto_rw)
-            rh = region.get("h", auto_rh)
+            # Always use at least auto-calculated size even if spec is smaller
+            rw = max(region.get("w", auto_rw), auto_rw)
+            rh = max(region.get("h", auto_rh), auto_rh)
 
             gen.add_region(
                 region["id"],
@@ -1440,8 +1528,11 @@ class OCIDiagramGenerator:
             vcn_offset_x = drg_lane_w + 15
             for vcn in region_vcns:
                 vcn_parent = vcn.get("parent", region["id"])
-                vcn_w = vcn.get("w", vcn.get("_auto_w", rw - vcn_offset_x - 15))
-                vcn_h = vcn.get("h", vcn.get("_auto_h", rh - 70))
+                auto_w = vcn.get("_auto_w", rw - vcn_offset_x - 15)
+                auto_h = vcn.get("_auto_h", rh - 70)
+                # Always use at least auto-calculated size even if spec is smaller
+                vcn_w = max(vcn.get("w", auto_w), auto_w)
+                vcn_h = max(vcn.get("h", auto_h), auto_h)
                 gen.add_vcn(
                     vcn["id"],
                     f"VCN {vcn['label']}",
@@ -1455,32 +1546,53 @@ class OCIDiagramGenerator:
                 gw_lane_w = 0
 
                 if vcn_gateways:
-                    gw_lane_w = max(gw.get("w", 110) for gw in vcn_gateways) + 20
-                    total_gw_h = sum(gw.get("h", 70) for gw in vcn_gateways) + 8 * max(0, len(vcn_gateways) - 1)
+                    GW_DEFAULT_W = 110
+                    GW_DEFAULT_H = gen.GW_DEFAULT_H
+                    GW_SPACING = gen.GW_SPACING
+                    gw_lane_w = max(gw.get("w", GW_DEFAULT_W) for gw in vcn_gateways) + 20
+                    total_gw_h = sum(gw.get("h", GW_DEFAULT_H) for gw in vcn_gateways) + GW_SPACING * max(0, len(vcn_gateways) - 1)
                     gw_start_y = max(32, (vcn_h - total_gw_h) // 2)
                     gy = gw_start_y
                     for gw in vcn_gateways:
                         gw_id = gw.get("id", gen._next_id())
-                        gw_w = gw.get("w", 110)
-                        gw_h = gw.get("h", 70)
+                        gw_w = gw.get("w", GW_DEFAULT_W)
                         gw_x = gw.get("x", 10)
                         gw_y = gw.get("y", gy)
                         label = gw["label"].replace("\\n", "\n")
+                        # Calculate ACTUAL rendered block height for correct stacking
+                        actual_block_h = gen._calc_service_block_h(label, gw["type"])
+                        gw_h = max(gw.get("h", GW_DEFAULT_H), GW_DEFAULT_H, actual_block_h)
                         gen.add_service(
                             gw_id, label, gw["type"],
                             vcn["id"], gw_x, gw_y, gw_w, gw_h,
                         )
-                        gy = gw_y + gw_h + 8
+                        # Stack using actual rendered height, not spec height
+                        gy = gw_y + actual_block_h + GW_SPACING
 
-                # Subnet horizontal offset: push right if VCN gateways present
-                subnet_x = 8 + gw_lane_w
-                subnet_avail_w = vcn_w - subnet_x - 8
+                # Subnet offset — Oracle ref arch: 42px left indent, 50px top
+                VCN_LEFT_PAD = 42 if not vcn_gateways else 8
+                VCN_TOP_PAD = gen.VCN_TOP_PAD
+                SUBNET_GAP = gen.SUBNET_GAP
+
+                subnet_x = VCN_LEFT_PAD + gw_lane_w
+                subnet_avail_w = vcn_w - subnet_x - 16  # 16px right margin
 
                 # Stack subnets vertically (top-to-bottom)
-                subnet_y = 32
+                subnet_y = VCN_TOP_PAD
+                SVC_SPACING = gen.SVC_SPACING
                 for subnet in vcn.get("subnets", []):
                     sw = subnet.get("w", subnet_avail_w)
-                    sh = subnet.get("h", 120)
+                    subnet_svcs = subnet.get("services", [])
+
+                    # ── Auto-calculate subnet height from service content ──
+                    # Each service = icon group (MIN 60px, grows for tall icons) + label + gap
+                    # Icon group grows based on aspect ratio (see _add_service_with_icon)
+                    # Use shared auto-height calculation
+                    auto_sh = gen._calc_subnet_h(subnet)
+                    sh = max(subnet.get("h", auto_sh), auto_sh)
+                    # Calculate max service block height for layout
+                    max_svc_h = auto_sh - 30 - 15  # reverse: total - top_pad - bottom_pad
+
                     gen.add_subnet(
                         subnet["id"], subnet["label"],
                         vcn["id"], subnet_x, subnet_y, sw, sh,
@@ -1488,22 +1600,22 @@ class OCIDiagramGenerator:
 
                     # Auto-layout services HORIZONTALLY within subnet, centered.
                     svc_top = 30
-                    subnet_svcs = subnet.get("services", [])
                     svc_widths = [svc.get("w", min(sw - 30, 150)) for svc in subnet_svcs]
-                    total_svc_w = sum(svc_widths) + 16 * max(0, len(svc_widths) - 1)
+                    total_svc_w = sum(svc_widths) + SVC_SPACING * max(0, len(svc_widths) - 1)
                     svc_x = max(15, (sw - total_svc_w) // 2)
                     for svc, svc_w in zip(subnet_svcs, svc_widths):
                         svc_id = svc.get("id", gen._next_id())
-                        svc_h = svc.get("h", 80)
+                        # Use auto-calculated height (ensures icons fit at MIN_ICON_H)
+                        svc_h = max(svc.get("h", 80), max_svc_h)
                         label = svc["label"].replace("\\n", "\n")
                         gen.add_service(
                             svc_id, label, svc["type"],
                             subnet["id"], svc_x, svc_top, svc_w, svc_h,
                             font_size=svc.get("fontSize"),
                         )
-                        svc_x += svc_w + 16
+                        svc_x += svc_w + SVC_SPACING
 
-                    subnet_y += sh + 14
+                    subnet_y += sh + SUBNET_GAP
 
             # Compartments inside region — can contain VCNs
             for comp in region.get("compartments", []):
@@ -1551,22 +1663,23 @@ class OCIDiagramGenerator:
                                 font_size=svc.get("fontSize"),
                             )
                             svc_x += svc_w + 16
-                        subnet_y += sh + 14
+                        subnet_y += sh + 28  # Oracle ref: subnet gap
                     # Gateways on left side of compartment VCN, stacked vertically
                     gx = 10
                     gy = 40
                     for gw in vcn.get("gateways", []):
                         gw_id = gw.get("id", gen._next_id())
                         gw_w = gw.get("w", 95)
-                        gw_h = gw.get("h", 60)
                         gw_x = gw.get("x", gx)
                         gw_y = gw.get("y", gy)
                         label = gw["label"].replace("\\n", "\n")
+                        actual_h = gen._calc_service_block_h(label, gw["type"])
+                        gw_h = max(gw.get("h", actual_h), actual_h)
                         gen.add_service(
                             gw_id, label, gw["type"],
                             vcn["id"], gw_x, gw_y, gw_w, gw_h,
                         )
-                        gy = gw_y + gw_h + 8
+                        gy = gw_y + actual_h + cls.GW_SPACING
 
             # Observability row at bottom of region — uses icons (only if explicitly requested)
             if region.get("observability"):

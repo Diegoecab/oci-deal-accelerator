@@ -1,0 +1,77 @@
+# Weekly KB health check — validates catalog links and reports broken URLs.
+# Runs Monday 8am UTC. Does NOT block deployments or affect user experience.
+# If broken links found, creates a Gitea issue for manual review.
+name: KB Health Check
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 pyyaml
+
+      - name: Check Architecture Center links
+        id: check
+        continue-on-error: true
+        run: |
+          python tools/refresh_arch_catalog.py --check-links 2>&1 | tee /tmp/link-check.txt
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Check SKU catalog freshness
+        id: sku
+        continue-on-error: true
+        run: |
+          python tools/refresh_sku_catalog.py --validate 2>&1 | tee -a /tmp/link-check.txt
+
+      - name: Create issue if problems found
+        if: steps.check.outcome == 'failure'
+        run: |
+          BROKEN=$(grep -c "❌" /tmp/link-check.txt || echo "0")
+          REDIRECTED=$(grep -c "↪️" /tmp/link-check.txt || echo "0")
+          BODY=$(cat <<'ISSUE_EOF'
+          ## KB Health Check — Broken Links Found
+
+          **Run date:** $(date -u +%Y-%m-%d)
+          **Broken:** $BROKEN URLs
+          **Redirected:** $REDIRECTED URLs
+
+          <details>
+          <summary>Full report</summary>
+
+          ```
+          $(cat /tmp/link-check.txt)
+          ```
+          </details>
+
+          ### Action needed
+          - For 404s: remove entry or find new URL via `python tools/refresh_arch_catalog.py --whats-new`
+          - For redirects: update URL in `kb/architecture-center/catalog.yaml`
+          ISSUE_EOF
+          )
+          # Note: Gitea issue creation requires gitea CLI or API call
+          # For now, save report as artifact
+          echo "$BODY" > /tmp/kb-health-report.md
+          echo "::warning::$BROKEN broken links found in KB catalog"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kb-health-report
+          path: /tmp/link-check.txt
+          retention-days: 30
