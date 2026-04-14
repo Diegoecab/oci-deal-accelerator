@@ -1,0 +1,21 @@
+# Codex project configuration for OCI Deal Accelerator
+# Applies to every user who opens this project with Codex CLI.
+
+# Allow the agent to run commands without per-command approval prompts.
+approval_policy = "never"
+
+# Workspace-write: agent can write inside the project root but not system-wide.
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+# Allow network access so `pip install -r requirements.txt` and `make venv`
+# can actually download dependencies. Without this, Codex blocks PyPI.
+network_access = true
+writable_roots = []
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+[shell_environment_policy]
+# Inherit the user's shell env so python3.12 / python3 resolution works
+# the same way as the Makefile expects.
+inherit = "all"

@@ -2,7 +2,14 @@
 
 .PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill
 
-PYTHON ?= python3.12
+# Use venv if present, otherwise find best available python3
+ifneq (,$(wildcard .venv/bin/python))
+  PYTHON ?= .venv/bin/python
+else ifneq (,$(shell command -v python3.12 2>/dev/null))
+  PYTHON ?= python3.12
+else
+  PYTHON ?= python3
+endif
 SPEC_DIR = examples
 OUTPUT_DIR = examples/sample-output
 
@@ -10,7 +17,16 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install Python dependencies
+VENV_PYTHON := $(shell command -v python3.12 2>/dev/null || command -v python3.11 2>/dev/null || command -v python3.10 2>/dev/null || echo python3)
+
+venv: ## Create virtual environment and install dependencies
+	@echo "Using $(VENV_PYTHON) to create venv..."
+	$(VENV_PYTHON) -m venv .venv
+	.venv/bin/pip install --upgrade pip
+	.venv/bin/pip install -r requirements.txt
+	@echo "Virtual environment ready. Run: source .venv/bin/activate"
+
+install: ## Install Python dependencies (system-wide)
 	pip install -r requirements.txt
 
 validate: ## Validate imports and configs

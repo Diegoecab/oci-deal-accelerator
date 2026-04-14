@@ -85,32 +85,39 @@ DEFINE (Ideate → Validate → Plan)  →  DESIGN (Current → Future → Confi
 
 Phase details in `docs/` — skill references them via progressive disclosure.
 
+## Environment Setup (MANDATORY before running tools)
+
+```bash
+make venv && source .venv/bin/activate
+```
+
+The Makefile auto-detects the best available Python (3.12 > 3.11 > 3.10 > python3).
+**Always use `make <target>` to run tools.** For custom specs, activate the venv first.
+
+### Codex sandbox note
+
+This project ships `.codex/config.toml` which enables `network_access = true`
+for the workspace-write sandbox. This is required so `make venv` can reach
+PyPI. If you see `No matching distribution found for pyyaml`, the config file
+is missing or Codex is ignoring it — re-open the project from its root so
+Codex loads `.codex/config.toml`.
+
 ## Running Tools
 
 ```bash
-# Generate slide deck (default output)
+# Standard targets (recommended)
+make deck                    # slide deck with sample spec
+make diagram                 # architecture diagram
+make full                    # all outputs (pptx + drawio + docx + xlsx + pdf)
+make validate                # WA validation
+make lint                    # check YAML syntax
+make venv                    # create/update virtual environment
+
+# Custom specs (activate venv first)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
-
-# Generate customer-facing PDF (branded, no internal KB refs)
 python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf
-
-# Generate diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
-
-# Run WA validation
-python scripts/validate-architecture.py \
-  --profile examples/sample-workload-profile.yaml \
-  --architecture examples/sample-architecture.yaml \
-  --output scorecard.yaml
-
-# Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
-
-# Build automation
-make help           # show all commands
-make full           # generate all outputs
-make validate       # run WA validation
-make lint           # check YAML syntax
 ```
 
 ## Output Formats

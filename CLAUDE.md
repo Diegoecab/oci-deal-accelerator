@@ -110,47 +110,44 @@ doc only          ← technical doc without slides
 deliver           ← handover + go-live checklist + success criteria
 ```
 
-## Running Tools
+## Environment Setup
+
+Before running ANY Python tool, ensure dependencies are installed:
 
 ```bash
-# Generate slide deck (default output)
+make venv && source .venv/bin/activate
+```
+
+The Makefile auto-detects the best available Python (3.12 > 3.11 > 3.10 > python3).
+**Always use `make <target>` to run tools** — this guarantees the correct Python with all dependencies.
+
+## Running Tools
+
+Prefer `make` targets. For custom specs, activate the venv first (`source .venv/bin/activate`), then use `python`:
+
+```bash
+# Standard targets (recommended)
+make deck                    # slide deck with sample spec
+make diagram                 # architecture diagram
+make full                    # all outputs (pptx + drawio + docx + xlsx + pdf)
+make validate                # WA validation
+make lint                    # check YAML syntax
+make venv                    # create/update virtual environment
+make freshness               # check KB freshness
+
+# Custom specs (activate venv first)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
-
-# Generate customer-facing PDF (branded, no internal KB refs)
 python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf
-python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal.pdf --diagram arch.png
-
-# Generate BOM (.xlsx Bill of Materials)
 python tools/oci_bom_gen.py --spec examples/bom-spec.yaml --output customer-bom.xlsx
-
-# Generate diagram
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
-
-# Run WA validation
-python scripts/validate-architecture.py \
-  --profile examples/sample-workload-profile.yaml \
-  --architecture examples/sample-architecture.yaml \
-  --output scorecard.yaml
-
-# Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
 
-# Refresh SKU catalog from Oracle pricing API
+# KB maintenance (activate venv first)
 python tools/refresh_sku_catalog.py --refresh          # update all prices
 python tools/refresh_sku_catalog.py --refresh --diff   # update + show changes
 python tools/refresh_sku_catalog.py --validate         # check for stale prices
-python tools/refresh_sku_catalog.py --sku B110627      # inspect single SKU
-
-# Refresh Architecture Center catalog
-python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
-python tools/refresh_arch_catalog.py --url <url>       # add single entry
+python tools/refresh_arch_catalog.py --whats-new       # crawl What's New pages
 python tools/refresh_arch_catalog.py --validate        # validate catalog
-
-# Build automation
-make help           # show all commands
-make full           # generate all outputs
-make validate       # run WA validation
-make lint           # check YAML syntax
 ```
 
 ## Key Principles
@@ -161,6 +158,39 @@ make lint           # check YAML syntax
 - **Composable** — patterns combine, not monolithic templates
 - **KB is the moat** — field experience, not documentation regurgitation
 - **ECAL-aligned** — Define → Design → Deliver with iterative checkpoints
+
+## Coding Guidelines
+
+### 1. Think Before Coding
+Don't assume. Don't hide confusion. Surface tradeoffs.
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+### 2. Simplicity First
+Minimum code that solves the problem. Nothing speculative.
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+### 3. Surgical Changes
+Touch only what you must. Clean up only your own mess.
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
+- Remove imports/variables/functions that YOUR changes made unused.
+- Every changed line should trace directly to the user's request.
+
+### 4. Goal-Driven Execution
+Define success criteria. Loop until verified.
+- "Add validation" → write tests for invalid inputs, then make them pass.
+- "Fix the bug" → write a test that reproduces it, then make it pass.
+- "Refactor X" → ensure tests pass before and after.
+- For multi-step tasks, state a brief plan with verification steps.
 
 ## Welcome Flow
 

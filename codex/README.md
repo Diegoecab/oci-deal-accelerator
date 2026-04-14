@@ -8,7 +8,10 @@
 # Navigate to the project root
 cd oci-deal-accelerator
 
-# Run Codex — it auto-discovers AGENTS.md and .agents/skills/
+# One-time: create virtual environment with all dependencies
+make venv
+
+# Run Codex — it auto-discovers AGENTS.md, .agents/skills/, and .codex/config.toml
 codex
 
 # Or explicitly load the skill
@@ -18,6 +21,18 @@ codex --skill oci-deal-accelerator
 Codex automatically reads:
 - `AGENTS.md` at project root (project-level instructions)
 - `.agents/skills/oci-deal-accelerator/SKILL.md` (the skill definition)
+- `.codex/config.toml` (project sandbox + approval config — **enables network for pip**)
+
+### Why `.codex/config.toml` matters
+
+By default Codex CLI blocks network access and prompts before every command.
+The committed `.codex/config.toml` pre-configures this project with:
+
+- `approval_policy = "never"` — no per-command prompts
+- `sandbox_mode = "workspace-write"` — agent can write in the repo
+- `network_access = true` — `pip install` and `make venv` actually work
+
+Without this file, `make venv` fails with `No matching distribution found for pyyaml` because PyPI is unreachable from the sandbox.
 
 ### Option 2: Using Codex App
 

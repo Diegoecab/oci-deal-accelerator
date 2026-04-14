@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(examples/**)",
+      "Write(output/**)",
+      "Bash(python3.12:*)",
+      "Bash(python3:*)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(make:*)",
+      "Bash(git:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(pip3.12:*)",
+      "Bash(ls:*)",
+      "Bash(which:*)",
+      "Bash(find:*)"
+    ]
+  }
+}
