@@ -14,6 +14,40 @@ What normally takes an SA days of work (structuring notes, designing architectur
 - **Multi-cloud aware** — supports hybrid/multi-cloud diagrams (AWS, Azure, GCP icons) and considers options like ADB Multicloud before recommending full migration
 - **End-to-end coverage** — from discovery notes to go-live checklist, not just the architecture slide
 
+## New user? Start here
+
+The skill runs as a hosted MCP server. Connect once from your LLM client, sign in with Oracle SSO, and the tools are ready.
+
+**1. Add the MCP server to your client:**
+
+| Client | How |
+|---|---|
+| **Claude Code** | `claude mcp add --transport http oci-deal-accelerator "https://mcp.tech-lad.com/deal-accelerator/mcp/"` |
+| **Codex** | `codex mcp add oci-deal-accelerator --url "https://mcp.tech-lad.com/deal-accelerator/mcp/"` |
+| **Cursor** | Settings (Ctrl+Shift+J) → MCP → Add new MCP server → Name: `oci-deal-accelerator`, Type: `streamable-http`, URL: `https://mcp.tech-lad.com/deal-accelerator/mcp/` |
+| **Claude Desktop** | Add to `claude_desktop_config.json`: `{ "mcpServers": { "oci-deal-accelerator": { "transport": "http", "url": "https://mcp.tech-lad.com/deal-accelerator/mcp/" } } }` |
+| **Windsurf** | Settings → Cascade → MCP → Manual config: `{ "oci-deal-accelerator": { "serverUrl": "https://mcp.tech-lad.com/deal-accelerator/sse/" } }` |
+
+**2. Trigger the connection** — type `/mcp` in Claude Code or Codex, or open any tool in Cursor / Claude Desktop / Windsurf. Your browser opens automatically.
+
+**3. Pick one of two options in the browser:**
+- **Sign in with Oracle SSO** — for existing users
+- **Create a new account** — for new users (see step 4)
+
+**4. New users — create an account** by clicking "Create a new account". This opens an OCI self-registration form (oracle.com emails only). Tips:
+- Use your full Oracle email as User ID (e.g. `name@oracle.com`)
+- Password must be 12+ chars, with an uppercase letter, a number, and a special character
+- Password must NOT contain your name or username
+
+**5. Verify your email**, then return to the browser and click **Sign in with Oracle SSO**.
+
+**6. Done.** The MCP tools are now available in your client.
+
+### Connection URLs
+
+- **MCP (HTTP streamable):** `https://mcp.tech-lad.com/deal-accelerator/mcp/`
+- **SSE (Windsurf only):** `https://mcp.tech-lad.com/deal-accelerator/sse/`
+
 ## What It Produces
 
 From unstructured input (meeting notes, emails, Slack threads), the skill generates:
