@@ -30,6 +30,86 @@ from oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
+# MCP flat-spec adapter
+# ============================================================
+
+def _is_flat_spec(spec: dict) -> bool:
+    """MCP payload shape: no 'metadata' key, but has customer_name/id/title."""
+    if not isinstance(spec, dict):
+        return False
+    if "metadata" in spec:
+        return False
+    return any(k in spec for k in ("customer_name", "customer_id", "title"))
+
+
+def _adapt_flat_spec(spec: dict) -> dict:
+    """Map the MCP flat payload to the proposal-spec structure from_spec expects."""
+    arch = spec.get("architecture") if isinstance(spec.get("architecture"), dict) else {}
+
+    customer = spec.get("customer_name") or spec.get("customer_id", "")
+    title = spec.get("title") or arch.get("workload", "") or "Architecture Proposal"
+    workload = spec.get("workload_type") or arch.get("workload", "")
+    deployment = spec.get("deployment_model") or arch.get("deployment", "")
+    region = spec.get("primary_region") or spec.get("region", "")
+    billing = spec.get("billing_model") or arch.get("license_model", "")
+    dr_raw = spec.get("disaster_recovery")
+    if dr_raw is None and "dr" in arch:
+        dr_raw = "Enabled" if arch.get("dr") else "Not in scope"
+    capacity = spec.get("capacity") or arch.get("capacity") or {}
+
+    target_parts = [p for p in (workload, deployment and f"deployment: {deployment}",
+                                region and f"region: {region}") if p]
+    target_state = " — ".join(target_parts)
+
+    current_state = []
+    if isinstance(capacity, dict):
+        for k, v in capacity.items():
+            current_state.append(f"{k.replace('_', ' ').title()}: {v}")
+    if billing:
+        current_state.append(f"License model: {billing}")
+    if dr_raw:
+        current_state.append(f"Disaster recovery: {dr_raw}")
+
+    line_items = []
+    for svc in spec.get("services", []) or []:
+        if not isinstance(svc, dict):
+            continue
+        qty = svc.get("quantity", svc.get("qty"))
+        notes = svc.get("notes", "")
+        if qty is not None:
+            notes = f"Qty: {qty}" + (f" — {notes}" if notes else "")
+        line_items.append({"component": svc.get("name", ""), "monthly_payg": "—", "notes": notes})
+
+    cost_summary = spec.get("cost_summary") or {}
+    monthly = cost_summary.get("monthly_estimate")
+    if monthly is not None:
+        currency = cost_summary.get("currency", "USD")
+        annual = cost_summary.get("annual_estimate", monthly * 12)
+        line_items.append({
+            "component": "Total (estimated)",
+            "monthly_payg": f"{currency} {monthly:,.2f}",
+            "notes": f"Annual: {currency} {annual:,.2f}",
+        })
+
+    adapted = {
+        "metadata": {"customer": customer, "subtitle": title},
+        "summary": {
+            "why": f"{customer} — {title}" if customer and title else (customer or title),
+            "current_state": current_state,
+            "target_state": target_state,
+            "timeline": "",
+        },
+    }
+    if line_items:
+        adapted["cost"] = {
+            "line_items": line_items,
+            "assumptions": spec.get("assumptions", []) or [],
+            "show_byol": False,
+        }
+    return adapted
+
+
+# ============================================================
 # Slide Generator
 # ============================================================
 
@@ -1185,6 +1265,13 @@ class OCIDeckGenerator(OraclePresBase):
     @classmethod
     def from_spec(cls, spec: dict, template: Optional[str] = None) -> "OCIDeckGenerator":
         """Build a complete deck from a YAML specification."""
+        # The MCP server passes a flat payload shape (customer_name, services,
+        # cost_summary, ...) that doesn't match the proposal-spec structure this
+        # method was originally written against. Adapt it so the deck renders
+        # with actual content instead of only blank title/closing slides.
+        if _is_flat_spec(spec):
+            spec = _adapt_flat_spec(spec)
+
         meta = spec.get("metadata", {})
         gen = cls(
             customer=meta.get("customer", ""),
