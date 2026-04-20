@@ -5,6 +5,7 @@ __pycache__/
 output/
 *.pptx
 !examples/sample-output/*.pptx
+!templates/Oracle_PPT-template_FY26.pptx
 
 # OCI Toolkit binary (download from Oracle, don't commit)
 kb/diagram/OCI Library.xml
