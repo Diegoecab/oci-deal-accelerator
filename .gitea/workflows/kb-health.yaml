@@ -18,25 +18,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3 python3-pip
+          python3 --version
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 pyyaml
+        run: python3 -m pip install --user requests beautifulsoup4 pyyaml
 
       - name: Check Architecture Center links
         id: check
         continue-on-error: true
         run: |
-          python tools/refresh_arch_catalog.py --check-links 2>&1 | tee /tmp/link-check.txt
+          python3 tools/refresh_arch_catalog.py --check-links 2>&1 | tee /tmp/link-check.txt
           echo "exit_code=$?" >> $GITHUB_OUTPUT
 
       - name: Check SKU catalog freshness
         id: sku
         continue-on-error: true
         run: |
-          python tools/refresh_sku_catalog.py --validate 2>&1 | tee -a /tmp/link-check.txt
+          python3 tools/refresh_sku_catalog.py --validate 2>&1 | tee -a /tmp/link-check.txt
 
       - name: Create issue if problems found
         if: steps.check.outcome == 'failure'
