@@ -432,6 +432,14 @@ See [docs/skill/output-formats.md](docs/skill/output-formats.md) for the per-cus
 
 ---
 
+## Cookbook: Building Tool Payloads
+
+Before mapping customer requirements to SKUs for `generate_bom`, `generate_bom_appca`, or `generate_cost_estimate`, check [docs/bom-cookbook.md](docs/bom-cookbook.md) — it has copy-paste recipes for common patterns (ExaCS X11M BYOL, ADB-Dedicated, ADB-S + Block + FastConnect) and explicitly names the gotchas that otherwise burn exploration turns (e.g. ADB-Dedicated shares infrastructure SKUs with ExaCS — there are no separate `adb_dedicated` SKUs in the catalog).
+
+If a requirement does not match a recipe, `grep` [`kb/pricing/oci-sku-catalog.yaml`](kb/pricing/oci-sku-catalog.yaml) and consult `kb/services/` before inventing SKUs.
+
+---
+
 ## Knowledge Base
 
 KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, frontmatter requirements, refresh tooling, and contributor guide.
