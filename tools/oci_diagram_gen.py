@@ -408,6 +408,220 @@ OBS_TYPE_MAP = {
     "auditing": "monitoring",  # uses monitoring icon as closest match
 }
 
+
+def pick(mapping: dict, *keys, default=""):
+    """Return the first non-empty value for any of the provided keys."""
+    if not isinstance(mapping, dict):
+        return default
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is not None:
+                return value
+    return default
+
+
+def pick_list(mapping: dict, *keys):
+    """Return the first list-like field normalized to a list."""
+    if not isinstance(mapping, dict):
+        return []
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is None:
+                return []
+            if isinstance(value, list):
+                return value
+            return [value]
+    return []
+
+
+def _slugify(value: str) -> str:
+    text = re.sub(r"[^a-z0-9]+", "-", str(value or "").lower()).strip("-")
+    return text or "item"
+
+
+class _SpecIdGenerator:
+    """Generate stable unique ids within one normalized spec."""
+
+    def __init__(self):
+        self.used = set()
+        self.counters = {}
+
+    def make(self, prefix: str, seed: str = "") -> str:
+        base = f"{prefix}-{_slugify(seed)}" if seed else prefix
+        candidate = base
+        idx = 2
+        while candidate in self.used:
+            candidate = f"{base}-{idx}"
+            idx += 1
+        self.used.add(candidate)
+        return candidate
+
+
+def _normalize_diagram_spec(spec: dict) -> dict:
+    """Normalize aliases and synthesize ids before rendering."""
+    spec = spec or {}
+    id_gen = _SpecIdGenerator()
+    aliases = {}
+
+    def remember(node: dict, node_id: str):
+        for key in ("id", "name", "label", "title"):
+            value = node.get(key)
+            if value:
+                aliases[str(value)] = node_id
+
+    def resolve_ref(value):
+        if value in (None, ""):
+            return None
+        return aliases.get(str(value), str(value))
+
+    def normalize_service(node: dict, prefix: str, default_type: str = "compute") -> dict:
+        raw = dict(node or {})
+        label = pick(raw, "label", "name", "title")
+        node_id = pick(raw, "id", "name") or id_gen.make(prefix, label)
+        normalized = dict(raw)
+        normalized["id"] = str(node_id)
+        normalized["label"] = label or str(node_id)
+        normalized["type"] = pick(raw, "type", "service_type", default=default_type)
+        remember(raw, normalized["id"])
+        return normalized
+
+    normalized = {
+        "title": spec.get("title", ""),
+        "external": [],
+        "clouds": [],
+        "tenancy": {},
+        "connections": [],
+    }
+
+    for ext in pick_list(spec, "external"):
+        normalized["external"].append(normalize_service(ext, "external"))
+
+    for cloud in pick_list(spec, "clouds"):
+        raw_cloud = dict(cloud or {})
+        label = pick(raw_cloud, "label", "name", "title")
+        cloud_id = pick(raw_cloud, "id", "name") or id_gen.make("cloud", label)
+        normalized_cloud = dict(raw_cloud)
+        normalized_cloud["id"] = str(cloud_id)
+        normalized_cloud["label"] = label or str(cloud_id)
+        normalized_cloud["services"] = [
+            normalize_service(svc, "cloud-svc", default_type="compute")
+            for svc in pick_list(raw_cloud, "services")
+        ]
+        remember(raw_cloud, normalized_cloud["id"])
+        normalized["clouds"].append(normalized_cloud)
+
+    tenancy_spec = dict(spec.get("tenancy", {}) or {})
+    normalized_tenancy = dict(tenancy_spec)
+    normalized_tenancy["label"] = pick(tenancy_spec, "label", "name", "title", default="Oracle Cloud Infrastructure")
+    normalized_tenancy["regions"] = []
+
+    for region in pick_list(tenancy_spec, "regions"):
+        raw_region = dict(region or {})
+        region_label = pick(raw_region, "label", "name", "title")
+        region_id = pick(raw_region, "id", "name") or id_gen.make("region", region_label)
+        normalized_region = dict(raw_region)
+        normalized_region["id"] = str(region_id)
+        normalized_region["label"] = region_label or str(region_id)
+        normalized_region["availability_domains"] = []
+        normalized_region["vcns"] = []
+        normalized_region["compartments"] = []
+        normalized_region["observability"] = pick_list(raw_region, "observability")
+        remember(raw_region, normalized_region["id"])
+
+        for ad in pick_list(raw_region, "availability_domains"):
+            raw_ad = dict(ad or {})
+            ad_label = pick(raw_ad, "label", "name", "title")
+            ad_id = pick(raw_ad, "id", "name") or id_gen.make("ad", ad_label)
+            normalized_ad = dict(raw_ad)
+            normalized_ad["id"] = str(ad_id)
+            normalized_ad["label"] = ad_label or str(ad_id)
+            remember(raw_ad, normalized_ad["id"])
+            normalized_region["availability_domains"].append(normalized_ad)
+
+        def normalize_vcn(raw_vcn: dict) -> dict:
+            vcn_label = pick(raw_vcn, "label", "name", "title")
+            vcn_id = pick(raw_vcn, "id", "name") or id_gen.make("vcn", vcn_label)
+            normalized_vcn = dict(raw_vcn)
+            normalized_vcn["id"] = str(vcn_id)
+            normalized_vcn["label"] = vcn_label or str(vcn_id)
+            parent_ref = pick(raw_vcn, "parent", default="")
+            if parent_ref:
+                normalized_vcn["parent"] = resolve_ref(parent_ref) or str(parent_ref)
+            normalized_vcn["gateways"] = [
+                normalize_service(gw, "gw", default_type="drg" if pick(gw, "type", "service_type") in ("drg", "dynamic_routing_gateway") else "compute")
+                for gw in pick_list(raw_vcn, "gateways")
+            ]
+            normalized_vcn["subnets"] = []
+            remember(raw_vcn, normalized_vcn["id"])
+
+            for subnet in pick_list(raw_vcn, "subnets"):
+                raw_subnet = dict(subnet or {})
+                subnet_label = pick(raw_subnet, "label", "name", "title")
+                subnet_id = pick(raw_subnet, "id", "name") or id_gen.make("subnet", subnet_label)
+                normalized_subnet = dict(raw_subnet)
+                normalized_subnet["id"] = str(subnet_id)
+                normalized_subnet["label"] = subnet_label or str(subnet_id)
+                normalized_subnet["services"] = [
+                    normalize_service(svc, "svc", default_type="compute")
+                    for svc in pick_list(raw_subnet, "services")
+                ]
+                remember(raw_subnet, normalized_subnet["id"])
+                normalized_vcn["subnets"].append(normalized_subnet)
+            return normalized_vcn
+
+        for vcn in pick_list(raw_region, "vcns"):
+            normalized_region["vcns"].append(normalize_vcn(dict(vcn or {})))
+
+        for comp in pick_list(raw_region, "compartments"):
+            raw_comp = dict(comp or {})
+            comp_label = pick(raw_comp, "label", "name", "title")
+            comp_id = pick(raw_comp, "id", "name") or id_gen.make("compartment", comp_label)
+            normalized_comp = dict(raw_comp)
+            normalized_comp["id"] = str(comp_id)
+            normalized_comp["label"] = comp_label or str(comp_id)
+            normalized_comp["vcns"] = [
+                normalize_vcn(dict(vcn or {}))
+                for vcn in pick_list(raw_comp, "vcns")
+            ]
+            remember(raw_comp, normalized_comp["id"])
+            normalized_region["compartments"].append(normalized_comp)
+
+        normalized_tenancy["regions"].append(normalized_region)
+
+    normalized["tenancy"] = normalized_tenancy
+
+    onprem_spec = spec.get("onprem")
+    if not onprem_spec:
+        onprem_spec = spec.get("on_prem")
+    if onprem_spec:
+        raw_onprem = dict(onprem_spec or {})
+        onprem_label = pick(raw_onprem, "label", "name", "title", default="On-Premises Data Center")
+        normalized_onprem = dict(raw_onprem)
+        normalized_onprem["id"] = pick(raw_onprem, "id", "name", default="onprem") or "onprem"
+        normalized_onprem["label"] = onprem_label
+        normalized_onprem["services"] = [
+            normalize_service(svc, "onprem-svc", default_type="compute")
+            for svc in pick_list(raw_onprem, "services")
+        ]
+        remember(raw_onprem, normalized_onprem["id"])
+        normalized["onprem"] = normalized_onprem
+
+    for conn in pick_list(spec, "connections"):
+        raw_conn = dict(conn or {})
+        source = resolve_ref(pick(raw_conn, "from", "source", default=None))
+        target = resolve_ref(pick(raw_conn, "to", "target", default=None))
+        if not source or not target:
+            continue
+        normalized_conn = dict(raw_conn)
+        normalized_conn["from"] = source
+        normalized_conn["to"] = target
+        normalized_conn["type"] = pick(raw_conn, "type", "service_type", default="standard")
+        normalized["connections"].append(normalized_conn)
+
+    return normalized
+
 # Unicode circled numbers for flow badges ① ② ③ ... ⑳
 _CIRCLED_NUMS = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳"
 
@@ -1314,6 +1528,7 @@ class OCIDiagramGenerator:
         Plus optional on-premises, external actors, and connections.
         See examples/diagram-spec.yaml for the full format.
         """
+        spec = _normalize_diagram_spec(spec)
         gen = cls()
 
         # External actors (users, internet, third-party)

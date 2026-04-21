@@ -73,6 +73,18 @@ TAIL_COLS = [
 ]
 
 
+def pick(mapping: dict, *keys, default=""):
+    """Return the first non-empty value for any of the provided keys."""
+    if not isinstance(mapping, dict):
+        return default
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is not None:
+                return value
+    return default
+
+
 class OCIBomGenerator:
     """Generate OCI Bill of Materials (.xlsx) with Oracle Redwood styling."""
 
@@ -667,17 +679,22 @@ class OCIBomGenerator:
     def from_spec(cls, spec: dict, catalog_path: Optional[str] = None) -> "OCIBomGenerator":
         """Build BOM from a YAML specification dict."""
         bom = spec.get("bom", spec)
+        conversion = bom.get("conversion")
+        if isinstance(conversion, dict):
+            conversion = dict(conversion)
+            if "target_currency" not in conversion and "currency" in conversion:
+                conversion["target_currency"] = conversion.get("currency")
 
         gen = cls(
-            customer=bom.get("customer_name", ""),
-            project=bom.get("project_name", ""),
-            prepared_by=bom.get("prepared_by", ""),
+            customer=pick(bom, "customer_name", "customer"),
+            project=pick(bom, "project_name", "project"),
+            prepared_by=pick(bom, "prepared_by", "author"),
             bom_date=bom.get("date", ""),
-            reference_label=bom.get("reference_label", ""),
+            reference_label=pick(bom, "reference_label", "reference"),
             currency=bom.get("currency", "USD"),
             realm=bom.get("realm", ""),
             service_type=bom.get("service_type", ""),
-            conversion=bom.get("conversion"),
+            conversion=conversion,
             notes=bom.get("notes"),
         )
 
@@ -688,14 +705,17 @@ class OCIBomGenerator:
         global_discount = bom_meta.get("discount_pct", bom.get("discount_pct", 0.0))
 
         for item in bom.get("line_items", []):
+            sku = pick(item, "sku", "part_number")
+            if sku in ("", None):
+                raise ValueError("BOM line item requires 'sku' or 'part_number'")
             gen.add_line_item(
-                sku=str(item["sku"]),
-                qty=item.get("qty", 0),
-                hours_units=item.get("hours_units"),
+                sku=str(sku),
+                qty=pick(item, "qty", "quantity", default=0),
+                hours_units=pick(item, "hours_units", "units", "hours", default=None),
                 months=item.get("months", 12),
-                discount=item.get("discount", global_discount),
-                custom_label=item.get("custom_label", ""),
-                custom_note=item.get("custom_note", ""),
+                discount=pick(item, "discount", "discount_pct", default=global_discount),
+                custom_label=pick(item, "custom_label", "label"),
+                custom_note=pick(item, "custom_note", "note", "notes"),
             )
 
         return gen

@@ -30,6 +30,45 @@ from oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
+# Defensive input helpers
+# ============================================================
+
+def pick(mapping: dict, *keys, default=""):
+    """Return the first non-empty value for any of the provided keys."""
+    if not isinstance(mapping, dict):
+        return default
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is not None:
+                return value
+    return default
+
+
+def coerce_list(value):
+    """Accept list, string, tuple, or None and normalize to a list."""
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    if isinstance(value, str):
+        return [value] if value else []
+    return [value]
+
+
+def pick_list(mapping: dict, *keys):
+    """Return the first list-like field normalized to a list."""
+    if not isinstance(mapping, dict):
+        return []
+    for key in keys:
+        if key in mapping:
+            return coerce_list(mapping.get(key))
+    return []
+
+
+# ============================================================
 # MCP flat-spec adapter
 # ============================================================
 
@@ -525,8 +564,9 @@ class OCIDeckGenerator(OraclePresBase):
         for i, wl in enumerate(workloads):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
-            self._style_table_cell(table.cell(row_idx, 0), wl["name"], font_size=10, bold=True, bg_color=bg)
-            tier_label = wl.get("tier", "Silver")
+            workload_name = pick(wl, "name", "workload", "title")
+            self._style_table_cell(table.cell(row_idx, 0), workload_name, font_size=10, bold=True, bg_color=bg)
+            tier_label = pick(wl, "tier", "name", default="Silver")
             tier_color = tier_colors.get(tier_label.lower(), Colors.SECONDARY_TEXT)
             self._style_table_cell(
                 table.cell(row_idx, 1), tier_label.title(),
@@ -613,11 +653,11 @@ class OCIDeckGenerator(OraclePresBase):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
             self._style_table_cell(
-                table.cell(row_idx, 0), dec["decision"],
+                table.cell(row_idx, 0), pick(dec, "decision", "title"),
                 font_size=11, bold=True, bg_color=bg,
             )
             self._style_table_cell(
-                table.cell(row_idx, 1), dec["rationale"],
+                table.cell(row_idx, 1), pick(dec, "rationale", "reason", "notes"),
                 font_size=10, bg_color=bg,
             )
 
@@ -659,10 +699,10 @@ class OCIDeckGenerator(OraclePresBase):
         for i, tier in enumerate(tiers):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
-            self._style_table_cell(table.cell(row_idx, 0), tier["tier"], font_size=10, bold=True, bg_color=bg)
-            self._style_table_cell(table.cell(row_idx, 1), tier["technology"], font_size=10, bg_color=bg)
-            self._style_table_cell(table.cell(row_idx, 2), tier["rto"], font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 3), tier["rpo"], font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 0), pick(tier, "tier", "name"), font_size=10, bold=True, bg_color=bg)
+            self._style_table_cell(table.cell(row_idx, 1), pick(tier, "technology", "architecture", "pattern"), font_size=10, bg_color=bg)
+            self._style_table_cell(table.cell(row_idx, 2), pick(tier, "rto"), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 3), pick(tier, "rpo"), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
 
     def add_security_slide(self, controls: dict, compliance: list = None):
         """Slide 6: Security & Compliance.
@@ -850,19 +890,22 @@ class OCIDeckGenerator(OraclePresBase):
 
         for i, item in enumerate(line_items):
             row_idx = i + 1
-            is_total = "total" in item.get("component", "").lower()
+            component = pick(item, "component", "name", "label")
+            notes = pick(item, "notes", "note")
+            monthly_payg = pick(item, "monthly_payg", "monthly")
+            is_total = "total" in str(component).lower()
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 and not is_total else None
             if is_total:
                 bg = Colors.TEAL
 
             self._style_table_cell(
-                table.cell(row_idx, 0), item["component"],
+                table.cell(row_idx, 0), component,
                 font_size=10, bold=is_total,
                 color=Colors.WHITE if is_total else None,
                 bg_color=bg,
             )
             self._style_table_cell(
-                table.cell(row_idx, 1), item.get("monthly_payg", ""),
+                table.cell(row_idx, 1), monthly_payg,
                 font_size=10, bold=is_total,
                 color=Colors.WHITE if is_total else None,
                 bg_color=bg, alignment=PP_ALIGN.RIGHT,
@@ -875,13 +918,13 @@ class OCIDeckGenerator(OraclePresBase):
                     bg_color=bg, alignment=PP_ALIGN.RIGHT,
                 )
                 self._style_table_cell(
-                    table.cell(row_idx, 3), item.get("notes", ""),
+                    table.cell(row_idx, 3), notes,
                     font_size=9, bg_color=bg,
                     color=Colors.WHITE if is_total else Colors.SECONDARY_TEXT,
                 )
             else:
                 self._style_table_cell(
-                    table.cell(row_idx, 2), item.get("notes", ""),
+                    table.cell(row_idx, 2), notes,
                     font_size=9, bg_color=bg,
                     color=Colors.WHITE if is_total else Colors.SECONDARY_TEXT,
                 )
@@ -983,14 +1026,14 @@ class OCIDeckGenerator(OraclePresBase):
 
         for i, phase in enumerate(phases):
             color = phase_colors[i % len(phase_colors)]
-            duration = phase.get("duration", phase.get("weeks", ""))
-            milestones = phase.get("milestones", phase.get("tasks", []))
+            duration = pick(phase, "duration", "weeks")
+            milestones = pick_list(phase, "milestones", "tasks")
 
             # Phase label (left of bar)
             self._add_textbox(
                 slide, self.MARGIN, y,
                 Inches(2.3), Inches(0.4),
-                text=phase["name"], font_size=11, bold=True,
+                text=pick(phase, "name", "title"), font_size=11, bold=True,
             )
 
             # Colored phase bar with duration
@@ -1122,7 +1165,7 @@ class OCIDeckGenerator(OraclePresBase):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
             self._style_table_cell(
-                table.cell(row_idx, 0), risk["risk"],
+                table.cell(row_idx, 0), pick(risk, "risk", "title"),
                 font_size=10, bg_color=bg,
             )
             sev = risk.get("severity", "MEDIUM").upper()
@@ -1133,7 +1176,7 @@ class OCIDeckGenerator(OraclePresBase):
                 bg_color=bg, alignment=PP_ALIGN.CENTER,
             )
             self._style_table_cell(
-                table.cell(row_idx, 2), risk["mitigation"],
+                table.cell(row_idx, 2), pick(risk, "mitigation", "action", "response"),
                 font_size=10, bg_color=bg,
             )
 
@@ -1155,7 +1198,8 @@ class OCIDeckGenerator(OraclePresBase):
 
         y = Inches(1.4)
         for pillar in pillars:
-            style = status_styles.get(pillar["status"], status_styles["PASS"])
+            status = pick(pillar, "status", default="PASS")
+            style = status_styles.get(status, status_styles["PASS"])
 
             # Status indicator pill
             pill = self._add_rect(
@@ -1173,11 +1217,13 @@ class OCIDeckGenerator(OraclePresBase):
             self._add_textbox(
                 slide, Inches(1.2), y,
                 Inches(4), Inches(0.45),
-                text=pillar["name"], font_size=13, bold=True,
+                text=pick(pillar, "name", "pillar"), font_size=13, bold=True,
             )
 
             # Score
-            score_text = f"{pillar['passed']}/{pillar['total']}" if pillar['total'] > 0 else "—"
+            passed = pick(pillar, "passed", default=0)
+            total = pick(pillar, "total", default=0)
+            score_text = f"{passed}/{total}" if total > 0 else "—"
             self._add_textbox(
                 slide, Inches(5.5), y,
                 Inches(1.5), Inches(0.45),
@@ -1274,24 +1320,24 @@ class OCIDeckGenerator(OraclePresBase):
 
         meta = spec.get("metadata", {})
         gen = cls(
-            customer=meta.get("customer", ""),
-            project=meta.get("project", ""),
-            architect=meta.get("architect", ""),
+            customer=pick(meta, "customer", "customer_name"),
+            project=pick(meta, "project", "project_name"),
+            architect=pick(meta, "architect", "prepared_by"),
             firm=meta.get("firm", ""),
             template=template,
         )
 
         # Slide 1: Title
-        gen.add_title_slide(subtitle=meta.get("subtitle", ""))
+        gen.add_title_slide(subtitle=pick(meta, "subtitle", "title"))
 
         # Slide 2: Summary
         if "summary" in spec:
             s = spec["summary"]
             gen.add_summary_slide(
-                why=s.get("why", ""),
-                current_state=s.get("current_state", []),
-                target_state=s.get("target_state", ""),
-                timeline=s.get("timeline", ""),
+                why=pick(s, "why"),
+                current_state=coerce_list(s.get("current_state")),
+                target_state=pick(s, "target_state"),
+                timeline=pick(s, "timeline"),
             )
 
         # Slide 3: Service Tiering (ECAL)
@@ -1343,8 +1389,8 @@ class OCIDeckGenerator(OraclePresBase):
         if "cost" in spec:
             c = spec["cost"]
             gen.add_cost_slide(
-                line_items=c.get("line_items", []),
-                assumptions=c.get("assumptions", []),
+                line_items=pick_list(c, "line_items"),
+                assumptions=pick_list(c, "assumptions"),
                 show_byol=c.get("show_byol", True),
             )
 
@@ -1361,9 +1407,9 @@ class OCIDeckGenerator(OraclePresBase):
         if "migration" in spec:
             m = spec["migration"]
             gen.add_migration_slide(
-                phases=m.get("phases", []),
-                tools=m.get("tools", []),
-                downtime=m.get("downtime", ""),
+                phases=pick_list(m, "phases"),
+                tools=pick_list(m, "tools"),
+                downtime=pick(m, "downtime"),
             )
 
         # Slide 13: Operational RACI (ECAL)
@@ -1382,16 +1428,16 @@ class OCIDeckGenerator(OraclePresBase):
         if "scorecard" in spec:
             sc = spec["scorecard"]
             gen.add_scorecard_slide(
-                pillars=sc.get("pillars", []),
-                recommendations=sc.get("recommendations", []),
+                pillars=pick_list(sc, "pillars"),
+                recommendations=pick_list(sc, "recommendations"),
             )
 
         # Slide 16: Next Steps
         if "next_steps" in spec:
             ns = spec["next_steps"]
             gen.add_next_steps_slide(
-                steps=ns.get("steps", []),
-                contact_info=ns.get("contact_info", ""),
+                steps=pick_list(ns, "steps", "next_steps"),
+                contact_info=pick(ns, "contact_info"),
             )
 
         # Closing slides

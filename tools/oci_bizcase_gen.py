@@ -29,6 +29,37 @@ from oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
+# Defensive input helpers
+# ============================================================
+
+def pick(mapping: dict, *keys, default=""):
+    """Return the first non-empty value for any of the provided keys."""
+    if not isinstance(mapping, dict):
+        return default
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is not None:
+                return value
+    return default
+
+
+def pick_list(mapping: dict, *keys):
+    """Return the first list-like field normalized to a list."""
+    if not isinstance(mapping, dict):
+        return []
+    for key in keys:
+        if key in mapping:
+            value = mapping.get(key)
+            if value is None:
+                return []
+            if isinstance(value, list):
+                return value
+            return [value]
+    return []
+
+
+# ============================================================
 # Business Case Deck Generator
 # ============================================================
 
@@ -461,10 +492,10 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         for i, phase in enumerate(phases[:4]):
             color = phase_colors[i % len(phase_colors)]
             y = content_start + i * row_h
-            name = phase.get("name", f"Phase {i+1}")
-            duration = phase.get("duration", "")
-            deliverables = phase.get("deliverables", [])
-            quick_wins = phase.get("quick_wins", [])
+            name = pick(phase, "name", "title", default=f"Phase {i+1}")
+            duration = pick(phase, "duration", "weeks")
+            deliverables = pick_list(phase, "deliverables", "outputs")
+            quick_wins = pick_list(phase, "quick_wins", "milestones")
 
             # Alternating row background
             if i % 2 == 0:
@@ -593,10 +624,10 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Slide 1: Cover
         gen.add_cover_slide(
-            customer=bc.get("customer_name", ""),
+            customer=pick(bc, "customer_name", "customer"),
             subtitle="Business Case for Oracle Cloud Infrastructure",
-            prepared_by=bc.get("prepared_by", ""),
-            date=bc.get("date", ""),
+            prepared_by=pick(bc, "prepared_by", "author"),
+            date=pick(bc, "date", "generated_on"),
         )
 
         # Slide 2: Executive Summary
@@ -608,18 +639,21 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         drivers_data = bc.get("drivers", {})
         if drivers_data:
             driver_statements = []
-            primary = drivers_data.get("primary", "")
-            urgency = drivers_data.get("urgency", "")
+            primary = pick(drivers_data, "primary")
+            urgency = pick(drivers_data, "urgency")
             coi = drivers_data.get("cost_of_inaction", {})
 
             if primary:
                 driver_statements.append(f"Primary Driver: {primary.replace('_', ' ').title()}\n{urgency}" if urgency else primary.replace('_', ' ').title())
-            if coi.get("financial"):
-                driver_statements.append(f"Financial Impact of Inaction\n{coi['financial']}")
-            if coi.get("operational"):
-                driver_statements.append(f"Operational Impact\n{coi['operational']}")
-            elif coi.get("strategic"):
-                driver_statements.append(f"Strategic Risk\n{coi['strategic']}")
+            financial = pick(coi, "financial")
+            operational = pick(coi, "operational")
+            strategic = pick(coi, "strategic")
+            if financial:
+                driver_statements.append(f"Financial Impact of Inaction\n{financial}")
+            if operational:
+                driver_statements.append(f"Operational Impact\n{operational}")
+            elif strategic:
+                driver_statements.append(f"Strategic Risk\n{strategic}")
 
             if driver_statements:
                 gen.add_business_drivers_slide(driver_statements)
@@ -641,8 +675,8 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Slide 7: Risk Assessment
         risks = bc.get("risks", {})
-        migration_risks = risks.get("migration_risks", [])
-        do_nothing_risks = risks.get("do_nothing_risks", [])
+        migration_risks = pick_list(risks, "migration_risks")
+        do_nothing_risks = pick_list(risks, "do_nothing_risks")
         if migration_risks or do_nothing_risks:
             gen.add_risk_slide(migration_risks, do_nothing_risks)
 
@@ -650,24 +684,24 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         roadmap = bc.get("roadmap", {})
         if roadmap.get("phases"):
             gen.add_roadmap_slide(
-                phases=roadmap["phases"],
-                total_duration=roadmap.get("total_duration", ""),
+                phases=pick_list(roadmap, "phases"),
+                total_duration=pick(roadmap, "total_duration"),
             )
 
         # Slide 9: Recommendation
         rec = bc.get("recommendation", {})
         if rec:
-            summary = rec.get("summary", "")
+            summary = pick(rec, "summary")
             if not summary and rec.get("commitment_amount"):
                 summary = f"Recommended: {rec['commitment_amount']} {rec.get('commitment_type', 'UCM')} commitment"
             if summary:
                 gen.add_recommendation_slide(
                     summary=summary,
-                    next_steps=rec.get("next_steps", []),
+                    next_steps=pick_list(rec, "next_steps"),
                 )
 
         # Closing slides
-        prepared_by = bc.get("prepared_by", "")
+        prepared_by = pick(bc, "prepared_by", "author")
         gen.add_closing_slide(name=prepared_by)
 
         return gen
