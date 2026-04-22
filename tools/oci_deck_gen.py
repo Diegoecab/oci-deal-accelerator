@@ -81,6 +81,161 @@ def _is_flat_spec(spec: dict) -> bool:
     return any(k in spec for k in ("customer_name", "customer_id", "title"))
 
 
+_PATTERNS_DIR = Path(__file__).resolve().parent.parent / "kb" / "patterns"
+
+
+def _load_patterns_yaml(filename: str) -> dict:
+    """Load a patterns YAML (supports 2-document layout: header + body)."""
+    path = _PATTERNS_DIR / filename
+    if not path.is_file():
+        return {}
+    try:
+        with open(path, "r") as f:
+            docs = [d for d in yaml.safe_load_all(f) if isinstance(d, dict)]
+        return docs[-1] if docs else {}
+    except Exception:
+        return {}
+
+
+def _default_architecture_principles() -> dict:
+    """Curated ECAL principles — 3 per category, 'applies_when: always' first."""
+    data = _load_patterns_yaml("architecture-principles.yaml")
+    principles = data.get("principles", {}) if isinstance(data, dict) else {}
+    result = {}
+    for cat in ("design", "deployment", "service"):
+        items = principles.get(cat, []) or []
+        always = [p for p in items if p.get("applies_when") == "always"]
+        picks = (always or items)[:3]
+        result[cat] = [
+            {
+                "id": p.get("id", ""),
+                "name": p.get("name", ""),
+                "summary": p.get("principle", p.get("summary", "")),
+            }
+            for p in picks
+            if isinstance(p, dict)
+        ]
+    return result if any(result.values()) else {}
+
+
+def _default_operational_raci(model: str = "co_managed") -> list:
+    data = _load_patterns_yaml("operational-raci.yaml")
+    models = data.get("models", {}) if isinstance(data, dict) else {}
+    chosen = models.get(model) or models.get("co_managed") or {}
+    raci = chosen.get("raci", [])
+    return [r for r in raci if isinstance(r, dict)]
+
+
+def _derive_environments(deployment: str, dr: str) -> list:
+    """Produce a default environment catalogue from deployment model + DR flag."""
+    deployment_lc = (deployment or "").lower()
+    dr_enabled = bool(dr) and str(dr).lower() not in {"", "no", "none", "not in scope", "disabled", "false"}
+    envs = [
+        {"name": "Production", "sizing": "Full capacity per workload profile",
+         "isolation": "Dedicated compartment, private endpoints", "cost_pct": 55},
+        {"name": "Pre-Production / UAT", "sizing": "50-75% of production",
+         "isolation": "Shared tenancy OK, same region", "cost_pct": 20},
+        {"name": "Dev/Test", "sizing": "25% of production, auto-stop off-hours",
+         "isolation": "Shared, relaxed controls", "cost_pct": 10},
+    ]
+    if dr_enabled or "multi" in deployment_lc or "dr" in deployment_lc:
+        envs.append({
+            "name": "DR (secondary region)",
+            "sizing": "100% of production, async replication",
+            "isolation": "Cross-region, same security baseline",
+            "cost_pct": 15,
+        })
+    return envs
+
+
+_HA_DR_BY_TIER = {
+    "platinum": {
+        "technology": "RAC + cross-region Active Data Guard (sync)",
+        "rto": "< 1 hour",
+        "rpo": "< 5 minutes",
+    },
+    "gold": {
+        "technology": "TAC + cross-region Active Data Guard (async)",
+        "rto": "2-4 hours",
+        "rpo": "15 minutes",
+    },
+    "silver": {
+        "technology": "Single instance + cross-region backup restore",
+        "rto": "4-8 hours",
+        "rpo": "1 hour",
+    },
+    "bronze": {
+        "technology": "Single instance + Object Storage archive",
+        "rto": "24 hours",
+        "rpo": "24 hours",
+    },
+}
+
+
+def _derive_ha_dr_tiers(workloads: list) -> list:
+    """Produce one HA/DR row per distinct service tier present."""
+    seen = []
+    for wl in workloads or []:
+        tier = str(wl.get("tier", "")).lower()
+        if tier in _HA_DR_BY_TIER and tier not in seen:
+            seen.append(tier)
+    return [
+        {"tier": t.title(), **_HA_DR_BY_TIER[t]}
+        for t in seen
+    ]
+
+
+def _default_security_baseline() -> dict:
+    """Conservative OCI security baseline — customer confirms specifics."""
+    return {
+        "controls": {
+            "identity": [
+                "IAM compartments per environment + tag-based policies",
+                "Federated SSO via customer IdP (SAML/OIDC)",
+                "MFA enforced for all human users",
+            ],
+            "network": [
+                "Private subnets with NSGs; no public IPs on data tier",
+                "Service Gateway for OCI APIs; no egress over public internet",
+                "FastConnect or Site-to-Site VPN for hybrid connectivity",
+            ],
+            "database": [
+                "TDE at rest (customer-managed keys via OCI Vault)",
+                "Network encryption in transit (TLS 1.2+)",
+                "Data Safe for activity auditing + sensitive data discovery",
+            ],
+            "monitoring": [
+                "OCI Logging + Service Connector Hub to SIEM",
+                "Cloud Guard detectors enabled (baseline recipe)",
+                "OCI Monitoring alarms on quota, cost, and security events",
+            ],
+        },
+        "compliance": ["ISO 27001", "SOC 2", "PCI-DSS"],
+    }
+
+
+def _derive_service_tiering(services: list) -> list:
+    """Map a flat services list to service-tiering workload rows.
+
+    Preserves any tier/uptime/rto/rpo the caller supplied; fills sensible
+    defaults so the slide always has a full table instead of blanks.
+    """
+    workloads = []
+    for svc in services or []:
+        if not isinstance(svc, dict):
+            continue
+        name = svc.get("name") or svc.get("workload") or svc.get("sku") or "Service"
+        tier = svc.get("tier") or svc.get("service_tier") or "Gold"
+        workloads.append({
+            "name": name,
+            "tier": str(tier).title(),
+            "uptime": svc.get("uptime", "99.9%"),
+            "rto": svc.get("rto", "4 hours"),
+            "rpo": svc.get("rpo", "15 minutes"),
+        })
+    return workloads
+
+
 def _adapt_flat_spec(spec: dict) -> dict:
     """Map the MCP flat payload to the proposal-spec structure from_spec expects."""
     arch = spec.get("architecture") if isinstance(spec.get("architecture"), dict) else {}
@@ -95,6 +250,7 @@ def _adapt_flat_spec(spec: dict) -> dict:
     if dr_raw is None and "dr" in arch:
         dr_raw = "Enabled" if arch.get("dr") else "Not in scope"
     capacity = spec.get("capacity") or arch.get("capacity") or {}
+    services = spec.get("services", []) or []
 
     target_parts = [p for p in (workload, deployment and f"deployment: {deployment}",
                                 region and f"region: {region}") if p]
@@ -110,7 +266,7 @@ def _adapt_flat_spec(spec: dict) -> dict:
         current_state.append(f"Disaster recovery: {dr_raw}")
 
     line_items = []
-    for svc in spec.get("services", []) or []:
+    for svc in services:
         if not isinstance(svc, dict):
             continue
         qty = svc.get("quantity", svc.get("qty"))
@@ -139,6 +295,54 @@ def _adapt_flat_spec(spec: dict) -> dict:
             "timeline": "",
         },
     }
+
+    workloads = _derive_service_tiering(services)
+    if workloads:
+        adapted["service_tiering"] = workloads
+
+    arch_desc_parts = [p for p in (
+        workload and f"Workload: {workload}",
+        deployment and f"Deployment: {deployment}",
+        region and f"Primary region: {region}",
+        billing and f"Licensing: {billing}",
+    ) if p]
+    if arch_desc_parts:
+        adapted["architecture"] = {"description": "  •  ".join(arch_desc_parts)}
+
+    principles = _default_architecture_principles()
+    if principles:
+        adapted["architecture_principles"] = principles
+
+    ha_dr_tiers = _derive_ha_dr_tiers(workloads)
+    if ha_dr_tiers:
+        adapted["ha_dr"] = {
+            "tiers": ha_dr_tiers,
+            "description": "HA/DR posture per service tier. Confirm RTO/RPO with business stakeholders.",
+        }
+
+    adapted["security"] = _default_security_baseline()
+
+    environments = _derive_environments(deployment, dr_raw)
+    if environments:
+        adapted["environment_catalogue"] = {"environments": environments}
+
+    raci_items = _default_operational_raci("co_managed")
+    if raci_items:
+        adapted["operational_raci"] = {
+            "raci_items": raci_items,
+            "model": "co_managed",
+        }
+
+    adapted["next_steps"] = {
+        "steps": [
+            "Validate architecture + service tiers with technical stakeholders",
+            "Confirm capacity assumptions against current/expected utilization",
+            "Lock commitment model (PAYG vs UCM) and finalize discount",
+            "Define proof-of-concept / pilot scope and success criteria",
+            "Schedule operational handover and RACI walkthrough",
+        ],
+    }
+
     if line_items:
         adapted["cost"] = {
             "line_items": line_items,

@@ -137,6 +137,51 @@ Swap `B88326` → `B88325` (1 Gbps) or `B93126` (100 Gbps) as needed.
 
 ---
 
+## Recipe 4 — Big Data Service + Data Science + Data Flow (analytics stack)
+
+**When it matches:** "HDFS-managed cluster for ETL", "notebooks + model deployment",
+"managed Spark pipelines" — typical OCI analytics/AI workload mix.
+
+**SKUs:**
+
+| SKU | Component | Metric |
+|-----|-----------|--------|
+| `B91128` | Big Data Service — Compute Standard (real) | OCPU/hour |
+| `B91129` | Big Data Service — Compute Dense I/O (real) | OCPU/hour |
+| `B91130` | Big Data Service — Compute HPC (real) | OCPU/hour |
+| `B93555` | Big Data Service — Core (real) | OCPU/hour |
+| `EST-DS-NOTEBOOK` | **[Estimate]** Data Science notebook session — priced as underlying VM.Standard OCPU | OCPU/hour |
+| `EST-DS-MODEL` | **[Estimate]** Data Science model-deployment endpoint — priced as underlying VM.Standard OCPU | OCPU/hour |
+| `EST-DF-SPARK` | **[Estimate]** Data Flow managed Spark runtime — priced as underlying VM.Standard OCPU | OCPU/hour |
+
+OCI Data Science and OCI Data Flow have no dedicated SKUs in the Oracle public
+pricing API — both are billed via the underlying Compute shape + Block/Object
+Storage consumed. The `EST-*` entries are placeholder estimates (VM.Standard3.Flex
+OCPU rate) so BOMs can include them as line items with an explicit "estimate"
+flag; confirm the actual shape and hours with the customer before quoting.
+
+**Payload (16 BDS Standard + 8 BDS Dense I/O + 4 notebook + 2 model + 8 Spark):**
+
+```json
+{
+  "customer_id": "acme-analytics",
+  "discount_pct": 0.30,
+  "currency": "USD",
+  "services": [
+    { "sku": "B91128",          "quantity": 16 },
+    { "sku": "B91129",          "quantity": 8 },
+    { "sku": "EST-DS-NOTEBOOK", "quantity": 4 },
+    { "sku": "EST-DS-MODEL",    "quantity": 2 },
+    { "sku": "EST-DF-SPARK",    "quantity": 8 }
+  ]
+}
+```
+
+Add `B91961` (Block Volume) and `B91628` (Object Storage Standard) when the
+customer needs dedicated storage beyond the compute default.
+
+---
+
 ## When a recipe doesn't fit
 
 1. Grep the catalog: `grep -n "<product keyword>" kb/pricing/oci-sku-catalog.yaml`
