@@ -239,18 +239,57 @@ def _derive_service_tiering(services: list) -> list:
 def _adapt_flat_spec(spec: dict) -> dict:
     """Map the MCP flat payload to the proposal-spec structure from_spec expects."""
     arch = spec.get("architecture") if isinstance(spec.get("architecture"), dict) else {}
+    tenancy = spec.get("tenancy") if isinstance(spec.get("tenancy"), dict) else {}
 
     customer = spec.get("customer_name") or spec.get("customer_id", "")
     title = spec.get("title") or arch.get("workload", "") or "Architecture Proposal"
     workload = spec.get("workload_type") or arch.get("workload", "")
     deployment = spec.get("deployment_model") or arch.get("deployment", "")
-    region = spec.get("primary_region") or spec.get("region", "")
     billing = spec.get("billing_model") or arch.get("license_model", "")
+    capacity = spec.get("capacity") or arch.get("capacity") or {}
+    services = spec.get("services", []) or []
+
+    # Region discovery — primary + DR can arrive as flat fields, under
+    # architecture.*, or as a tenancy.regions list (items may be plain
+    # strings or {region, role} dicts).
+    primary_region = (
+        spec.get("primary_region")
+        or spec.get("region")
+        or arch.get("primary_region")
+        or arch.get("region")
+        or ""
+    )
+    dr_region = (
+        spec.get("dr_region")
+        or spec.get("secondary_region")
+        or arch.get("dr_region")
+        or arch.get("secondary_region")
+        or ""
+    )
+    tenancy_regions = tenancy.get("regions") or spec.get("regions") or arch.get("regions") or []
+    if isinstance(tenancy_regions, list):
+        for entry in tenancy_regions:
+            if isinstance(entry, dict):
+                name = entry.get("name") or entry.get("region") or entry.get("id") or ""
+                role = str(entry.get("role") or entry.get("type") or "").lower()
+                if role in ("primary", "hub", "prod", "production") and not primary_region:
+                    primary_region = name
+                elif role in ("dr", "standby", "secondary", "failover") and not dr_region:
+                    dr_region = name
+            elif isinstance(entry, str):
+                if not primary_region:
+                    primary_region = entry
+                elif not dr_region:
+                    dr_region = entry
+    region = primary_region
+
     dr_raw = spec.get("disaster_recovery")
     if dr_raw is None and "dr" in arch:
         dr_raw = "Enabled" if arch.get("dr") else "Not in scope"
-    capacity = spec.get("capacity") or arch.get("capacity") or {}
-    services = spec.get("services", []) or []
+    # If the spec names a DR region, treat DR as enabled even when the
+    # disaster_recovery flag is omitted.
+    if not dr_raw and dr_region:
+        dr_raw = f"Enabled — secondary region: {dr_region}"
 
     target_parts = [p for p in (workload, deployment and f"deployment: {deployment}",
                                 region and f"region: {region}") if p]
@@ -304,10 +343,28 @@ def _adapt_flat_spec(spec: dict) -> dict:
         workload and f"Workload: {workload}",
         deployment and f"Deployment: {deployment}",
         region and f"Primary region: {region}",
+        dr_region and f"DR region: {dr_region}",
         billing and f"Licensing: {billing}",
     ) if p]
+    architecture_block: dict = {}
+    # Preserve any caller-supplied visual/diagram_path instead of overwriting.
+    if isinstance(arch.get("visual"), dict):
+        architecture_block["visual"] = arch["visual"]
+    if arch.get("diagram_path"):
+        architecture_block["diagram_path"] = arch["diagram_path"]
     if arch_desc_parts:
-        adapted["architecture"] = {"description": "  •  ".join(arch_desc_parts)}
+        architecture_block["description"] = "  •  ".join(arch_desc_parts)
+    # When we know both regions and no visual was supplied, emit a simple
+    # two-region visual so the DR region renders with its real name.
+    if region and dr_region and "visual" not in architecture_block:
+        architecture_block["visual"] = {
+            "regions": [
+                {"name": region, "primary": True, "label": "PRIMARY"},
+                {"name": dr_region, "primary": False, "label": "DR STANDBY"},
+            ],
+        }
+    if architecture_block:
+        adapted["architecture"] = architecture_block
 
     principles = _default_architecture_principles()
     if principles:
@@ -326,12 +383,22 @@ def _adapt_flat_spec(spec: dict) -> dict:
     if environments:
         adapted["environment_catalogue"] = {"environments": environments}
 
-    raci_items = _default_operational_raci("co_managed")
-    if raci_items:
-        adapted["operational_raci"] = {
-            "raci_items": raci_items,
-            "model": "co_managed",
-        }
+    # Respect user-supplied RACI if present (string model name, list of items,
+    # or dict with model/raci_items); otherwise fall back to co_managed default.
+    user_raci = None
+    for key in ("operational_raci", "raci", "operations_raci"):
+        if spec.get(key) is not None:
+            user_raci = spec[key]
+            break
+    if user_raci is not None:
+        adapted["operational_raci"] = user_raci
+    else:
+        raci_items = _default_operational_raci("co_managed")
+        if raci_items:
+            adapted["operational_raci"] = {
+                "raci_items": raci_items,
+                "model": "co_managed",
+            }
 
     adapted["next_steps"] = {
         "steps": [
@@ -1617,11 +1684,32 @@ class OCIDeckGenerator(OraclePresBase):
             )
 
         # Slide 13: Operational RACI (ECAL)
-        if "operational_raci" in spec:
-            r = spec["operational_raci"]
+        raci_payload = None
+        for key in ("operational_raci", "raci", "operations_raci"):
+            if key in spec and spec[key] is not None:
+                raci_payload = spec[key]
+                break
+        if raci_payload is not None:
+            model = "co_managed"
+            raci_items = []
+            if isinstance(raci_payload, str):
+                model = raci_payload
+            elif isinstance(raci_payload, list):
+                raci_items = [r for r in raci_payload if isinstance(r, dict)]
+            elif isinstance(raci_payload, dict):
+                model = raci_payload.get("model") or raci_payload.get("engagement_model") or "co_managed"
+                items = (
+                    raci_payload.get("raci_items")
+                    or raci_payload.get("items")
+                    or raci_payload.get("activities")
+                    or []
+                )
+                raci_items = [r for r in items if isinstance(r, dict)]
+            if not raci_items:
+                raci_items = _default_operational_raci(model)
             gen.add_operational_raci_slide(
-                raci_items=r.get("raci_items", []),
-                model=r.get("model", "co_managed"),
+                raci_items=raci_items,
+                model=model,
             )
 
         # Slide 14: Risks
