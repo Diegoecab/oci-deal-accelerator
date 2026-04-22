@@ -637,23 +637,56 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Slide 3: Business Drivers
         drivers_data = bc.get("drivers", {})
-        if drivers_data:
+        # Accept primary_driver at the top level as well (common user shape)
+        top_primary = pick(bc, "primary_driver", "main_driver")
+        # Accept a plain string or list for drivers
+        if isinstance(drivers_data, str):
+            drivers_data = {"primary": drivers_data}
+        elif isinstance(drivers_data, list):
+            drivers_data = {"items": drivers_data}
+        elif not isinstance(drivers_data, dict):
+            drivers_data = {}
+
+        if drivers_data or top_primary:
             driver_statements = []
-            primary = pick(drivers_data, "primary")
-            urgency = pick(drivers_data, "urgency")
-            coi = drivers_data.get("cost_of_inaction", {})
+            primary = pick(drivers_data, "primary", "primary_driver", "main_driver") or top_primary
+            urgency = pick(drivers_data, "urgency", "why_now")
+            coi = drivers_data.get("cost_of_inaction", {}) or {}
 
             if primary:
-                driver_statements.append(f"Primary Driver: {primary.replace('_', ' ').title()}\n{urgency}" if urgency else primary.replace('_', ' ').title())
-            financial = pick(coi, "financial")
-            operational = pick(coi, "operational")
-            strategic = pick(coi, "strategic")
-            if financial:
-                driver_statements.append(f"Financial Impact of Inaction\n{financial}")
-            if operational:
-                driver_statements.append(f"Operational Impact\n{operational}")
-            elif strategic:
-                driver_statements.append(f"Strategic Risk\n{strategic}")
+                primary_text = primary if isinstance(primary, str) else str(primary)
+                # Only rewrite snake_case enum tokens ("compliance_driven"); leave natural
+                # language intact so values like "Soberanía de datos + compliance regulatorio"
+                # render verbatim.
+                if "_" in primary_text and " " not in primary_text and len(primary_text) <= 40:
+                    headline = f"Primary Driver: {primary_text.replace('_', ' ').title()}"
+                else:
+                    headline = primary_text
+                driver_statements.append(f"{headline}\n{urgency}" if urgency else headline)
+
+            # Spec-provided additional cards take precedence over the inaction fallback
+            extra_items = pick_list(drivers_data, "items", "additional", "secondary", "cards")
+            for item in extra_items:
+                if isinstance(item, str) and item.strip():
+                    driver_statements.append(item.strip())
+                elif isinstance(item, dict):
+                    label = pick(item, "label", "headline", "title", "name")
+                    desc = pick(item, "detail", "description", "text", "body")
+                    if label and desc:
+                        driver_statements.append(f"{label}\n{desc}")
+                    elif label or desc:
+                        driver_statements.append(label or desc)
+
+            if not extra_items:
+                financial = pick(coi, "financial")
+                operational = pick(coi, "operational")
+                strategic = pick(coi, "strategic")
+                if financial:
+                    driver_statements.append(f"Financial Impact of Inaction\n{financial}")
+                if operational:
+                    driver_statements.append(f"Operational Impact\n{operational}")
+                elif strategic:
+                    driver_statements.append(f"Strategic Risk\n{strategic}")
 
             if driver_statements:
                 gen.add_business_drivers_slide(driver_statements)
@@ -699,10 +732,6 @@ class BusinessCaseDeckGenerator(OraclePresBase):
                     summary=summary,
                     next_steps=pick_list(rec, "next_steps"),
                 )
-
-        # Closing slides
-        prepared_by = pick(bc, "prepared_by", "author")
-        gen.add_closing_slide(name=prepared_by)
 
         return gen
 

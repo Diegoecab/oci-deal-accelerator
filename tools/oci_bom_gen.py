@@ -163,6 +163,16 @@ class OCIBomGenerator:
         sku = str(sku)
         cat_entry = self.catalog.get(sku, {})
 
+        note = custom_note
+        if not cat_entry:
+            warn = f"[WARN] SKU {sku!r} not in catalog — included as line item with $0 price and warning note"
+            print(warn, file=sys.stderr)
+            flag = "⚠ SKU not in catalog — estimated $0, must be confirmed before quoting"
+            note = f"{note}. {flag}" if note else flag
+        elif cat_entry.get("estimate"):
+            flag = "⚠ Estimate only — billed via underlying compute/storage; confirm actual shape + hours"
+            note = f"{note}. {flag}" if note else flag
+
         item = {
             "sku": sku,
             "product": cat_entry.get("product", f"Unknown SKU ({sku})"),
@@ -176,7 +186,7 @@ class OCIBomGenerator:
             "discountable": cat_entry.get("discountable", True),
             "billing_type": cat_entry.get("billing_type", "hourly"),
             "custom_label": custom_label,
-            "custom_note": custom_note,
+            "custom_note": note,
         }
         self.line_items.append(item)
 
@@ -308,12 +318,22 @@ class OCIBomGenerator:
         data_start_row = row
         cat_subtotal_rows = []
 
-        for cat_key in self.category_order:
+        # Ensure categories present in items but missing from catalog order
+        # (e.g., "other" from unknown SKUs) still render at the end.
+        render_order = list(self.category_order)
+        for cat_key in items_by_cat:
+            if cat_key not in render_order:
+                render_order.append(cat_key)
+
+        for cat_key in render_order:
             if cat_key not in items_by_cat:
                 continue
 
             cat_items = items_by_cat[cat_key]
-            display_name = self.category_names.get(cat_key, cat_key)
+            display_name = self.category_names.get(
+                cat_key,
+                "Uncategorized — confirm SKUs" if cat_key == "other" else cat_key,
+            )
 
             # Category header row
             ws.cell(row=row, column=COL_PRODUCT, value=display_name).font = cat_font
@@ -579,11 +599,19 @@ class OCIBomGenerator:
             cat = item["category"]
             items_by_cat.setdefault(cat, []).append(item)
 
-        for cat_key in self.category_order:
+        render_order = list(self.category_order)
+        for cat_key in items_by_cat:
+            if cat_key not in render_order:
+                render_order.append(cat_key)
+
+        for cat_key in render_order:
             if cat_key not in items_by_cat:
                 continue
 
-            display_name = self.category_names.get(cat_key, cat_key)
+            display_name = self.category_names.get(
+                cat_key,
+                "Uncategorized — confirm SKUs" if cat_key == "other" else cat_key,
+            )
 
             # Category header
             ws_bom.cell(row=row, column=4, value=display_name).font = cat_font

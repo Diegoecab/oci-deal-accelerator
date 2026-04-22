@@ -1262,6 +1262,60 @@ categories:
       list_price_usd: 0.0003
       default_hours_units: 1
       billing_type: per_unit
+  data_services:
+    display_name: Oracle Cloud Infrastructure - Data & Analytics Services
+    skus:
+    - sku: B91128
+      product: Oracle Big Data Service - Compute - Standard
+      metric: OCPU Per Hour
+      list_price_usd: 0.1344
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B91129
+      product: Oracle Big Data Service - Compute - Dense I/O
+      metric: OCPU Per Hour
+      list_price_usd: 0.214
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B91130
+      product: Oracle Big Data Service - Compute - HPC
+      metric: OCPU Per Hour
+      list_price_usd: 0.1536
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B93555
+      product: Oracle Big Data Service - Core
+      metric: OCPU Per Hour
+      list_price_usd: 0.015
+      default_hours_units: 730
+      billing_type: hourly
+    # OCI Data Science and Data Flow do not have dedicated SKUs in the Oracle
+    # public pricing API — they are billed via the underlying Compute + Block/Object
+    # Storage consumed by notebook sessions, model-deployment endpoints, and Spark
+    # runs. The entries below are placeholder estimates (VM.Standard3.Flex OCPU rate)
+    # so BOMs can include them as line items; always confirm against the customer's
+    # actual shape + usage before quoting.
+    - sku: EST-DS-NOTEBOOK
+      product: '[ESTIMATE] OCI Data Science - Notebook Session (billed via underlying VM.Standard compute OCPU)'
+      metric: OCPU Per Hour
+      list_price_usd: 0.0255
+      default_hours_units: 730
+      billing_type: hourly
+      estimate: true
+    - sku: EST-DS-MODEL
+      product: '[ESTIMATE] OCI Data Science - Model Deployment endpoint (billed via underlying VM.Standard compute OCPU)'
+      metric: OCPU Per Hour
+      list_price_usd: 0.0255
+      default_hours_units: 730
+      billing_type: hourly
+      estimate: true
+    - sku: EST-DF-SPARK
+      product: '[ESTIMATE] OCI Data Flow - Managed Spark runtime (billed via underlying VM.Standard compute OCPU)'
+      metric: OCPU Per Hour
+      list_price_usd: 0.0255
+      default_hours_units: 730
+      billing_type: hourly
+      estimate: true
   roving_edge:
     display_name: Oracle Roving Edge Infrastructure
     skus:

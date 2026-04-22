@@ -1440,12 +1440,6 @@ class OCIDeckGenerator(OraclePresBase):
                 contact_info=pick(ns, "contact_info"),
             )
 
-        # Closing slides
-        gen.add_closing_slide(
-            name=meta.get("architect", ""),
-            title=meta.get("firm", ""),
-        )
-
         return gen
 
 
