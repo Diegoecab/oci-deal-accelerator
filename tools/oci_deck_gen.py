@@ -17,6 +17,7 @@ Or import and use programmatically:
 
 import yaml
 import argparse
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -118,6 +119,21 @@ def _default_architecture_principles() -> dict:
     return result if any(result.values()) else {}
 
 
+def _principles_kb_index() -> dict:
+    """Index every KB principle by id so spec items with only id get enriched."""
+    data = _load_patterns_yaml("architecture-principles.yaml")
+    principles = data.get("principles", {}) if isinstance(data, dict) else {}
+    index = {}
+    for cat_items in principles.values():
+        for p in cat_items or []:
+            if isinstance(p, dict) and p.get("id"):
+                index[str(p["id"])] = {
+                    "name": p.get("name", ""),
+                    "summary": p.get("principle", p.get("summary", "")),
+                }
+    return index
+
+
 def _default_operational_raci(model: str = "co_managed") -> list:
     data = _load_patterns_yaml("operational-raci.yaml")
     models = data.get("models", {}) if isinstance(data, dict) else {}
@@ -169,6 +185,13 @@ _HA_DR_BY_TIER = {
         "rto": "24 hours",
         "rpo": "24 hours",
     },
+}
+
+_UPTIME_BY_TIER = {
+    "platinum": "99.99%",
+    "gold": "99.95%",
+    "silver": "99.9%",
+    "bronze": "99.5%",
 }
 
 
@@ -234,6 +257,167 @@ def _derive_service_tiering(services: list) -> list:
             "rpo": svc.get("rpo", "15 minutes"),
         })
     return workloads
+
+
+def _timeline_to_weeks(timeline: str) -> int | None:
+    """Parse a simple duration phrase like '12 weeks' or '6 months'."""
+    if not timeline:
+        return None
+    text = str(timeline).lower()
+    match = re.search(r"(\d+)\s*(week|weeks|month|months)", text)
+    if not match:
+        return None
+    amount = int(match.group(1))
+    unit = match.group(2)
+    return amount * 4 if unit.startswith("month") else amount
+
+
+def _proposal_default_migration(timeline: str = "") -> dict:
+    """Generate a conservative Define/Design/Deliver plan from total duration."""
+    total_weeks = _timeline_to_weeks(timeline)
+    if total_weeks and total_weeks >= 6:
+        define = max(1, round(total_weeks * 0.2))
+        design = max(1, round(total_weeks * 0.3))
+        deliver = max(1, total_weeks - define - design)
+        total_duration = f"{total_weeks} weeks"
+    else:
+        define, design, deliver = 2, 4, 6
+        total_duration = timeline or "12 weeks (to validate)"
+    return {
+        "total_duration": total_duration,
+        "phases": [
+            {
+                "name": "Define",
+                "duration": f"{define} weeks",
+                "tasks": [
+                    "Validate scope and business drivers",
+                    "Baseline current estate and constraints",
+                    "Confirm success criteria and migration assumptions",
+                ],
+            },
+            {
+                "name": "Design",
+                "duration": f"{design} weeks",
+                "tasks": [
+                    "Finalize target architecture and landing zone",
+                    "Confirm security, DR, and networking approach",
+                    "Validate sizing and migration wave plan",
+                ],
+            },
+            {
+                "name": "Deliver",
+                "duration": f"{deliver} weeks",
+                "tasks": [
+                    "Execute migration waves and rehearsals",
+                    "Run cutover and stabilization",
+                    "Complete operations handover",
+                ],
+            },
+        ],
+        "downtime": "Confirm cutover window with application owners during design.",
+    }
+
+
+def _proposal_default_risks(summary: dict) -> list:
+    """Infer generic-but-grounded proposal risks from sparse summary text."""
+    text_parts = [
+        pick(summary, "why"),
+        pick(summary, "target_state"),
+        pick(summary, "timeline"),
+        *coerce_list(summary.get("current_state")),
+    ]
+    text = " ".join(str(p) for p in text_parts if p).lower()
+    risks = []
+
+    if any(token in text for token in ("legacy", "on-prem", "on premises", "migration")):
+        risks.append({
+            "risk": "Current-state migration scope may be larger than initially captured.",
+            "severity": "HIGH",
+            "mitigation": "Complete application and database discovery before locking the wave plan.",
+        })
+    if any(token in text for token in ("dr", "disaster recovery", "rto", "rpo", "resilien")):
+        risks.append({
+            "risk": "Resilience objectives need explicit validation against the proposed operating model.",
+            "severity": "MEDIUM",
+            "mitigation": "Confirm RTO/RPO targets and rehearse failover before production cutover.",
+        })
+    if any(token in text for token in ("cost", "budget", "tco", "byol", "payg")):
+        risks.append({
+            "risk": "Commercial assumptions may diverge from the customer's actual utilization baseline.",
+            "severity": "MEDIUM",
+            "mitigation": "Validate sizing, discount, and licensing assumptions with finance and platform owners.",
+        })
+    if any(token in text for token in ("team", "skill", "operations", "dba", "cloud")):
+        risks.append({
+            "risk": "Day-2 operating responsibilities may be unclear for the delivery team.",
+            "severity": "MEDIUM",
+            "mitigation": "Review the co-managed RACI and confirm ownership before the pilot starts.",
+        })
+
+    if not risks:
+        risks.append({
+            "risk": "Incomplete discovery details can force late design changes.",
+            "severity": "MEDIUM",
+            "mitigation": "Run a discovery checkpoint before committing to procurement or migration dates.",
+        })
+    return risks[:4]
+
+
+def _proposal_default_next_steps(summary: dict) -> list:
+    timeline = pick(summary, "timeline")
+    steps = [
+        "Review the proposal with technical and business stakeholders.",
+        "Validate current-state inventory, sizing, and dependency assumptions.",
+        "Confirm the target delivery model and success criteria for the first wave.",
+    ]
+    if timeline:
+        steps.append(f"Reconcile the plan against the stated timeline ({timeline}).")
+    steps.append("Decide whether to proceed with a proof of concept or detailed design workshop.")
+    return steps[:5]
+
+
+def _enrich_partial_proposal_spec(spec: dict) -> dict:
+    """Add safe fallback sections so sparse proposal specs still render usable decks."""
+    if not isinstance(spec, dict):
+        return spec
+
+    summary = spec.get("summary")
+    if not isinstance(summary, dict):
+        return spec
+
+    target_state = pick(summary, "target_state")
+    has_context = bool(target_state or pick(summary, "why") or coerce_list(summary.get("current_state")))
+    if not has_context:
+        return spec
+
+    enriched = dict(spec)
+
+    if "architecture" not in enriched and target_state:
+        enriched["architecture"] = {"description": target_state}
+
+    if "architecture_principles" not in enriched:
+        principles = _default_architecture_principles()
+        if principles:
+            enriched["architecture_principles"] = principles
+
+    if "migration" not in enriched:
+        enriched["migration"] = _proposal_default_migration(pick(summary, "timeline"))
+
+    if not any(k in enriched for k in ("operational_raci", "raci", "operations_raci")):
+        raci_items = _default_operational_raci("co_managed")
+        if raci_items:
+            enriched["operational_raci"] = {
+                "model": "co_managed",
+                "raci_items": raci_items,
+            }
+
+    if "risks" not in enriched:
+        enriched["risks"] = _proposal_default_risks(summary)
+
+    if "next_steps" not in enriched:
+        enriched["next_steps"] = {"steps": _proposal_default_next_steps(summary)}
+
+    return enriched
 
 
 def _adapt_flat_spec(spec: dict) -> dict:
@@ -836,17 +1020,22 @@ class OCIDeckGenerator(OraclePresBase):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
             workload_name = pick(wl, "name", "workload", "title")
+            tier_label = pick(wl, "tier", "service_tier", default="Silver")
+            tier_key = tier_label.lower()
+            tier_color = tier_colors.get(tier_key, Colors.SECONDARY_TEXT)
+            tier_defaults = _HA_DR_BY_TIER.get(tier_key, {})
+            uptime = wl.get("uptime") or _UPTIME_BY_TIER.get(tier_key, "")
+            rto = wl.get("rto") or tier_defaults.get("rto", "")
+            rpo = wl.get("rpo") or tier_defaults.get("rpo", "")
             self._style_table_cell(table.cell(row_idx, 0), workload_name, font_size=10, bold=True, bg_color=bg)
-            tier_label = pick(wl, "tier", "name", default="Silver")
-            tier_color = tier_colors.get(tier_label.lower(), Colors.SECONDARY_TEXT)
             self._style_table_cell(
                 table.cell(row_idx, 1), tier_label.title(),
                 font_size=10, bold=True, color=tier_color, bg_color=bg,
                 alignment=PP_ALIGN.CENTER,
             )
-            self._style_table_cell(table.cell(row_idx, 2), wl.get("uptime", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 3), wl.get("rto", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 4), wl.get("rpo", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 2), uptime, font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 3), rto, font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            self._style_table_cell(table.cell(row_idx, 4), rpo, font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
 
     def add_architecture_principles_slide(self, principles: dict):
         """Architecture Principles slide — ECAL Design/Deployment/Service categories.
@@ -856,6 +1045,8 @@ class OCIDeckGenerator(OraclePresBase):
         """
         slide = self._add_blank_slide()
         self._add_title_bar(slide, "Architecture Principles", margin=self.MARGIN)
+
+        kb_index = _principles_kb_index()
 
         y = Inches(1.2)
         col_x = self.MARGIN
@@ -877,7 +1068,11 @@ class OCIDeckGenerator(OraclePresBase):
             for item in items:
                 pid = item.get("id", "")
                 name = item.get("name", "")
-                summary = item.get("summary", "")
+                summary = item.get("summary", "") or item.get("principle", "")
+                if pid and (not name or not summary):
+                    fallback = kb_index.get(str(pid), {})
+                    name = name or fallback.get("name", "")
+                    summary = summary or fallback.get("summary", "")
                 label = f"{pid}  {name}" if pid else name
                 if summary:
                     label += f" — {summary}"
@@ -1588,6 +1783,8 @@ class OCIDeckGenerator(OraclePresBase):
         # with actual content instead of only blank title/closing slides.
         if _is_flat_spec(spec):
             spec = _adapt_flat_spec(spec)
+        else:
+            spec = _enrich_partial_proposal_spec(spec)
 
         meta = spec.get("metadata", {})
         gen = cls(
@@ -1622,10 +1819,43 @@ class OCIDeckGenerator(OraclePresBase):
         # Slide 5: Architecture
         if "architecture" in spec:
             a = spec["architecture"]
+            visual = a.get("visual")
+            description = a.get("description", "")
+            primary_region = (
+                spec.get("primary_region")
+                or spec.get("region")
+                or a.get("primary_region")
+                or a.get("region")
+                or ""
+            )
+            dr_region = (
+                spec.get("dr_region")
+                or spec.get("secondary_region")
+                or a.get("dr_region")
+                or a.get("secondary_region")
+                or ""
+            )
+            # Auto-build a two-region visual when the spec names a DR region
+            # but didn't pre-render the visual structure itself.
+            if dr_region and not visual:
+                visual = {
+                    "regions": [
+                        {"name": primary_region or "Primary", "primary": True, "label": "PRIMARY"},
+                        {"name": dr_region, "primary": False, "label": "DR STANDBY"},
+                    ],
+                }
+            elif dr_region and isinstance(visual, dict):
+                regions = visual.get("regions") or []
+                names = {str(r.get("name", "")).lower() for r in regions if isinstance(r, dict)}
+                if dr_region.lower() not in names:
+                    regions.append({"name": dr_region, "primary": False, "label": "DR STANDBY"})
+                    visual["regions"] = regions
+            if dr_region and description and dr_region.lower() not in description.lower():
+                description = f"{description}  •  DR region: {dr_region}"
             gen.add_architecture_slide(
                 diagram_path=a.get("diagram_path"),
-                description=a.get("description", ""),
-                visual=a.get("visual"),
+                description=description,
+                visual=visual,
             )
 
         # Slide 6: Decisions

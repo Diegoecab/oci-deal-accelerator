@@ -300,6 +300,8 @@ SVC_CATEGORY = {
     # Integration (purple #804998)
     "drg": "svc_integration",
     "dynamic_routing_gateway": "svc_integration",
+    "rpc": "svc_integration",
+    "remote_peering_connection": "svc_integration",
     "streaming": "svc_integration", "kafka": "svc_integration",
     "queue": "svc_integration", "oci_queue": "svc_integration",
     "oic": "svc_integration", "integration_cloud": "svc_integration",
@@ -1640,6 +1642,7 @@ class OCIDiagramGenerator:
 
         # Regions — auto-size containers from content when spec doesn't override
         region_x_cursor = 15  # tracks right edge for auto-positioning next region
+        drg_by_region = []  # list of (region_id, drg_id) for cross-region RPC auto-wiring
         for region in tenancy_spec.get("regions", []):
             is_primary = region.get("primary", False)
             rx = region.get("x", region_x_cursor)
@@ -1700,6 +1703,18 @@ class OCIDiagramGenerator:
                 auto_rw = total_vcn_w + drg_lane_w + 50  # margins
                 auto_rh = total_vcn_h + 70  # 45 top (label) + 25 bottom
 
+            # Local DR standby (same region as primary) — adds a dormant
+            # node below the VCNs. Bump auto-height to make room.
+            local_dr = bool(region.get("local_dr") or region.get("local_dr_standby"))
+            if not local_dr:
+                for v in region_vcns:
+                    if v.get("local_dr") or v.get("local_dr_standby"):
+                        local_dr = True
+                        break
+            local_dr_h = 90 if local_dr else 0
+            if local_dr:
+                auto_rh += local_dr_h
+
             # Always use at least auto-calculated size even if spec is smaller
             rw = max(region.get("w", auto_rw), auto_rw)
             rh = max(region.get("h", auto_rh), auto_rh)
@@ -1738,6 +1753,7 @@ class OCIDiagramGenerator:
                         drg_id, label, drg["type"],
                         region["id"], drg_x, drg_y, drg_w, drg_h,
                     )
+                    drg_by_region.append((region["id"], drg_id))
 
             # VCNs — offset right if DRG lane present
             vcn_offset_x = drg_lane_w + 15
@@ -1831,6 +1847,25 @@ class OCIDiagramGenerator:
                         svc_x += svc_w + SVC_SPACING
 
                     subnet_y += sh + SUBNET_GAP
+
+            # Local DR standby — render a dormant node inside the region
+            # at the bottom-right corner so it's visually clear that the
+            # primary has a same-region failover target.
+            if local_dr:
+                standby_w = 160
+                standby_h = 70
+                standby_x = max(15, rw - standby_w - 20)
+                standby_y = rh - standby_h - 15
+                standby_label = (
+                    region.get("local_dr_label")
+                    or region.get("local_dr_standby_label")
+                    or "Local DR\nStandby"
+                )
+                standby_id = region.get("local_dr_id") or gen._next_id()
+                gen.add_service(
+                    standby_id, standby_label, "standby",
+                    region["id"], standby_x, standby_y, standby_w, standby_h,
+                )
 
             # Compartments inside region — can contain VCNs
             for comp in region.get("compartments", []):
@@ -1939,9 +1974,39 @@ class OCIDiagramGenerator:
                 )
                 opx += svc_w + 12
 
+        # Cross-region RPC — when 2+ regions own a DRG and the spec didn't
+        # already wire a peering link between them, auto-add a "Remote
+        # Peering Connection" edge for each pair so the cross-region path
+        # is visible in the diagram.
+        connections = spec.get("connections", [])
+        if len(drg_by_region) >= 2:
+            existing_pairs = {
+                (c.get("from"), c.get("to")) for c in connections
+                if isinstance(c, dict)
+            }
+            existing_pairs |= {(b, a) for (a, b) in existing_pairs}
+            seen_drgs_per_region = {}
+            for region_id, drg_id in drg_by_region:
+                seen_drgs_per_region.setdefault(region_id, []).append(drg_id)
+            region_ids = list(seen_drgs_per_region.keys())
+            for i in range(len(region_ids)):
+                for j in range(i + 1, len(region_ids)):
+                    src = seen_drgs_per_region[region_ids[i]][0]
+                    tgt = seen_drgs_per_region[region_ids[j]][0]
+                    if (src, tgt) in existing_pairs:
+                        continue
+                    connections = list(connections) + [{
+                        "id": f"rpc_{src}_{tgt}",
+                        "from": src,
+                        "to": tgt,
+                        "type": "network",
+                        "label": "RPC\n(Remote Peering)",
+                    }]
+                    existing_pairs.add((src, tgt))
+                    existing_pairs.add((tgt, src))
+
         # Connections — merge duplicate from/to pairs (e.g., dual FastConnect)
         # into a single edge with combined label
-        connections = spec.get("connections", [])
         seen_pairs = {}  # (from, to) -> index in deduped list
         deduped = []
         for conn in connections:
