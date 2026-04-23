@@ -204,6 +204,17 @@ class OCIBomGenerator:
     def _col_count(self) -> int:
         return len(self._col_defs())
 
+    @staticmethod
+    def _monthly_values(item: dict) -> tuple[float, float]:
+        """Return monthly values with and without discount for one BOM line."""
+        price = float(item.get("list_price_usd", 0) or 0)
+        hours_units = float(item.get("hours_units", 0) or 0)
+        qty = float(item.get("qty", 0) or 0)
+        discount = float(item.get("discount", 0) or 0)
+        monthly_wo = price * hours_units * qty
+        monthly_w = monthly_wo * (1 - discount)
+        return monthly_wo, monthly_w
+
     def _build_sheet(self, ws):
         """Build the complete BOM sheet."""
         ws.title = "BOM"
@@ -325,6 +336,11 @@ class OCIBomGenerator:
             if cat_key not in render_order:
                 render_order.append(cat_key)
 
+        grand_total_wo = 0.0
+        grand_total_w = 0.0
+        grand_total_conv_wo = 0.0
+        grand_total_conv_w = 0.0
+
         for cat_key in render_order:
             if cat_key not in items_by_cat:
                 continue
@@ -344,6 +360,10 @@ class OCIBomGenerator:
             row += 1
 
             cat_first_data = row
+            cat_total_wo = 0.0
+            cat_total_w = 0.0
+            cat_total_conv_wo = 0.0
+            cat_total_conv_w = 0.0
 
             for idx, item in enumerate(cat_items):
                 # Static data
@@ -356,38 +376,22 @@ class OCIBomGenerator:
                 ws.cell(row=row, column=COL_MONTHS, value=item["months"])
                 ws.cell(row=row, column=COL_DISC, value=item["discount"])
 
-                # Formula: Monthly w/o discount = Price × Hours × Qty
-                p = get_column_letter(COL_PRICE)
-                h = get_column_letter(COL_HOURS)
-                q = get_column_letter(COL_QTY)
-                d = get_column_letter(COL_DISC)
-                ws.cell(
-                    row=row, column=COL_M_WO,
-                    value=f"={p}{row}*{h}{row}*{q}{row}",
-                )
-
-                # Formula: Monthly w/ discount = Monthly_wo × (1 - Discount)
-                mwo = get_column_letter(COL_M_WO)
-                ws.cell(
-                    row=row, column=COL_M_W,
-                    value=f"={mwo}{row}*(1-{d}{row})",
-                )
+                monthly_wo, monthly_w = self._monthly_values(item)
+                ws.cell(row=row, column=COL_M_WO, value=monthly_wo)
+                ws.cell(row=row, column=COL_M_W, value=monthly_w)
+                cat_total_wo += monthly_wo
+                cat_total_w += monthly_w
 
                 # Conversion formulas
                 if conv:
                     xr = self.conversion.get("exchange_rate", 1)
                     tr = self.conversion.get("tax_rate", 0)
-                    mw = get_column_letter(COL_M_W)
-                    # Converted w/o tax
-                    ws.cell(
-                        row=row, column=COL_CONV_WO,
-                        value=f"={mw}{row}*{xr}",
-                    )
-                    # Converted w/ tax
-                    ws.cell(
-                        row=row, column=COL_CONV_W,
-                        value=f"={get_column_letter(COL_CONV_WO)}{row}*(1+{tr})",
-                    )
+                    conv_wo = monthly_w * xr
+                    conv_w = conv_wo * (1 + tr)
+                    ws.cell(row=row, column=COL_CONV_WO, value=conv_wo)
+                    ws.cell(row=row, column=COL_CONV_W, value=conv_w)
+                    cat_total_conv_wo += conv_wo
+                    cat_total_conv_w += conv_w
 
                 # Styling per row
                 is_alt = idx % 2 == 1
@@ -419,20 +423,20 @@ class OCIBomGenerator:
             # Category subtotal row
             cat_last_data = row - 1
             ws.cell(row=row, column=COL_PRODUCT, value=f"Subtotal — {display_name}")
-            mwo_letter = get_column_letter(COL_M_WO)
-            mw_letter = get_column_letter(COL_M_W)
-            ws.cell(row=row, column=COL_M_WO, value=f"=SUM({mwo_letter}{cat_first_data}:{mwo_letter}{cat_last_data})")
-            ws.cell(row=row, column=COL_M_W, value=f"=SUM({mw_letter}{cat_first_data}:{mw_letter}{cat_last_data})")
+            ws.cell(row=row, column=COL_M_WO, value=cat_total_wo)
+            ws.cell(row=row, column=COL_M_W, value=cat_total_w)
             ws.cell(row=row, column=COL_M_WO).number_format = '$#,##0.00'
             ws.cell(row=row, column=COL_M_W).number_format = '$#,##0.00'
+            grand_total_wo += cat_total_wo
+            grand_total_w += cat_total_w
 
             if conv:
-                cwo_letter = get_column_letter(COL_CONV_WO)
-                cw_letter = get_column_letter(COL_CONV_W)
-                ws.cell(row=row, column=COL_CONV_WO, value=f"=SUM({cwo_letter}{cat_first_data}:{cwo_letter}{cat_last_data})")
-                ws.cell(row=row, column=COL_CONV_W, value=f"=SUM({cw_letter}{cat_first_data}:{cw_letter}{cat_last_data})")
+                ws.cell(row=row, column=COL_CONV_WO, value=cat_total_conv_wo)
+                ws.cell(row=row, column=COL_CONV_W, value=cat_total_conv_w)
                 ws.cell(row=row, column=COL_CONV_WO).number_format = '#,##0.00'
                 ws.cell(row=row, column=COL_CONV_W).number_format = '#,##0.00'
+                grand_total_conv_wo += cat_total_conv_wo
+                grand_total_conv_w += cat_total_conv_w
 
             for ci in range(1, num_cols + 1):
                 cell = ws.cell(row=row, column=ci)
@@ -448,19 +452,14 @@ class OCIBomGenerator:
         total_row = row
         ws.cell(row=row, column=COL_PRODUCT, value="TOTAL").font = total_font
 
-        # Sum of subtotals
-        mwo_refs = "+".join(f"{get_column_letter(COL_M_WO)}{r}" for r in cat_subtotal_rows)
-        mw_refs = "+".join(f"{get_column_letter(COL_M_W)}{r}" for r in cat_subtotal_rows)
-        ws.cell(row=row, column=COL_M_WO, value=f"={mwo_refs}")
-        ws.cell(row=row, column=COL_M_W, value=f"={mw_refs}")
+        ws.cell(row=row, column=COL_M_WO, value=grand_total_wo)
+        ws.cell(row=row, column=COL_M_W, value=grand_total_w)
         ws.cell(row=row, column=COL_M_WO).number_format = '$#,##0.00'
         ws.cell(row=row, column=COL_M_W).number_format = '$#,##0.00'
 
         if conv:
-            cwo_refs = "+".join(f"{get_column_letter(COL_CONV_WO)}{r}" for r in cat_subtotal_rows)
-            cw_refs = "+".join(f"{get_column_letter(COL_CONV_W)}{r}" for r in cat_subtotal_rows)
-            ws.cell(row=row, column=COL_CONV_WO, value=f"={cwo_refs}")
-            ws.cell(row=row, column=COL_CONV_W, value=f"={cw_refs}")
+            ws.cell(row=row, column=COL_CONV_WO, value=grand_total_conv_wo)
+            ws.cell(row=row, column=COL_CONV_W, value=grand_total_conv_w)
             ws.cell(row=row, column=COL_CONV_WO).number_format = '#,##0.00'
             ws.cell(row=row, column=COL_CONV_W).number_format = '#,##0.00'
 
@@ -476,15 +475,13 @@ class OCIBomGenerator:
         ws.cell(row=row, column=COL_PRODUCT, value="Annual Run Rate (ARR)").font = Font(
             name="Segoe UI", size=11, bold=True, color=Colors.COPPER
         )
-        mw_total = get_column_letter(COL_M_W)
-        ws.cell(row=row, column=COL_M_W, value=f"={mw_total}{total_row}*12")
+        ws.cell(row=row, column=COL_M_W, value=grand_total_w * 12)
         ws.cell(row=row, column=COL_M_W).number_format = '$#,##0.00'
         ws.cell(row=row, column=COL_M_W).font = Font(
             name="Segoe UI", size=11, bold=True, color=Colors.COPPER
         )
         if conv:
-            cw_total = get_column_letter(COL_CONV_W)
-            ws.cell(row=row, column=COL_CONV_W, value=f"={cw_total}{total_row}*12")
+            ws.cell(row=row, column=COL_CONV_W, value=grand_total_conv_w * 12)
             ws.cell(row=row, column=COL_CONV_W).number_format = '#,##0.00'
             ws.cell(row=row, column=COL_CONV_W).font = Font(
                 name="Segoe UI", size=11, bold=True, color=Colors.COPPER
@@ -630,11 +627,9 @@ class OCIBomGenerator:
                 ws_bom.cell(row=row, column=9, value=item["months"])
                 ws_bom.cell(row=row, column=10, value=item["discount"])
 
-                # Formulas matching BOM.C1 style
-                ws_bom.cell(row=row, column=11,
-                            value="=(F{r}*G{r}*H{r})".format(r=row))
-                ws_bom.cell(row=row, column=12,
-                            value="=IFERROR(K{r}*(1-J{r}),K{r})".format(r=row))
+                monthly_wo, monthly_w = self._monthly_values(item)
+                ws_bom.cell(row=row, column=11, value=monthly_wo)
+                ws_bom.cell(row=row, column=12, value=monthly_w)
 
                 # Formats
                 ws_bom.cell(row=row, column=6).number_format = '#,##0.0000'
