@@ -1,8 +1,11 @@
 ---
-last_verified: 2026-03-14
+last_verified: 2026-04-24
 service: OCI Compute
 category: compute
 oci_color: "#4F7B6E"
+changelog:
+  - date: "2026-04-24"
+    change: "Added missing shapes surfaced by discover+WebFetch: VM/BM.Standard.E6.Ax, VM/BM.Standard.A4.Ax, and full X12 family (VM.Standard4.Ax.Flex 39 OCPU / 360 GB, BM.Standard4.Ax.120 latest-gen bare metal). Verified against docs.oracle.com/en-us/iaas/Content/Compute/References/computeshapes.htm."
 ---
 
 what: Virtual machines and bare metal instances. Flexible shapes allow custom
@@ -42,6 +45,24 @@ shape_families:
     max_ocpu: 18
     memory_per_ocpu_gb: "1-64 GB per OCPU"
     use_for: "High-frequency trading, HPC"
+  - name: VM.Standard.E6.Ax.Flex
+    processor: "AMD EPYC (Ampere-branded E6 variant)"
+    max_ocpu: 94
+    max_memory_gb: 712
+    network_gbps: 99
+    use_for: "E6 Ampere-variant general purpose"
+  - name: VM.Standard.A4.Ax.Flex
+    processor: "Arm (A4 Ampere-branded variant)"
+    max_ocpu: 45
+    max_memory_gb: 720
+    network_gbps: 100
+    use_for: "A4 Ampere-variant Arm workloads"
+  - name: VM.Standard4.Ax.Flex
+    processor: "AMD EPYC (X12 Ampere-branded)"
+    max_ocpu: 39
+    max_memory_gb: 360
+    network_gbps: 99
+    use_for: "X12-generation general purpose (latest)"
   - name: BM.Standard.E5
     processor: "AMD EPYC 9J14 (Genoa)"
     ocpus: 192
@@ -50,6 +71,30 @@ shape_families:
     processor: "AMD EPYC 9J45 (Turin)"
     ocpus: 256
     use_for: "Bare metal latest generation"
+  - name: BM.Standard.E6.Ax.192
+    processor: "AMD EPYC (E6 Ampere-branded variant)"
+    ocpus: 192
+    max_memory_gb: 1536
+    network_gbps: 200
+    use_for: "Bare metal E6 Ampere-variant"
+  - name: BM.Standard.A4.48
+    processor: "Arm (A4)"
+    ocpus: 48
+    max_memory_gb: 768
+    network_gbps: 100
+    use_for: "Bare metal A4 Arm general purpose"
+  - name: BM.Standard.A4.Ax.48
+    processor: "Arm (A4 Ampere-branded variant)"
+    ocpus: 48
+    max_memory_gb: 768
+    network_gbps: 100
+    use_for: "Bare metal A4 Ampere-variant Arm"
+  - name: BM.Standard4.Ax.120
+    processor: "AMD EPYC (X12 Ampere-branded)"
+    ocpus: 120
+    max_memory_gb: 1152
+    network_gbps: 200
+    use_for: "Bare metal X12 latest generation"
   - name: VM.GPU.A10.1
     processor: "NVIDIA A10"
     gpu_count: 1

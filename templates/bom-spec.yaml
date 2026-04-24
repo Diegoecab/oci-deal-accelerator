@@ -48,3 +48,4 @@ bom:
   notes:
     - "Pricing based on Ashburn region (OC1)"
     - "Discounts subject to Oracle approval"
+    - "Hours convention — 730 vs 744: this BOM uses 730 hrs/month (= 8,760 annual hrs / 12), which equals the actual yearly OCI billing for hourly SKUs. OCI Cost Estimator defaults to 744 hrs/month (worst-case 31-day month); extrapolated to 12 months, 744 overstates the real annual cost by 1.92%. For 12-month TCO/proposals, 730 is the accurate figure; 744 is only appropriate when quoting a single peak month as an upper bound."

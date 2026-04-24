@@ -220,6 +220,13 @@ def refresh_catalog(verbose=False):
     print("  Not in API (possibly retired): {}".format(not_found))
     print("  Catalog saved: {}".format(CATALOG_PATH))
 
+    # Reverse-direction check: SKUs in API we haven't catalogued yet.
+    catalog_skus_after = {str(e["sku"]) for cat in raw.get("categories", {}).values()
+                         for e in cat.get("skus", [])}
+    stub_map = {s: {} for s in catalog_skus_after}
+    new_skus = discover_missing_skus(api_map, stub_map, verbose=verbose)
+    print_missing_skus(new_skus, limit=None if verbose else 20)
+
 
 def validate_catalog(verbose=False):
     """Compare current catalog prices against API and report differences."""
@@ -281,6 +288,104 @@ def validate_catalog(verbose=False):
             print("  - {}".format(s))
         if len(missing) > 10:
             print("  ... and {} more".format(len(missing) - 10))
+
+    # Reverse-direction check: SKUs in API we haven't catalogued yet.
+    new_skus = discover_missing_skus(api_map, sku_map, verbose=verbose)
+    print_missing_skus(new_skus, limit=None if verbose else 20)
+
+
+def discover_missing_skus(api_map, catalog_sku_map, verbose=False):
+    """Find SKUs present in the API but missing from the catalog.
+
+    The filter is auto-derived: we collect every `serviceCategory` value for
+    SKUs already in the catalog and only report new SKUs whose serviceCategory
+    falls within that curated set. This keeps the report relevant — as new
+    categories are added to the catalog, the discovery scope expands.
+    """
+    curated_categories = set()
+    for sku in catalog_sku_map:
+        if sku in api_map:
+            sc = api_map[sku].get("serviceCategory", "") or ""
+            if sc:
+                curated_categories.add(sc)
+
+    if verbose:
+        print("  Curated serviceCategory values ({}): {}".format(
+            len(curated_categories), ", ".join(sorted(curated_categories))
+        ))
+
+    missing = []
+    for sku, product in api_map.items():
+        if sku in catalog_sku_map:
+            continue
+        sc = product.get("serviceCategory", "") or ""
+        if sc not in curated_categories:
+            continue
+        missing.append({
+            "sku": sku,
+            "product": product.get("displayName", ""),
+            "service_category": sc,
+            "metric": product.get("metricName", ""),
+            "price": extract_payg_price(product),
+        })
+    missing.sort(key=lambda x: (x["service_category"], x["sku"]))
+    return missing
+
+
+def print_missing_skus(missing, limit=None):
+    """Print a readable report of missing SKUs, grouped by serviceCategory."""
+    if not missing:
+        print("\nNo new SKUs discovered in curated categories. Catalog covers the API well.")
+        return
+
+    print("\n{} SKUs present in API but missing from catalog".format(len(missing)))
+    print("(filtered to serviceCategory values already represented in our catalog)\n")
+
+    by_cat = {}
+    for m in missing:
+        by_cat.setdefault(m["service_category"], []).append(m)
+
+    shown = 0
+    truncated = False
+    for cat, items in sorted(by_cat.items()):
+        print("  [{}]  ({} new)".format(cat, len(items)))
+        for m in items:
+            if limit is not None and shown >= limit:
+                truncated = True
+                break
+            price_str = "${:.4f}".format(m["price"]) if m["price"] else "    -"
+            print("    {:<10} {:>10}  {}".format(
+                m["sku"], price_str, m["product"][:70]
+            ))
+            shown += 1
+        if truncated:
+            break
+
+    if truncated:
+        print("\n  ... and {} more (re-run with -v to list all)".format(len(missing) - shown))
+
+    print("\nNext step: review and add relevant entries to kb/pricing/oci-sku-catalog.yaml")
+    print("           under the appropriate category block.")
+
+
+def discover_catalog(verbose=False):
+    """Stand-alone --discover entry point: report new API SKUs not yet in catalog."""
+    print("Fetching current products from Oracle API...")
+    products = fetch_all_products(currency=DEFAULT_CURRENCY, verbose=verbose)
+    api_map = {}
+    for p in products:
+        pn = p.get("partNumber", "")
+        if pn:
+            api_map[pn] = p
+
+    raw, sku_map = load_current_catalog()
+    if not raw:
+        print("Error: Could not load catalog at {}".format(CATALOG_PATH))
+        return 1
+
+    missing = discover_missing_skus(api_map, sku_map, verbose=verbose)
+    print_missing_skus(missing, limit=None if verbose else 40)
+    return 0
 
 
 def inspect_sku(part_number):
@@ -571,6 +676,9 @@ def main():
                              "(currently: compute)")
     parser.add_argument("--validate", action="store_true",
                         help="Validate catalog prices against API")
+    parser.add_argument("--discover", action="store_true",
+                        help="Report SKUs present in API but missing from catalog "
+                             "(filtered to serviceCategory values already curated)")
     parser.add_argument("--sku", type=str,
                         help="Inspect a single SKU from the API")
     parser.add_argument("--dump", type=str, metavar="FILE",
@@ -589,6 +697,8 @@ def main():
         refresh_catalog(verbose=args.verbose or args.diff)
     elif args.validate:
         validate_catalog(verbose=args.verbose)
+    elif args.discover:
+        return discover_catalog(verbose=args.verbose)
     elif args.dump:
         dump_all(args.dump, verbose=args.verbose)
     else:

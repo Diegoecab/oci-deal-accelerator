@@ -1,0 +1,143 @@
+# Monthly SKU catalog refresh.
+#
+# Runs on the 1st of each month at 09:00 UTC and on manual dispatch.
+#
+# Does two things:
+#   1. `--refresh`: pulls latest PAYG prices from Oracle's public API,
+#      updates kb/pricing/oci-sku-catalog.yaml, and opens a PR if anything
+#      changed.
+#   2. `--discover`: reports SKUs present in the API but absent from the
+#      catalog (filtered to serviceCategory values already curated).
+#      If new SKUs are found, opens a Gitea issue listing them by category
+#      for manual review.
+#
+# Tokens:
+#   secrets.GITEA_TOKEN — must have repo:write + issues:write.
+#   If not set, the run logs the diff/discover output as an artifact and
+#   leaves the rest (branch push, PR, issue) as a no-op.
+name: SKU Catalog Refresh
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'
+  workflow_dispatch:
+
+jobs:
+  refresh-and-discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y python3 python3-pip jq
+          python3 -m pip install --user requests pyyaml
+
+      - name: Refresh prices from Oracle API
+        id: refresh
+        run: |
+          python3 tools/refresh_sku_catalog.py --refresh --diff 2>&1 \
+            | tee /tmp/refresh.log
+          if git diff --quiet kb/pricing/oci-sku-catalog.yaml; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Discover missing SKUs
+        id: discover
+        run: |
+          python3 tools/refresh_sku_catalog.py --discover -v 2>&1 \
+            | tee /tmp/discover.log
+          NEW_COUNT=$(grep -oE '^[0-9]+ SKUs present in API' /tmp/discover.log \
+            | head -1 | awk '{print $1}' || echo "0")
+          echo "new_count=${NEW_COUNT:-0}" >> $GITHUB_OUTPUT
+
+      - name: Upload logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sku-refresh-logs
+          path: |
+            /tmp/refresh.log
+            /tmp/discover.log
+          retention-days: 90
+
+      - name: Open PR with price updates
+        if: steps.refresh.outputs.changed == 'true' && env.GITEA_TOKEN != ''
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          GITEA_SERVER: ${{ github.server_url }}
+          GITEA_REPO: ${{ github.repository }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          BRANCH="automation/sku-refresh-${DATE}"
+
+          git config user.name "sku-refresh-bot"
+          git config user.email "sku-refresh@automation.local"
+          git checkout -b "$BRANCH"
+          git add kb/pricing/oci-sku-catalog.yaml
+          git commit -m "chore(pricing): monthly SKU catalog refresh (${DATE})
+
+          Automated refresh from Oracle public pricing API.
+          See workflow artifact 'sku-refresh-logs' for the diff."
+
+          # Push using token auth
+          REMOTE=$(echo "$GITEA_SERVER/$GITEA_REPO.git" \
+            | sed "s#https://#https://sku-refresh-bot:${GITEA_TOKEN}@#")
+          git push "$REMOTE" "$BRANCH"
+
+          # Open PR via Gitea API
+          OWNER=$(echo "$GITEA_REPO" | cut -d/ -f1)
+          REPO=$(echo "$GITEA_REPO" | cut -d/ -f2)
+          curl -sS -X POST \
+            -H "Authorization: token ${GITEA_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${GITEA_SERVER}/api/v1/repos/${OWNER}/${REPO}/pulls" \
+            -d "$(jq -n \
+              --arg title "chore(pricing): monthly SKU refresh ${DATE}" \
+              --arg head "$BRANCH" \
+              --arg base "main" \
+              --arg body "$(printf 'Automated refresh — [refresh log artifact](../../actions).\n\n```\n%s\n```' \
+                "$(tail -40 /tmp/refresh.log)")" \
+              '{title:$title, head:$head, base:$base, body:$body}')"
+
+      - name: Open issue for new SKUs
+        if: steps.discover.outputs.new_count != '0' && env.GITEA_TOKEN != ''
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          GITEA_SERVER: ${{ github.server_url }}
+          GITEA_REPO: ${{ github.repository }}
+          NEW_COUNT: ${{ steps.discover.outputs.new_count }}
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          OWNER=$(echo "$GITEA_REPO" | cut -d/ -f1)
+          REPO=$(echo "$GITEA_REPO" | cut -d/ -f2)
+
+          BODY=$(printf '## %s new SKUs detected in Oracle API\n\n**Detected:** %s\n\nThese SKUs are present in the Oracle public pricing API but not yet in `kb/pricing/oci-sku-catalog.yaml`. Filter: serviceCategory values already represented in our catalog (so only relevant families show up).\n\n### Full listing\n\n```\n%s\n```\n\n### Next step\n\nReview and add relevant entries to `kb/pricing/oci-sku-catalog.yaml` under the appropriate category block. After merging, prices will be picked up automatically on the next monthly refresh.\n' \
+            "$NEW_COUNT" "$DATE" "$(cat /tmp/discover.log)")
+
+          curl -sS -X POST \
+            -H "Authorization: token ${GITEA_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "${GITEA_SERVER}/api/v1/repos/${OWNER}/${REPO}/issues" \
+            -d "$(jq -n \
+              --arg title "SKU catalog: ${NEW_COUNT} new SKUs to review (${DATE})" \
+              --arg body "$BODY" \
+              '{title:$title, body:$body, labels:["automation","sku-catalog"]}')"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## SKU Refresh Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Catalog changed: ${{ steps.refresh.outputs.changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- New SKUs discovered: ${{ steps.discover.outputs.new_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Token configured: ${{ env.GITEA_TOKEN != '' && 'yes' || 'no (PR/issue skipped)' }}" >> $GITHUB_STEP_SUMMARY
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}

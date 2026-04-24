@@ -328,6 +328,7 @@ class OCIBomGenerator:
 
         data_start_row = row
         cat_subtotal_rows = []
+        data_item_rows = []  # line-item rows (excludes category headers/subtotals/totals)
 
         # Ensure categories present in items but missing from catalog order
         # (e.g., "other" from unknown SKUs) still render at the end.
@@ -418,6 +419,7 @@ class OCIBomGenerator:
                     ws.cell(row=row, column=COL_CONV_WO).number_format = '#,##0.00'
                     ws.cell(row=row, column=COL_CONV_W).number_format = '#,##0.00'
 
+                data_item_rows.append(row)
                 row += 1
 
             # Category subtotal row
@@ -492,17 +494,15 @@ class OCIBomGenerator:
 
         # ── Cost proportion formulas (back-fill) ─────────────────
         # Cost % = line monthly w/ discount / total monthly w/ discount
-        for item_row in range(data_start_row, total_row):
-            cell_val = ws.cell(row=item_row, column=COL_M_W).value
-            if cell_val and str(cell_val).startswith("=") and "SUM" not in str(cell_val):
-                mw_l = get_column_letter(COL_M_W)
-                ws.cell(
-                    row=item_row, column=COL_PCT,
-                    value=f"=IF({mw_l}{total_row}=0,0,{mw_l}{item_row}/{mw_l}{total_row})",
-                )
-                ws.cell(row=item_row, column=COL_PCT).number_format = '0.0%'
-                ws.cell(row=item_row, column=COL_PCT).font = data_font
-                ws.cell(row=item_row, column=COL_PCT).border = thin_border
+        mw_l = get_column_letter(COL_M_W)
+        for item_row in data_item_rows:
+            ws.cell(
+                row=item_row, column=COL_PCT,
+                value=f"=IF({mw_l}{total_row}=0,0,{mw_l}{item_row}/{mw_l}{total_row})",
+            )
+            ws.cell(row=item_row, column=COL_PCT).number_format = '0.0%'
+            ws.cell(row=item_row, column=COL_PCT).font = data_font
+            ws.cell(row=item_row, column=COL_PCT).border = thin_border
 
         # ── Notes ─────────────────────────────────────────────────
         if self.notes:

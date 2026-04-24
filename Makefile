@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover
 
 # Use venv if present, otherwise find best available python3
 ifneq (,$(wildcard .venv/bin/python))
@@ -97,3 +97,6 @@ kb-check: ## KB freshness JSON (used by skill welcome-flow pre-flight)
 
 freshness-refresh: ## Run refresh tools for stale KB files that support automation
 	@$(PYTHON) tools/kb_freshness.py --auto-refresh
+
+sku-discover: ## Report SKUs present in Oracle API but missing from oci-sku-catalog.yaml
+	@$(PYTHON) tools/refresh_sku_catalog.py --discover

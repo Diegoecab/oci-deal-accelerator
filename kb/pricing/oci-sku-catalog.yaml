@@ -560,6 +560,18 @@ categories:
       list_price_usd: 0.0807
       default_hours_units: 730
       billing_type: hourly
+    - sku: B95714
+      product: Oracle Autonomous AI Transaction Processing - Dedicated - ECPU
+      metric: ECPU Per Hour
+      list_price_usd: 0.336
+      default_hours_units: 730
+      billing_type: hourly
+    - sku: B95715
+      product: Oracle Autonomous AI Transaction Processing - Dedicated - ECPU - BYOL
+      metric: ECPU Per Hour
+      list_price_usd: 0.0807
+      default_hours_units: 730
+      billing_type: hourly
   exascale:
     display_name: Oracle Cloud Infrastructure - Database Exadata Exascale Infrastructure
     skus:
