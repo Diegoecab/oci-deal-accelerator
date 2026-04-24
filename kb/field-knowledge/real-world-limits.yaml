@@ -1,5 +1,5 @@
 ---
-last_verified: 2026-03-14
+last_verified: 2026-04-24
 description: |
   Real-world limits that differ from official documentation or are not
   well-documented. These come from actual deployment experience.
@@ -75,3 +75,15 @@ limits:
       request limit increase via support ticket. Increases are usually
       approved within 1-2 business days.
     recommendation: "Request limit increases early in project planning"
+
+  - service: ADB-S Lakehouse
+    limit: "Apache Iceberg interoperability"
+    documented: "Lakehouse can query Iceberg tables"
+    real_world: |
+      The capability is useful, but not transparent parity with native
+      Iceberg engines. Current documented constraints include: no partitioned
+      Iceberg tables, no credential vending, no query-time time travel, and
+      some schema/snapshot changes requiring external table recreation.
+      Architects should treat this as selective interoperability, not a
+      drop-in replacement for every Iceberg pattern already in use.
+    recommendation: "Validate exact Iceberg table design and metadata workflow before positioning ADB Lakehouse as a universal Iceberg endpoint"

@@ -27,7 +27,7 @@
 # =============================================================================
 
 ---
-last_verified: "2026-03-14"
+last_verified: "2026-04-24"
 maintained_by: "Field Architecture Team"
 
 versions:
@@ -337,6 +337,69 @@ features:
     matrix:
       adb_s:
         "23ai": { status: "GA_CAVEAT", notes: "--resource-pool-summary works on CLI 3.73+. --autonomous-database-maintenance-window has JSON serialization bug on CLI 3.73.1 AND 3.75.0. Must use Console for maintenance window." }
+
+  - name: "Lakehouse External Table Cache / Lake Cache"
+    category: "operations"
+    matrix:
+      adb_s:
+        "23ai":
+          status: "UNTESTED"
+          notes: "Officially documented for Lakehouse workload. Caches external-table data locally to accelerate repeat reads. Field team has not yet validated production behavior."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
+        "26ai":
+          status: "UNTESTED"
+          notes: "Documented for AI Lakehouse workload. Expect benefit on repeated reads over external data; validate eviction behavior and cache warmup in benchmarks."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
+
+  - name: "Apache Iceberg External Tables"
+    category: "operations"
+    matrix:
+      adb_s:
+        "23ai":
+          status: "LIMITED"
+          notes: "Official docs show support with important caveats: no partitioned Iceberg tables, no credential vending, no query-time time travel, and some snapshot/schema changes require recreating the external table."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
+        "26ai":
+          status: "LIMITED"
+          notes: "Same documented limitations as 23ai unless field testing proves otherwise. Treat as fit-for-purpose, not transparent parity with native Iceberg engines."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
+
+  - name: "TP / TPURGENT Service Names on Lakehouse"
+    category: "operations"
+    matrix:
+      adb_s:
+        "23ai":
+          status: "UNTESTED"
+          notes: "Need field confirmation by exact release/build. Use docs/release notes before promising availability on older estates."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
+        "26ai":
+          status: "GA_CAVEAT"
+          notes: "Officially released for Lakehouse workload. Useful to explain mixed-workload support, but benchmark service behavior under real concurrency before positioning as OLTP-equivalent."
+          contributor:
+            name: "Codex"
+            team: "Field Architecture"
+            date: "2026-04-24"
+            confidence: "doc-validated"
 
 # =============================================================================
 # HOW TO ADD A NEW FEATURE

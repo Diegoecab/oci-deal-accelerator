@@ -1,8 +1,8 @@
 # OCI Service: Autonomous Database Serverless (ADB-S)
-# Last verified: 2026-03
+# Last verified: 2026-04
 
 service:
-  name: "Autonomous Database Serverless (ADB-S)"
+  name: "Autonomous AI Database Serverless (ADB-S)"
   id: adb_serverless
   category: database
   color: "#AA643B"
@@ -35,13 +35,17 @@ limits:
 
 variants:
   - id: adb_s
-    name: "Autonomous Database Serverless (ADB-S)"
+    name: "Autonomous AI Database Serverless (ADB-S)"
     description: "Shared Exadata infrastructure, fully managed, auto-scaling"
     workload_types:
-      - ATP (Transaction Processing / Mixed)
-      - ADW (Data Warehouse / Analytics)
-      - AJD (JSON Document Store)
-      - APEX (Low-code application development)
+      - "Autonomous AI Transaction Processing (TP) - app-facing OLTP and mixed workloads on local database-managed data"
+      - "Autonomous AI Lakehouse - SQL across database-local plus external/open-format data (Object Storage, Iceberg, federated catalogs)"
+      - "Autonomous JSON Database - document-centric JSON development pattern"
+      - "APEX Application Development - low-code application development"
+    workload_notes:
+      - "Since October 2025 Oracle documentation uses Autonomous AI Database naming for workload types."
+      - "Lakehouse is not a separate database engine; it is a workload specialization with an explicit external-data plane."
+      - "Lakehouse now also exposes TP and TPURGENT predefined service names, so do not assume warehouse-only service semantics."
 
   - id: adb_d
     name: "Autonomous Database on Dedicated Exadata (ADB-D)"
@@ -59,6 +63,7 @@ when_to_use:
   - "JSON document workloads (AJD)"
   - "Rapid APEX application development"
   - "Data warehouse / analytics with auto-scaling"
+  - "Need Lakehouse-style SQL over Object Storage / Apache Iceberg without copying all data into the database"
 
 when_not_to_use:
   - "Non-Oracle database engines (use MySQL HeatWave, PostgreSQL, NoSQL)"
@@ -66,6 +71,7 @@ when_not_to_use:
   - "Need RAC but not ADB-D budget → use ExaCS or DBCS VM"
   - "Workloads requiring specific DB patches not yet in ADB"
   - "Extreme IOPS requirements > what Exadata provides"
+  - "Choose TP workload if the dominant path is OLTP write-heavy access on database-local data and external/open-table access is peripheral"
 
 sizing:
   adb_s:
@@ -114,6 +120,22 @@ gotchas:
     severity: LOW
     description: "ADB now defaults to Oracle 26ai in all commercial regions. 19c is legacy. Verify customer version requirements."
 
+  - id: adb_lakehouse_not_separate_engine
+    severity: MEDIUM
+    description: "Lakehouse is a workload specialization inside ADB Serverless, not a separate database engine or separate managed service."
+
+  - id: adb_lakehouse_external_data_plane
+    severity: MEDIUM
+    description: "Lakehouse value appears when Object Storage / Iceberg / open-format access is structural. If the dataset is fully local and OLTP-dominant, TP is usually the cleaner fit."
+
+  - id: adb_lakehouse_iceberg_limits
+    severity: HIGH
+    description: "Current Iceberg support has material caveats: no partitioned Iceberg tables, no credential vending, no query-time time travel, and some snapshot/schema changes require recreating the external table."
+
+  - id: adb_lakehouse_tp_services
+    severity: LOW
+    description: "Lakehouse now supports TP and TPURGENT predefined service names. Do not model it as ADW-style query-only connectivity."
+
 implied_dependencies:
   - service: service_gateway
     reason: "Required for automated backups to Object Storage"
@@ -144,8 +166,16 @@ references:
   documentation: "https://docs.oracle.com/en/cloud/paas/autonomous-database/"
   pricing: "https://www.oracle.com/autonomous-database/pricing/"
   sizing_guide: "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-database-cpu.html"
+  workload_types: "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/about-autonomous-database-workloads.html"
+  lakehouse: "https://docs.oracle.com/en-us/iaas/autonomous-database-serverless/doc/lake-lakehouse.html"
+  iceberg: "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/query-external-data-apache-iceberg.html"
+  lakehouse_tp_services: "https://docs.oracle.com/iaas/releasenotes/autonomous-database-serverless/2025-10-tp-tpurgent-predefined-db-service-names-for-lakehouse-workload.htm"
+  data_lake_accelerator: "https://docs.oracle.com/iaas/releasenotes/autonomous-database-serverless/2025-11-data-lake-accelerator.htm"
 
 changelog:
+  - date: "2026-04-24"
+    contributor: { name: "Codex", team: "Field Architecture" }
+    change: "Updated workload taxonomy to Autonomous AI naming; added Lakehouse selection guidance, Iceberg caveats, TP/TPURGENT note, and official references"
   - date: "2026-03-14"
     contributor: { name: "Diego Cabrera", team: "Field Architecture" }
     change: "Initial creation with sizing rules, gotchas, competitive notes, HA/DR options"
