@@ -100,20 +100,28 @@ jobs:
             | sed "s#https://#https://sku-refresh-bot:${GITEA_TOKEN}@#")
           git push "$REMOTE" "$BRANCH"
 
-          # Open PR via Gitea API
+          # Open PR via Gitea API (fail-fast + log response)
           OWNER=$(echo "$GITEA_REPO" | cut -d/ -f1)
           REPO=$(echo "$GITEA_REPO" | cut -d/ -f2)
-          curl -sS -X POST \
+          PAYLOAD=$(jq -n \
+            --arg title "chore(pricing): monthly SKU refresh ${DATE}" \
+            --arg head "$BRANCH" \
+            --arg base "main" \
+            --arg body "$(printf 'Automated refresh — see run artifact for full refresh/discover logs.\n\n```\n%s\n```' \
+              "$(tail -40 /tmp/refresh.log)")" \
+            '{title:$title, head:$head, base:$base, body:$body}')
+          echo "Creating PR ${BRANCH} -> main ..."
+          RESPONSE=$(curl -sS -w "\nHTTP_STATUS=%{http_code}\n" -X POST \
             -H "Authorization: token ${GITEA_TOKEN}" \
             -H "Content-Type: application/json" \
             "${GITEA_SERVER}/api/v1/repos/${OWNER}/${REPO}/pulls" \
-            -d "$(jq -n \
-              --arg title "chore(pricing): monthly SKU refresh ${DATE}" \
-              --arg head "$BRANCH" \
-              --arg base "main" \
-              --arg body "$(printf 'Automated refresh — [refresh log artifact](../../actions).\n\n```\n%s\n```' \
-                "$(tail -40 /tmp/refresh.log)")" \
-              '{title:$title, head:$head, base:$base, body:$body}')"
+            -d "$PAYLOAD")
+          echo "$RESPONSE"
+          STATUS=$(echo "$RESPONSE" | grep -oE 'HTTP_STATUS=[0-9]+' | cut -d= -f2)
+          if [ "$STATUS" != "201" ]; then
+            echo "::error::PR creation failed with HTTP $STATUS"
+            exit 1
+          fi
 
       - name: Open issue for new SKUs
         if: steps.discover.outputs.new_count != '0'
@@ -130,14 +138,22 @@ jobs:
           BODY=$(printf '## %s new SKUs detected in Oracle API\n\n**Detected:** %s\n\nThese SKUs are present in the Oracle public pricing API but not yet in `kb/pricing/oci-sku-catalog.yaml`. Filter: serviceCategory values already represented in our catalog (so only relevant families show up).\n\n### Full listing\n\n```\n%s\n```\n\n### Next step\n\nReview and add relevant entries to `kb/pricing/oci-sku-catalog.yaml` under the appropriate category block. After merging, prices will be picked up automatically on the next monthly refresh.\n' \
             "$NEW_COUNT" "$DATE" "$(cat /tmp/discover.log)")
 
-          curl -sS -X POST \
+          PAYLOAD=$(jq -n \
+            --arg title "SKU catalog: ${NEW_COUNT} new SKUs to review (${DATE})" \
+            --arg body "$BODY" \
+            '{title:$title, body:$body}')
+          echo "Creating issue: ${NEW_COUNT} new SKUs..."
+          RESPONSE=$(curl -sS -w "\nHTTP_STATUS=%{http_code}\n" -X POST \
             -H "Authorization: token ${GITEA_TOKEN}" \
             -H "Content-Type: application/json" \
             "${GITEA_SERVER}/api/v1/repos/${OWNER}/${REPO}/issues" \
-            -d "$(jq -n \
-              --arg title "SKU catalog: ${NEW_COUNT} new SKUs to review (${DATE})" \
-              --arg body "$BODY" \
-              '{title:$title, body:$body, labels:["automation","sku-catalog"]}')"
+            -d "$PAYLOAD")
+          echo "$RESPONSE"
+          STATUS=$(echo "$RESPONSE" | grep -oE 'HTTP_STATUS=[0-9]+' | cut -d= -f2)
+          if [ "$STATUS" != "201" ]; then
+            echo "::error::Issue creation failed with HTTP $STATUS"
+            exit 1
+          fi
 
       - name: Summary
         if: always()
