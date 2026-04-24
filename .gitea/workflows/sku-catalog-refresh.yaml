@@ -84,7 +84,7 @@ jobs:
           GITEA_REPO: ${{ github.repository }}
         run: |
           DATE=$(date -u +%Y-%m-%d)
-          BRANCH="automation/sku-refresh-${DATE}"
+          BRANCH="automation/sku-refresh-${DATE}-run${{ github.run_number }}"
 
           git config user.name "sku-refresh-bot"
           git config user.email "sku-refresh@automation.local"
