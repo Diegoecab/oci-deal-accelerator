@@ -1,5 +1,5 @@
 # OCI Service: Exadata Cloud Service (ExaCS)
-# Last verified: 2026-03
+# Last verified: 2026-04
 
 service:
   name: "Exadata Cloud Service (ExaCS)"
@@ -35,37 +35,102 @@ variants:
       usable_tb: 63.6
   - id: exacs_x11m
     name: "ExaCS X11M"
-    description: "Exadata X11M shape — latest generation with AMD EPYC 9J25 processors and XRMEM acceleration."
+    description: "Exadata X11M shape — latest generation with AMD EPYC processors and XRMEM acceleration. Two storage server variants: HC (default, capacity-optimised) and EF (Extreme Flash, latency-optimised)."
     per_db_server:
       ecpus: 760
       memory_gb: 1390
       xrmem_gb: 1250
       flash_cache_tb: 27.2
-    per_storage_server:
-      usable_tb: 52.5
-      type: "Extreme Flash (EF)"
+      cpu: "2 × AMD EPYC 9J25 (96 cores each, 192 cores per server)"
+    storage_server_variants:
+      hc:
+        name: "X11M High Capacity (HC)"
+        description: "Default storage variant. 12 × 22 TB SAS HDDs + 27.2 TB flash cache + 1.25 TB XRMEM per SS. Best $/TB; same hot-data latency as EF (served from flash cache + XRMEM)."
+        raw_tb_per_ss: 264
+        flash_cache_tb_per_ss: 27.2
+        xrmem_tb_per_ss: 1.25
+        usable_disk_tb_per_ss: 80              # Datasheet "Total Usable Disk Capacity" per SS — post HIGH redundancy + drive-failure reserve, before compression
+        max_db_size_tb_per_ss_no_local_backup: 64    # Derived: 192 TB / 3 SS at base config (datasheet Elastic Example 1)
+        max_db_size_tb_per_ss_with_local_backup: 32  # Derived: 96 TB / 3 SS at base config
+        total_cores_per_ss: 64
+        recommended_for: "OLTP, mixed workloads, DWH where active set fits in flash cache (~80% of cases)"
+      ef:
+        name: "X11M Extreme Flash (EF)"
+        description: "All-flash storage variant. Lower latency on cache-miss reads, but higher $/TB. Use when the working set exceeds flash cache or for latency-sensitive DWH full scans."
+        usable_tb_per_ss: 52.5
+        type: "Extreme Flash (EF)"
+        recommended_for: "Latency-sensitive DWH with large full-table scans that miss flash cache; sub-ms consistent latency requirements"
+    pricing_2026_04:
+      source: "OCI Cost Estimator 2026-04-23"
+      db_server_per_hour_usd: 2.9032
+      storage_server_per_hour_usd: 2.9032
+      base_config_monthly_usd: 10800   # (2 DB + 3 SS) × $2.9032 × 744 hr; excludes DB licenses (BYOL) and ECPU charges
 
 sizing:
-  model: "Elastic per-server (2-32 DB servers, 3-64 storage servers)"
-  rack_configurations:
-    quarter_rack:
-      ocpus: "252 (X9M: 2 × 126/server)"
-      memory: "2.71 TB (X9M: 2 × 1,390 GB)"
-      storage: "Up to 190.8 TB usable (X9M: 3 SS × 63.6 TB)"
-      db_nodes: 2
-      storage_servers: 3
-    half_rack:
-      ocpus: "504 (X9M: 4 × 126/server)"
-      memory: "5.43 TB"
-      storage: "Up to 383 TB usable"
-      db_nodes: 4
-      storage_servers: 6
-    full_rack:
-      ocpus: "1,008 (X9M: 8 × 126/server)"
-      memory: "10.86 TB"
-      storage: "Up to 766 TB usable"
-      db_nodes: 8
-      storage_servers: 12
+  model: "Elastic per-server (X9M+: 2-32 DB servers, 3-64 storage servers). 'Quarter/half/full rack' terminology is legacy; X9M and X11M are billed per-server."
+  notes: |
+    Three different storage figures appear in Oracle datasheets — they measure different things:
+      • Total Usable Disk Capacity = ASM-allocatable space, post HIGH redundancy + drive-failure reserve, before compression
+      • Max DB Size – No Local Backup = practical limit for DB allocation after RECO/SPARSE/DBFS reserves (this is what OCI Cost Estimator caps at)
+      • Max DB Size – With Local Backup = ~half of above (FRA on disk for backups)
+    Always quote both Usable Disk and Max DB Size to avoid customer confusion.
+    OCI scales storage by adding individual storage servers, not in racks.
+
+  base_configuration:
+    description: "Minimum elastic configuration — what you get on day-1 before scaling."
+    db_servers: 2
+    storage_servers: 3
+
+  x11m_elastic_base:
+    description: "Datasheet 'Elastic Configuration Example 1' (2 DB + 3 SS, all-elastic SKUs)."
+    source: "ADB-D X11M Datasheet v1.0, Jan 2025, Table 1"
+    db_servers: 2
+    storage_servers: 3
+    total_ecpus: 1520               # 2 × 760
+    total_memory_gb: 2780           # 2 × 1,390
+    total_xrmem_tb: 3.75            # 3 × 1.25 (XRMEM lives on storage servers)
+    total_flash_tb: 81.6            # 3 × 27.2
+    hc_variant:
+      total_usable_disk_tb: 240             # Datasheet authoritative
+      max_db_size_no_local_backup_tb: 192   # OCI Cost Estimator caps allocation here
+      max_db_size_with_local_backup_tb: 96
+      max_sql_flash_bandwidth_gbps: 300
+      max_sql_xrmem_bandwidth_gbps: 1500
+      max_sql_disk_bandwidth_gbps: 5.4
+      max_sql_read_iops: 5_600_000
+      max_sql_write_iops: 3_000_000
+      max_sql_disk_iops: 7_800
+      max_data_load_rate_tb_per_hr: 7.5
+    ef_variant:
+      usable_tb: 157.5        # 3 × 52.5
+    sample_elastic_growth_examples:
+      compute_heavy: { db_servers: 8, storage_servers: 8, total_ecpus: 6080, max_db_size_tb: 512 }
+      storage_heavy: { db_servers: 2, storage_servers: 14, total_ecpus: 1520, max_db_size_tb: 896 }
+
+  x11m_base_system:
+    description: "Hardware-generation-agnostic 'Base System' SKU — fixed-spec, NOT expandable, single VM Cluster only. Different product from elastic; entry-price option for small footprints."
+    source: "ADB-D X11M Datasheet v1.0, Jan 2025, Table 1, footnote 1"
+    db_servers: 2
+    storage_servers: 3
+    total_ecpus: 192
+    total_memory_gb: 720
+    total_flash_tb: 38.4
+    total_usable_disk_tb: 73
+    max_db_size_no_local_backup_tb: 58
+    max_db_size_with_local_backup_tb: 29
+    network: "10 GbE (vs 50 GbE on elastic)"
+    notes: "Base System is NOT the same as 'Elastic Example 1 with 2 DB + 3 SS'. The elastic config has ~8× more ECPUs, ~4× more memory, ~3× more storage at same physical-server count, and 50 GbE networking. Base System is for cost-optimised entry; if customer expects to scale, go elastic from day 1."
+
+  x9m_base:
+    cpu_ocpus: 252            # 2 × 126
+    memory_tb: 2.71           # 2 × 1,390 GB
+    pmem_tb: 3.0              # 2 × 1.5 (persistent memory tier)
+    flash_cache_tb_db: 51.2   # 2 × 25.6
+    hc_variant:
+      usable_tb_per_ss: 63.6
+      base_usable_tb_high_redundancy: 190.8  # 3 × 63.6
+    notes: "X9M HC drives are 14 TB (vs 22 TB on X11M)."
+
   legacy_x8_fixed_shapes:
     quarter_rack:
       storage_tb: 149
@@ -74,8 +139,9 @@ sizing:
     full_rack:
       storage_tb: 598
     notes: "X8 shapes are fixed-size (not elastic). Storage values are usable disk, not flash cache."
-  ocpu_scaling: "OCPUs can be scaled online in increments without downtime. You pay for enabled OCPUs, not the total available in the rack."
-  sizing_guidance: "Start with a quarter rack for most production workloads. Scale OCPUs on demand. Choose half/full rack only when storage capacity or aggregate memory requirements exceed quarter rack limits."
+
+  ocpu_scaling: "OCPUs/ECPUs can be scaled online in increments without downtime. You pay for enabled cores, not the total available in the rack."
+  sizing_guidance: "Start with the elastic base (2 DB + 3 SS) for most production workloads. Add storage servers when capacity or IOPS exceed base. Add DB servers when CPU saturates. Choose HC over EF unless workload is latency-sensitive on cache-miss reads."
 
 gotchas:
   - id: exacs_minimum_cost
@@ -102,6 +168,10 @@ gotchas:
     severity: LOW
     description: "ExaCS requires placement in a private subnet with sufficient IP addresses. Each DB node and each virtual IP consumes an IP; plan your subnet CIDR accordingly."
 
+  - id: exacs_x11m_hc_vs_ef
+    severity: MEDIUM
+    description: "X11M ships in two storage variants — HC (default, 264 TB raw / SS) and EF (all-flash, 52.5 TB usable / SS). Most customers should choose HC: same hot-data latency (served from 27.2 TB flash cache per SS) at far better $/TB. Only pick EF when the working set genuinely exceeds flash cache and you need sub-ms consistent latency on cache-miss reads. Many quotes default to EF without justification — confirm with the customer."
+
 implied_dependencies:
   - service: vcn
     reason: "ExaCS infrastructure must be deployed in a VCN"
@@ -123,3 +193,9 @@ changelog:
   - date: "2026-03-14"
     contributor: { name: "Diego Cabrera", team: "Field Architecture" }
     change: "Initial creation with shapes, sizing, gotchas, dependencies"
+  - date: "2026-04-23"
+    contributor: { name: "Diego Velásquez", team: "Field Architecture" }
+    change: "Added X11M HC variant (default) alongside existing EF; replaced misleading rack_configurations table that mixed X9M data with elastic per-server model; added X11M and X9M base configs; added pricing verified against OCI Cost Estimator (DB+SS @ $2.9032/hr); added gotcha on HC vs EF default choice."
+  - date: "2026-04-23"
+    contributor: { name: "Diego Velásquez", team: "Field Architecture" }
+    change: "Replaced earlier estimator-derived storage figures (63 TB/SS, 190 TB at base) with authoritative numbers from ADB-D X11M Datasheet v1.0 Jan 2025 Table 1. X11M HC SS = 80 TB Total Usable Disk (HIGH redundancy + drive-failure reserve). 3-SS Elastic base = 240 TB Total Usable Disk OR 192 TB Max DB Size (no local backup, what the Estimator caps at) OR 96 TB Max DB Size (with local backup). Also added separate Base System SKU (fixed, non-expandable, 73 TB usable disk) — distinct product from elastic 2 DB + 3 SS. Added performance metrics (IOPS, GB/s) for elastic base."
