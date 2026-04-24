@@ -385,6 +385,8 @@ def discover_catalog(verbose=False):
 
     missing = discover_missing_skus(api_map, sku_map, verbose=verbose)
     print_missing_skus(missing, limit=None if verbose else 40)
+    # Machine-readable summary for CI/automation — always last line on stdout.
+    print("\nDISCOVER_MISSING_COUNT={}".format(len(missing)))
     return 0
 
 

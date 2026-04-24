@@ -61,8 +61,9 @@ jobs:
         run: |
           python3 tools/refresh_sku_catalog.py --discover -v 2>&1 \
             | tee /tmp/discover.log
-          NEW_COUNT=$(grep -oE '^[0-9]+ SKUs present in API' /tmp/discover.log \
-            | head -1 | awk '{print $1}' || echo "0")
+          NEW_COUNT=$(sed -n 's/^DISCOVER_MISSING_COUNT=\([0-9]\+\)$/\1/p' \
+            /tmp/discover.log | tail -1)
+          echo "Parsed new_count='${NEW_COUNT}'"
           echo "new_count=${NEW_COUNT:-0}" >> $GITHUB_OUTPUT
 
       - name: Upload logs as artifact
