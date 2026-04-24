@@ -11,16 +11,22 @@
 #      If new SKUs are found, opens a Gitea issue listing them by category
 #      for manual review.
 #
-# Tokens:
-#   secrets.GITEA_TOKEN — must have repo:write + issues:write.
-#   If not set, the run logs the diff/discover output as an artifact and
-#   leaves the rest (branch push, PR, issue) as a no-op.
+# Token:
+#   Uses the auto-provisioned secrets.GITHUB_TOKEN (Gitea Actions provides this
+#   per-run, scoped to this repo, GitHub-Actions-compatible). No manual secret
+#   configuration required. The explicit `permissions:` block below grants the
+#   scopes needed to push a branch, open a PR, and open an issue.
 name: SKU Catalog Refresh
 
 on:
   schedule:
     - cron: '0 9 1 * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
   refresh-and-discover:
@@ -70,9 +76,9 @@ jobs:
           retention-days: 90
 
       - name: Open PR with price updates
-        if: steps.refresh.outputs.changed == 'true' && env.GITEA_TOKEN != ''
+        if: steps.refresh.outputs.changed == 'true'
         env:
-          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITEA_SERVER: ${{ github.server_url }}
           GITEA_REPO: ${{ github.repository }}
         run: |
@@ -109,9 +115,9 @@ jobs:
               '{title:$title, head:$head, base:$base, body:$body}')"
 
       - name: Open issue for new SKUs
-        if: steps.discover.outputs.new_count != '0' && env.GITEA_TOKEN != ''
+        if: steps.discover.outputs.new_count != '0'
         env:
-          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITEA_SERVER: ${{ github.server_url }}
           GITEA_REPO: ${{ github.repository }}
           NEW_COUNT: ${{ steps.discover.outputs.new_count }}
@@ -138,6 +144,3 @@ jobs:
           echo "## SKU Refresh Summary" >> $GITHUB_STEP_SUMMARY
           echo "- Catalog changed: ${{ steps.refresh.outputs.changed }}" >> $GITHUB_STEP_SUMMARY
           echo "- New SKUs discovered: ${{ steps.discover.outputs.new_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Token configured: ${{ env.GITEA_TOKEN != '' && 'yes' || 'no (PR/issue skipped)' }}" >> $GITHUB_STEP_SUMMARY
-        env:
-          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
