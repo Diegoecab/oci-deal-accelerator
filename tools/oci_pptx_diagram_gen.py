@@ -511,12 +511,15 @@ class NativePPTXDiagramRenderer:
                     (source["x"] + int(source["cx"] / 2), source["y"] + int(source["cy"] / 2)),
                     (target["x"] + int(target["cx"] / 2), target["y"] + int(target["cy"] / 2)),
                 ]
-            for idx in range(len(scaled) - 1):
-                fragments.append(self._arrow_shape(
-                    allocate_id(), scaled[idx][0], scaled[idx][1], scaled[idx + 1][0], scaled[idx + 1][1],
-                    self.bark, width_emu=12700, dashed=bool(conn.get("dashed")),
-                    arrow=idx == len(scaled) - 2,
-                ))
+            # Render the polyline as a SINGLE native bent connector
+            # (OCI_Icons.pptx convention) instead of multiple disjoint
+            # straight `line` shapes.
+            bent = self._bent_connector_shape(
+                allocate_id(), scaled, self.bark,
+                width_emu=12700, dashed=bool(conn.get("dashed")), arrow=True,
+            )
+            if bent is not None:
+                fragments.append(bent)
             if conn.get("flow_order"):
                 bx = scaled[0][0] + int((scaled[-1][0] - scaled[0][0]) * float(conn.get("badge_t", 0.25))) - sl(9)
                 by = scaled[0][1] + int((scaled[-1][1] - scaled[0][1]) * float(conn.get("badge_t", 0.25))) - sl(9)
@@ -1296,6 +1299,70 @@ class NativePPTXDiagramRenderer:
           <p:spPr>
             <a:xfrm{flip_h}{flip_v}><a:off x="{x}" y="{y}"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm>
             <a:prstGeom prst="line"><a:avLst/></a:prstGeom>
+            <a:ln w="{width_emu}">
+              <a:solidFill><a:srgbClr val="{color}"/></a:solidFill>
+              {dash}
+              {arrow_xml}
+            </a:ln>
+          </p:spPr>
+        </p:cxnSp>
+        """
+        return etree.fromstring(xml.encode("utf-8"))
+
+    def _bent_connector_shape(self, shape_id: int, points: list[tuple[int, int]],
+                              color: str, width_emu: int = 12700,
+                              dashed: bool = False, arrow: bool = True):
+        """Render a polyline as a SINGLE OOXML bent connector.
+
+        OCI_Icons.pptx (the template) uses ``bentConnector2/3/5`` for
+        elbow paths, NOT a sequence of separate straight ``line``
+        shapes. The latter renders as disjoint segments at the bends —
+        what Diego flagged: "la distribucion/forma de las flechas me
+        gusta mas como quedo en drawio que en pptx" (2026-04-25).
+
+        We use:
+          • 2 points (1 segment)  → straightConnector1 (single line)
+          • 3 points (1 elbow)    → bentConnector2 (1 bend)
+          • 4 points (2 elbows)   → bentConnector3 (2 bends, S-shape)
+          • 5+ points             → bentConnector5 (4 bends)
+
+        ``flipH``/``flipV`` are derived from the path's overall
+        direction so the bent connector lays out source→target the way
+        the spec authored it.
+        """
+        if len(points) < 2:
+            return None
+        x_first, y_first = points[0]
+        x_last, y_last = points[-1]
+        xs = [p[0] for p in points]
+        ys = [p[1] for p in points]
+        x = min(xs)
+        y = min(ys)
+        cx = max(max(xs) - x, 1)
+        cy = max(max(ys) - y, 1)
+        flip_h = ' flipH="1"' if x_last < x_first else ""
+        flip_v = ' flipV="1"' if y_last < y_first else ""
+        n = len(points)
+        if n == 2:
+            prst = "straightConnector1"
+        elif n == 3:
+            prst = "bentConnector2"
+        elif n == 4:
+            prst = "bentConnector3"
+        else:
+            prst = "bentConnector5"
+        dash = "<a:prstDash val=\"dash\"/>" if dashed else "<a:prstDash val=\"solid\"/>"
+        arrow_xml = '<a:tailEnd type="triangle" w="sm" len="sm"/>' if arrow else ""
+        xml = f"""
+        <p:cxnSp xmlns:p="{P_NS}" xmlns:a="{A_NS}">
+          <p:nvCxnSpPr>
+            <p:cNvPr id="{shape_id}" name="Connector"/>
+            <p:cNvCxnSpPr/>
+            <p:nvPr/>
+          </p:nvCxnSpPr>
+          <p:spPr>
+            <a:xfrm{flip_h}{flip_v}><a:off x="{x}" y="{y}"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm>
+            <a:prstGeom prst="{prst}"><a:avLst/></a:prstGeom>
             <a:ln w="{width_emu}">
               <a:solidFill><a:srgbClr val="{color}"/></a:solidFill>
               {dash}

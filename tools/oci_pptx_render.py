@@ -355,7 +355,59 @@ class PPTXSlideRenderer:
         if not line:
             return
         xfrm = sp_pr.find("a:xfrm", namespaces=NS)
+        geom = sp_pr.find("a:prstGeom", namespaces=NS)
+        prst = geom.get("prst") if geom is not None else "line"
+        # bentConnectorN: PowerPoint draws an elbow path inside the
+        # bbox. Approximate visually so the rasterizer preview matches
+        # what real PowerPoint shows. (The previous code rendered every
+        # connector as a single diagonal which hid bent elbows during
+        # local visual review — Diego flagged 2026-04-25.)
+        if prst.startswith("bentConnector"):
+            self._render_bent_connector(xfrm, transform, line, prst)
+            return
         self._render_line_like(xfrm, transform, line, arrow=True)
+
+    def _render_bent_connector(self, xfrm: etree._Element | None, transform: Transform,
+                               line: dict, prst: str) -> None:
+        if xfrm is None:
+            return
+        off = xfrm.find("a:off", namespaces=NS)
+        ext = xfrm.find("a:ext", namespaces=NS)
+        if off is None or ext is None:
+            return
+        x = _safe_int(off.get("x"))
+        y = _safe_int(off.get("y"))
+        cx = _safe_int(ext.get("cx"))
+        cy = _safe_int(ext.get("cy"))
+        flip_h = xfrm.get("flipH") == "1"
+        flip_v = xfrm.get("flipV") == "1"
+        start_local = (cx if flip_h else 0, cy if flip_v else 0)
+        end_local = (0 if flip_h else cx, 0 if flip_v else cy)
+        sx_, sy_ = transform.map_point(x + start_local[0], y + start_local[1])
+        ex, ey = transform.map_point(x + end_local[0], y + end_local[1])
+        # Build the elbow waypoints. bentConnector2 = single bend at
+        # the source's projection on the target. bentConnector3 = two
+        # bends (S-shape). bentConnector5 = four bends.
+        if prst == "bentConnector2":
+            mid = (ex, sy_)
+            pts = [(sx_, sy_), mid, (ex, ey)]
+        elif prst == "bentConnector3":
+            half_x = (sx_ + ex) / 2
+            pts = [(sx_, sy_), (half_x, sy_), (half_x, ey), (ex, ey)]
+        else:  # bentConnector5 or anything larger
+            half_x = (sx_ + ex) / 2
+            half_y = (sy_ + ey) / 2
+            pts = [(sx_, sy_), (half_x, sy_), (half_x, half_y),
+                   (ex, half_y), (ex, ey)]
+        ipts = [(int(round(p[0])), int(round(p[1]))) for p in pts]
+        for i in range(len(ipts) - 1):
+            a, b = ipts[i], ipts[i + 1]
+            if line.get("dashed"):
+                self._draw_dashed_line(a, b, line["color"], line["width"])
+            else:
+                self.draw.line([a, b], fill=line["color"], width=line["width"])
+        if line.get("arrow"):
+            self._draw_arrowhead(ipts[-2], ipts[-1], line["color"], line["width"])
 
     def _render_line_like(self, xfrm: etree._Element | None, transform: Transform, line: dict, arrow: bool) -> None:
         if xfrm is None:
