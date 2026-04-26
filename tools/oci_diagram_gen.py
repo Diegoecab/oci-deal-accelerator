@@ -856,6 +856,19 @@ class OCIDiagramGenerator:
         "terraform": ["resource_manager"],
         "oac": ["analytics"],
         "oic": ["integration"],
+        # Newer OCI services not yet in OCI Toolkit v24.2 — fall back to
+        # the generic ``database`` stencil. Oracle's own ref archs do
+        # the same (custom inline SVG over the generic icon) until the
+        # toolkit ships dedicated stencils. The agent should pair these
+        # with an explicit ``label:`` (e.g. "OCI Cache (Redis)").
+        "redis": ["database"],
+        "oci_cache": ["database"],
+        "oci_cache_with_redis": ["database"],
+        "cache": ["database"],
+        "valkey": ["database"],
+        "postgresql": ["database"],
+        "postgres": ["database"],
+        "oci_postgresql": ["database"],
     }
 
     @classmethod

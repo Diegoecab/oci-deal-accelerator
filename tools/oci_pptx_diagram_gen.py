@@ -189,6 +189,21 @@ TYPE_TO_ICON = {
     "tags": ["tag_namespace"],
     "compartment": ["compartment"],
     "compartments": ["compartment"],
+    # Newer OCI services not yet in the OCI Toolkit v24.2 / OCI_Icons.pptx —
+    # fall back to the generic ``database`` stencil with an explicit
+    # ``label:`` carrying the real service name. Oracle's own ref archs
+    # (e.g. modernize-app-dev-oci-postgresql-redis-opensearch) embed
+    # custom inline SVGs because the toolkit lacks these too — using the
+    # canonical generic icon is the closest standardized match.
+    "redis": ["database"],
+    "oci_cache": ["database"],
+    "oci_cache_with_redis": ["database"],
+    "cache": ["database"],
+    "valkey": ["database"],
+    "postgresql": ["database"],
+    "postgres": ["database"],
+    "oci_postgresql": ["database"],
+    "opensearch": ["database_opensearch", "database"],
 }
 
 ICON_KEYWORD_HINTS = {
