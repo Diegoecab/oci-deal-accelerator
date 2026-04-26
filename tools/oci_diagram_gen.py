@@ -2198,6 +2198,30 @@ class OCIDiagramGenerator:
             gen._render_absolute_layout(spec)
             return gen
 
+        # Legacy workload-driven shape (tenancy → regions → compartments
+        # → services). Does NOT resolve OCI stencils — services render
+        # as colored rectangles with text labels — does NOT run through
+        # the spec validator, and bakes connector text into edge values
+        # (forbidden by the connector-labels rule). Output looks like a
+        # wireframe placeholder, not an architecture diagram. Loud
+        # warning so any agent that takes this path against the
+        # procedure docs sees the problem immediately, even if it
+        # skipped reading SKILL.md option 2.
+        import sys as _sys
+        if spec.get("tenancy") or spec.get("regions") or spec.get("clouds"):
+            print(
+                "[oci_diagram_gen] WARNING: spec uses the legacy "
+                "workload-driven shape (tenancy → regions → "
+                "compartments → services). This mode does NOT resolve "
+                "OCI icon stencils, does NOT run the spec validator, "
+                "and produces wireframe-looking output. The standard "
+                "procedure (SKILL.md option 2 / docs/skill/output-formats.md) "
+                "requires the `absolute_layout` shape. Re-author the "
+                "spec under `absolute_layout:` for any customer-facing "
+                "diagram.",
+                file=_sys.stderr,
+            )
+
         # External actors (users, internet, third-party)
         for ext in spec.get("external", []):
             ext_id = ext.get("id", gen._next_id())

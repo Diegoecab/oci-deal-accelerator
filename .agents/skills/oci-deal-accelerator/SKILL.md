@@ -135,8 +135,8 @@ Pick a number, or just describe what you need.
   After the user answers, **follow these steps in order — do NOT skip step 1**:
   1. **Reference-architecture lookup.** Run `python tools/archcenter_pattern_lookup.py "<topology keywords>"` against `kb/architecture-center/catalog.yaml` (123 Oracle-curated entries with cached `.drawio` / `_description.md` under `kb/diagram/assets/archcenter-refs/`). Pick the highest-scoring entry whose topology matches; copy its container nesting, padding, and AD/subnet placement. **Do NOT search `examples/` for references** — `examples/` are previous user outputs, not authoritative Oracle conventions.
   2. **Pre-generation review.** Confirm the component list with the user (REQUESTED + TECHNICAL DEPENDENCIES per the whitelist).
-  3. **Author the `absolute_layout` spec** following the geometry rules.
-  4. **Spec validator runs automatically** before either renderer (`tools/diagram_spec_validator.py`). Fix any errors.
+  3. **Author the spec in `absolute_layout` shape** — this is REQUIRED. Do NOT use the legacy workload-driven shape (`tenancy → regions → compartments → services`); it does not resolve OCI icon stencils, does not run through the spec validator, and produces wireframe-looking output (rectangles with text instead of real OCI icons). Every container, service, label, and connection needs explicit `(x, y, w, h)`.
+  4. **Spec validator runs automatically** before either renderer (`tools/diagram_spec_validator.py`). It runs ONLY on `absolute_layout` specs — that's another reason workload-driven is forbidden. Fix any errors before re-rendering.
   5. **Render.** `oci_diagram_gen.py` for drawio, `oci_deck_gen.py` for PPTX.
   6. **Visually verify.** `tools/oci_pptx_render.py` to rasterize, then read the PNG.
 

@@ -85,10 +85,10 @@ These rules are enforced by `tools/diagram_spec_validator.py` and exist because 
 
 ### Diagram modes
 
-The diagram generator accepts two spec shapes:
+The diagram generator accepts two spec shapes — but only ONE is acceptable for any output an SA shows a customer:
 
-1. **Workload-driven (default)** — `tenancy → region(s) → vcn(s) → subnet(s) → service(s)` plus on-premises and external actors. The generator auto-lays out containers and service blocks. Use this for most customer proposals where you describe the workload abstractly.
-2. **`absolute_layout` (fidelity mode)** — explicit `(x, y, w, h)` for every container, service, label, and connection. Use this when the user wants to reproduce an Oracle Architecture Center reference diagram with maximum visual fidelity, or when a layout already exists (e.g. extracted from an official `.drawio`).
+1. **`absolute_layout` (REQUIRED for any new diagram).** Explicit `(x, y, w, h)` for every container, service, label, and connection. Resolves real OCI stencils from `kb/diagram/oci-icons.json`, runs through `tools/diagram_spec_validator.py` (geometry rules), and produces output visually consistent with Oracle Architecture Center references. **This is the only mode the standard procedure supports.** Pair it with the ref-arch lookup (`tools/archcenter_pattern_lookup.py`) so geometry derives from a canonical Oracle reference, not invented from scratch.
+2. **Workload-driven (DEPRECATED).** `tenancy → region(s) → vcn(s) → subnet(s) → service(s)`. The generator auto-lays out blocks but **does NOT resolve OCI icon stencils** — services render as colored rectangles with text labels, connector text gets baked into edge values (which the connector-label rule forbids), and the spec validator does NOT run. Output looks like a wireframe placeholder, not an architecture diagram. Kept only for back-compat with very old specs; do not author new specs in this shape.
 
 ```yaml
 absolute_layout:
