@@ -211,6 +211,16 @@ def main() -> None:
         print(f"  {status:30s}  {n}", file=sys.stderr)
     print(f"\nReport: {args.report.relative_to(PROJECT_ROOT)}", file=sys.stderr)
 
+    # Bump cache-dir mtime so the pattern-lookup index invalidates.
+    # New downloads create new subdirs (POSIX bumps the parent mtime),
+    # but re-downloads or unzip-overwrites of existing slugs do not —
+    # so we touch explicitly.
+    if any(counts.get(k) for k in ("downloaded", "zip_error", "no_drawio_after_extract")):
+        try:
+            args.cache_dir.touch(exist_ok=True)
+        except OSError:
+            pass
+
 
 if __name__ == "__main__":
     main()

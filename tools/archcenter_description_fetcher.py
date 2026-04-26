@@ -169,6 +169,16 @@ def main() -> None:
         print(f"  {s:25s}  {n}", file=sys.stderr)
     print(f"\nReport: {args.report.relative_to(PROJECT_ROOT)}", file=sys.stderr)
 
+    # Bump CACHE_DIR mtime so archcenter_pattern_lookup invalidates its
+    # persisted JSON index — POSIX doesn't propagate child-file changes
+    # (e.g. new _description.md inside an existing slug) to the parent
+    # dir's mtime, so we touch it explicitly.
+    if counts.get("fetched"):
+        try:
+            CACHE_DIR.touch(exist_ok=True)
+        except OSError:
+            pass
+
 
 if __name__ == "__main__":
     main()

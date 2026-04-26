@@ -402,7 +402,15 @@ def main() -> None:
                         "before scoring (opt-in; requires "
                         "ANTHROPIC_API_KEY). Useful for natural-language "
                         "queries the synonym table doesn't cover.")
+    parser.add_argument("--rebuild-index", action="store_true",
+                        help="Force-rebuild the cached archcenter-refs "
+                        "index (kb/diagram/assets/archcenter-refs-index.json). "
+                        "Use after a manual KB edit if mtime didn't bump.")
     args = parser.parse_args()
+    if args.rebuild_index and CACHE_INDEX_FILE.exists():
+        CACHE_INDEX_FILE.unlink()
+        print(f"[lookup] removed stale index at {CACHE_INDEX_FILE.relative_to(PROJECT_ROOT)}",
+              file=sys.stderr)
 
     queries: list[str] = list(args.queries)
     if args.query:
