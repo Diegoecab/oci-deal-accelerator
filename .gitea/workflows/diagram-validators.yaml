@@ -1,0 +1,75 @@
+# Diagram-validator gate.
+#
+# Runs on every push and PR. Two checks:
+#
+#   1. diagram-spec-audit — every absolute_layout spec under examples/
+#      passes tools/diagram_spec_validator.py (geometry rules:
+#      CONTAINER_TOO_THIN, CONTAINER_PADDING_VIOLATION,
+#      LABEL_OVERFLOW_PARENT). Hard fail surfaces the regressions
+#      Diego flagged on the MySQL HeatWave HA example.
+#
+#   2. drawio-validators-smoke — re-renders the canonical example with
+#      tools/oci_diagram_gen.py so the post-render
+#      drawio_visual_validator runs (font sizes, dangling edges,
+#      duplicate ids, off-canvas geometry).
+#
+# Failures block the merge so a busted geometry never ships.
+
+name: Diagram validators
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/**'
+      - 'kb/diagram/**'
+      - 'tools/diagram_spec_validator.py'
+      - 'tools/drawio_visual_validator.py'
+      - 'tools/oci_diagram_gen.py'
+      - 'tools/oci_pptx_diagram_gen.py'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  diagram-validators:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends python3 python3-pip python3-yaml
+          python3 --version
+
+      - name: Install minimal deps
+        run: |
+          python3 -m pip install --quiet --upgrade pip
+          python3 -m pip install --quiet drawpyo lxml pyyaml
+
+      - name: Spec validator audit (every absolute_layout spec)
+        run: |
+          set -e
+          total=0; failed=0
+          for f in $(find examples -name 'diagram-spec.yaml' -o -name '*-diagram-spec.yaml'); do
+            total=$((total+1))
+            if ! python3 tools/diagram_spec_validator.py --spec "$f" --strict; then
+              failed=$((failed+1))
+            fi
+          done
+          echo "Validated $total spec(s); $failed hard-failed."
+          test $failed -eq 0
+
+      - name: Re-render canonical example (drawio post-render validator)
+        run: |
+          if [ -f examples/aws-app-mysql-heatwave-ha/specs/diagram-spec.yaml ]; then
+            python3 tools/oci_diagram_gen.py \
+              --spec examples/aws-app-mysql-heatwave-ha/specs/diagram-spec.yaml \
+              --output /tmp/aws-app-mysql-heatwave-ha.drawio --strict
+          else
+            echo "Canonical example missing — skipping drawio smoke test"
+          fi

@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20 diagram-lookup diagram-validate-spec archcenter-descriptions-refresh diagram-spec-audit archcenter-smoke
 
 # Use venv if present, otherwise find best available python3
 ifneq (,$(wildcard .venv/bin/python))
@@ -82,6 +82,35 @@ archcenter-benchmark-20: ## Run 20-case Oracle Architecture Center native benchm
 		--threshold 0.82 \
 		--fidelity-threshold 0.90 \
 		--output-root examples/eval-2026-04-25-archcenter-native-20-v8
+
+diagram-lookup: ## Find Architecture Center reference patterns. Usage: make diagram-lookup QUERY="mysql heatwave HA"
+	@if [ -z "$(QUERY)" ]; then echo "Usage: make diagram-lookup QUERY=\"<topology>\""; exit 1; fi
+	$(PYTHON) tools/archcenter_pattern_lookup.py "$(QUERY)" --top $${TOP:-5}
+
+diagram-validate-spec: ## Validate a diagram spec's geometry. Usage: make diagram-validate-spec SPEC=path/to/spec.yaml
+	@if [ -z "$(SPEC)" ]; then echo "Usage: make diagram-validate-spec SPEC=<path>"; exit 1; fi
+	$(PYTHON) tools/diagram_spec_validator.py --spec "$(SPEC)" --strict
+
+diagram-spec-audit: ## Run spec validator across every diagram-spec in examples/, print pass/fail summary
+	@echo "Auditing diagram specs under examples/..."
+	@total=0; failed=0; \
+	for f in $$(find examples -name 'diagram-spec.yaml' -o -name '*-diagram-spec.yaml'); do \
+	  total=$$((total+1)); \
+	  $(PYTHON) tools/diagram_spec_validator.py --spec "$$f" --strict >/dev/null 2>&1 || { \
+	    failed=$$((failed+1)); echo "  FAIL  $$f"; \
+	  }; \
+	done; \
+	echo "Audited $$total spec(s); $$failed failed."
+
+archcenter-descriptions-refresh: ## Re-fetch _description.md for every Architecture Center entry
+	$(PYTHON) tools/archcenter_description_fetcher.py --limit 200 --sleep 0.5
+
+archcenter-smoke: ## 3-case Architecture Center reconstruction smoke test (CI-friendly)
+	$(PYTHON) tools/oci_archcenter_batch.py \
+		--limit 3 \
+		--threshold 0.78 \
+		--fidelity-threshold 0.85 \
+		--output-root tmp/archcenter-smoke
 
 clean: ## Remove generated output files
 	rm -f examples/sample-output/*.drawio

@@ -29,6 +29,23 @@ Returns a dict with:
   - issues: [{"severity", "code", "message", "id"}]
 
 Severity ``error`` → renderers raise. ``warn`` → printed to stderr.
+
+Policy on legacy archcenter reproductions
+-----------------------------------------
+Specs under ``examples/eval-*-archcenter-native-*/`` are auto-generated
+reconstructions of Oracle Architecture Center references. Oracle's own
+geometry sometimes places labels 2-5px from container edges, and the
+reproductions mirror those coordinates verbatim to keep the perceptual
+diff against the canonical PNGs above the fidelity threshold. Touching
+them to silence ``LABEL_NEAR_PARENT_EDGE`` (severity=warn) would risk
+the pixel-fidelity scores tracked by ``archcenter_batch_driver``.
+
+The validator therefore distinguishes:
+
+  - ``LABEL_OVERFLOW_PARENT`` (error, blocks render): label bottom is
+    OUTSIDE the parent — true regression.
+  - ``LABEL_NEAR_PARENT_EDGE`` (warn, never blocks): label sits within
+    6px but still inside — common in Oracle's own ref archs.
 """
 from __future__ import annotations
 

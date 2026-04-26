@@ -178,7 +178,12 @@ python tools/archcenter_pattern_lookup.py "fastconnect exacs cross region" --top
 
 # Re-fetch description text after a catalog refresh
 python tools/archcenter_description_fetcher.py --limit 200
+
+# Re-download cached drawio/svg/png assets after a catalog refresh
+python tools/archcenter_zip_downloader.py    # idempotent; skips slugs whose folder already has a .drawio
 ```
+
+The cached assets under `kb/diagram/assets/archcenter-refs/` (~83MB) are committed so the skill works offline. Refresh quarterly or when `refresh_arch_catalog.py --whats-new` adds entries — both downloader and description fetcher are idempotent and only fetch what's missing.
 
 ### KB Health & Freshness
 

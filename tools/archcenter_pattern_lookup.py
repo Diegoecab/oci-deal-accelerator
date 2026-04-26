@@ -33,7 +33,12 @@ as the basis for your absolute_layout authoring.
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import re
+import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import yaml
@@ -98,6 +103,60 @@ def _expand_query_tokens(tokens: set[str]) -> set[str]:
     for tok in tokens:
         expanded.update(index.get(tok, set()))
     return expanded
+
+
+def _llm_rewrite_query(query: str) -> str:
+    """Rewrite ``query`` into canonical OCI/Oracle terminology via the
+    Anthropic API.
+
+    Opt-in: requires ``ANTHROPIC_API_KEY`` in the environment. Returns
+    the original query unchanged on any error or when the key is
+    missing — never fails the lookup. The synonym table covers the
+    common abbreviations; this hook is for natural-language queries
+    where rule-based expansion alone misses the intent.
+    """
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("[lookup] --llm-rewrite skipped: ANTHROPIC_API_KEY not set",
+              file=sys.stderr)
+        return query
+    model = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
+    payload = {
+        "model": model,
+        "max_tokens": 120,
+        "system": (
+            "Rewrite the user's free-text architecture query into a "
+            "concise list of canonical OCI and cloud terms. Expand "
+            "abbreviations (LB → load balancer, ADG → active data "
+            "guard, AD → availability domain, etc.). Do NOT add "
+            "topology elements the user did not request. Output ONLY "
+            "the rewritten query as a single space-separated phrase, "
+            "no preface, no quotes."
+        ),
+        "messages": [{"role": "user", "content": query}],
+    }
+    req = urllib.request.Request(
+        "https://api.anthropic.com/v1/messages",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "content-type": "application/json",
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, ValueError) as exc:
+        print(f"[lookup] --llm-rewrite failed: {exc}; using original query",
+              file=sys.stderr)
+        return query
+    blocks = body.get("content") or []
+    text = " ".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
+    if not text:
+        return query
+    print(f"[lookup] llm-rewrote: {query!r} → {text!r}", file=sys.stderr)
+    return text
 
 
 def _description_text(entry: dict) -> str:
@@ -251,6 +310,11 @@ def main() -> None:
     parser.add_argument("--no-synonyms", action="store_true",
                         help="Disable query-token expansion via "
                         "kb/architecture-center/synonyms.yaml.")
+    parser.add_argument("--llm-rewrite", action="store_true",
+                        help="Rewrite the query via the Anthropic API "
+                        "before scoring (opt-in; requires "
+                        "ANTHROPIC_API_KEY). Useful for natural-language "
+                        "queries the synonym table doesn't cover.")
     args = parser.parse_args()
 
     queries: list[str] = list(args.queries)
@@ -260,6 +324,8 @@ def main() -> None:
         parser.error("Provide a positional query or --queries.")
 
     expand = not args.no_synonyms
+    if args.llm_rewrite:
+        queries = [_llm_rewrite_query(q) for q in queries]
     if args.format == "yaml":
         bundle = {q: lookup(q, top=args.top, expand_synonyms=expand) for q in queries}
         print(yaml.safe_dump(bundle if len(queries) > 1 else bundle[queries[0]],
