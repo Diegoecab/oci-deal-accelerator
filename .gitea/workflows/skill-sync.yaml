@@ -47,3 +47,21 @@ jobs:
       - name: Verify SKILL.md is in sync with the Codex copy
         run: |
           python3 scripts/sync-skill.py --check
+
+      - name: Reject .agents/ edits without a matching root SKILL.md change
+        if: github.event_name == 'pull_request'
+        run: |
+          # If only .agents/skills/.../SKILL.md is in the diff (no
+          # change to root SKILL.md), someone edited the auto-generated
+          # copy directly. That edit will be silently destroyed by the
+          # next sync. Block the PR with a clear message.
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          changed=$(git diff --name-only "$base" "$head" || true)
+          if echo "$changed" | grep -qx ".agents/skills/oci-deal-accelerator/SKILL.md"; then
+            if ! echo "$changed" | grep -qx "SKILL.md"; then
+              echo "::error::PR edits .agents/skills/.../SKILL.md without touching root SKILL.md."
+              echo "::error::That file is auto-generated. Move the edit to SKILL.md and run 'make sync-skill'."
+              exit 1
+            fi
+          fi

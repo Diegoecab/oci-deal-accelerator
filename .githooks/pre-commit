@@ -7,9 +7,13 @@
 # different instructions.
 #
 # Behavior:
-#   • If SKILL.md is staged but the .agents/ copy is not synced,
-#     auto-run scripts/sync-skill.py and stage the result so the
-#     commit ships both files together.
+#   1. Only the .agents/ copy staged (no root SKILL.md change):
+#      REJECT — the .agents/ file is auto-generated, edits MUST land
+#      in root SKILL.md. Otherwise the next sync silently destroys
+#      the change.
+#   2. Root SKILL.md staged: auto-run scripts/sync-skill.py and
+#      stage the regenerated .agents/ copy in the same commit.
+#   3. Neither: nothing to do.
 #   • If the script can't run (no python, etc.), abort with a clear
 #     message rather than committing a desync silently.
 #
@@ -22,8 +26,33 @@ SOURCE="SKILL.md"
 TARGET=".agents/skills/oci-deal-accelerator/SKILL.md"
 SCRIPT="scripts/sync-skill.py"
 
-# Only act when SKILL.md is part of the staged change set.
-if ! git diff --cached --name-only | grep -qx "$SOURCE"; then
+STAGED="$(git diff --cached --name-only)"
+SOURCE_STAGED=0
+TARGET_STAGED=0
+echo "$STAGED" | grep -qx "$SOURCE" && SOURCE_STAGED=1 || true
+echo "$STAGED" | grep -qx "$TARGET" && TARGET_STAGED=1 || true
+
+# Case 1: only the auto-generated .agents/ copy is staged. Reject —
+# the source of truth is root SKILL.md and a future sync will
+# silently overwrite this change.
+if [ "$TARGET_STAGED" = "1" ] && [ "$SOURCE_STAGED" = "0" ]; then
+    echo "" >&2
+    echo "pre-commit: REJECTED — you staged $TARGET in isolation." >&2
+    echo "  This file is auto-generated from $SOURCE and the next" >&2
+    echo "  ``make sync-skill`` (or this pre-commit hook firing on a" >&2
+    echo "  later commit) will overwrite your changes silently." >&2
+    echo "" >&2
+    echo "  Workflow:" >&2
+    echo "    1. Move your edits into $SOURCE." >&2
+    echo "    2. ``git restore --staged --worktree $TARGET``" >&2
+    echo "    3. ``git add $SOURCE`` and re-commit — the hook will" >&2
+    echo "       regenerate the .agents/ copy automatically." >&2
+    echo "" >&2
+    exit 1
+fi
+
+# Nothing else to do unless root SKILL.md changed.
+if [ "$SOURCE_STAGED" = "0" ]; then
     exit 0
 fi
 

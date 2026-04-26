@@ -472,6 +472,8 @@ Three layers of defense, run from least to most enforcement:
 
 3. **CI gate (`.gitea/workflows/skill-sync.yaml`):** every push/PR runs `python scripts/sync-skill.py --check` and fails the build if the two files have drifted. Catches anyone who skipped the hook.
 
+**Direction is always root → `.agents/`.** The `.agents/` copy is auto-generated; do NOT edit it directly — the next sync will silently overwrite your changes. Both the local pre-commit hook and the CI gate REJECT a commit/PR that stages `.agents/skills/oci-deal-accelerator/SKILL.md` without a matching root `SKILL.md` change. If you find yourself wanting to tweak the Codex side specifically, that signal belongs in `AGENTS.md` (Codex-only project instructions) — `SKILL.md` content stays unified across both agents.
+
 ## Roadmap
 
 ### ECAL Completeness (see `docs/ecal-gaps-backlog.md` for full list)
