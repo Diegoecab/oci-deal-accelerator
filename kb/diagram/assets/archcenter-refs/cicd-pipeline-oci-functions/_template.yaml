@@ -1,0 +1,674 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/cicd-pipeline-oci-functions/cicd-deploy-oci-functions-oracle/cicd-deploy-oci-functions.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 850
+    height: 1100
+  containers:
+  - id: c1
+    type: region
+    label: ''
+    x: 550
+    y: 34
+    w: 490
+    h: 515
+  - id: c2
+    type: region
+    label: ''
+    x: 10
+    y: 34
+    w: 531
+    h: 258
+  - id: c27
+    type: region
+    label: ''
+    x: 322
+    y: 124
+    w: 180
+    h: 14
+  - id: '261'
+    type: region
+    label: ''
+    x: 0
+    y: 0
+    w: 76
+    h: 14
+  - id: '264'
+    type: region
+    label: ''
+    x: 0
+    y: 0
+    w: 50
+    h: 14
+  - id: '267'
+    type: region
+    label: ''
+    x: 0
+    y: 0
+    w: 33
+    h: 14
+  - id: '258'
+    type: region
+    label: ''
+    x: 0
+    y: 0
+    w: 30
+    h: 14
+  services:
+  - id: '11'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 41
+    h: 39
+  - id: '12'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 42
+    h: 40
+  - id: '16'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 55
+  - id: '17'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 56
+  - id: '29'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 44
+    h: 61
+  - id: '30'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 45
+    h: 63
+  - id: '35'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 57
+    h: 63
+  - id: '46'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '67'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '68'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 61
+    h: 61
+  - id: '69'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '82'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 61
+    h: 61
+  - id: '83'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '101'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 42
+    h: 42
+  - id: '102'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 41
+    h: 41
+  - id: '103'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 42
+    h: 42
+  - id: '120'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '121'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 61
+    h: 62
+  - id: '122'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '133'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '134'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 62
+  - id: '135'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '147'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 65
+    h: 62
+  - id: '148'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 60
+  - id: '149'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 65
+    h: 62
+  - id: '174'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '175'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 61
+    h: 62
+  - id: '176'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '206'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '210'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '211'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 61
+  - id: '212'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 63
+  - id: '242'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 55
+    h: 62
+  - id: '243'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 56
+    h: 63
+  - id: '13'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 0
+    w: 40
+    h: 38
+  - id: '18'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 53
+  - id: '31'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 42
+    h: 60
+  - id: '47'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '48'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '70'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '71'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '84'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 47
+    h: 58
+  - id: '104'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 40
+    h: 40
+  - id: '123'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '124'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '136'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '150'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 62
+    h: 58
+  - id: '152'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 55
+    h: 55
+  - id: '177'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '200'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '213'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 60
+  - id: '244'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 53
+    h: 61
+  - id: '34'
+    type: TODO_identify
+    label: ''
+    x: 2
+    y: 1
+    w: 53
+    h: 59
+  - id: '19'
+    type: TODO_identify
+    label: ''
+    x: 14
+    y: 7
+    w: 34
+    h: 34
+  - id: '88'
+    type: TODO_identify
+    label: ''
+    x: 8
+    y: 8
+    w: 32
+    h: 25
+  - id: '168'
+    type: TODO_identify
+    label: ''
+    x: 22
+    y: 9
+    w: 40
+    h: 38
+  - id: '49'
+    type: TODO_identify
+    label: ''
+    x: 11
+    y: 12
+    w: 38
+    h: 38
+  - id: '171'
+    type: TODO_identify
+    label: ''
+    x: 28
+    y: 13
+    w: 30
+    h: 30
+  - id: '105'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 14
+    w: 29
+    h: 26
+  - id: '137'
+    type: TODO_identify
+    label: ''
+    x: 9
+    y: 17
+    w: 43
+    h: 28
+  - id: '227'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 18
+    w: 60
+    h: 42
+  - id: '36'
+    type: TODO_identify
+    label: ''
+    x: 4
+    y: 21
+    w: 47
+    h: 37
+  - id: '92'
+    type: TODO_identify
+    label: ''
+    x: 34
+    y: 34
+    w: 27
+    h: 27
+  - id: s6
+    type: TODO_identify
+    label: ''
+    x: 43
+    y: 67
+    w: 45
+    h: 63
+  - id: s4
+    type: TODO_identify
+    label: ''
+    x: 866
+    y: 77
+    w: 42
+    h: 40
+  - id: s3
+    type: TODO_identify
+    label: ''
+    x: 736
+    y: 94
+    w: 182
+    h: 187
+  - id: s16
+    type: TODO_identify
+    label: ''
+    x: 857
+    y: 122
+    w: 42
+    h: 42
+  - id: s15
+    type: TODO_identify
+    label: ''
+    x: 746
+    y: 144
+    w: 161
+    h: 127
+  - id: s7
+    type: TODO_identify
+    label: ''
+    x: 38
+    y: 177
+    w: 57
+    h: 63
+  - id: s9
+    type: TODO_identify
+    label: ''
+    x: 215
+    y: 177
+    w: 63
+    h: 63
+  - id: s11
+    type: TODO_identify
+    label: ''
+    x: 320
+    y: 177
+    w: 63
+    h: 63
+  - id: s13
+    type: TODO_identify
+    label: ''
+    x: 445
+    y: 177
+    w: 63
+    h: 63
+  - id: s18
+    type: TODO_identify
+    label: ''
+    x: 582
+    y: 177
+    w: 63
+    h: 63
+  - id: s17
+    type: TODO_identify
+    label: ''
+    x: 795
+    y: 177
+    w: 63
+    h: 63
+  - id: s8
+    type: TODO_identify
+    label: ''
+    x: 27
+    y: 244
+    w: 169
+    h: 37
+  - id: s10
+    type: TODO_identify
+    label: ''
+    x: 222
+    y: 244
+    w: 101
+    h: 37
+  - id: s12
+    type: TODO_identify
+    label: ''
+    x: 305
+    y: 244
+    w: 203
+    h: 37
+  - id: s14
+    type: TODO_identify
+    label: ''
+    x: 424
+    y: 244
+    w: 203
+    h: 37
+  - id: s19
+    type: TODO_identify
+    label: ''
+    x: 560
+    y: 244
+    w: 220
+    h: 37
+  - id: s23
+    type: TODO_identify
+    label: ''
+    x: 799
+    y: 324
+    w: 56
+    h: 63
+  - id: s5
+    type: TODO_identify
+    label: ''
+    x: 1099
+    y: 331
+    w: 63
+    h: 56
+  - id: s25
+    type: TODO_identify
+    label: ''
+    x: 693
+    y: 354
+    w: 110
+    h: 95
+  - id: s26
+    type: TODO_identify
+    label: ''
+    x: 849
+    y: 354
+    w: 125
+    h: 95
+  - id: s24
+    type: TODO_identify
+    label: ''
+    x: 769
+    y: 392
+    w: 220
+    h: 37
+  - id: s21
+    type: TODO_identify
+    label: ''
+    x: 795
+    y: 451
+    w: 63
+    h: 63
+  - id: s20
+    type: TODO_identify
+    label: ''
+    x: 672
+    y: 452
+    w: 65
+    h: 62
+  - id: s22
+    type: TODO_identify
+    label: ''
+    x: 935
+    y: 452
+    w: 63
+    h: 63
+  labels: []
+  connections: []

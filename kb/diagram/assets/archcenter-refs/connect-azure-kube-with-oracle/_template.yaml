@@ -1,0 +1,296 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/connect-azure-kube-with-oracle/azure-kube-with-exadata-db-oracle/azure-kube-with-exadata-db.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 850
+    height: 1100
+  containers: []
+  services:
+  - id: s1
+    type: TODO_identify
+    label: ''
+    x: 887
+    y: 83
+    w: 28
+    h: 31
+  - id: s9
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 177
+    w: 58
+    h: 63
+  - id: s8
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 178
+    w: 57
+    h: 61
+  - id: s10
+    type: TODO_identify
+    label: ''
+    x: 234
+    y: 179
+    w: 55
+    h: 60
+  - id: s24
+    type: TODO_identify
+    label: ''
+    x: 342
+    y: 203
+    w: 135
+    h: 31
+  - id: s25
+    type: TODO_identify
+    label: ''
+    x: 347
+    y: 204
+    w: 125
+    h: 30
+  - id: s15
+    type: TODO_identify
+    label: ''
+    x: 1132
+    y: 208
+    w: 63
+    h: 33
+  - id: s14
+    type: TODO_identify
+    label: ''
+    x: 1133
+    y: 208
+    w: 61
+    h: 31
+  - id: s16
+    type: TODO_identify
+    label: ''
+    x: 1134
+    y: 209
+    w: 60
+    h: 30
+  - id: s11
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 280
+    w: 57
+    h: 61
+  - id: s12
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 280
+    w: 58
+    h: 63
+  - id: s13
+    type: TODO_identify
+    label: ''
+    x: 234
+    y: 281
+    w: 55
+    h: 60
+  - id: s22
+    type: TODO_identify
+    label: ''
+    x: 342
+    y: 305
+    w: 135
+    h: 31
+  - id: s23
+    type: TODO_identify
+    label: ''
+    x: 347
+    y: 307
+    w: 125
+    h: 30
+  - id: s6
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 381
+    w: 58
+    h: 63
+  - id: s18
+    type: TODO_identify
+    label: ''
+    x: 1132
+    y: 381
+    w: 63
+    h: 63
+  - id: s5
+    type: TODO_identify
+    label: ''
+    x: 233
+    y: 382
+    w: 57
+    h: 61
+  - id: s17
+    type: TODO_identify
+    label: ''
+    x: 1133
+    y: 382
+    w: 62
+    h: 62
+  - id: s7
+    type: TODO_identify
+    label: ''
+    x: 234
+    y: 383
+    w: 55
+    h: 60
+  - id: s19
+    type: TODO_identify
+    label: ''
+    x: 1133
+    y: 389
+    w: 60
+    h: 54
+  - id: s35
+    type: TODO_identify
+    label: ''
+    x: 771
+    y: 399
+    w: 96
+    h: 127
+  - id: s36
+    type: TODO_identify
+    label: ''
+    x: 774
+    y: 401
+    w: 90
+    h: 45
+  - id: s40
+    type: TODO_identify
+    label: ''
+    x: 671
+    y: 404
+    w: 63
+    h: 40
+  - id: s39
+    type: TODO_identify
+    label: ''
+    x: 672
+    y: 405
+    w: 62
+    h: 39
+  - id: s26
+    type: TODO_identify
+    label: ''
+    x: 342
+    y: 407
+    w: 135
+    h: 31
+  - id: s27
+    type: TODO_identify
+    label: ''
+    x: 347
+    y: 409
+    w: 125
+    h: 30
+  - id: s38
+    type: TODO_identify
+    label: ''
+    x: 797
+    y: 426
+    w: 47
+    h: 97
+  - id: s34
+    type: TODO_identify
+    label: ''
+    x: 802
+    y: 431
+    w: 38
+    h: 87
+  - id: s37
+    type: TODO_identify
+    label: ''
+    x: 802
+    y: 431
+    w: 38
+    h: 87
+  - id: s3
+    type: TODO_identify
+    label: ''
+    x: 989
+    y: 486
+    w: 42
+    h: 42
+  - id: s2
+    type: TODO_identify
+    label: ''
+    x: 990
+    y: 487
+    w: 41
+    h: 41
+  - id: s20
+    type: TODO_identify
+    label: ''
+    x: 518
+    y: 499
+    w: 55
+    h: 63
+  - id: s21
+    type: TODO_identify
+    label: ''
+    x: 520
+    y: 501
+    w: 34
+    h: 25
+  - id: s4
+    type: TODO_identify
+    label: ''
+    x: 990
+    y: 501
+    w: 29
+    h: 26
+  - id: s30
+    type: TODO_identify
+    label: ''
+    x: 1019
+    y: 527
+    w: 41
+    h: 41
+  - id: s31
+    type: TODO_identify
+    label: ''
+    x: 1019
+    y: 527
+    w: 42
+    h: 42
+  - id: s32
+    type: TODO_identify
+    label: ''
+    x: 1019
+    y: 527
+    w: 30
+    h: 31
+  - id: s33
+    type: TODO_identify
+    label: ''
+    x: 1024
+    y: 532
+    w: 36
+    h: 36
+  - id: s28
+    type: TODO_identify
+    label: ''
+    x: 642
+    y: 543
+    w: 78
+    h: 31
+  - id: s29
+    type: TODO_identify
+    label: ''
+    x: 647
+    y: 545
+    w: 68
+    h: 30
+  labels: []
+  connections: []

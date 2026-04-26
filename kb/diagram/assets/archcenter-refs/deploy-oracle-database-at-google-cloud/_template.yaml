@@ -1,0 +1,303 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/deploy-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 900
+    height: 566
+  containers:
+  - id: '4'
+    type: container
+    label: ''
+    x: 0
+    y: 0
+    w: 664
+    h: 560
+  - id: '5'
+    type: container
+    label: ''
+    x: 8
+    y: 32
+    w: 647
+    h: 515
+  - id: '3'
+    type: region
+    label: ''
+    x: 678
+    y: 0
+    w: 210
+    h: 554
+  services:
+  - id: '18'
+    type: TODO_identify
+    label: Google Cloud
+    x: 8
+    y: 6
+    w: 127
+    h: 24
+  - id: '17'
+    type: TODO_identify
+    label: OCI Region
+    x: 685
+    y: 6
+    w: 107
+    h: 24
+  - id: '19'
+    type: TODO_identify
+    label: Project A
+    x: 16
+    y: 38
+    w: 97
+    h: 24
+  - id: '27'
+    type: TODO_identify
+    label: ODB network
+    x: 216
+    y: 46
+    w: 117
+    h: 24
+  - id: '44'
+    type: TODO_identify
+    label: ''
+    x: 598
+    y: 53
+    w: 40
+    h: 40
+  - id: '20'
+    type: TODO_identify
+    label: VPC default
+    x: 25
+    y: 79
+    w: 117
+    h: 24
+  - id: '21'
+    type: TODO_identify
+    label: Google Cloud Region
+    x: 32
+    y: 110
+    w: 196
+    h: 24
+  - id: '45'
+    type: TODO_identify
+    label: ''
+    x: 591
+    y: 123
+    w: 29
+    h: 40
+  - id: '46'
+    type: TODO_identify
+    label: ''
+    x: 806
+    y: 130
+    w: 60
+    h: 31
+  - id: '22'
+    type: TODO_identify
+    label: Zone
+    x: 40
+    y: 150
+    w: 48
+    h: 24
+  - id: '28'
+    type: TODO_identify
+    label: Control
+    x: 810
+    y: 163
+    w: 77
+    h: 24
+  - id: '26'
+    type: TODO_identify
+    label: OCI child site
+    x: 241
+    y: 172
+    w: 147
+    h: 24
+  - id: '29'
+    type: TODO_identify
+    label: plane
+    x: 816
+    y: 179
+    w: 58
+    h: 24
+  - id: '50'
+    type: TODO_identify
+    label: ''
+    x: 726
+    y: 186
+    w: 40
+    h: 38
+  - id: '23'
+    type: TODO_identify
+    label: Application
+    x: 48
+    y: 206
+    w: 117
+    h: 24
+  - id: '34'
+    type: TODO_identify
+    label: VCN
+    x: 249
+    y: 207
+    w: 38
+    h: 24
+  - id: '51'
+    type: TODO_identify
+    label: ''
+    x: 682
+    y: 211
+    w: 40
+    h: 40
+  - id: '24'
+    type: TODO_identify
+    label: subnet
+    x: 48
+    y: 222
+    w: 68
+    h: 24
+  - id: '54'
+    type: TODO_identify
+    label: ''
+    x: 520
+    y: 236
+    w: 60
+    h: 52
+  - id: '35'
+    type: TODO_identify
+    label: Client subnet
+    x: 268
+    y: 237
+    w: 137
+    h: 24
+  - id: '47'
+    type: TODO_identify
+    label: ''
+    x: 806
+    y: 257
+    w: 60
+    h: 60
+  - id: '39'
+    type: TODO_identify
+    label: Oracle Autonomous
+    x: 478
+    y: 290
+    w: 177
+    h: 24
+  - id: '53'
+    type: TODO_identify
+    label: ''
+    x: 405
+    y: 294
+    w: 53
+    h: 70
+  - id: '40'
+    type: TODO_identify
+    label: AI Database
+    x: 507
+    y: 306
+    w: 117
+    h: 24
+  - id: '30'
+    type: TODO_identify
+    label: Object
+    x: 813
+    y: 319
+    w: 68
+    h: 24
+  - id: '52'
+    type: TODO_identify
+    label: ''
+    x: 682
+    y: 323
+    w: 40
+    h: 40
+  - id: '31'
+    type: TODO_identify
+    label: Storage
+    x: 808
+    y: 335
+    w: 77
+    h: 24
+  - id: '48'
+    type: TODO_identify
+    label: ''
+    x: 90
+    y: 339
+    w: 60
+    h: 60
+  - id: '36'
+    type: TODO_identify
+    label: Backup subnet
+    x: 268
+    y: 349
+    w: 137
+    h: 24
+  - id: '37'
+    type: TODO_identify
+    label: Oracle Exadata
+    x: 378
+    y: 366
+    w: 147
+    h: 24
+  - id: '55'
+    type: TODO_identify
+    label: ''
+    x: 527
+    y: 380
+    w: 46
+    h: 60
+  - id: '38'
+    type: TODO_identify
+    label: Database Service
+    x: 370
+    y: 382
+    w: 167
+    h: 24
+  - id: '32'
+    type: TODO_identify
+    label: Application
+    x: 79
+    y: 401
+    w: 117
+    h: 24
+  - id: '49'
+    type: TODO_identify
+    label: ''
+    x: 806
+    y: 413
+    w: 60
+    h: 54
+  - id: '41'
+    type: TODO_identify
+    label: Oracle Database
+    x: 492
+    y: 442
+    w: 157
+    h: 24
+  - id: '42'
+    type: TODO_identify
+    label: Autonomous
+    x: 503
+    y: 458
+    w: 107
+    h: 24
+  - id: '33'
+    type: TODO_identify
+    label: OCI Vault
+    x: 803
+    y: 470
+    w: 97
+    h: 24
+  - id: '43'
+    type: TODO_identify
+    label: Recovery Service
+    x: 489
+    y: 474
+    w: 167
+    h: 24
+  labels: []
+  connections: []

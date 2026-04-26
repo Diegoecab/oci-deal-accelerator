@@ -1,0 +1,156 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 850
+    height: 1100
+  containers: []
+  services:
+  - id: s2
+    type: TODO_identify
+    label: ''
+    x: 1117
+    y: 177
+    w: 63
+    h: 63
+  - id: s1
+    type: TODO_identify
+    label: ''
+    x: 1117
+    y: 178
+    w: 62
+    h: 62
+  - id: s3
+    type: TODO_identify
+    label: ''
+    x: 1118
+    y: 185
+    w: 60
+    h: 54
+  - id: s11
+    type: TODO_identify
+    label: ''
+    x: 780
+    y: 186
+    w: 63
+    h: 55
+  - id: s10
+    type: TODO_identify
+    label: ''
+    x: 781
+    y: 186
+    w: 61
+    h: 53
+  - id: s12
+    type: TODO_identify
+    label: ''
+    x: 781
+    y: 187
+    w: 60
+    h: 52
+  - id: s19
+    type: TODO_identify
+    label: ''
+    x: 968
+    y: 197
+    w: 78
+    h: 31
+  - id: s20
+    type: TODO_identify
+    label: ''
+    x: 972
+    y: 197
+    w: 88
+    h: 43
+  - id: s8
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 198
+    w: 30
+    h: 42
+  - id: s7
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 199
+    w: 30
+    h: 41
+  - id: s9
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 199
+    w: 29
+    h: 40
+  - id: s4
+    type: TODO_identify
+    label: ''
+    x: 38
+    y: 293
+    w: 60
+    h: 43
+  - id: s17
+    type: TODO_identify
+    label: ''
+    x: 780
+    y: 465
+    w: 63
+    h: 55
+  - id: s16
+    type: TODO_identify
+    label: ''
+    x: 781
+    y: 466
+    w: 61
+    h: 53
+  - id: s18
+    type: TODO_identify
+    label: ''
+    x: 781
+    y: 467
+    w: 60
+    h: 52
+  - id: s6
+    type: TODO_identify
+    label: ''
+    x: 252
+    y: 478
+    w: 63
+    h: 63
+  - id: s13
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 478
+    w: 30
+    h: 41
+  - id: s14
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 478
+    w: 30
+    h: 42
+  - id: s15
+    type: TODO_identify
+    label: ''
+    x: 629
+    y: 478
+    w: 29
+    h: 40
+  - id: s5
+    type: TODO_identify
+    label: ''
+    x: 40
+    y: 483
+    w: 63
+    h: 42
+  labels: []
+  connections: []

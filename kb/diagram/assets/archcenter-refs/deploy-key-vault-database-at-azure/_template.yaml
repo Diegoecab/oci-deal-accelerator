@@ -1,0 +1,296 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-azure/key-vault-database-at-azure-diagram-oracle/key-vault-database-at-azure-diagram.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 850
+    height: 1100
+  containers: []
+  services:
+  - id: '50'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 48
+    h: 63
+  - id: '71'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '72'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 56
+  - id: '73'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '91'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '92'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 56
+  - id: '93'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '111'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '112'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 56
+  - id: '113'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '131'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '132'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 62
+    h: 56
+  - id: '133'
+    type: TODO_identify
+    label: ''
+    x: 0
+    y: 0
+    w: 63
+    h: 57
+  - id: '74'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 54
+  - id: '94'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 54
+  - id: '114'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 54
+  - id: '134'
+    type: TODO_identify
+    label: ''
+    x: 1
+    y: 1
+    w: 60
+    h: 54
+  - id: '75'
+    type: TODO_identify
+    label: ''
+    x: 20
+    y: 1
+    w: 41
+    h: 54
+  - id: '95'
+    type: TODO_identify
+    label: ''
+    x: 20
+    y: 1
+    w: 41
+    h: 54
+  - id: '115'
+    type: TODO_identify
+    label: ''
+    x: 20
+    y: 1
+    w: 41
+    h: 54
+  - id: '135'
+    type: TODO_identify
+    label: ''
+    x: 20
+    y: 1
+    w: 41
+    h: 54
+  - id: '44'
+    type: TODO_identify
+    label: ''
+    x: 13
+    y: 11
+    w: 28
+    h: 31
+  - id: s1
+    type: TODO_identify
+    label: ''
+    x: 408
+    y: 140
+    w: 42
+    h: 42
+  - id: s2
+    type: TODO_identify
+    label: ''
+    x: 229
+    y: 189
+    w: 48
+    h: 63
+  - id: s15
+    type: TODO_identify
+    label: ''
+    x: 42
+    y: 373
+    w: 202
+    h: 176
+  - id: s16
+    type: TODO_identify
+    label: ''
+    x: 42
+    y: 373
+    w: 202
+    h: 176
+  - id: s3
+    type: TODO_identify
+    label: ''
+    x: 271
+    y: 373
+    w: 202
+    h: 176
+  - id: s4
+    type: TODO_identify
+    label: ''
+    x: 271
+    y: 373
+    w: 202
+    h: 176
+  - id: s7
+    type: TODO_identify
+    label: ''
+    x: 703
+    y: 373
+    w: 202
+    h: 176
+  - id: s8
+    type: TODO_identify
+    label: ''
+    x: 703
+    y: 373
+    w: 202
+    h: 176
+  - id: s11
+    type: TODO_identify
+    label: ''
+    x: 931
+    y: 373
+    w: 202
+    h: 176
+  - id: s12
+    type: TODO_identify
+    label: ''
+    x: 931
+    y: 373
+    w: 202
+    h: 176
+  - id: s17
+    type: TODO_identify
+    label: ''
+    x: 111
+    y: 437
+    w: 63
+    h: 57
+  - id: s5
+    type: TODO_identify
+    label: ''
+    x: 340
+    y: 437
+    w: 63
+    h: 57
+  - id: s9
+    type: TODO_identify
+    label: ''
+    x: 772
+    y: 437
+    w: 63
+    h: 57
+  - id: s13
+    type: TODO_identify
+    label: ''
+    x: 1000
+    y: 437
+    w: 63
+    h: 57
+  - id: s18
+    type: TODO_identify
+    label: ''
+    x: 102
+    y: 498
+    w: 186
+    h: 37
+  - id: s6
+    type: TODO_identify
+    label: ''
+    x: 331
+    y: 498
+    w: 186
+    h: 37
+  - id: s10
+    type: TODO_identify
+    label: ''
+    x: 763
+    y: 498
+    w: 186
+    h: 37
+  - id: s14
+    type: TODO_identify
+    label: ''
+    x: 991
+    y: 498
+    w: 186
+    h: 37
+  labels: []
+  connections: []

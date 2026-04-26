@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20 diagram-lookup diagram-validate-spec archcenter-descriptions-refresh diagram-spec-audit archcenter-smoke install-hooks
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20 diagram-lookup diagram-validate-spec archcenter-descriptions-refresh diagram-spec-audit archcenter-smoke install-hooks archcenter-templates-refresh
 
 # Use venv if present, otherwise find best available python3
 ifneq (,$(wildcard .venv/bin/python))
@@ -113,6 +113,9 @@ diagram-spec-audit: ## Run spec validator across every diagram-spec in examples/
 
 archcenter-descriptions-refresh: ## Re-fetch _description.md for every Architecture Center entry
 	$(PYTHON) tools/archcenter_description_fetcher.py --limit 200 --sleep 0.5
+
+archcenter-templates-refresh: ## Extract absolute_layout YAML scaffolds from every cached .drawio
+	$(PYTHON) tools/archcenter_drawio_to_template.py
 
 archcenter-smoke: ## 3-case Architecture Center reconstruction smoke test (CI-friendly)
 	$(PYTHON) tools/oci_archcenter_batch.py \

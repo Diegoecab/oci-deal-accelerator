@@ -1,0 +1,233 @@
+# Auto-extracted absolute_layout template from
+#   kb/diagram/assets/archcenter-refs/learn-about-drg-solutions/drg-routing-operation-oracle/drg-routing-operation.drawio
+# Source: Oracle Architecture Center reference (canonical geometry).
+# Use this as the starting scaffold for a new spec — copy, rename ids,
+# and replace `type: TODO_identify` on services with the right OCI
+# type alias (adb_s, drg, fastconnect, etc.). Container coords and
+# edge waypoints are Oracle's canonical layout; preserve unless the
+# customer's topology requires a change.
+absolute_layout:
+  canvas:
+    width: 850
+    height: 1100
+  containers:
+  - id: c1
+    type: region
+    label: ''
+    x: 550
+    y: 35
+    w: 176
+    h: 209
+  - id: c18
+    type: region
+    label: ''
+    x: 549
+    y: 116
+    w: 9
+    h: 95
+  - id: c19
+    type: region
+    label: ''
+    x: 718
+    y: 116
+    w: 9
+    h: 95
+  - id: c14
+    type: region
+    label: ''
+    x: 638
+    y: 63
+    w: 2
+    h: 63
+  services:
+  - id: s2
+    type: TODO_identify
+    label: ''
+    x: 550
+    y: 35
+    w: 176
+    h: 209
+  - id: s16
+    type: TODO_identify
+    label: ''
+    x: 617
+    y: 63
+    w: 42
+    h: 42
+  - id: s15
+    type: TODO_identify
+    label: ''
+    x: 618
+    y: 63
+    w: 41
+    h: 41
+  - id: s17
+    type: TODO_identify
+    label: ''
+    x: 618
+    y: 64
+    w: 40
+    h: 40
+  - id: s4
+    type: TODO_identify
+    label: ''
+    x: 226
+    y: 101
+    w: 63
+    h: 63
+  - id: s21
+    type: TODO_identify
+    label: ''
+    x: 502
+    y: 101
+    w: 63
+    h: 63
+  - id: s25
+    type: TODO_identify
+    label: ''
+    x: 711
+    y: 101
+    w: 63
+    h: 63
+  - id: s7
+    type: TODO_identify
+    label: ''
+    x: 988
+    y: 101
+    w: 63
+    h: 63
+  - id: s3
+    type: TODO_identify
+    label: ''
+    x: 227
+    y: 102
+    w: 61
+    h: 62
+  - id: s20
+    type: TODO_identify
+    label: ''
+    x: 503
+    y: 102
+    w: 61
+    h: 61
+  - id: s24
+    type: TODO_identify
+    label: ''
+    x: 712
+    y: 102
+    w: 61
+    h: 61
+  - id: s6
+    type: TODO_identify
+    label: ''
+    x: 989
+    y: 102
+    w: 61
+    h: 62
+  - id: s5
+    type: TODO_identify
+    label: ''
+    x: 227
+    y: 103
+    w: 60
+    h: 60
+  - id: s8
+    type: TODO_identify
+    label: ''
+    x: 989
+    y: 103
+    w: 60
+    h: 60
+  - id: s28
+    type: TODO_identify
+    label: ''
+    x: 454
+    y: 113
+    w: 49
+    h: 37
+  - id: s29
+    type: TODO_identify
+    label: ''
+    x: 464
+    y: 113
+    w: 40
+    h: 39
+  - id: s30
+    type: TODO_identify
+    label: ''
+    x: 765
+    y: 113
+    w: 49
+    h: 37
+  - id: s31
+    type: TODO_identify
+    label: ''
+    x: 775
+    y: 113
+    w: 40
+    h: 39
+  - id: s22
+    type: TODO_identify
+    label: ''
+    x: 516
+    y: 114
+    w: 33
+    h: 37
+  - id: s23
+    type: TODO_identify
+    label: ''
+    x: 516
+    y: 114
+    w: 33
+    h: 37
+  - id: s26
+    type: TODO_identify
+    label: ''
+    x: 726
+    y: 114
+    w: 33
+    h: 37
+  - id: s27
+    type: TODO_identify
+    label: ''
+    x: 726
+    y: 114
+    w: 33
+    h: 37
+  - id: s13
+    type: TODO_identify
+    label: ''
+    x: 505
+    y: 210
+    w: 35
+    h: 103
+  - id: s11
+    type: TODO_identify
+    label: ''
+    x: 304
+    y: 278
+    w: 194
+    h: 33
+  - id: s12
+    type: TODO_identify
+    label: ''
+    x: 304
+    y: 278
+    w: 194
+    h: 33
+  - id: s9
+    type: TODO_identify
+    label: ''
+    x: 304
+    y: 312
+    w: 194
+    h: 33
+  - id: s10
+    type: TODO_identify
+    label: ''
+    x: 304
+    y: 312
+    w: 194
+    h: 33
+  labels: []
+  connections: []

@@ -1,147 +1,181 @@
 {
-  "cache_dir_mtime": 1777171058.9167857,
+  "cache_dir_mtime": 1777171657.6658223,
   "entries": {
     "active-data-guard-far-sync-dba-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.drawio",
       "png": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.png",
-      "svg": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/_template.yaml"
     },
     "active-data-guard-far-sync-oracle-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-oracle-db-at-azure/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-oracle-db-at-azure/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-oracle-db-at-azure/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-oracle-db-at-azure/_template.yaml"
     },
     "ai-fraud-detection": {
       "drawio": "kb/diagram/assets/archcenter-refs/ai-fraud-detection/ai-fraud-detection-flow-oracle/ai-fraud-detection-flow.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/ai-fraud-detection/ai-fraud-detection-flow-oracle/ai-fraud-detection-flow.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/ai-fraud-detection/ai-fraud-detection-flow-oracle/ai-fraud-detection-flow.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/ai-fraud-detection/_template.yaml"
     },
     "analytics-pipeline-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/analytics-pipeline-db-at-azure/data-lake-db-at-azure-medallion-oracle/data-lake-db-at-azure-medallion.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/analytics-pipeline-db-at-azure/data-lake-db-at-azure-medallion-oracle/data-lake-db-at-azure-medallion.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/analytics-pipeline-db-at-azure/data-lake-db-at-azure-medallion-oracle/data-lake-db-at-azure-medallion.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/analytics-pipeline-db-at-azure/_template.yaml"
     },
     "autonomous-database-db-at-azure-diagram-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.drawio",
       "png": "kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.png",
-      "svg": "kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/_template.yaml"
     },
     "azure-pipeline-exacs-dbazure": {
       "drawio": "kb/diagram/assets/archcenter-refs/azure-pipeline-exacs-dbazure/exadata-database-service-oracle/exadata-database-service.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/azure-pipeline-exacs-dbazure/exadata-database-service-oracle/exadata-database-service.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/azure-pipeline-exacs-dbazure/exadata-database-service-oracle/exadata-database-service.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/azure-pipeline-exacs-dbazure/_template.yaml"
     },
     "back-up-base-database-zero-data-loss-recovery": {
       "drawio": "kb/diagram/assets/archcenter-refs/back-up-base-database-zero-data-loss-recovery/base-database-recovery-backup-architecture/base-database-recovery-backup-architecture.drawio",
       "png": "kb/diagram/assets/archcenter-refs/back-up-base-database-zero-data-loss-recovery/base-database-recovery-backup-architecture/base-database-recovery-backup-architecture.png",
-      "svg": "kb/diagram/assets/archcenter-refs/back-up-base-database-zero-data-loss-recovery/base-database-recovery-backup-architecture/base-database-recovery-backup-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/back-up-base-database-zero-data-loss-recovery/base-database-recovery-backup-architecture/base-database-recovery-backup-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/back-up-base-database-zero-data-loss-recovery/_template.yaml"
     },
     "back-up-exadata-dedicated-zero-data-loss-recovery": {
       "drawio": "kb/diagram/assets/archcenter-refs/back-up-exadata-dedicated-zero-data-loss-recovery/exadata-dedicated-recovery-backup-architecture/exadata-dedicated-recovery-backup-architecture.drawio",
       "png": "kb/diagram/assets/archcenter-refs/back-up-exadata-dedicated-zero-data-loss-recovery/exadata-dedicated-recovery-backup-architecture/exadata-dedicated-recovery-backup-architecture.png",
-      "svg": "kb/diagram/assets/archcenter-refs/back-up-exadata-dedicated-zero-data-loss-recovery/exadata-dedicated-recovery-backup-architecture/exadata-dedicated-recovery-backup-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/back-up-exadata-dedicated-zero-data-loss-recovery/exadata-dedicated-recovery-backup-architecture/exadata-dedicated-recovery-backup-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/back-up-exadata-dedicated-zero-data-loss-recovery/_template.yaml"
     },
     "bread-multicloud-on-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/bread-multicloud-on-oci/peoplesoft-migration-process-oracle/peoplesoft-migration-process.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/bread-multicloud-on-oci/peoplesoft-migration-process-oracle/peoplesoft-migration-process.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/bread-multicloud-on-oci/peoplesoft-migration-process-oracle/peoplesoft-migration-process.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/bread-multicloud-on-oci/_template.yaml"
     },
     "cicd-pipeline-oci-functions": {
       "drawio": "kb/diagram/assets/archcenter-refs/cicd-pipeline-oci-functions/cicd-deploy-oci-functions-oracle/cicd-deploy-oci-functions.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/cicd-pipeline-oci-functions/cicd-deploy-oci-functions-oracle/cicd-deploy-oci-functions.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cicd-pipeline-oci-functions/cicd-deploy-oci-functions-oracle/cicd-deploy-oci-functions.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cicd-pipeline-oci-functions/_template.yaml"
     },
     "cis-oci-benchmark": {
       "drawio": "kb/diagram/assets/archcenter-refs/cis-oci-benchmark/oci-core-landingzone-oracle/oci-core-landingzone.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/cis-oci-benchmark/oci-core-landingzone-oracle/oci-core-landingzone.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cis-oci-benchmark/oci-core-landingzone-oracle/oci-core-landingzone.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cis-oci-benchmark/_template.yaml"
     },
     "cloud-native-dicom-on-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/cloud-native-dicom-on-oci/oci-dicom-store-oracle/oci-dicom-store.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/cloud-native-dicom-on-oci/oci-dicom-store-oracle/oci-dicom-store.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cloud-native-dicom-on-oci/oci-dicom-store-oracle/oci-dicom-store.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cloud-native-dicom-on-oci/_template.yaml"
     },
     "cloud-native-ecommerce": {
       "drawio": "kb/diagram/assets/archcenter-refs/cloud-native-ecommerce/mushop-infrastructure-expand-oracle/mushop-infrastructure-expand.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/cloud-native-ecommerce/mushop-infrastructure-expand-oracle/mushop-infrastructure-expand.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cloud-native-ecommerce/mushop-infrastructure-expand-oracle/mushop-infrastructure-expand.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cloud-native-ecommerce/_template.yaml"
     },
     "config-jde-dr-fsdr": {
       "drawio": "kb/diagram/assets/archcenter-refs/config-jde-dr-fsdr/jde-dr-fsdr/jde-dr-fsdr.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/config-jde-dr-fsdr/jde-dr-fsdr/jdr-dr-fsdr.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/config-jde-dr-fsdr/jde-dr-fsdr/jdr-dr-fsdr.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/config-jde-dr-fsdr/_template.yaml"
     },
     "connect-azure-kube-with-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/connect-azure-kube-with-oracle/azure-kube-with-exadata-db-oracle/azure-kube-with-exadata-db.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/connect-azure-kube-with-oracle/azure-kube-with-exadata-db-oracle/azure-kube-with-exadata-db.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/connect-azure-kube-with-oracle/azure-kube-with-exadata-db-oracle/azure-kube-with-exadata-db.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/connect-azure-kube-with-oracle/_template.yaml"
     },
     "cross-az-dr-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.drawio",
       "png": "kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.png",
-      "svg": "kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/_template.yaml"
     },
     "cross-region-dr-essbase-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/cross-region-dr-essbase-oci/essbase-oci-cross-region-dr-oracle/essbase-oci-cross-region-dr.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/cross-region-dr-essbase-oci/essbase-oci-cross-region-dr-oracle/essbase-oci-cross-region-dr.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/cross-region-dr-essbase-oci/essbase-oci-cross-region-dr-oracle/essbase-oci-cross-region-dr.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/cross-region-dr-essbase-oci/_template.yaml"
     },
     "data-application-integration-workloads": {
       "drawio": "kb/diagram/assets/archcenter-refs/data-application-integration-workloads/integration-architecture-pattern-1-oracle/integration-architecture-pattern-1.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/data-application-integration-workloads/integration-architecture-pattern-1-oracle/integration-architecture-pattern-1.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/data-application-integration-workloads/integration-architecture-pattern-1-oracle/integration-architecture-pattern-1.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/data-application-integration-workloads/_template.yaml"
     },
     "data-platform-decentralized": {
       "drawio": "kb/diagram/assets/archcenter-refs/data-platform-decentralized/decentralized-data-platform-logical-oracle/decentralized-data-platform-logical.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/data-platform-decentralized/decentralized-data-platform-logical-oracle/decentralized-data-platform-logical.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/data-platform-decentralized/decentralized-data-platform-logical-oracle/decentralized-data-platform-logical.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/data-platform-decentralized/_template.yaml"
     },
     "data-platform-lakehouse": {
       "drawio": "kb/diagram/assets/archcenter-refs/data-platform-lakehouse/lakehouse-architecture-oracle/lakehouse-architecture.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/data-platform-lakehouse/lakehouse-architecture-oracle/lakehouse-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/data-platform-lakehouse/lakehouse-architecture-oracle/lakehouse-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/data-platform-lakehouse/_template.yaml"
     },
     "data-safe-exadata-adb": {
       "drawio": "kb/diagram/assets/archcenter-refs/data-safe-exadata-adb/data-safe-for-exa-adb/data-safe-for-exa-adb-old.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/data-safe-exadata-adb/data-safe-for-exa-adb/data-safe-for-exa-adb.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/data-safe-exadata-adb/data-safe-for-exa-adb/data-safe-for-exa-adb.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/data-safe-exadata-adb/_template.yaml"
     },
     "data-safe-multicloud-ods-hybrid": {
       "drawio": "kb/diagram/assets/archcenter-refs/data-safe-multicloud-ods-hybrid/datasafe-multi-odsa-01/datasafe-multi-odsa-01.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/data-safe-multicloud-ods-hybrid/datasafe-multi-odsa-01/datasafe-multi-odsa-01.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/data-safe-multicloud-ods-hybrid/datasafe-multi-odsa-01/datasafe-multi-odsa-01.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/data-safe-multicloud-ods-hybrid/_template.yaml"
     },
     "dataguard-exadata-dedicated-infrastructure": {
       "drawio": "kb/diagram/assets/archcenter-refs/dataguard-exadata-dedicated-infrastructure/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.drawio",
       "png": "kb/diagram/assets/archcenter-refs/dataguard-exadata-dedicated-infrastructure/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.png",
-      "svg": "kb/diagram/assets/archcenter-refs/dataguard-exadata-dedicated-infrastructure/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/dataguard-exadata-dedicated-infrastructure/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/dataguard-exadata-dedicated-infrastructure/_template.yaml"
     },
     "deploy-adb-db-at-google-cloud": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-adb-db-at-google-cloud/adb-oracle-db-at-google-cloud-region-oracle/adb-oracle-db-at-google-cloud-region.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-adb-db-at-google-cloud/adb-oracle-db-at-google-cloud-region-oracle/adb-oracle-db-at-google-cloud-region.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-adb-db-at-google-cloud/adb-oracle-db-at-google-cloud-region-oracle/adb-oracle-db-at-google-cloud-region.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-adb-db-at-google-cloud/_template.yaml"
     },
     "deploy-agentic-ai-agent-platform": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-agentic-ai-agent-platform/agentic-ai-oci-ai-agent-arch-oracle/agentic-ai-oci-ai-agent-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-agentic-ai-agent-platform/agentic-ai-oci-ai-agent-arch-oracle/agentic-ai-oci-ai-agent-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-agentic-ai-agent-platform/agentic-ai-oci-ai-agent-arch-oracle/agentic-ai-oci-ai-agent-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-agentic-ai-agent-platform/_template.yaml"
     },
     "deploy-ai-powered-chatbot": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-ai-powered-chatbot/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch.drawio",
-      "png": "kb/diagram/assets/archcenter-refs/deploy-ai-powered-chatbot/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch.png"
+      "png": "kb/diagram/assets/archcenter-refs/deploy-ai-powered-chatbot/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch/deploy-ai-chatbot-arch.png",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-ai-powered-chatbot/_template.yaml"
     },
     "deploy-autonomous-database-and-app": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-and-app/apex-app-adb-oracle/apex-app-adb.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-and-app/apex-app-adb-oracle/apex-app-adb.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-and-app/apex-app-adb-oracle/apex-app-adb.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-and-app/_template.yaml"
     },
     "deploy-autonomous-database-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-db-at-azure/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-db-at-azure/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-db-at-azure/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-autonomous-database-db-at-azure/_template.yaml"
     },
     "deploy-data-rcvy-oci-api-gateway": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-data-rcvy-oci-api-gateway/apigw-oci-customer-managed-dr-topology-oracle/apigw-oci-customer-managed-dr-topology.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-data-rcvy-oci-api-gateway/apigw-oci-customer-managed-dr-topology-oracle/apigw-oci-customer-managed-dr-topology.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-data-rcvy-oci-api-gateway/apigw-oci-customer-managed-dr-topology-oracle/apigw-oci-customer-managed-dr-topology.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-data-rcvy-oci-api-gateway/_template.yaml"
     },
     "deploy-ebs-on-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-ebs-on-db-at-azure/ebs-on-db-at-azure-arch-oracle/ebs-on-db-at-azure-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-ebs-on-db-at-azure/ebs-on-db-at-azure-arch-oracle/ebs-on-db-at-azure-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-ebs-on-db-at-azure/ebs-on-db-at-azure-arch-oracle/ebs-on-db-at-azure-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-ebs-on-db-at-azure/_template.yaml"
     },
     "deploy-gitops-argocd-oke": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-gitops-argocd-oke/argocd/argocd.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-gitops-argocd-oke/argocd/argocd.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-gitops-argocd-oke/argocd/argocd.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-gitops-argocd-oke/_template.yaml"
     },
     "deploy-hybrid-dr-wls-fmw": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-hybrid-dr-wls-fmw/maa-wls-hybrid-dr-tool-highlights-oracle/maa-wls-hybrid-dr-tool-highlights.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-hybrid-dr-wls-fmw/maa-wls-hybrid-dr-tool-highlights-oracle/maa-wls-hybrid-dr-tool-highlights.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-hybrid-dr-wls-fmw/maa-wls-hybrid-dr-tool-highlights-oracle/maa-wls-hybrid-dr-tool-highlights.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-hybrid-dr-wls-fmw/_template.yaml"
     },
     "deploy-key-vault-database-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-azure/key-vault-database-at-azure-diagram-oracle/key-vault-database-at-azure-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-azure/key-vault-database-at-azure-diagram-oracle/key-vault-database-at-azure-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-azure/key-vault-database-at-azure-diagram-oracle/key-vault-database-at-azure-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-azure/_template.yaml"
     },
     "deploy-key-vault-database-at-google": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-google/key-vault-database-google/key-vault-database-google/key-vault-database-google.drawio",
-      "png": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-google/key-vault-database-google/key-vault-database-google/key-vault-database-google.png"
+      "png": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-google/key-vault-database-google/key-vault-database-google/key-vault-database-google.png",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-key-vault-database-at-google/_template.yaml"
     },
     "deploy-lustre-file-systems": {
       "png": "kb/diagram/assets/archcenter-refs/deploy-lustre-file-systems/lustre-file-system-oci-arch/lustre-file-system-oci-arch/lustre-file-system-oci-arch.png",
@@ -149,312 +183,386 @@
     },
     "deploy-maa-for-peoplesoft-on-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-maa-for-peoplesoft-on-oci/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-maa-for-peoplesoft-on-oci/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-maa-for-peoplesoft-on-oci/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-maa-for-peoplesoft-on-oci/_template.yaml"
     },
     "deploy-oke-with-bastion-and-github": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-oke-with-bastion-and-github/oke-bastion-deployment-diagram-oracle/oke-bastion-deployment-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-oke-with-bastion-and-github/oke-bastion-deployment-diagram-oracle/oke-bastion-deployment-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-oke-with-bastion-and-github/oke-bastion-deployment-diagram-oracle/oke-bastion-deployment-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-oke-with-bastion-and-github/_template.yaml"
     },
     "deploy-oracle-database-at-google-cloud": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-oracle-database-at-google-cloud/_template.yaml"
     },
     "deploy-oracle-db-aws": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-oracle-db-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-oracle-db-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-oracle-db-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-oracle-db-aws/_template.yaml"
     },
     "deploy-tcs-banc-oci-exa": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-tcs-banc-oci-exa/bancs-ref-architecture-no-fd-oracle/bancs-ref-architecture-no-fd.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-tcs-banc-oci-exa/bancs-ref-architecture-no-fd-oracle/bancs-ref-architecture-no-fd.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-tcs-banc-oci-exa/bancs-ref-architecture-no-fd-oracle/bancs-ref-architecture-no-fd.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-tcs-banc-oci-exa/_template.yaml"
     },
     "deploy-wls-on-oke": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-wls-on-oke/weblogic-oke-oracle/weblogic-oke.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-wls-on-oke/weblogic-oke-oracle/weblogic-oke.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-wls-on-oke/weblogic-oke-oracle/weblogic-oke.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-wls-on-oke/_template.yaml"
     },
     "deploy-xstore-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/deploy-xstore-oci/deploy-xstore-on-oci/deploy-xstore-on-oci.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/deploy-xstore-oci/deploy-xstore-on-oci/deploy-xstore-on-oci.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/deploy-xstore-oci/deploy-xstore-on-oci/deploy-xstore-on-oci.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/deploy-xstore-oci/_template.yaml"
     },
     "dns-resolution-oracle-db-at-google-cloud": {
       "drawio": "kb/diagram/assets/archcenter-refs/dns-resolution-oracle-db-at-google-cloud/resolve-dns-oci-google-cloud-oracle/resolve-dns-oci-google-cloud.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/dns-resolution-oracle-db-at-google-cloud/resolve-dns-oci-google-cloud-oracle/resolve-dns-oci-google-cloud.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/dns-resolution-oracle-db-at-google-cloud/resolve-dns-oci-google-cloud-oracle/resolve-dns-oci-google-cloud.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/dns-resolution-oracle-db-at-google-cloud/_template.yaml"
     },
     "dr-active-dg-farsync-db-at-aws": {
       "drawio": "kb/diagram/assets/archcenter-refs/dr-active-dg-farsync-db-at-aws/cross-region-dr-activedg-farsync-oracle/cross-region-dr-activedg-farsync.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/dr-active-dg-farsync-db-at-aws/cross-region-dr-activedg-farsync-oracle/cross-region-dr-activedg-farsync.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/dr-active-dg-farsync-db-at-aws/cross-region-dr-activedg-farsync-oracle/cross-region-dr-activedg-farsync.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/dr-active-dg-farsync-db-at-aws/_template.yaml"
     },
     "dr-local-regional-standby-db-at-aws": {
       "drawio": "kb/diagram/assets/archcenter-refs/dr-local-regional-standby-db-at-aws/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/dr-local-regional-standby-db-at-aws/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/dr-local-regional-standby-db-at-aws/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/dr-local-regional-standby-db-at-aws/_template.yaml"
     },
     "ebs-logging-analytics-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/ebs-logging-analytics-oci/ebs-logging-analytics-on-oci-oracle/ebs-logging-analytics-on-oci.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/ebs-logging-analytics-oci/ebs-logging-analytics-on-oci-oracle/ebs-logging-analytics-on-oci.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/ebs-logging-analytics-oci/ebs-logging-analytics-on-oci-oracle/ebs-logging-analytics-on-oci.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/ebs-logging-analytics-oci/_template.yaml"
     },
     "ebs-on-db-at-aws": {
       "drawio": "kb/diagram/assets/archcenter-refs/ebs-on-db-at-aws/ebs-db-at-aws-architecture-oracle/ebs-db-at-aws-architecture.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/ebs-on-db-at-aws/ebs-db-at-aws-architecture-oracle/ebs-db-at-aws-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/ebs-on-db-at-aws/ebs-db-at-aws-architecture-oracle/ebs-db-at-aws-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/ebs-on-db-at-aws/_template.yaml"
     },
     "exadata-dedicated-cross-region-dataguard": {
       "drawio": "kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard-uncompressed.drawio",
       "png": "kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.png",
-      "svg": "kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/_template.yaml"
     },
     "exadata-dedicated-in-region-dataguard": {
       "drawio": "kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.drawio",
       "png": "kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.png",
-      "svg": "kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/_template.yaml"
     },
     "exadb-dbaws-dr-arch-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.drawio",
       "png": "kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.png",
-      "svg": "kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/_template.yaml"
     },
     "exadb-dr-on-db-at-azure-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.drawio",
       "png": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.png",
-      "svg": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/_template.yaml"
     },
     "exadb-dr-on-db-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-azure/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-azure/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-azure/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/exadb-dr-on-db-azure/_template.yaml"
     },
     "hub-spoke-network": {
       "drawio": "kb/diagram/assets/archcenter-refs/hub-spoke-network/hub-spoke-oci.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/hub-spoke-network/hub-spoke-oci.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/hub-spoke-network/hub-spoke-oci.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/hub-spoke-network/_template.yaml"
     },
     "hub-spoke-network-drg": {
       "drawio": "kb/diagram/assets/archcenter-refs/hub-spoke-network-drg/hub-and-spoke-drg-oracle/hub-and-spoke-drg.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/hub-spoke-network-drg/hub-and-spoke-drg-oracle/hub-and-spoke-drg.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/hub-spoke-network-drg/hub-and-spoke-drg-oracle/hub-and-spoke-drg.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/hub-spoke-network-drg/_template.yaml"
     },
     "implement-goldengate-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/implement-goldengate-azure/goldengate-dbatazure-integration/goldengate-dbatazure-integration/goldengate-dbatazure-integration.drawio",
       "png": "kb/diagram/assets/archcenter-refs/implement-goldengate-azure/goldengate-dbatazure-integration/goldengate-dbatazure-integration/goldengate-dbatazure-integration.png",
-      "svg": "kb/diagram/assets/archcenter-refs/implement-goldengate-azure/goldengate-dbatazure-integration/goldengate-dbatazure-integration/goldengate-dbatazure-integration.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/implement-goldengate-azure/goldengate-dbatazure-integration/goldengate-dbatazure-integration/goldengate-dbatazure-integration.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/implement-goldengate-azure/_template.yaml"
     },
     "implement-rag-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/implement-rag-oci/rag-oic-aug-gen-oracle/rag-oic-aug-gen.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/implement-rag-oci/rag-oic-aug-gen-oracle/rag-oic-aug-gen.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/implement-rag-oci/rag-oic-aug-gen-oracle/rag-oic-aug-gen.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/implement-rag-oci/_template.yaml"
     },
     "implement-recovery-service-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/implement-recovery-service-db-at-azure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/implement-recovery-service-db-at-azure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/implement-recovery-service-db-at-azure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure/db-autonomous-recovery-dbatazure.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/implement-recovery-service-db-at-azure/_template.yaml"
     },
     "integration-access-control": {
       "drawio": "kb/diagram/assets/archcenter-refs/integration-access-control/oracle-integration-rest-oauth-diagram-oracle/oracle-integration-rest-oauth-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/integration-access-control/oracle-integration-rest-oauth-diagram-oracle/oracle-integration-rest-oauth-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/integration-access-control/oracle-integration-rest-oauth-diagram-oracle/oracle-integration-rest-oauth-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/integration-access-control/_template.yaml"
     },
     "kubernetes-artifact-snapshot-dr": {
       "drawio": "kb/diagram/assets/archcenter-refs/kubernetes-artifact-snapshot-dr/kubernetes-multiregion-dr-oracle/kubernetes-multiregion-dr.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/kubernetes-artifact-snapshot-dr/kubernetes-multiregion-dr-oracle/kubernetes-multiregion-dr.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/kubernetes-artifact-snapshot-dr/kubernetes-multiregion-dr-oracle/kubernetes-multiregion-dr.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/kubernetes-artifact-snapshot-dr/_template.yaml"
     },
     "kubernetes-oke-logging-analytics": {
       "drawio": "kb/diagram/assets/archcenter-refs/kubernetes-oke-logging-analytics/k8s-oke-monitoring-oracle/k8s-oke-monitoring.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/kubernetes-oke-logging-analytics/k8s-oke-monitoring-oracle/k8s-oke-monitoring.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/kubernetes-oke-logging-analytics/k8s-oke-monitoring-oracle/k8s-oke-monitoring.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/kubernetes-oke-logging-analytics/_template.yaml"
     },
     "learn-about-drg-solutions": {
       "drawio": "kb/diagram/assets/archcenter-refs/learn-about-drg-solutions/drg-routing-operation-oracle/drg-routing-operation.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/learn-about-drg-solutions/drg-routing-operation-oracle/drg-routing-operation.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/learn-about-drg-solutions/drg-routing-operation-oracle/drg-routing-operation.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/learn-about-drg-solutions/_template.yaml"
     },
     "learn-about-maa-for-peoplesoft": {
       "drawio": "kb/diagram/assets/archcenter-refs/learn-about-maa-for-peoplesoft/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/learn-about-maa-for-peoplesoft/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/learn-about-maa-for-peoplesoft/peoplesoft-maa-arch-oracle/peoplesoft-maa-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/learn-about-maa-for-peoplesoft/_template.yaml"
     },
     "local-regional-standby-dr-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/local-regional-standby-dr-db-at-azure/local-regional-standby-dr-db-azure-arch-oracle/local-regional-standby-dr-db-azure-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/local-regional-standby-dr-db-at-azure/local-regional-standby-dr-db-azure-arch-oracle/local-regional-standby-dr-db-azure-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/local-regional-standby-dr-db-at-azure/local-regional-standby-dr-db-azure-arch-oracle/local-regional-standby-dr-db-azure-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/local-regional-standby-dr-db-at-azure/_template.yaml"
     },
     "mid-tier-replication-oci-dr-arch": {
       "drawio": "kb/diagram/assets/archcenter-refs/mid-tier-replication-oci-dr-arch/active-passive-dr-mid-tier-oracle/active-passive-dr-mid-tier.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/mid-tier-replication-oci-dr-arch/active-passive-dr-mid-tier-oracle/active-passive-dr-mid-tier.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/mid-tier-replication-oci-dr-arch/active-passive-dr-mid-tier-oracle/active-passive-dr-mid-tier.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/mid-tier-replication-oci-dr-arch/_template.yaml"
     },
     "migrate-apps-to-apex": {
       "drawio": "kb/diagram/assets/archcenter-refs/migrate-apps-to-apex/forms-apps-to-apex-oracle/forms-apps-to-apex.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/migrate-apps-to-apex/forms-apps-to-apex-oracle/forms-apps-to-apex.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/migrate-apps-to-apex/forms-apps-to-apex-oracle/forms-apps-to-apex.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/migrate-apps-to-apex/_template.yaml"
     },
     "migrate-ebs-with-cloudmanager": {
       "drawio": "kb/diagram/assets/archcenter-refs/migrate-ebs-with-cloudmanager/migrate-ebs-env-prod-oracle/migrate-ebs-env-prod.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/migrate-ebs-with-cloudmanager/migrate-ebs-env-prod-oracle/migrate-ebs-env-prod.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/migrate-ebs-with-cloudmanager/migrate-ebs-env-prod-oracle/migrate-ebs-env-prod.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/migrate-ebs-with-cloudmanager/_template.yaml"
     },
     "migrate-to-atp": {
       "png": "kb/diagram/assets/archcenter-refs/migrate-to-atp/favicon-128.png"
     },
     "modern-platform-oracle-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/modern-platform-oracle-db-at-azure/oracle-database-at-azure-services-platform-oracle/oracle-database-at-azure-services-platform.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/modern-platform-oracle-db-at-azure/oracle-database-at-azure-services-platform-oracle/oracle-database-at-azure-services-platform.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/modern-platform-oracle-db-at-azure/oracle-database-at-azure-services-platform-oracle/oracle-database-at-azure-services-platform.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/modern-platform-oracle-db-at-azure/_template.yaml"
     },
     "modernize-app-dev-oci-postgresql-redis-opensearch": {
       "drawio": "kb/diagram/assets/archcenter-refs/modernize-app-dev-oci-postgresql-redis-opensearch/dr-architecture-diagram-oracle/dr-architecture-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/modernize-app-dev-oci-postgresql-redis-opensearch/dr-architecture-diagram-oracle/dr-architecture-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/modernize-app-dev-oci-postgresql-redis-opensearch/dr-architecture-diagram-oracle/dr-architecture-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/modernize-app-dev-oci-postgresql-redis-opensearch/_template.yaml"
     },
     "mongodb-to-atp": {
       "drawio": "kb/diagram/assets/archcenter-refs/mongodb-to-atp/mongodb-atp-s-arch-variant-oracle/mongodb-atp-s-arch-variant.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp/mongodb-atp-s-arch-variant-oracle/mongodb-atp-s-arch-variant.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp/mongodb-atp-s-arch-variant-oracle/mongodb-atp-s-arch-variant.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/mongodb-to-atp/_template.yaml"
     },
     "mongodb-to-atp-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-azure/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant.drawio",
       "png": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-azure/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant.png",
-      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-azure/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-azure/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant/mongodb-atp-s-azure-arch-variant.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-azure/_template.yaml"
     },
     "mongodb-to-atp-google": {
       "drawio": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-google/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant.drawio",
       "png": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-google/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant.png",
-      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-google/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-google/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant/mongodb-atp-s-google-arch-variant.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/mongodb-to-atp-google/_template.yaml"
     },
     "mongodb-to-auto-json-db": {
       "drawio": "kb/diagram/assets/archcenter-refs/mongodb-to-auto-json-db/mongodb-json-arch-variant-oracle/mongdb-json-arch-variant.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-auto-json-db/mongodb-json-arch-variant-oracle/mongodb-json-arch-variant.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/mongodb-to-auto-json-db/mongodb-json-arch-variant-oracle/mongodb-json-arch-variant.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/mongodb-to-auto-json-db/_template.yaml"
     },
     "mongodb-to-exadata-machine": {
       "drawio": "kb/diagram/assets/archcenter-refs/mongodb-to-exadata-machine/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch.drawio",
-      "png": "kb/diagram/assets/archcenter-refs/mongodb-to-exadata-machine/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch.png"
+      "png": "kb/diagram/assets/archcenter-refs/mongodb-to-exadata-machine/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch/mongodb-exadata-machine-physical-arch.png",
+      "yaml": "kb/diagram/assets/archcenter-refs/mongodb-to-exadata-machine/_template.yaml"
     },
     "multi-region-standby-dr-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-at-azure/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-at-azure/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-at-azure/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-at-azure/_template.yaml"
     },
     "multi-region-standby-dr-db-azure-arch-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.drawio",
       "png": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.png",
-      "svg": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/_template.yaml"
     },
     "multi-tenant-app-deploy": {
       "drawio": "kb/diagram/assets/archcenter-refs/multi-tenant-app-deploy/multi-tenant-app-oci-oracle/multi-tenant-app-oci.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/multi-tenant-app-deploy/multi-tenant-app-oci-oracle/multi-tenant-app-oci.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/multi-tenant-app-deploy/multi-tenant-app-oci-oracle/multi-tenant-app-oci.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/multi-tenant-app-deploy/_template.yaml"
     },
     "network-topology-oracle-database-at-aws": {
       "drawio": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-aws/db-at-aws-main-arch-oracle/db-at-aws-main-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-aws/_template.yaml"
     },
     "network-topology-oracle-database-at-google-cloud": {
       "drawio": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-google-cloud/google-detailed-arch-oracle/google-detailed-arch-oracle/google-detailed-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/network-topology-oracle-database-at-google-cloud/_template.yaml"
     },
     "oci-ai-healthcare": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-ai-healthcare/oci-ai-healthcare_arch-oracle/oci-ai-healthcare-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-ai-healthcare/oci-ai-healthcare_arch-oracle/oci-ai-healthcare-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-ai-healthcare/oci-ai-healthcare_arch-oracle/oci-ai-healthcare-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-ai-healthcare/_template.yaml"
     },
     "oci-azure-multicloud-data-solution": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-azure-multicloud-data-solution/oci-azure-multicloud-data-solution-diagram-oracle/oci-azure-multicloud-data-solution-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-azure-multicloud-data-solution/oci-azure-multicloud-data-solution-diagram-oracle/oci-azure-multicloud-data-solution-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-azure-multicloud-data-solution/oci-azure-multicloud-data-solution-diagram-oracle/oci-azure-multicloud-data-solution-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-azure-multicloud-data-solution/_template.yaml"
     },
     "oci-best-practices-networking": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-best-practices-networking/multi-region-deployment-full-arch-oracle/multi-region-deployment-full-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-best-practices-networking/multi-region-deployment-full-arch-oracle/multi-region-deployment-full-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-best-practices-networking/multi-region-deployment-full-arch-oracle/multi-region-deployment-full-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-best-practices-networking/_template.yaml"
     },
     "oci-cpu-inference-ollama": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-cpu-inference-ollama/ollama-blueprint-architecture-oracle/ollama-blueprint-architecture.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-cpu-inference-ollama/ollama-blueprint-architecture-oracle/ollama-blueprint-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-cpu-inference-ollama/ollama-blueprint-architecture-oracle/ollama-blueprint-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-cpu-inference-ollama/_template.yaml"
     },
     "oci-genai-enterprise": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-genai-enterprise/oci-genai-enterprise-arch-oracle/oci-genai-enterprise-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-genai-enterprise/oci-genai-enterprise-arch-oracle/oci-genai-enterprise-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-genai-enterprise/oci-genai-enterprise-arch-oracle/oci-genai-enterprise-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-genai-enterprise/_template.yaml"
     },
     "oci-generative-ai-llm-platforms": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-generative-ai-llm-platforms/ai-llm-workflow-architecture-oracle/ai-llm-workflow-architecture.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-generative-ai-llm-platforms/ai-llm-workflow-architecture-oracle/ai-llm-workflow-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-generative-ai-llm-platforms/ai-llm-workflow-architecture-oracle/ai-llm-workflow-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-generative-ai-llm-platforms/_template.yaml"
     },
     "oci-multicloud-datalake": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-multicloud-datalake/oci-multicloud-datalake-flow-oracle/oci_multicloud_datalake_flow.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-multicloud-datalake/oci-multicloud-datalake-flow-oracle/oci_multicloud_datalake_flow.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-multicloud-datalake/oci-multicloud-datalake-flow-oracle/oci_multicloud_datalake_flow.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-multicloud-datalake/_template.yaml"
     },
     "oci-multicloud-genai-rag": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-multicloud-genai-rag/multicloud-genai-rag-architecture-oracle/multicloud-genai-rag-architecture.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-multicloud-genai-rag/multicloud-genai-rag-architecture-oracle/multicloud-genai-rag-architecture.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-multicloud-genai-rag/multicloud-genai-rag-architecture-oracle/multicloud-genai-rag-architecture.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-multicloud-genai-rag/_template.yaml"
     },
     "oci-nlb-palo-alto-active-active": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-nlb-palo-alto-active-active/oci-nlb-palo-alto-active-active-arch-oracle/oci-nlb-palo-alto-active-active-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-nlb-palo-alto-active-active/oci-nlb-palo-alto-active-active-arch-oracle/oci-nlb-palo-alto-active-active-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-nlb-palo-alto-active-active/oci-nlb-palo-alto-active-active-arch-oracle/oci-nlb-palo-alto-active-active-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-nlb-palo-alto-active-active/_template.yaml"
     },
     "oci-oad-kafka-oi": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-oad-kafka-oi/oci-oad-kafka-oi-oracle/oci-oad-kafka-oi.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-oad-kafka-oi/oci-oad-kafka-oi-oracle/oci-oad-kafka-oi.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-oad-kafka-oi/oci-oad-kafka-oi-oracle/oci-oad-kafka-oi.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-oad-kafka-oi/_template.yaml"
     },
     "oci-object-storage-modernization": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-object-storage-modernization/oci-object-storage-modernization-arch-after-oracle/oci-object-storage-modernization-arch-after.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-object-storage-modernization/oci-object-storage-modernization-arch-after-oracle/oci-object-storage-modernization-arch-after.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-object-storage-modernization/oci-object-storage-modernization-arch-after-oracle/oci-object-storage-modernization-arch-after.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-object-storage-modernization/_template.yaml"
     },
     "oci-ops-insights-and-em-bridge": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-ops-insights-and-em-bridge/oci-ops-insights-diagram-oracle/oci-ops-insights-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-ops-insights-and-em-bridge/oci-ops-insights-diagram-oracle/oci-ops-insights-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-ops-insights-and-em-bridge/oci-ops-insights-diagram-oracle/oci-ops-insights-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-ops-insights-and-em-bridge/_template.yaml"
     },
     "oci-security-zones": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-security-zones/MSZ-01-oracle/MSZ-01.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-security-zones/MSZ-01-oracle/MSZ-01.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-security-zones/MSZ-01-oracle/MSZ-01.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-security-zones/_template.yaml"
     },
     "oci-speech-meeting-insights-genai": {
       "drawio": "kb/diagram/assets/archcenter-refs/oci-speech-meeting-insights-genai/oci-speech-adb-ai-arch-oracle/oci-speech-adb-ai-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oci-speech-meeting-insights-genai/oci-speech-adb-ai-arch-oracle/oci-speech-adb-ai-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oci-speech-meeting-insights-genai/oci-speech-adb-ai-arch-oracle/oci-speech-adb-ai-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oci-speech-meeting-insights-genai/_template.yaml"
     },
     "ocvs-vsan-stretched-cluster": {
       "drawio": "kb/diagram/assets/archcenter-refs/ocvs-vsan-stretched-cluster/ocvs-vsan-stretched-cluster-oracle/ocvs-vsan-stretched-cluster.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/ocvs-vsan-stretched-cluster/ocvs-vsan-stretched-cluster-oracle/ocvs-vsan-stretched-cluster.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/ocvs-vsan-stretched-cluster/ocvs-vsan-stretched-cluster-oracle/ocvs-vsan-stretched-cluster.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/ocvs-vsan-stretched-cluster/_template.yaml"
     },
     "oracle-adb-jde-exadata": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata/_template.yaml"
     },
     "oracle-adb-jde-exadata-arch-oracle": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.drawio",
       "png": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/rendered.png",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/_template.yaml"
     },
     "oracle-db-at-azure-migration": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-migration/oracle-db-at-azure-zdm-oracle/oracle-db-at-azure-zdm.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-migration/oracle-db-at-azure-zdm-oracle/oracle-db-at-azure-zdm.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-migration/oracle-db-at-azure-zdm-oracle/oracle-db-at-azure-zdm.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-migration/_template.yaml"
     },
     "oracle-db-at-azure-streaming": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-streaming/oracle-db-at-azure-streaming-oracle/oracle-db-at-azure-streaming.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-streaming/oracle-db-at-azure-streaming-oracle/oracle-db-at-azure-streaming.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-streaming/oracle-db-at-azure-streaming-oracle/oracle-db-at-azure-streaming.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-db-at-azure-streaming/_template.yaml"
     },
     "oracle-db-at-google-cloud-migration": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-db-at-google-cloud-migration/oracle_database_at_google_cloud_w_zdm-oracle/oracle_database_at_google_cloud_w_zdm.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-google-cloud-migration/oracle_database_at_google_cloud_w_zdm-oracle/oracle_database_at_google_cloud_w_zdm.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-db-at-google-cloud-migration/oracle_database_at_google_cloud_w_zdm-oracle/oracle_database_at_google_cloud_w_zdm.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-db-at-google-cloud-migration/_template.yaml"
     },
     "oracle-maa-db-at-azure": {
       "drawio": "kb/diagram/assets/archcenter-refs/oracle-maa-db-at-azure/cross-az-dr-oracle/cross-az-dr.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/oracle-maa-db-at-azure/cross-az-dr-oracle/cross-az-dr.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/oracle-maa-db-at-azure/cross-az-dr-oracle/cross-az-dr.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/oracle-maa-db-at-azure/_template.yaml"
     },
     "phased-migration-to-oracle-dba": {
       "drawio": "kb/diagram/assets/archcenter-refs/phased-migration-to-oracle-dba/logical-architecture-diagram-oracle/logical-architecture-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/phased-migration-to-oracle-dba/logical-architecture-diagram-oracle/logical-architecture-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/phased-migration-to-oracle-dba/logical-architecture-diagram-oracle/logical-architecture-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/phased-migration-to-oracle-dba/_template.yaml"
     },
     "private-dns": {
       "drawio": "kb/diagram/assets/archcenter-refs/private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns.drawio",
-      "png": "kb/diagram/assets/archcenter-refs/private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns.png"
+      "png": "kb/diagram/assets/archcenter-refs/private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns/architecture-deploy-private-dns.png",
+      "yaml": "kb/diagram/assets/archcenter-refs/private-dns/_template.yaml"
     },
     "remote-synchronous-block-replication-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/remote-synchronous-block-replication-oci/remote-synchronous-block-replication-diagram-oracle/remote-synchronous-block-replication-diagram.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/remote-synchronous-block-replication-oci/remote-synchronous-block-replication-diagram-oracle/remote-synchronous-block-replication-diagram.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/remote-synchronous-block-replication-oci/remote-synchronous-block-replication-diagram-oracle/remote-synchronous-block-replication-diagram.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/remote-synchronous-block-replication-oci/_template.yaml"
     },
     "rep-fusion-saas-third-party-dw": {
       "drawio": "kb/diagram/assets/archcenter-refs/rep-fusion-saas-third-party-dw/fusion-saas-to-snowflake-arch-oracle/fusion-saas-to-snowflake-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/rep-fusion-saas-third-party-dw/fusion-saas-to-snowflake-arch-oracle/fusion-saas-to-snowflake-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/rep-fusion-saas-third-party-dw/fusion-saas-to-snowflake-arch-oracle/fusion-saas-to-snowflake-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/rep-fusion-saas-third-party-dw/_template.yaml"
     },
     "run-quantized-gguf-llm-ampere-cluster": {
       "drawio": "kb/diagram/assets/archcenter-refs/run-quantized-gguf-llm-ampere-cluster/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch.drawio",
       "png": "kb/diagram/assets/archcenter-refs/run-quantized-gguf-llm-ampere-cluster/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch.png",
-      "svg": "kb/diagram/assets/archcenter-refs/run-quantized-gguf-llm-ampere-cluster/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/run-quantized-gguf-llm-ampere-cluster/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch/gen-ai-ampere-gguf-llm-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/run-quantized-gguf-llm-ampere-cluster/_template.yaml"
     },
     "secure-backup-oci-object-storage": {
       "drawio": "kb/diagram/assets/archcenter-refs/secure-backup-oci-object-storage/secure-backup-oci-object-storage-oracle/secure-backup-oci-object-storage.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/secure-backup-oci-object-storage/secure-backup-oci-object-storage-oracle/secure-backup-oci-object-storage.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/secure-backup-oci-object-storage/secure-backup-oci-object-storage-oracle/secure-backup-oci-object-storage.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/secure-backup-oci-object-storage/_template.yaml"
     },
     "select-ai-apex-framework": {
       "drawio": "kb/diagram/assets/archcenter-refs/select-ai-apex-framework/hallucination-reduction-workflow-oracle/hallucination-reduction-workflow.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/select-ai-apex-framework/hallucination-reduction-workflow-oracle/hallucination-reduction-workflow.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/select-ai-apex-framework/hallucination-reduction-workflow-oracle/hallucination-reduction-workflow.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/select-ai-apex-framework/_template.yaml"
     },
     "takamol-on-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/takamol-on-oci/takamol-on-oci-arch-oracle/takamol-on-oci-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/takamol-on-oci/takamol-on-oci-arch-oracle/takamol-on-oci-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/takamol-on-oci/takamol-on-oci-arch-oracle/takamol-on-oci-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/takamol-on-oci/_template.yaml"
     },
     "tharseo-data-platform-on-oci": {
       "drawio": "kb/diagram/assets/archcenter-refs/tharseo-data-platform-on-oci/tharseo-data-platform-on-oci-arch-oracle/tharseo-data-platform-on-oci-arch.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/tharseo-data-platform-on-oci/tharseo-data-platform-on-oci-arch-oracle/tharseo-data-platform-on-oci-arch.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/tharseo-data-platform-on-oci/tharseo-data-platform-on-oci-arch-oracle/tharseo-data-platform-on-oci-arch.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/tharseo-data-platform-on-oci/_template.yaml"
     },
     "wls-on-oke-marketplace": {
       "drawio": "kb/diagram/assets/archcenter-refs/wls-on-oke-marketplace/wls-oke-marketplace-oracle/wls-oke-marketplace.drawio",
-      "svg": "kb/diagram/assets/archcenter-refs/wls-on-oke-marketplace/wls-oke-marketplace-oracle/wls-oke-marketplace.svg"
+      "svg": "kb/diagram/assets/archcenter-refs/wls-on-oke-marketplace/wls-oke-marketplace-oracle/wls-oke-marketplace.svg",
+      "yaml": "kb/diagram/assets/archcenter-refs/wls-on-oke-marketplace/_template.yaml"
     }
   }
 }
