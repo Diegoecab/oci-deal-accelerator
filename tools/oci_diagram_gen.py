@@ -808,18 +808,54 @@ class OCIDiagramGenerator:
     ICON_TYPE_ALIASES = {
         "database_system": ["db_system", "dbcs"],
         "base_db": ["db_system", "dbcs"],
+        "base_database": ["db_system", "dbcs"],
         "virtual_machine": ["compute", "vm"],
         "compute_instance": ["compute", "vm"],
         "oci_functions": ["functions"],
         "function": ["functions"],
+        # ADB family — drawio toolkit ships ``autonomous_database`` (the
+        # canonical generic icon, 7 cells) and ``adb_d`` (Dedicated, 28
+        # cells with the wider footprint). There is NO separate
+        # ``adb_s`` stencil — Serverless is rendered with the canonical
+        # ``autonomous_database`` icon. Map every ADB-S synonym to that
+        # entry first, falling back to ``adb_d`` only if the canonical
+        # is absent. Diego flagged 2026-04-25: "el icono de ADB-S no se
+        # genero en drawio" because the renderer had no alias for it.
+        "adb_s": ["autonomous_database", "autonomous_db", "adb_d"],
+        "adb_serverless": ["autonomous_database", "autonomous_db", "adb_d"],
+        "autonomous_database_serverless": ["autonomous_database", "autonomous_db", "adb_d"],
+        "autonomous_database": ["autonomous_database", "autonomous_db"],
+        "refreshable_clone": ["autonomous_database", "autonomous_db", "adb_d"],
+        "adb_clone": ["autonomous_database", "autonomous_db", "adb_d"],
         "adb_d": ["adb_d", "adb", "autonomous_db"],
+        "adb_dedicated": ["adb_d", "adb", "autonomous_db"],
+        "autonomous_database_dedicated": ["adb_d", "adb", "autonomous_db"],
         "adw_d": ["adw", "autonomous_db"],
+        "adw": ["adw", "autonomous_db"],
         "atp_d": ["atp", "autonomous_db"],
+        "atp": ["atp", "autonomous_db"],
+        # GoldenGate aliases — same rule that fixes the PPTX side.
+        "oci_goldengate": ["goldengate"],
+        "ogg": ["goldengate"],
+        "oracle_goldengate": ["goldengate"],
+        # DRG variants
+        "dynamic_routing_gateway": ["drg"],
+        # Misc
         "block_volume": ["block_storage"],
         "oci_streaming": ["streaming", "kafka"],
+        "kafka": ["streaming"],
         "web_application_firewall": ["waf"],
         "network_firewall": ["network_firewall"],
         "queue": ["queue", "oci_queue"],
+        "kms": ["vault"],
+        "secret": ["vault"],
+        "secrets_manager": ["vault"],
+        "identity": ["oracle_identity"],
+        "iam": ["oracle_identity"],
+        "iac": ["resource_manager"],
+        "terraform": ["resource_manager"],
+        "oac": ["analytics"],
+        "oic": ["integration"],
     }
 
     @classmethod

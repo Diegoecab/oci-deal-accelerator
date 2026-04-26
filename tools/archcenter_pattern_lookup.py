@@ -206,15 +206,70 @@ def _score(query_tokens: set[str], entry: dict, description: str = "") -> float:
     return score
 
 
+_CACHE_DIR_INDEX: dict[str, dict[str, str]] | None = None
+CACHE_INDEX_FILE = PROJECT_ROOT / "kb" / "diagram" / "assets" / "archcenter-refs-index.json"
+
+
+def _build_cache_dir_index() -> dict[str, dict[str, str]]:
+    """Scan of CACHE_DIR. Returns {folder_name: {ext: relpath}}.
+
+    The previous implementation called ``iterdir()`` + ``rglob`` for
+    EVERY catalog entry the scorer touched (123 times) — on WSL2 this
+    pushed a single lookup to 75+ seconds. Now:
+      1. In-memory cache for the duration of the process.
+      2. Persisted JSON index next to the assets, refreshed only when
+         CACHE_DIR's mtime changes — so a fresh process reads the
+         index in milliseconds instead of walking 113 subdirs through
+         WSL2's /mnt/c (~16 s on a typical laptop).
+    """
+    global _CACHE_DIR_INDEX
+    if _CACHE_DIR_INDEX is not None:
+        return _CACHE_DIR_INDEX
+    if not CACHE_DIR.exists():
+        _CACHE_DIR_INDEX = {}
+        return _CACHE_DIR_INDEX
+
+    cache_mtime = CACHE_DIR.stat().st_mtime
+    if CACHE_INDEX_FILE.exists():
+        try:
+            payload = json.loads(CACHE_INDEX_FILE.read_text(encoding="utf-8"))
+            if payload.get("cache_dir_mtime") == cache_mtime:
+                _CACHE_DIR_INDEX = payload.get("entries") or {}
+                return _CACHE_DIR_INDEX
+        except (OSError, ValueError):
+            pass  # fall through and rebuild
+
+    index: dict[str, dict[str, str]] = {}
+    for sub in CACHE_DIR.iterdir():
+        if not sub.is_dir():
+            continue
+        bucket: dict[str, str] = {}
+        for ext in ("drawio", "png", "svg"):
+            for path in sub.rglob(f"*.{ext}"):
+                bucket[ext] = str(path.relative_to(PROJECT_ROOT))
+                break  # only the first hit per ext is enough
+        if bucket:
+            index[sub.name] = bucket
+
+    try:
+        CACHE_INDEX_FILE.write_text(
+            json.dumps({"cache_dir_mtime": cache_mtime, "entries": index},
+                       indent=2),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass  # index is still useful in-memory even if we can't persist
+
+    _CACHE_DIR_INDEX = index
+    return index
+
+
 def _cached_assets(entry: dict) -> dict:
     """Find .drawio / .png / .svg if a matching folder is cached locally.
-
-    Oracle's zips often nest the assets one level deep (e.g.
-    ``deploy-oracle-db-aws/db-at-aws-main-arch-oracle/main.drawio``),
-    so we scan recursively. The folder match is by URL slug or by
-    folder-name containment in the title slug.
-    """
-    if not CACHE_DIR.exists():
+    Served from the one-shot in-memory index built by
+    ``_build_cache_dir_index``."""
+    cache_index = _build_cache_dir_index()
+    if not cache_index:
         return {}
     title_slug = re.sub(r"[^a-z0-9]+", "-", entry.get("title", "").lower()).strip("-")
     url_slug = ""
@@ -222,30 +277,41 @@ def _cached_assets(entry: dict) -> dict:
         m = re.search(r"/solutions/([^/]+)/", entry["url"])
         if m:
             url_slug = m.group(1)
-    found: dict[str, str] = {}
-    for sub in CACHE_DIR.iterdir():
-        if not sub.is_dir():
-            continue
-        if (url_slug and (url_slug == sub.name or url_slug in sub.name)) or (sub.name in title_slug):
-            for ext in ("drawio", "png", "svg"):
-                hits = list(sub.rglob(f"*.{ext}"))
-                if hits:
-                    found[ext] = str(hits[0].relative_to(PROJECT_ROOT))
-            if found:
-                return found
+    for name, bucket in cache_index.items():
+        if (url_slug and (url_slug == name or url_slug in name)) or (name in title_slug):
+            return bucket
     return {}
+
+
+_PATTERNS_BY_URL: dict[str, list[str]] | None = None
+
+
+def _build_patterns_index() -> dict[str, list[str]]:
+    """Load reference-patterns.yaml ONCE and index by entry URL.
+    Was being reloaded for every match (125x per lookup = 5s wasted)."""
+    global _PATTERNS_BY_URL
+    if _PATTERNS_BY_URL is not None:
+        return _PATTERNS_BY_URL
+    index: dict[str, list[str]] = {}
+    if not PATTERNS.exists():
+        _PATTERNS_BY_URL = index
+        return index
+    try:
+        patterns_doc = yaml.safe_load(PATTERNS.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError:
+        _PATTERNS_BY_URL = index
+        return index
+    for pname, pdata in (patterns_doc.get("patterns") or {}).items():
+        url = (pdata or {}).get("source")
+        if url:
+            index.setdefault(url, []).append(pname)
+    _PATTERNS_BY_URL = index
+    return index
 
 
 def _patterns_for(entry: dict) -> list[str]:
     """Surface visual-convention names that apply to this entry."""
-    if not PATTERNS.exists():
-        return []
-    patterns_doc = yaml.safe_load(PATTERNS.read_text(encoding="utf-8"))
-    out: list[str] = []
-    for pname, pdata in (patterns_doc.get("patterns") or {}).items():
-        if pdata.get("source") == entry.get("url"):
-            out.append(pname)
-    return out
+    return _build_patterns_index().get(entry.get("url", ""), [])
 
 
 def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> list[dict]:
@@ -255,13 +321,35 @@ def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> list[dict]
     if expand_synonyms:
         qt = _expand_query_tokens(qt)
     scored = []
+    # Two-pass scoring: cheap fields first (title/tags/services/summary),
+    # then enrich the top-K with expensive fields (description text from
+    # disk, cached_assets, visual_patterns). Previously _cached_assets
+    # ran for every entry whose tokens overlapped at all — 121 of 123
+    # entries on a typical query — pushing the lookup to 75s+ on WSL2.
+    light: list[dict] = []
     for e in entries:
-        description = _description_text(e)
-        s = _score(qt, e, description=description)
-        if s <= 0:
+        s_light = _score(qt, e, description="")
+        if s_light <= 0:
             continue
+        light.append({"_entry": e, "_score_light": s_light})
+
+    # Re-rank the candidate set with description text for tie-breaking
+    # accuracy, then keep ``top`` * 2 to leave room for description
+    # bumps to reorder.
+    pool_size = max(top * 3, 10)
+    light.sort(key=lambda r: -r["_score_light"])
+    candidates = light[:pool_size]
+    for c in candidates:
+        e = c["_entry"]
+        description = _description_text(e)
+        c["_description"] = description
+        c["_score_full"] = _score(qt, e, description=description)
+    candidates.sort(key=lambda r: -r["_score_full"])
+
+    for c in candidates[:top]:
+        e = c["_entry"]
         scored.append({
-            "score": round(s, 1),
+            "score": round(c["_score_full"], 1),
             "title": e.get("title"),
             "url": e.get("url"),
             "tags": e.get("tags", []),
@@ -269,10 +357,9 @@ def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> list[dict]
             "summary": (e.get("summary", "") or "").strip().split("\n")[0],
             "cached_assets": _cached_assets(e),
             "visual_patterns": _patterns_for(e),
-            "has_description": bool(description),
+            "has_description": bool(c.get("_description")),
         })
-    scored.sort(key=lambda r: -r["score"])
-    return scored[:top]
+    return scored
 
 
 def _print_results(query: str, results: list[dict]) -> None:
