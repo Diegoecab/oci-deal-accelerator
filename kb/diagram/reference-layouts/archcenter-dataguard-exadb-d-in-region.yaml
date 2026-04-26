@@ -1,0 +1,73 @@
+---
+last_verified: 2026-04-25
+source: https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/index.html
+arch_zip: exadata-dedicated-region-dataguard.zip
+diagram_asset: examples/dataguard-exa-dedicated-in-region/reference/exadata-dedicated-in-region-dataguard.png
+publication_date: "2025-07"
+pattern: in-region-data-guard-on-exadb-d-dedicated
+classification: single-region HA + automatic failover
+---
+
+lessons:
+  - Oracle's drawio exports wrap many cells in <UserObject id="…"> instead
+    of mxCell. Iterating only mxCell loses the addressable id, breaking
+    every parent-chain calculation. Always iterate UserObject elements
+    too and treat them as the addressable cell.
+  - Reference diagrams that pre-date 2024 use plain rectangles for the
+    region/AD/VCN/subnet tiers (no shape=mxgraph.oracle.* stencil).
+    Classify them by fillColor: #f5f4f2 region, #e4e1dd AD,
+    fillColor=none orange-stroked containers for VCN/subnet.
+  - Per-subnet route-table/security-list icons are placed *outside* the
+    VCN, on the right edge, vertically aligned with each subnet.
+    Policies sits at the top-right of the region, also outside the VCN.
+    Do not bind these to subnet containers in the layout — they must
+    live on the region canvas.
+  - The DRG icon for a region with FastConnect / DRG attaches sits on
+    the LEFT outside the VCN at roughly mid-height, with a "DRG" label
+    badge underneath the stencil. The runner's stencil-fingerprint
+    table (55x66 → drg) covers this case when no caption is present.
+  - Two ExaDB-D stencils flank a horizontal "← Oracle Data Guard →"
+    label. The Data Guard label is rendered as a text block, not as
+    the OCI data_guard stencil — keep that intent in absolute_layout.
+
+layout_rules:
+  absolute_layout:
+    use_when:
+      - Two Availability Domain columns span horizontal subnet bands.
+      - Per-subnet small icons (route table + security list) sit
+        outside the VCN, aligned with their subnet.
+      - DRG sits to the left of the VCN with no other gateways.
+    canonical_geometry:
+      canvas: {width: 627, height: 389}
+      region: {x: 0,   y: 0,   w: 627, h: 389}
+      vcn:    {x: 28,  y: 51,  w: 589, h: 328}
+      ad1:    {x: 145, y: 17,  w: 185, h: 346}
+      ad2:    {x: 364, y: 17,  w: 185, h: 346}
+      client_subnet: {x: 60, y: 102, w: 549, h: 75}
+      backup_subnet: {x: 60, y: 219, w: 549, h: 127}
+      drg:           {x: 7,   y: 188, w: 55, h: 66}
+      policies:      {x: 566, y: 35,  w: 42, h: 40}
+      route_table_client: {x: 558, y: 80,  w: 42, h: 42}
+      route_table_backup: {x: 558, y: 197, w: 42, h: 42}
+      exa_ad1:       {x: 205, y: 152, w: 64, h: 84}
+      exa_ad2:       {x: 425, y: 152, w: 64, h: 84}
+
+service_aliases:
+  exadata: oracle_exadata_database_service
+  exacs: oracle_exadata_database_service
+  oracle_exadata_database_service: oracle_exadata_database_service
+  drg: drg
+  dynamic_routing_gateway: drg
+  policies: policies
+  security_list: security_lists
+  security_lists: security_lists
+  route_table: route_table_and_security_list
+  route_table_and_security_list: route_table_and_security_list
+
+benchmark_case:
+  workspace: examples/dataguard-exa-dedicated-in-region
+  drawio_spec: examples/dataguard-exa-dedicated-in-region/specs/dataguard-exa-dedicated-in-region-diagram-spec.yaml
+  deck_spec: examples/dataguard-exa-dedicated-in-region/specs/dataguard-exa-dedicated-in-region-deck-spec.yaml
+  output_drawio: examples/dataguard-exa-dedicated-in-region/out/dataguard-exa-dedicated-in-region.drawio
+  output_pptx: examples/dataguard-exa-dedicated-in-region/out/dataguard-exa-dedicated-in-region-native.pptx
+  evaluation: examples/dataguard-exa-dedicated-in-region/evidence/dataguard-exa-dedicated-in-region-eval.md

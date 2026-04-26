@@ -1,0 +1,645 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="concept">
+      <meta name="DC.Title" content="Implement Cross-Region Disaster Recovery for Oracle Exadata Database Service on Oracle AI Database@Azure">
+      <meta name="abstract" content="When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.">
+      <meta name="description" content="When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.">
+      <meta name="copyright" content="(C) Copyrightfr 2024" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2024" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2026" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2026" type="secondary">
+      <meta name="DC.Date.Created" content="April 2026">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-A43C87C3-C331-415A-9951-86C454C8E9C3">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.">
+      <meta name="description" content="When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.">
+      <title>Implement Cross-Region Disaster Recovery for Oracle Exadata Database Service on Oracle AI Database@Azure</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Implement cross-region disaster recovery for Exadata Database on Oracle AI Database@Azure">
+      <meta property="og:description" content="When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Implement cross-region disaster recovery for Exadata Database on Oracle AI Database@Azure">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="Database, Database Services, HA/DR, Multicloud, Azure">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2026-04-10T09:39:34-07:00">
+      <meta name="dcterms.title" content="Implement cross-region disaster recovery for Exadata Database on Oracle AI Database@Azure">
+      <meta name="dcterms.dateCopyrighted" content="2024, 2026">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="G10653-06">
+      
+      <meta name="dcterms.product" content="en/solutions;en/cloud/paas/recovery-service;en/cloud/oracle-cloud-infrastructure/object-storage;en/cloud/oracle-cloud-infrastructure/oci;en/cloud/oracle-cloud-infrastructure/vault">
+      <meta name="dcterms.release" content="Test Release">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"reference-architectures","element_name":"Reference Architectures","display_in_url":false},"product_group":{"short_name":"oci","element_name":"OCI Architectures","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="CODOE">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Implement Cross-Region Disaster Recovery for Oracle Exadata Database Service on Oracle AI Database@Azure","description":"When designing applications, it is essential to ensure business continuity by establishing a robust disaster recovery mechanism for restoring operations in the event of an outage.","datePublished":"2026-04-10 CST","dateModified":"2026-04-10 CST"}</script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/exadb-dr-on-db-azure/toc.htm">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/exadb-dr-on-db-azure/toc.htm">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="#" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-A43C87C3-C331-415A-9951-86C454C8E9C3" name="GUID-A43C87C3-C331-415A-9951-86C454C8E9C3"></a>
+         
+         <h2 id="CODOE-GUID-A43C87C3-C331-415A-9951-86C454C8E9C3" class="sect2">Implement Cross-Region Disaster
+        Recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span>
+            
+         </h2>
+         <div class="ind">
+            <div>
+               <p>When designing applications, it is essential to ensure business continuity by
+        establishing a robust disaster recovery mechanism for restoring operations in the event of
+        an outage.</p>
+               <p>For many years, customers have trusted <span>Oracle Exadata Database
+                        Service</span> using Oracle Maximum Availability Architecture (MAA) to power mission-critical
+            applications both on premises and on <span>Oracle Cloud
+                                Infrastructure</span> (OCI). <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span> offers feature and price parity with Exadata on OCI and can be deployed across
+            multiple Microsoft Azure availability zones (AZs) and regions to ensure high
+            availability and disaster recovery. 
+               </p>
+            </div>
+            <div class="sect2"><a id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1" name="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1"></a><h3 id="CODOE-GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1" class="sect3">Architecture</h3>
+               <div>
+                  <p>This architecture shows a high-availability, containerized Azure Kubernetes
+        Service (AKS) application with <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span> in a cross-region, disaster recovery topology.
+                  </p>
+                  <p>A high-availability, containerized Azure Kubernetes Service (AKS)
+            application is deployed in two Azure regions: a primary region and a standby region. The
+            container images are stored in the Azure container registry and are replicated between
+            primary and standby regions. Users access the application externally through a public
+            load balancer. </p>
+                  <p>For data protection, the <span>Oracle Database</span> is running in an Exadata virtual machine (VM) cluster in the primary region, with <span>Oracle Data Guard</span> or Oracle Active Data Guard replicating the data to the standby database running on
+            an Exadata VM cluster in the standby region.
+                  </p>
+                  <p>The database transparent data encryption (TDE) keys are stored in <span>Oracle Cloud Infrastructure Vault</span> and replicated between the Azure and OCI regions. The automatic backups are in OCI
+            for both the primary and standby regions. Customers can use <span>Oracle Cloud
+                                Infrastructure Object Storage</span> or <span>Oracle Database Autonomous
+                                Recovery Service</span> as the preferred storage solution.
+                  </p>
+                  <p>The <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span> network is connected to the Exadata client subnet by using a dynamic routing gateway
+            (DRG) managed by Oracle. A DRG is also required to create a peer connection between VCNs
+            in different regions. Because only one DRG is allowed per VCN in OCI, a second VCN with
+            its own DRG is required to connect the primary and standby VCNs in each region. In this
+            example:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__UL_U5Q_XSP_VBC">
+                     <li>The primary Exadata VM cluster is deployed in the <kbd class="userinput">VCN
+                    Primary</kbd> VCN client subnet (10.5.0.0/24).
+                     </li>
+                     <li>The <kbd class="userinput">Hub VCN Primary</kbd> VCN for the transit network
+                is 10.15.0.0/29.
+                     </li>
+                     <li>The standby Exadata VM cluster is deployed in the <kbd class="userinput">VCN
+                    Standby</kbd> VCN client subnet (10.6.0.0/24).
+                     </li>
+                     <li>The <kbd class="userinput">Hub VCN Standby</kbd> VCN for the transit network
+                is 10.16.0.0/29.
+                     </li>
+                  </ul>
+                  <p>No subnet is required for the Hub VCNs to enable transit routing, therefore
+            these VCNs can use a very small network. The VCNs on the OCI child site are created
+            after the <span>Oracle Exadata Database
+                        Service</span> VM clusters on <span>Oracle AI Database@Azure</span>  have been created for the primary and standby databases. 
+                  </p>
+                  <p>The following diagram illustrates the architecture:</p><br><div class="imageleft"><img class="imageleft" id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__IMAGE_LVZ_YV4_VBC" height="1162" width="1440" src="img/exadb-dr-db-azure.png" alt="Description of exadb-dr-db-azure.png follows" title="Description of exadb-dr-db-azure.png follows" longdesc="img_text/exadb-dr-db-azure.html"><br><a href="img_text/exadb-dr-db-azure.html">Description of the illustration exadb-dr-db-azure.png</a></div><br><p><a href="img/exadb-dr-db-azure-oracle.zip" class="de-download">exadb-dr-db-azure-oracle.zip</a></p>
+                  <p>Microsoft Azure provides the following components:</p>
+                  <ul style="list-style-type: disc;" id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__UL_EHS_WDQ_VBC">
+                     <li><span class="bold">Microsoft Azure region</span><p>An Azure region is a
+                    geographical area in which one or more physical Azure data centers, called
+                    availability zones, reside. Regions are independent of other regions, and vast
+                    distances can separate them (across countries or even continents).</p>
+                        <p>Azure and OCI regions are localized geographic areas. For Oracle
+                    Database@Azure, an Azure region is connected to an OCI region, with availability
+                    zones (AZs) in Azure connected to availability domains (ADs) in OCI. Azure and
+                    OCI region pairs are selected to minimize distance and latency.</p>
+                     </li>
+                     <li><span class="bold">Microsoft Azure availability zone</span><p>An availability
+                    zone is a physically-separate data center within a region that is designed to be
+                    highly available and fault tolerant. Availability zones are close enough to have
+                    low-latency connections to other availability zones.</p>
+                     </li>
+                     <li><span class="bold">Microsoft Azure Virtual Netwok</span><p>Microsoft Azure
+                    Virtual Network (VNet) is the fundamental building block for a private network
+                    in Azure. VNet enables many types of Azure resources, such as Azure virtual
+                    machines (VM), to securely communicate with each other, the internet, and with
+                    on-premises networks.</p>
+                     </li>
+                     <li><span class="bold">Microsoft Azure Delegated Subnet</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__GUID-A032AC9D-5569-4A5C-8414-C0B7031E55CE__D5E151">Subnet delegation alows
+                    you to inject a managed service, specifically a platform-as-a-service (PaaS)
+                    service, directly into your virtual network. A delegated subnet can be a home
+                    for an externally managed service inside of your virtual network so that the
+                    external service acts as a virtual network resource, even though it is an
+                    external PaaS service.</p>
+                     </li>
+                     <li><span class="bold">Microsoft Azure VNIC</span><p>The services in Azure data centers have physical
+                    network interface cards (NICs). Virtual machine instances communicate using
+                    virtual NICs (VNICs) associated with the physical NICs. Each instance has a
+                    primary VNIC that's automatically created and attached during launch and is
+                    available during the instance's lifetime.</p>
+                     </li>
+                     <li><span class="bold">Microsoft Azure Route table</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__GUID-A032AC9D-5569-4A5C-8414-C0B7031E55CE__D5E139">Virtual route tables
+                    contain rules to route traffic from subnets to destinations outside a VNet,
+                    typically through gateways. Route tables are associated with subnets in a
+                    VNet.</p>
+                     </li>
+                     <li><span class="bold">Azure Virtual Network Gateway</span><p>Azure Virtual
+                    Network Gateway service establishes secure, cross-premises connectivity between
+                    an Azure virtual network and an on-premises network. It allows you to create a
+                    hybrid network that spans your data center and Azure.</p>
+                     </li>
+                  </ul>
+                  <p><span>Oracle Cloud
+                                Infrastructure</span> provides the following components:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__UL_QDH_4LM_CKB">
+                     <li><span class="bold">OCI region</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1267">An OCI region
+                                                  is a localized geographic area that contains one
+                                                  or more data centers, hosting availability
+                                                  domains. Regions are independent of other regions,
+                                                  and vast distances can separate them (across
+                                                  countries or even continents).</p>
+                     </li>
+                     <li><span class="bold">Availability domain</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e243">Availability domains are standalone, independent data centers within a region. The physical resources in each availability domain are isolated from the resources in the other availability domains, which provides fault tolerance. Availability domains don’t share infrastructure such as power or cooling, or the internal availability domain network. So, a failure at one availability domain shouldn't affect the other availability domains in the region.</p>
+                     </li>
+                     <li><span class="bold">Virtual cloud network (VCN) and subnets</span><p>A virtual cloud
+                                                  network (VCN) is a customizable, software-defined
+                                                  network that you set up in an OCI region. Like
+                                                  traditional data center networks, VCNs give you
+                                                  control over your network environment. A VCN can
+                                                  have multiple non-overlapping classless
+                                                  inter-domain routing (CIDR) blocks that you can
+                                                  change after you create the VCN. You can segment a
+                                                  VCN into subnets, which can be scoped to a region
+                                                  or to an availability domain. Each subnet consists
+                                                  of a contiguous range of addresses that don't
+                                                  overlap with the other subnets in the VCN. You can
+                                                  change the size of a subnet after creation. A
+                                                  subnet can be public or private. </p>
+                     </li>
+                     <li><span class="bold">Route table</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1286">Virtual
+                                                  route tables contain rules to route traffic from
+                                                  subnets to destinations outside a VCN, typically
+                                                  through gateways.</p>
+                     </li>
+                     <li><span class="bold">Security list</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1292">For
+                                                  each subnet, you can create security rules that
+                                                  specify the source, destination, and type of
+                                                  traffic that is allowed in and out of the
+                                                  subnet.</p>
+                     </li>
+                     <li><span class="bold">Dynamic routing gateway
+                                                  (DRG)</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e750">The DRG is a
+                                                  virtual router that provides a path for private
+                                                  network traffic between VCNs in the same region,
+                                                  between a VCN and a network outside the region,
+                                                  such as a VCN in another OCI region, an
+                                                  on-premises network, or a network in another cloud
+                                                  provider.</p>
+                     </li>
+                     <li><span class="bold">Service
+                                                  gateway</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1304">A
+                                                  service gateway provides access from a VCN to
+                                                  other services, such as <span>Oracle Cloud
+                                Infrastructure Object Storage</span>. The traffic from the VCN to the Oracle service
+                                                  travels over the Oracle network fabric and does
+                                                  not traverse the internet.
+                        </p>
+                     </li>
+                     <li><span class="bold">Local
+                                                  peering</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1103">Local peering allows two VCNs
+                                                  within the same OCI region to communicate directly
+                                                  using private IP addresses. This communication
+                                                  does not traverse the internet or your on-premises
+                                                  network. Local peering is enabled by a Local
+                                                  Peering Gateway (LPG), which serves as the
+                                                  connection point between VCNs. Configure an LPG in
+                                                  each VCN and establish a peering relationship to
+                                                  allow instances, load balancers, and other
+                                                  resources in one VCN to securely access resources
+                                                  in another VCN within the same region.</p>
+                     </li>
+                     <li><span class="bold">Network security group
+                                                  (NSG)</span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1174">NSGs act as virtual firewalls for your cloud resources. With the zero-trust security model of OCI you control the network traffic inside a VCN. An NSG consists of a set of ingress and egress security rules that apply to only a specified set of virtual network interface cards (VNICs) in a single VCN.</p>
+                     </li>
+                     <li><span class="bold"><span>OCI Object Storage</span></span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1227"> <span>OCI Object Storage</span> provides access to large amounts of structured and unstructured data of any content type, including database backups, analytic data, and rich content such as images and videos. You can safely and securely store data directly from applications or from within the cloud platform. You can scale storage without experiencing any degradation in performance or service reliability. 
+                        </p>
+                        <p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e1232">Use standard storage for "hot" storage that you need to access quickly, immediately, and frequently. Use archive storage for "cold" storage that you retain for long periods of time and seldom or rarely access.</p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Data Guard</span></span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e445"><span>Oracle Data Guard</span> and <span>Active Data Guard</span> provide a comprehensive set of services that
+                                                  create, maintain, manage, and monitor one or more
+                                                  standby databases and that enable production
+                                                  Oracle databases to remain available without
+                                                  interruption. <span>Oracle Data Guard</span> maintains these standby databases as copies of
+                                                  the production database by using in-memory
+                                                  replication. If the production database becomes
+                                                  unavailable due to a planned or an unplanned
+                                                  outage, <span>Oracle Data Guard</span> can switch any standby database to the
+                                                  production role, minimizing the downtime
+                                                  associated with the outage. Oracle Active Data
+                                                  Guard provides the additional ability to offload
+                                                  read-mostly workloads to standby databases and
+                                                  also provides advanced data protection
+                                                  features.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Database Autonomous
+                                Recovery Service</span></span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e524"><span>Oracle Database Autonomous
+                                Recovery Service</span> is a fully managed service designed to protect <span>Oracle Database</span>s from data loss and cyber threats. It offers faster backups with reduced database overhead, reliable recovery with validated backups, and real-time protection enabling recovery to within less than a second of an outage or ransomware attack. This service provides a centralized data protection dashboard and is recommended for backing up <span>Oracle Database</span>s with high resiliency.
+                        </p>
+                     </li>
+                     <li><span class="bold">Exadata Database Service</span><p>Oracle Exadata is an enterprise database platform that runs <span>Oracle Database</span> workloads of any scale and criticality with high performance, availability, and security. Exadata’s scale-out design employs unique optimizations that let transaction processing, analytics, machine learning, and mixed workloads run faster and more efficiently. Consolidating diverse <span>Oracle Database</span> workloads on Exadata platforms in enterprise data centers, on OCI, and in multicloud environments helps organizations increase operational efficiency, reduce IT administration, and lower costs.
+                        </p>
+                        <p> enables you to leverage the power of Exadata in the cloud. <span>Oracle Exadata Database
+                        Service</span> delivers proven <span>Oracle Database</span> capabilities on purpose-built, optimized Oracle Exadata infrastructure in the public cloud. Built-in cloud automation, elastic resource scaling, security, and fast performance for all <span>Oracle Database</span> workloads helps you simplify management and reduce costs.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle AI Database@Azure</span></span><p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e559"><span>Oracle AI Database@Azure</span> is the Oracle Database service (<span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> and <span>Oracle Autonomous AI Database Serverless</span>) running on OCI, deployed in Microsoft Azure data centers. The service offers features and price parity with OCI. Purchase the service on Azure Marketplace.
+                        </p>
+                        <p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e567"><span>Oracle AI Database@Azure</span> integrates <span>Oracle Exadata Database
+                        Service</span>, <span>Oracle Real Application Clusters (Oracle
+                        RAC)</span>, and <span>Oracle Data Guard</span> technologies into the Azure platform. Users manage the service on the Azure console and with Azure automation tools. The service is deployed in Azure Virtual Network (VNet) and integrated with the Azure identity and access management system. The OCI and <span>Oracle Database</span> generic metrics and audit logs are natively available in Azure. The service requires users to have an Azure subscription and an OCI tenancy. 
+                        </p>
+                        <p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e578"><span>Autonomous AI Database</span> is built on Oracle Exadata infrastructure, is self-managing, self-securing, and self-repairing, helping eliminate manual database management and human errors. <span>Autonomous AI Database</span> enables development of scalable AI-powered apps with any data using built-in AI capabilities using your choice of large language model (LLM) and deployment location.
+                        </p>
+                        <p id="GUID-C5016FB8-DD90-4F5C-8965-AC4230537EB1__d5e583">Both <span>Oracle Exadata Database
+                        Service</span> and <span>Oracle Autonomous AI Database Serverless</span> are easily provisioned through the native Azure Portal, enabling access to the broader Azure ecosystem.
+                        </p>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-98515CDC-DBC6-4314-AF9C-42F2288F49CD" name="GUID-98515CDC-DBC6-4314-AF9C-42F2288F49CD"></a><h3 id="CODOE-GUID-98515CDC-DBC6-4314-AF9C-42F2288F49CD" class="sect3">Recommendations</h3>
+               <div>
+                  <div><span>Use the following recommendations as a starting point
+            when performing cross-region disaster recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span>. </span>Your requirements might differ from the architecture described here. 
+                  </div>
+                  <ul style="list-style-type: disc;" id="GUID-98515CDC-DBC6-4314-AF9C-42F2288F49CD__UL_MPQ_P1D_WBC">
+                     <li>Deploy the required Exadata infrastructure in both primary and standby
+                regions. For each Exadata instance, deploy an Exadata VM cluster in the delegated
+                subnet of a Microsoft Azure virtual network (VNet). The <span>Oracle Real Application Clusters</span> (RAC) database can then be instantiated on the cluster. In the same VNet, deploy
+                Azure Kubernetes Service (AKS) in a separate subnet. Configure <span>Oracle Data Guard</span> to replicate data from one <span>Oracle Database</span> to the other, across regions.
+                     </li>
+                     <li>When Exadata VM clusters are created in the <span>Oracle AI Database@Azure</span> child site, each is created within its own <span>Oracle Cloud
+                                Infrastructure</span> virtual cloud network (VCN). <span>Oracle Data Guard</span> requires that the databases communicate with each other to ship redo data. The
+                VCNs must be peered to enable this communication.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-7DDA74AB-E917-4CDE-BADA-A704EB0ACFE2" name="GUID-7DDA74AB-E917-4CDE-BADA-A704EB0ACFE2"></a><h3 id="CODOE-GUID-7DDA74AB-E917-4CDE-BADA-A704EB0ACFE2" class="sect3">Considerations</h3>
+               <div>
+                  <p>When performing cross-region disaster recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle AI Database@Azure</span>, consider the following. 
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-7DDA74AB-E917-4CDE-BADA-A704EB0ACFE2__UL_ESS_Q1D_WBC">
+                     <li>Preparation for a disaster scenario requires a comprehensive approach
+                that considers different business requirements and availability architectures and
+                that encompasses those considerations in an actionable, high-availability (HA),
+                disaster-recovery (DR) plan. The scenario described here provides guidelines to help
+                select the approach that best fits your application deployment by using a simple but
+                effective failover for the disaster recovery configuration in your <span>Oracle Cloud
+                                Infrastructure</span> (OCI) and Microsoft Azure environments.
+                     </li>
+                     <li>Use <span>Oracle Data Guard</span> across regions for the databases provisioned in the Exadata VM Cluster on <span>Oracle AI Database@Azure</span> by using an OCI-managed network.
+                     </li>
+                     <li><span>Oracle Cloud
+                                Infrastructure</span> is the preferred network for achieving better performance, measured by latency
+                and throughput, and for achieving reduced cost, as the first 10 TB/Month is
+                free.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E" name="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E"></a><h3 id="CODOE-GUID-89D923BA-B23D-4536-B52B-C668F6A2125E" class="sect3"><span>Deploy</span></h3>
+               <div>
+                  <p>To configure the network communication
+        between regions shown in the above architecture diagram, complete the following high-level
+        steps.</p>
+                  <p><span class="bold">Primary Region</span></p>
+                  <ol id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__OL_T5L_WCL_WBC">
+                     <li>Create a virtual cloud network (VCN), <kbd class="userinput">HUB VCN
+                    Primary</kbd>, in the <span>Oracle Cloud
+                                Infrastructure</span> (OCI) primary region.
+                     </li>
+                     <li>Deploy two local peering gateways (LPGs),
+                    <kbd class="userinput">Primary-LPG</kbd> and <kbd class="userinput">Hub-Primary-LPG</kbd>,
+                in <kbd class="userinput">VCN Primary</kbd> and <kbd class="userinput">HUB VCN Primary</kbd>
+                respectively.
+                     </li>
+                     <li>Establish a peer LPG connection between the LPGs for <kbd class="userinput">HUB VCN
+                    Primary</kbd> and <kbd class="userinput">VCN Primary</kbd>.
+                     </li>
+                     <li>Create a dynamic routing gateway (DRG),
+                    <kbd class="userinput">Primary-DRG</kbd> in the <kbd class="userinput">Hub VCN Primary</kbd>
+                VCN.
+                     </li>
+                     <li>In the <kbd class="userinput">HUB VCN Primary</kbd> VCN, create the route
+                table, <kbd class="userinput">primary_hub_transit_drg</kbd>, and assign the destination of
+                the <kbd class="userinput">VCN Primary</kbd> client subnet, a target type of
+                    <kbd class="userinput">LPG</kbd>, and the target
+                    <kbd class="userinput">Hub-Primary-LPG</kbd>. For example:
+                <pre class="pre codeblock"><code>10.5.0.0/24 target type: LPG, Target: Hub-Primary-LPG</code></pre></li>
+                     <li>In the <kbd class="userinput">HUB VCN Primary</kbd> VCN, create a second route
+                table, <kbd class="userinput">primary_hub_transit_lpg</kbd>, and assign the destination of
+                the <kbd class="userinput">VCN Standby</kbd> client subnet, a target type
+                    <kbd class="userinput">DRG</kbd>, and a target <kbd class="userinput">Primary-DRG</kbd>. For
+                example:
+                <pre class="pre codeblock"><code>10.6.0.0/24 target type: DRG, Target: Primary-DRG</code></pre></li>
+                     <li>From the <kbd class="userinput">Hub VCN Primary</kbd> VCN, attach
+                    <kbd class="userinput">Hub VCN Primary</kbd> to the DRG. Edit the DRG VCN attachments,
+                and under advanced options, edit the tab VCN route table to associate it with the
+                    <kbd class="userinput">primary_hub_transit_drg</kbd> route table. This configuration
+                permits transit routing.​
+                     </li>
+                     <li>From the <kbd class="userinput">Hub VCN Primary</kbd> VCN, associate the
+                    <kbd class="userinput">primary_hub_transit_lpg</kbd> route table with the
+                    <kbd class="userinput">Hub-Primary-LPG</kbd> gateway.
+                     </li>
+                     <li>In the <kbd class="userinput">Hub VCN Primary</kbd> default route table, add
+                a route rule for the <kbd class="userinput">VCN Primary</kbd> client subnet IP Address
+                range to use the LPG. Add another route rule for the <kbd class="userinput">VCN
+                    Standby</kbd> client subnet IP Address range to use the DRG. For
+                example:<pre class="pre codeblock"><code>10.5.0.0/24 LPG Hub-Primary-LPG
+10.6.0.0/24 DRG Primary-DRG</code></pre></li>
+                     <li>From <kbd class="userinput">Primary-DRG</kbd>, select the DRG route table,
+                    <kbd class="userinput">Autogenerated DRG Route Table for RPC, VC, and IPSec
+                    attachments</kbd>. Add a static route to the <kbd class="userinput">VCN
+                    Primary</kbd> subnet client IP Address range that uses the <kbd class="userinput">Hub
+                    VCN Primary</kbd> VCN with a next hop attachment type of
+                    <kbd class="userinput">VCN</kbd> and the next hop attachment name <kbd class="userinput">Primary
+                    Hub attachment</kbd>. For example:
+                <pre class="pre codeblock"><code>10.5.0.0/24 VCN Primary Hub attachment</code></pre></li>
+                     <li>Use the <kbd class="userinput">Primary-DRG</kbd> remote peering connection
+                attachments menu to create a remote peering connection,
+                <kbd class="userinput">RPC</kbd>.
+                     </li>
+                     <li>In the <kbd class="userinput">VCN Primary</kbd> client subnet, update the
+                network security group (NSG) to create a security rule to allow ingress for TCP port
+                1521. Optionally, you can add SSH port 22 for direct SSH access to the database
+                    servers.
+                        <div class="infoboxnote" id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__GUID-AF07E005-3620-4B86-B8FE-8E129CF9BDDB">
+                           <p class="notep1">Note:</p>For a more precise
+                    configuration, disable the import route distribution of the
+                        <kbd class="userinput">Autogenerated DRG Route Table for RPC, VC, and IPSec
+                        attachments</kbd> route table. For <kbd class="userinput">Autogenerated DRG Route
+                        Table for VCN attachments</kbd>, create and assign a new import route
+                    distribution including only the required RPC attachment.
+                        </div>
+                     </li>
+                  </ol>
+                  <p><span class="bold">Standby Region</span></p>
+                  <ol id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__OL_ICQ_ZCL_WBC">
+                     <li>Create the VCN, <kbd class="userinput">HUB VCN Standby</kbd>, in the OCI
+                standby region.
+                     </li>
+                     <li>Deploy two LPGs, <kbd class="userinput">Standby-LPG</kbd> and
+                    <kbd class="userinput">Hub-Standby-LPG</kbd>, in the <kbd class="userinput">VCN
+                    Standby</kbd> and the <kbd class="userinput">HUB VCN Standby</kbd> VCNs
+                respectively.
+                     </li>
+                     <li>Establish a peer LPG connection between LPGs for <kbd class="userinput">VCN
+                    Standby</kbd> and <kbd class="userinput">HUB VCN Standby</kbd>.
+                     </li>
+                     <li>Create a DRG, <kbd class="userinput">Standby-DRG</kbd>  in the <kbd class="userinput">Hub
+                    VCN Standby</kbd> VCN.
+                     </li>
+                     <li>In the <kbd class="userinput">HUB VCN Standby</kbd> VCN, create a route table,
+                    <kbd class="userinput">standby_hub_transit_drg</kbd>, and assign the destination of
+                the <kbd class="userinput">VCN Standby</kbd> client subnet, a target type of
+                    <kbd class="userinput">LPG</kbd>, and a target <kbd class="userinput">Hub-Standby-LPG</kbd>.
+                For example:
+                <pre class="pre codeblock"><code>10.6.0.0/24 target type: LPG, Target: Hub-Standby-LPG</code></pre></li>
+                     <li>In the <kbd class="userinput">HUB VCN Standby</kbd> VCN, create a second
+                route table, <kbd class="userinput">standby_hub_transit_lpg</kbd> and assign the
+                destination of the <kbd class="userinput">VCN Primary</kbd> client subnet, a target type
+                DRG, and a target <kbd class="userinput">Standby-DRG</kbd>. For example:
+                <pre class="pre codeblock"><code>10.5.0.0/24 target type: DRG, Target: Standby-DRG</code></pre></li>
+                     <li>From the <kbd class="userinput">HUB VCN Standby</kbd> VCN, attach the
+                    <kbd class="userinput">Hub VCN Standby</kbd> VCN to the DRG. Edit The DRG VCN
+                attachments and under advanced options, edit the VCN route table to associate it
+                with the <kbd class="userinput">standby_hub_transit_drg</kbd> route table. This
+                configuration permits transit routing.
+                     </li>
+                     <li>From the <kbd class="userinput">HUB VCN Standby</kbd> VCN, in the
+                    <kbd class="userinput">Hub VCN Standby</kbd> default route table, add route rules for
+                the <kbd class="userinput">VCN Standby</kbd> client subnet IP Address range to use the LPG
+                and for the <kbd class="userinput">VCN Primary</kbd> client subnet IP Address range to use
+                the DRG. For example:
+                <pre class="pre codeblock"><code>10.6.0.0/24 LPG Hub-Standby-LPG
+10.5.0.0/24 DRG Standby-DRG</code></pre></li>
+                     <li>Associate the route table,
+                    <kbd class="userinput">standby_hub_transit_lpg</kbd> with the
+                    <kbd class="userinput">Hub-Standby-LPG</kbd> gateway.
+                     </li>
+                     <li>From <kbd class="userinput">Standby-DRG</kbd>, select the DRG route table
+                    <kbd class="userinput">Autogenerated Drg Route Table for RPC, VC, and IPSec
+                    attachments</kbd>. Add a static route to the <kbd class="userinput">VCN
+                    Standby</kbd> subnet client IP Address range that use the <kbd class="userinput">Hub
+                    VCN Standby</kbd> VCN with a next hop attachment type of VCN and the next
+                hop attachment name <kbd class="userinput">Standby Hub attachment</kbd>. For example:
+                <pre class="pre codeblock"><code>10.6.0.0/24 VCN Standby Hub attachment</code></pre></li>
+                     <li>Use the <kbd class="userinput">Standby-DRG</kbd> remote peering connection
+                attachments menu to create a remote peering connection,
+                <kbd class="userinput">RPC</kbd>.
+                     </li>
+                     <li>Select the remote peering connection, select <span class="uicontrol bold">Establish
+                    Connection</span>, and provide the <kbd class="userinput">Primary-DRG</kbd> OCID.
+                The peering status becomes peered. Both regions are connected.
+                     </li>
+                     <li>In the <kbd class="userinput">VCN Standby</kbd> client subnet, update the NSG
+                to create a security rule to allow ingress for TCP port 1521. Optionally, you can
+                add SSH port 22 for direct SSH access to the database servers.
+                     </li>
+                  </ol>
+                  <p><span class="bold">Data Guard Association</span></p>
+                  <ol id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__OL_NRB_CDL_WBC">
+                     <li>To enable <span>Oracle Data Guard</span> or Oracle Active Data Guard for the <span>Oracle Database</span>, on the <span>Oracle Database</span> details page, click Data Guard Associations, then click <span class="bold">Enable Data
+                Guard</span>.
+                     </li>
+                     <li>On the Enable Data Guard page:
+                        <ol type="a" id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__OL_ORB_CDL_WBC">
+                           <li>Select the standby region.</li>
+                           <li>Select the standby availability domain mapped to Azure AZ.</li>
+                           <li>Select the standby Exadata infrastructure.</li>
+                           <li>Select the desired standby VM cluster.</li>
+                           <li>Choose <span>Oracle Data Guard</span> or Oracle Active Data Guard. MAA recommends Oracle Active Data Guard for
+                        auto block repair of data corruptions and the ability to offload
+                        reporting.
+                           </li>
+                           <li>For cross-region <span>Oracle Data Guard</span> associations, only the maximum performance protection mode is
+                        supported.
+                           </li>
+                           <li>Select an existing database home or create one. It's recommended
+                        to use the same database software image of the primary database for the
+                        standby database home, so that both have the same patches available.</li>
+                           <li>Enter the password for the SYS user and enable <span>Oracle Data Guard</span>.
+                           </li>
+                        </ol>
+                        <p>After <span>Oracle Data Guard</span> is enabled, the standby database will be listed in the Data Guard
+                    Associations section.
+                        </p>
+                     </li>
+                     <li>(Optional) Enable automatic failover (Fast-Start Failover) to reduce the
+                recovery time in case of failures by installing Data Guard Observer on a separate
+                VM, preferably in a separate location or in the application network. </li>
+                  </ol>
+                  <p><span class="bold"><span>Deploy</span></span></p>
+                  <p>Follow these steps to download the code from GitHub, customize the code, and
+            deploy it:</p>
+                  <ol id="GUID-89D923BA-B23D-4536-B52B-C668F6A2125E__OL_MS5_2HB_N3C">
+                     <li>Go to <a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=github-multicloud-dr-terraform" target="_blank">GitHub</a>. 
+                     </li>
+                     <li>Clone or download the repository.</li>
+                     <li>Follow the instructions in the README document.</li>
+                  </ol>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-978847A9-0995-490E-A48D-658DC9CAD267" name="GUID-978847A9-0995-490E-A48D-658DC9CAD267"></a><h3 id="CODOE-GUID-978847A9-0995-490E-A48D-658DC9CAD267" class="sect3">Explore More</h3>
+               <div>
+                  <p>Learn more about the features of this architecture and about related architectures.</p>
+                  <ul style="list-style-type: disc;" id="GUID-978847A9-0995-490E-A48D-658DC9CAD267__UL_SJH_54R_5LB">
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=oracle-database-at-azure" target="_blank"><span>Oracle AI Database@Azure</span></a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=GVVGQ" target="_blank"><span><cite>Well-architected framework
+                              for Oracle Cloud Infrastructure</cite></span></a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=high-availability-overview-best-practices" target="_blank"><span><cite>High Availability Overview
+                                                  and Best Practices</cite></span></a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=oracle-db-at-azure-evaluations" target="_blank">Oracle
+                                                Maximum Availability Architecture for Oracle AI
+                                                Database@Azure</a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=ODCTC" target="_blank"><span><cite>Learn about Oracle
+                              Maximum Availability Architecture for Oracle AI
+                        Database@Azure</cite></span></a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=oracle-data-guard" target="_blank">Oracle Data
+                                                Guard</a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=fast-start-failover" target="_blank">Fast-Start Failover</a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=blog-oracle-database-at-azure-first-principles" target="_blank">First
+                                                Principles: Powering mission-critical applications
+                                                with Oracle AI Database@Azure</a> (blog)
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=oci-doc" target="_blank">Oracle Cloud
+                                                Infrastructure Documentation</a></p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/exadb-dr-on-db-azure&amp;id=oci-calc" target="_blank">Oracle Cloud Cost
+                                                Estimator</a></p>
+                        
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-3246035C-20C3-4B53-BF2C-09343715B431" name="GUID-3246035C-20C3-4B53-BF2C-09343715B431"></a><h3 id="CODOE-GUID-3246035C-20C3-4B53-BF2C-09343715B431" class="sect3">Acknowledgments</h3>
+               <div>
+                  <ul style="list-style-type: disc;">
+                     <li><span class="bold">Authors</span>: <span translate="no">Ricardo Anda, Srikanth Bolisetty, Julien
+                    Silverston, Andy Steinorth, Lingaraj Nayak</span></li>
+                     <li><span class="bold">Contributors</span>: <span translate="no">Tammy Bednar, Wei Han, Glen Hawkins, Gavin
+                    Parish, Sinan Petrus Toma, Lawrence To, Thomas Van Buggenhout, Robert
+                Lies</span></li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-D733E617-FAC3-47E6-B552-BE5D3DB21336" name="GUID-D733E617-FAC3-47E6-B552-BE5D3DB21336"></a><h3 id="CODOE-GUID-D733E617-FAC3-47E6-B552-BE5D3DB21336" class="sect3">Change Log</h3>
+               <div>
+                  <p>This log lists significant changes:</p>
+                  <table cellpadding="4" cellspacing="0" summary frame="hsides" border="1" rules="rows" id="GUID-D733E617-FAC3-47E6-B552-BE5D3DB21336__SIMPLETABLE_RM3_NHT_GMB" role="presentation">
+                     <tr>
+                        <td valign="top" width="28%">March 10, 2026</td>
+                        <td valign="top" width="72%">Added a Deploy section with a link to the repository that includes the
+                    associated Terraform code.</td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Implement cross-region disaster recovery for Exadata Database on Oracle AI Database@Azure</p>
+            <p class="legal">G10653-06</p>
+            <p class="date legal">April 2026</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2024,2026, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>

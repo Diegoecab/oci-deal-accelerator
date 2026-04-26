@@ -1,0 +1,131 @@
+last_verified: '2026-04-25'
+description: Derived manifest for the bundled OCI_Icons.pptx asset used by native
+  PPTX diagram generation.
+source: Oracle OCI_Icons.pptx asset inspected by tools/refresh_pptx_icon_index.py
+asset:
+  relative_path: kb/diagram/assets/OCI_Icons.pptx
+  sha256: e18615d90fbb38a3354e3a55d7d8baca59f6ba20de1af0a384addba73ede57ea
+  size_bytes: 3949330
+  slide_count: 48
+  modified_utc: '2026-04-24T20:36:10.468632+00:00'
+semantic_slides:
+  connectors_logical:
+    display_number: 10
+    slide_path: ppt/slides/slide10.xml
+    title: Connectors — Logical
+    slide_sha256: 860a487c8cf128387e842133388d2e817e046f776655dca261d0a58ed1a6ede7
+    text_sample: Use connectors to show relationships between icons and grouping boxes.
+      | Reuse these sample connectors or generate connectors. | Use Bark color for
+      all connector lines. | Use 1pt line weight (or your app’s equivalent) for all
+      connector lines. | Use Open Arrowhead style (or your app’s equivalent) to indicate
+      directional flow. | Use | Solid-line | connectors for | Dataflow | . | Use |
+      Dashed-line | connectors (or your app’s equivalent) for | User Interaction |
+      . | Maintain consistent width and height of the connector pegs for visual clarity.
+      | Align and center connector lines by each connector joint. | Maintain a small
+      gap between icons | and connectors for visual clarity. | Sample Dataflow | Solid-line
+      | Sample User Interaction | Dashed-line | Connectors — Logical
+  connector_labels:
+    display_number: 11
+    slide_path: ppt/slides/slide11.xml
+    title: Connector Labels
+    slide_sha256: de974c1512704afbb32ed4cbd324adfe139f5836142302fed5a7fcb6d14750c6
+    text_sample: Use connector labels to distinguish different types of logical connections
+      and relationships. | Use 8pt font size and Bark color for label text. | Place
+      connector labels on the horizontal portions of a line whenever possible. | Center
+      connector labels on the connector line. | Text Label | Labeled Action | Ordered
+      Action | Connector Labels | 4/26/2024 | Copyright © 2022, Oracle and/or its
+      affiliates  | | 11 | A | B | C | D | A | B | C | A | B | C | D | Dataflow |
+      Connector
+  grouping:
+    display_number: 18
+    slide_path: ppt/slides/slide18.xml
+    title: Grouping
+    slide_sha256: acda73d2bc75dc9e74c335dd2527b299596d77939e56189b4d81d9611210b5bf
+    text_sample: 'Use the boxes on the right when depicting groupings in your diagrams.
+      Groupings are divided by logical and physical resource groupings and are indicated
+      by dashed or solid outlines. | Icons and captions are not mandatory but should
+      be used if they add clarity and purpose to your diagram. | VCN, routing table,
+      and security list icons are used at half size as labels to differentiate the
+      VCN and subnet. In complex diagrams omit them to reduce clutter in the diagram.
+      | See sample usage diagrams starting on | this slide | . | Network Grouping
+      | Location Grouping | Grouping | 4/26/2024 | Copyright © 2022, Oracle and/or
+      its affiliates  | | 18 | Compartment Grouping | Other Grouping | OCI Region
+      | Availability Domain | Fault Domain | User Group | Tier | Tenancy | Compartment
+      | Neutral 1 | RGB: | 245/244/242'
+  landscape_blank_template:
+    display_number: 24
+    slide_path: ppt/slides/slide24.xml
+    title: Landscape Blank Template
+    slide_sha256: 9d7f3f392ff19514f65cb912e4c40233695cf5a8e1ab38e48280c4599803f305
+    text_sample: Landscape Blank Template | Copyright © 2022 Oracle and/or its affiliates.
+      | 24 | OCI Region | On-Premises | Internet | 3rd Party Cloud | Tip! | The elements
+      of the Location Canvas can vary and can be rearranged or deleted from solution
+      to solution or even between landscape- and horizontal- orientations. | The landscape
+      orientation is typical for presentations, but for diagrams shown on websites,
+      a portrait layout is preferred.
+  portrait_blank_template:
+    display_number: 25
+    slide_path: ppt/slides/slide25.xml
+    title: Portrait Blank Template
+    slide_sha256: c57de967026bc81b2493c39636438a21c4976035f93b41a31460ab50e0f000f3
+    text_sample: Portrait Blank Template | Copyright © 2022 Oracle and/or its affiliates.
+      | OCI Region | On-Premises | Internet | 3rd Party Cloud | Tip! | The elements
+      of the Location Canvas can vary and can be rearranged or deleted from solution
+      to solution or even between landscape- and horizontal- orientations. | The landscape
+      orientation is typical for presentations, but for diagrams shown on websites,
+      a portrait layout is preferred.
+  landscape_sample_db_dr:
+    display_number: 29
+    slide_path: ppt/slides/slide29.xml
+    title: Landscape Sample
+    slide_sha256: 5efe3347c3291fd583cf641e675b2001d5d03fb1afa6dfabc5f71a397b927202
+    text_sample: Landscape Sample | Copyright © 2022 Oracle and/or its affiliates.
+      | On-Premises | OCI Region | Availability Domain 1 | Subnet A | 10.0.30.0/24
+      | Bastion | Server | Subnet B | 10.0.30.0/24 | Primary | Database | Availability
+      Domain 2 | Subnet D | 10.0.30.0/24 | Standby | Database | VCN | Auditing | Identity
+      & Access | Management | Subnet C | 10.0.30.0/24
+  database_icons:
+    display_number: 37
+    slide_path: ppt/slides/slide37.xml
+    title: Database
+    slide_sha256: 5de5b48a87773b9ef8293e4896523094f8f1bc436aad4f8b240fde61576659aa
+    text_sample: Database | Copyright © 2022 Oracle and/or its affiliates. | 37 |
+      Oracle Base | Database | Database | Oracle | Autonomous | Database | OCI Migrate
+      | Autonomous | Database | Oracle Autonomous | Data Warehouse | ADW-D | Oracle
+      Autonomous | Transaction | Processing ATP | ATP-D | Oracle Exadata | Database
+      Service | Oracle Compute | Cloud@Customer | Exadata
+  migration_icons:
+    display_number: 43
+    slide_path: ppt/slides/slide43.xml
+    title: Migration
+    slide_sha256: 628b6f2d97f8f4b6c9225ce225ee69b3d8d149fcf1fcf8fe765822f24f596c64
+    text_sample: Migration | Copyright © 2022 Oracle and/or its affiliates. | 43 |
+      Data | Transfer | Database | Migration | Oracle Cloud | Migration Advisor
+coverage:
+  catalogued_slides: 48
+  slides_with_instructions: 48
+  unique_text_shape_labels: 724
+  text_shape_entries: 1596
+extracted_shapes:
+  groupings:
+  - availability_domain
+  - compartment
+  - fault_domain
+  - oci_region
+  - subnet
+  - tenancy
+  - tier
+  - vcn
+  database_icons:
+  - adb_d
+  - adw_d
+  - atp_d
+  - data_guard
+  - data_guard_recovery
+  - data_safe
+  - database
+  - database_management
+  - nosql_database
+  - oracle_autonomous_database
+  - oracle_exadata_database_service
+warnings: []

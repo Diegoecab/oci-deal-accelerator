@@ -1,0 +1,70 @@
+<svg width="616" height="312" viewBox="0 0 616 312" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="logical-architecture-diagram">
+<rect width="616" height="312" fill="white"/>
+<g id="OCI Section Boxes">
+<rect x="0.5" y="0.5" width="255" height="311" rx="3.5" fill="#F5F4F2"/>
+<rect x="0.5" y="0.5" width="255" height="311" rx="3.5" stroke="#9E9892"/>
+<text id="On-premises" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="31.3828" y="21.816">On-Premises Data Center</tspan></text>
+</g>
+<g id="Azure Cloud boxes">
+<rect x="360.5" y="0.5" width="255" height="311" rx="3.5" fill="#ECF3FB"/>
+<rect x="360.5" y="0.5" width="255" height="311" rx="3.5" stroke="#0078D7"/>
+<text id="Azure Region" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="441.594" y="21.816">Azure Cloud</tspan></text>
+</g>
+<g id="Logical Components">
+<rect x="8.5" y="48.5" width="239" height="99" rx="3.5" fill="white"/>
+<rect x="8.5" y="48.5" width="239" height="99" rx="3.5" stroke="#C74634"/>
+<text id="Oracle" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="81.0078" y="95.816">On-Premises</tspan></text>
+<text id="On-Premises Component" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="99.4766" y="111.816">Primary</tspan></text>
+</g>
+<g id="Logical Components_2">
+<rect x="8.5" y="200.5" width="239" height="99" rx="3.5" fill="white"/>
+<rect x="8.5" y="200.5" width="239" height="99" rx="3.5" stroke="#C74634"/>
+<text id="Oracle_2" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="81.0078" y="247.816">On-Premises</tspan></text>
+<text id="On-Premises Component_2" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="98.2266" y="263.816">Standby</tspan></text>
+</g>
+<g id="Logical Components_3">
+<rect x="368.5" y="48.5" width="239" height="99" rx="3.5" fill="white"/>
+<rect x="368.5" y="48.5" width="239" height="99" rx="3.5" stroke="#5F7D4F"/>
+<text id="3rd Party" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="467.031" y="95.816">Azure</tspan></text>
+<text id="(non-OCI)" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="459.477" y="111.816">Primary</tspan></text>
+</g>
+<g id="Logical Components_4">
+<rect x="368.5" y="200.5" width="239" height="99" rx="3.5" fill="white"/>
+<rect x="368.5" y="200.5" width="239" height="99" rx="3.5" stroke="#5F7D4F"/>
+<text id="3rd Party_2" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="467.031" y="247.816">Azure</tspan></text>
+<text id="(non-OCI)_2" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" letter-spacing="0em"><tspan x="458.227" y="263.816">Standby</tspan></text>
+</g>
+<path id="Vector 79" d="M368.707 96.7071C369.098 96.3166 369.098 95.6834 368.707 95.2929L362.343 88.9289C361.953 88.5384 361.319 88.5384 360.929 88.9289C360.538 89.3195 360.538 89.9526 360.929 90.3432L366.586 96L360.929 101.657C360.538 102.047 360.538 102.681 360.929 103.071C361.319 103.462 361.953 103.462 362.343 103.071L368.707 96.7071ZM248 97L368 97L368 95L248 95L248 97Z" fill="#312D2A"/>
+<path id="Vector 80" d="M487.293 200.707C487.683 201.098 488.317 201.098 488.707 200.707L495.071 194.343C495.462 193.953 495.462 193.319 495.071 192.929C494.681 192.538 494.047 192.538 493.657 192.929L488 198.586L482.343 192.929C481.953 192.538 481.319 192.538 480.929 192.929C480.538 193.319 480.538 193.953 480.929 194.343L487.293 200.707ZM487 148L487 200L489 200L489 148L487 148Z" fill="#312D2A"/>
+<g id="Connector Line Label">
+<rect width="55" height="14" transform="translate(281 89)" fill="white"/>
+<text id="Line Label" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="14" letter-spacing="0em"><tspan x="285.101" y="101.089">Phase 1</tspan></text>
+</g>
+<g id="Connector Line Label_2">
+<rect width="57" height="14" transform="translate(459.5 165)" fill="#ECF3FB"/>
+<text id="Line Label_2" fill="#312D2A" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="14" letter-spacing="0em"><tspan x="463.555" y="177.089">Phase 2</tspan></text>
+</g>
+<g id="Numbered circle">
+<circle id="Ellipse 269" cx="29" cy="48" r="11.5" fill="#70665E" stroke="white"/>
+<text id="1" fill="white" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="25.2031" y="53.816">1</tspan></text>
+</g>
+<g id="Numbered circle_2">
+<circle id="Ellipse 269_2" cx="29" cy="200" r="11.5" fill="#70665E" stroke="white"/>
+<text id="1_2" fill="white" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="24.2891" y="205.816">2</tspan></text>
+</g>
+<g id="Numbered circle_3">
+<circle id="Ellipse 269_3" cx="389" cy="48" r="11.5" fill="#70665E" stroke="white"/>
+<text id="1_3" fill="white" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="384.219" y="53.816">3</tspan></text>
+</g>
+<g id="Numbered circle_4">
+<circle id="Ellipse 269_4" cx="389" cy="200" r="11.5" fill="#70665E" stroke="white"/>
+<text id="1_4" fill="white" xml:space="preserve" style="white-space: pre" font-family="Oracle Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="383.422" y="205.816">4</tspan></text>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_18723_2592">
+<rect width="616" height="312" fill="white"/>
+</clipPath>
+</defs>
+</svg>

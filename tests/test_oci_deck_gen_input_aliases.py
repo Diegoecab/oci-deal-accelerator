@@ -96,3 +96,28 @@ def test_from_spec_accepts_aliases_for_cost_migration_risk_scorecard_and_next_st
     assert "Security" in text
     assert "2/2" in text
     assert "Validate scope" in text
+
+
+def test_from_spec_enriches_sparse_nested_spec_with_safe_fallback_sections():
+    spec = {
+        "metadata": {
+            "customer": "Acme Corp",
+            "project": "Pilot",
+        },
+        "summary": {
+            "why": "Modernize core platform",
+            "current_state": ["Legacy Oracle DB on-prem"],
+            "target_state": "Target OCI platform with improved DR posture",
+            "timeline": "12 weeks",
+        },
+    }
+
+    gen = OCIDeckGenerator.from_spec(spec)
+    text = _collect_slide_text(gen)
+
+    assert "Architecture Overview" in text
+    assert "Migration Approach" in text
+    assert "Operational Responsibilities" in text
+    assert "Risk Register" in text
+    assert "Next Steps" in text
+    assert "12 weeks" in text

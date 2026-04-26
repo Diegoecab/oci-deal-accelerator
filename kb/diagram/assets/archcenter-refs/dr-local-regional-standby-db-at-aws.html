@@ -1,0 +1,408 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="topic">
+      <meta name="DC.Title" content="Learn About Disaster Recovery for Local and Regional Standbys">
+      <meta name="abstract" content="Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.">
+      <meta name="description" content="Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Date.Created" content="October 2025">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-20F21093-AF9B-421D-A0B4-CA87155F6337">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.">
+      <meta name="description" content="Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.">
+      <title>Learn About Disaster Recovery for Local and Regional Standbys</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Implement disaster recovery with local and regional standbys on Oracle Database@AWS">
+      <meta property="og:description" content="Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Implement disaster recovery with local and regional standbys on Oracle Database@AWS">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="AWS, Multicloud, HA/DR">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-10-09T17:41:08-07:00">
+      <meta name="dcterms.title" content="Implement disaster recovery with local and regional standbys on Oracle Database@AWS">
+      <meta name="dcterms.dateCopyrighted" content="2025">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="G43628-02">
+      
+      <meta name="dcterms.product" content="en/solutions;en/cloud/oracle-cloud-infrastructure/database-at-aws">
+      <meta name="dcterms.release" content="Test Release">
+      <link rel="next" href="configure1.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"develop","element_name":"Develop","display_in_url":false},"product_group":{"short_name":"deployment","element_name":"Deployment","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="INDAW">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Learn About Disaster Recovery for Local and Regional Standbys","description":"Ensuring business continuity is critical to success when designing applications. Achieving this requires a disaster recovery strategy that can rapidly restore service during disruptions.","datePublished":"2025-10-09 CST","dateModified":"2025-10-09 CST"}</script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/dr-local-regional-standby-db-at-aws/configure1.html">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="configure1.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-20F21093-AF9B-421D-A0B4-CA87155F6337" name="GUID-20F21093-AF9B-421D-A0B4-CA87155F6337"></a>
+         
+         <h2 id="INDAW-GUID-20F21093-AF9B-421D-A0B4-CA87155F6337" class="sect2">Learn About Disaster Recovery for
+        Local and Regional Standbys</h2>
+         <div class="ind">
+            <div>
+               <div>Ensuring business continuity is critical to success
+            when designing applications. Achieving this requires a disaster recovery strategy that
+            can rapidly restore service during disruptions.</div>For decades, organizations
+        have relied on <span>Oracle Exadata Database Machine</span> and <span>Oracle Data Guard</span>, Oracle's premier disaster recovery technology, to support mission-critical applications,
+        whether on-premises or within <span>Oracle Cloud
+                                Infrastructure</span> (OCI). <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@AWS</span> brings the same industry-leading performance, feature set, and price parity as Exadata on
+        OCI. The hardware resides in AWS's data centers to provide low latency to AWS applications
+        on top of unmatched high availability and disaster recovery capabilities, ensuring seamless
+        operations during maintenance and in the event of disruption.
+               <p>In this solution
+            playbook, you learn how to implement disaster recovery with local and regional standbys
+            on <span>Oracle Database@AWS</span>.
+               </p>
+            </div>
+            <div class="sect2"><a id="GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64" name="GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64"></a><h3 id="INDAW-GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64" class="sect3">Before You Begin</h3>
+               <div>
+                  <div>
+                     
+                     <div>Before you begin, ensure the following:</div>
+                     
+                     <ul style="list-style-type: disc;" id="UL_T2P_QTV_5GC">
+                        <li>The Exadata infrastructure and the Exadata VM clusters are deployed in the standby
+                availability zone and region.</li>
+                        <li>The network IP CIDR ranges for the primary and standby Exadata VM clusters don't
+                overlap.</li>
+                     </ul>
+                     
+                  </div>
+                  <p>Review the following solutions:</p>
+                  <ul style="list-style-type: disc;" id="GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64__UL_PW4_CKT_TGC">
+                     <li><a href="https://docs.oracle.com/en/solutions/implement-dr-cross-region-dg-odb-aws/index.html" target="_blank"><span><cite>Implement disaster recovery with
+                              cross-regional Data Guard on Oracle Database@AWS</cite></span></a></li>
+                     <li id="GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64__LI_GHW_M25_TGC"><a href="https://docs.oracle.com/en/solutions/cross-zone-dr-db-at-aws/index.html" target="_blank"><span><cite>Implement disaster recovery with cross-zonal Data Guard on Oracle Database@AWS</cite></span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/dr-local-regional-standby-db-at-aws&amp;id=exadata-oci-ovu" target="_blank"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/dr-local-regional-standby-db-at-aws&amp;id=DODJW" target="_blank"><span><cite>Deploy Oracle
+                              Database@AWS</cite></span></a></li>
+                  </ul>
+                  <p>Review these related resources:</p>
+                  <ul style="list-style-type: disc;" id="GUID-E21BAD12-F5B8-43B6-B8EF-7FFB89BEFD64__UL_DKR_225_TGC">
+                     <li>Review the <a href="/pls/topic/lookup?ctx=en/solutions/dr-local-regional-standby-db-at-aws&amp;id=aws-networking-best-practices" target="_blank">Security best practices for your VPC</a> in  <span>Amazon virtual private cloud</span> documentation
+                     </li>
+                     <li>Plan for AWS IP address space using <a href="/pls/topic/lookup?ctx=en/solutions/dr-local-regional-standby-db-at-aws&amp;id=ohc-oci-odb-network-design" target="_blank">ODB Network Design</a></li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907" name="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907"></a><h3 id="INDAW-GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907" class="sect3">Architecture</h3>
+               <div>
+                  <div>
+                     
+                     <div>This architecture shows <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle Database@AWS</span> in a disaster recovery topology using two standby databases:
+                     </div>
+                     
+                     <ul style="list-style-type: disc;" id="UL_GCL_QDB_5GC">
+                        <li>A local standby in the same region as the primary but in a different availability
+                zone.</li>
+                        <li>A remote standby in a different region.</li>
+                     </ul>
+                     
+                  </div><br><div class="imageleft"><img class="imageleft" id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__IMAGE_B3P_ZYT_TGC" height="811" width="1584" src="img/exadb-dbaws-dr-arch.png" alt="Description of exadb-dbaws-dr-arch.png follows" title="Description of exadb-dbaws-dr-arch.png follows" longdesc="img_text/exadb-dbaws-dr-arch.html"><br><a href="img_text/exadb-dbaws-dr-arch.html">Description of the illustration exadb-dbaws-dr-arch.png</a></div><br><p><a href="img/exadb-dbaws-dr-arch-oracle.zip" class="de-download">exadb-dbaws-dr-arch-oracle.zip</a></p>
+                  <p>Oracle Database runs in an Exadata VM cluster in the primary <code class="codeph">Region
+                1</code>. For data protection and disaster recovery, <span>Active Data Guard</span> replicates the data to the following two Exadata VM clusters:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__UL_Y4P_TDB_5GC">
+                     <li>One in the same region but in a different  availability zone (local
+                standby). A local standby is ideal for failover scenarios, offering zero data loss
+                for local failures while applications continue to operate without the performance
+                overhead of communicating with a remote region.</li>
+                     <li>A second standby in a different region (remote standby). A remote
+                standby is typically used for disaster recovery or to offload read-only
+                workloads.</li>
+                  </ul>
+                  <p>Although <span>Active Data Guard</span> network traffic can traverse the AWS backbone, Oracle recommends this architecture
+            which routes it over OCI for optimized throughput and latency.
+                  </p>
+                  <p>The <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle Database@AWS</span> network is connected to the Exadata client subnet using a Dynamic Routing Gateway
+            (DRG) managed by Oracle. A DRG is also required to create a peer connection between VCNs
+            in different regions. Because only one DRG is allowed per VCN in OCI, a second VCN with
+            its own DRG is required to connect the primary and standby VCNs in each region.
+                  </p>
+                  <ul style="list-style-type: disc;">
+                     <li>The primary Exadata VM cluster is deployed in <code class="codeph">Region
+                1</code>, <code class="codeph">availability zone 1</code> in <code class="codeph">VCN1</code> with CIDR
+                    <code class="codeph">10.10.0.0/16</code> and client subnet CIDR
+                    <code class="codeph">10.10.1.0/24</code>.
+                     </li>
+                     <li><code class="codeph">VCN1</code> has Local Peering Gateways (LPGs) <code class="codeph">LPG1
+                    remote</code> and <code class="codeph">LPG1 local</code>.
+                     </li>
+                     <li>The Hub VCN in the primary <code class="codeph">Region 1</code> is <code class="codeph">Hub
+                    VCN1</code> with CIDR <code class="codeph">10.11.0.0/16</code>.
+                     </li>
+                     <li>The first standby Exadata VM Cluster is deployed in <code class="codeph">Region
+                    1</code>, <code class="codeph">availability zone 2</code> in <code class="codeph">VCN2</code> with
+                CIDR <code class="codeph">10.20.0.0/16</code> and client subnet CIDR
+                    <code class="codeph">10.20.1.0/24</code>.
+                     </li>
+                     <li><code class="codeph">VCN2</code> has two LPGs <code class="codeph">LPG2 remote</code> and
+                    <code class="codeph">LPG2 local</code>.
+                     </li>
+                     <li>The Hub VCN is the same as the Hub VCN for the Primary database,
+                    <code class="codeph">Hub VCN1</code> as it resides in the same region.
+                     </li>
+                     <li><code class="codeph">Hub VCN1</code> has LPG <code class="codeph">Hub LPG1</code> and
+                    <code class="codeph">Hub LPG2</code> and <code class="codeph">DRG1</code>.
+                     </li>
+                     <li>The second standby Exadata VM cluster is deployed in <code class="codeph">Region
+                    2</code> in <code class="codeph">VCN3</code> with CIDR <code class="codeph">10.30.0.0/16</code> and
+                client subnet CIDR <code class="codeph">10.30.1.0/24</code>.
+                     </li>
+                     <li><code class="codeph">VCN3</code> has a LPG <code class="codeph">LPG3 remote</code>.
+                     </li>
+                     <li>The Hub VCN in the remote standby <code class="codeph">Region 2</code> is
+                    <code class="codeph">Hub VCN3</code> with CIDR <code class="codeph">10.33.0.0/16</code>.
+                     </li>
+                     <li><code class="codeph">Hub VCN3</code> has a LPG <code class="codeph">Hub LPG3</code> and DRG
+                    <code class="codeph">DRG3</code>.
+                     </li>
+                     <li>No subnet is required for the hub VCNs to enable transit routing.
+                Therefore, these VCNs can use very small IP CIDR ranges.</li>
+                  </ul>
+                  <p> This architecture supports the following components:</p>
+                  <ul style="list-style-type: disc;" id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__UL_BKZ_BZT_TGC">
+                     <li><span class="bold">AWS region</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d5e131">AWS regions
+                                        are separate geographic areas. They consist of multiple,
+                                        physically separated, and isolated availability zones that
+                                        are connected with low latency, high throughput, highly
+                                        redundant networking.</p>
+                     </li>
+                     <li><span class="bold">AWS availability zone</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d5e107">Availability
+                                        zones are highly available data centers within each AWS
+                                        region.</p>
+                     </li>
+                     <li><span class="bold">OCI virtual cloud
+                                                  network and subnet</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e1349">A virtual cloud
+                                                  network (VCN) is a customizable, software-defined
+                                                  network that you set up in an OCI region. Like
+                                                  traditional data center networks, VCNs give you
+                                                  control over your network environment. A VCN can
+                                                  have multiple non-overlapping classless
+                                                  inter-domain routing (CIDR) blocks that you can
+                                                  change after you create the VCN. You can segment a
+                                                  VCN into subnets, which can be scoped to a region
+                                                  or to an availability domain. Each subnet consists
+                                                  of a contiguous range of addresses that don't
+                                                  overlap with the other subnets in the VCN. You can
+                                                  change the size of a subnet after creation. A
+                                                  subnet can be public or private. </p>
+                     </li>
+                     <li><span class="bold">Route table</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e1237">Virtual
+                                                  route tables contain rules to route traffic from
+                                                  subnets to destinations outside a VCN, typically
+                                                  through gateways.</p>
+                     </li>
+                     <li><span class="bold">Network security group
+                                                  (NSG)</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e1125">NSGs act as virtual firewalls for your cloud resources. With the zero-trust security model of OCI you control the network traffic inside a VCN. An NSG consists of a set of ingress and egress security rules that apply to only a specified set of virtual network interface cards (VNICs) in a single VCN.</p>
+                     </li>
+                     <li><span class="bold">Local
+                                                  peering</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e1054">Local peering allows two VCNs
+                                                  within the same OCI region to communicate directly
+                                                  using private IP addresses. This communication
+                                                  does not traverse the internet or your on-premises
+                                                  network. Local peering is enabled by a Local
+                                                  Peering Gateway (LPG), which serves as the
+                                                  connection point between VCNs. Configure an LPG in
+                                                  each VCN and establish a peering relationship to
+                                                  allow instances, load balancers, and other
+                                                  resources in one VCN to securely access resources
+                                                  in another VCN within the same region.</p>
+                     </li>
+                     <li><span class="bold">Dynamic routing gateway
+                                                  (DRG)</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e701">The DRG is a
+                                                  virtual router that provides a path for private
+                                                  network traffic between VCNs in the same region,
+                                                  between a VCN and a network outside the region,
+                                                  such as a VCN in another OCI region, an
+                                                  on-premises network, or a network in another cloud
+                                                  provider.</p>
+                     </li>
+                     <li><span class="bold">Remote
+                                                  peering</span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e1231">Remote
+                                                  peering enables private communication between
+                                                  resources in different VCNs, which can be located
+                                                  in the same or different OCI regions. Each VCN
+                                                  uses its own Dynamic Routing Gateway (DRG) for
+                                                  remote peering. The DRGs securely route traffic
+                                                  between the VCNs over OCI's private backbone,
+                                                  allowing resources to communicate using private IP
+                                                  addresses without routing traffic over the
+                                                  internet or through on-premises networks. Remote
+                                                  peering removes the need for internet gateways or
+                                                  public IP addresses for instances that need to
+                                                  connect across regions.</p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e751"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> enables you to leverage the power of Exadata in the cloud. <span>Oracle Exadata Database
+                        Service</span> delivers proven <span>Oracle Database</span> capabilities on purpose-built, optimized Oracle Exadata infrastructure in the public cloud. Built-in cloud automation, elastic resource scaling, security, and fast performance for all <span>Oracle Database</span> workloads helps you simplify management and reduce costs.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Data Guard</span></span><p id="GUID-BF1C9332-AF53-4720-AEAC-9F7B696F5907__d720e390"><span>Oracle Data Guard</span> and <span>Active Data Guard</span> provide a comprehensive set of services that
+                                                  create, maintain, manage, and monitor one or more
+                                                  standby databases and that enable production
+                                                  Oracle databases to remain available without
+                                                  interruption. <span>Oracle Data Guard</span> maintains these standby databases as copies of
+                                                  the production database by using in-memory
+                                                  replication. If the production database becomes
+                                                  unavailable due to a planned or an unplanned
+                                                  outage, <span>Oracle Data Guard</span> can switch any standby database to the
+                                                  production role, minimizing the downtime
+                                                  associated with the outage. Oracle Active Data
+                                                  Guard provides the additional ability to offload
+                                                  read-mostly workloads to standby databases and
+                                                  also provides advanced data protection
+                                                  features.
+                        </p>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-62AC9002-E108-4710-BED4-5337C48AB59E" name="GUID-62AC9002-E108-4710-BED4-5337C48AB59E"></a><h3 id="INDAW-GUID-62AC9002-E108-4710-BED4-5337C48AB59E" class="sect3">Recommendations</h3>
+               <div>
+                  <div><span>Use the following recommendations as a starting point
+            when performing disaster recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle Database@AWS</span>. </span>Your requirements might differ from the architecture described here. 
+                  </div>
+                  <ul style="list-style-type: disc;" id="GUID-62AC9002-E108-4710-BED4-5337C48AB59E__UL_V21_5R5_TGC">
+                     <li>Use <span>Active Data Guard</span> for comprehensive data corruption prevention with automatic block repair, online
+                upgrades and migrations, and to offload the workload to standby with read-mostly
+                scale-out.
+                     </li>
+                     <li>Enable <span>Application Continuity</span> to mask database outages during planned and unplanned events from end-users.
+                     </li>
+                     <li>Configure automatic backups to <span>Oracle Database Autonomous
+                                Recovery Service</span> in OCI. Although data is protected by <span>Oracle Data Guard</span>, minimize the backup workload on the database by implementing the
+                    <code>incremental-forever</code> backup strategy that eliminates weekly
+                full backups. Alternatively, use <span>Amazon Simple Storage Service</span> for automatic backups.
+                     </li>
+                     <li>Run backups from standby to achieve cross-region backup
+                replication.</li>
+                     <li>Use OCI <span>Full Stack DR</span> to orchestrate database switchover and failover operations.
+                     </li>
+                     <li>Store the database's <span>Transparent Data Encryption (TDE)</span> keys in <span>OCI Vault</span> with customer-managed keys.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-9CD49229-46A0-4F68-8EB8-E00D3C8B77EF" name="GUID-9CD49229-46A0-4F68-8EB8-E00D3C8B77EF"></a><h3 id="INDAW-GUID-9CD49229-46A0-4F68-8EB8-E00D3C8B77EF" class="sect3">Considerations</h3>
+               <div>
+                  <p>When performing local and regional disaster recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle Database@AWS</span>, consider the following:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-9CD49229-46A0-4F68-8EB8-E00D3C8B77EF__UL_YQL_DQ5_TGC">
+                     <li>When Exadata VM clusters are created in the <span>Oracle Database@AWS</span> child site, each Exadata VM cluster is provisioned in its own OCI VCN. Peer the
+                VCNs and avoid overlapping CIDRs and ensure that the databases communicate with each
+                other so that <span>Data Guard</span> can ship <code>redo</code> data.
+                     </li>
+                     <li>Cross‑region latency is typically too high for synchronous transport in
+                mission-critical applications. Hence, use <span>Data Guard</span>
+                        <code>ASYNC</code> replication across regions. Add <span>Active Data Guard Far Sync</span> to ensure zero data loss across regions.
+                     </li>
+                     <li>Configure OCI as the preferred network for better performance, lower latency, higher
+                throughput, and reduced cost; the first 10 TB/month of data egress is free across
+                regions.</li>
+                     <li>You can create up to six standby databases per primary using cloud tooling.</li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-BBA68F23-5B6E-4CC5-A7CE-2C525BFCF72E" name="GUID-BBA68F23-5B6E-4CC5-A7CE-2C525BFCF72E"></a><h3 id="INDAW-GUID-BBA68F23-5B6E-4CC5-A7CE-2C525BFCF72E" class="sect3">About Required Services and
+        Roles</h3>
+               <div>
+                  <p>This solution requires the following services and roles:</p>
+                  <ul style="list-style-type: disc;">
+                     <li><span>Oracle Cloud Infrastructure
+                                Networking</span></li>
+                     <li><span>Oracle Exadata Database
+                        Service</span></li>
+                  </ul>
+                  <p>These are the roles needed for each service.</p>
+                  <div class="tblformal" id="GUID-BBA68F23-5B6E-4CC5-A7CE-2C525BFCF72E__GUID-7CE17383-3146-4560-A5FE-8D1E5CC7CA95">
+                     <table cellpadding="4" cellspacing="0" class="Formal" title summary="Lists services and roles for this solution" frame="hsides" border="1" rules="rows">
+                        <thead>
+                           <tr align="left" valign="top">
+                              <th align="left" valign="bottom" width="20%" id="d297e531">Service Name: Role</th>
+                              <th align="left" valign="bottom" width="20%" id="d297e533">Required to...</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr align="left" valign="top">
+                              <td align="left" valign="top" width="20%" id="d297e537" headers="d297e531 "><span>Oracle Exadata Database
+                        Service</span>: <code class="codeph">manage database-family</code></td>
+                              <td align="left" valign="top" width="20%" headers="d297e537 d297e533 ">Manage the database, including adding and operating Active Data Guard deployments </td>
+                           </tr>
+                           <tr align="left" valign="top">
+                              <td align="left" valign="top" width="20%" id="d297e546" headers="d297e531 "><span>OCI Networking</span>: <code class="codeph">manage vcn-family </code></td>
+                              <td align="left" valign="top" width="20%" headers="d297e546 d297e533 ">Manage the network components, including VCNs, subnets, security rules, and VCN
+                            peering</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+                  <p>See <a href="/pls/topic/lookup?ctx=en/solutions/dr-local-regional-standby-db-at-aws&amp;id=oracle-products-and-services" target="_blank">Oracle Products, Solutions, and Services</a> to
+            get what you need.
+                  </p>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Implement disaster recovery with local and regional standbys on Oracle Database@AWS</p>
+            <p class="legal">G43628-02</p>
+            <p class="date legal">October 2025</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2025, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>

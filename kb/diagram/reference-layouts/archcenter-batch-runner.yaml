@@ -1,0 +1,219 @@
+---
+last_verified: 2026-04-25
+runner: tools/archcenter_case_runner.py
+batch_driver: tools/oci_archcenter_batch.py
+evaluator: tools/oci_archcenter_eval.py
+---
+
+purpose: |
+  Reusable harness that converts an Oracle Architecture Center
+  reference (.drawio + optional .png) into:
+    1. a verbatim .drawio output (the source of visual truth),
+    2. an auto-extracted absolute_layout YAML rebuilt through
+       oci_diagram_gen.py (regression evidence),
+    3. a native .pptx deck with OCI-styled shapes via the deck
+       generator's native_pptx mode,
+    4. a pure-Python raster render of that native PPTX slide via
+       tools/oci_pptx_render.py,
+    5. a draw.io fidelity render exported from the rebuilt `.drawio`
+       via the real draw.io binary when available,
+    6. a geometry eval rendered from the same YAML and diffed against
+       the canonical PNG.
+
+key_lessons:
+  - >-
+    Oracle drawio exports wrap many cells in <UserObject id="…"> rather
+    than mxCell. The id lives on the wrapper, the geometry/style on the
+    inner mxCell. Iterating only mxCell breaks the parent chain. The
+    runner's _load_drawio handles both shapes and demotes UserObject
+    parents back into the lookup.
+  - >-
+    Official OCI service icons are often multi-cell stencils with nested
+    overlays or satellite cells. Cluster contained cells together and
+    preserve their exact source XML as `raw_icon_cells`; otherwise the
+    rebuilt draw.io drifts even when the semantic service type is right.
+  - >-
+    Pre-2024 references use plain rectangles (no shape=mxgraph.oracle.*
+    stencil) for region/AD/VCN/subnet tiers. Classification therefore
+    rides on fillColor (#f5f4f2 = region, #e4e1dd = AD,
+    fillColor=none + orange stroke = VCN/subnet) rather than stencil
+    family.
+  - >-
+    Caption text for an icon often sits in a *separate* anchor block
+    (UserObject) BELOW the icon's anchor — not as a child. The label
+    scanner walks every cell with absolute coordinates and looks
+    in four cardinal directions, plus an "overlap" zone for caption
+    boxes that visually overlap their icon.
+  - >-
+    For icons that have NO caption (policies, route-table/security-list,
+    DRG-with-only-badge), the anchor's (width, height) tuple is a stable
+    fingerprint across exports. The runner ships an ANCHOR_FINGERPRINTS
+    table; extend it whenever a new size is observed.
+  - >-
+    Many official Oracle `.drawio` files store the `<diagram>` payload as
+    base64 + raw-deflate XML. Both extraction and validation must support
+    compressed payloads; otherwise the benchmark silently degrades into
+    empty specs and false PASS/FAIL signals.
+  - >-
+    Per-subnet route-table/security-list icons sit *outside* the VCN.
+    Do not bind them to the subnet container in absolute_layout — keep
+    them on the region canvas.
+  - >-
+    The extractor now canonicalizes service captions instead of blindly
+    reusing every nearby text block. This matters for DRG and Exadata
+    anchors, where nearby route statements or container headers would
+    otherwise become duplicated captions in the rebuilt draw.io.
+  - >-
+    draw.io icon alias coverage and PPTX icon alias coverage are separate
+    concerns. PPTX can resolve more families than `kb/diagram/oci-icons.json`.
+    Benchmark-pool curation must therefore skip some official references
+    that still need draw.io icon harvesting, even if PPTX already renders
+    them natively.
+  - >-
+    Some references keep important page furniture outside the semantic
+    model: on-prem boxes, small context glyphs, accent bars, and similar
+    stencils that are not services or containers. Preserve them as
+    `raw_underlay_cells` and inject them immediately after the root scaffold
+    in the rebuilt draw.io so they stay behind editable objects but still
+    count in the real draw.io export fidelity benchmark.
+
+threshold_guidance: |
+  - 0.82 is appropriate for hand-tuned single-case reconstructions
+    where every label, connector, and caption is curated.
+  - 0.78 is the right threshold for the auto-extracted batch path; the
+    eval renderer is intentionally minimalist (PIL boxes), so a
+    geometry-faithful reproduction lands in the 0.80–0.86 band.
+  - If a case dips below 0.78, first check whether the canvas size
+    matches the official PNG; canvas mismatch dominates the RMS metric.
+
+fidelity_guidance: |
+  Primary method (persistent, canonical):
+  - Export the rebuilt `.drawio` through `draw.io.exe` (or a Linux
+    draw.io binary if available) and diff that PNG against the official
+    Architecture Center PNG.
+  - This is the only path that validates the editable artifact we
+    generated. It catches missing stencils, bad page geometry, and
+    caption regressions that an SVG-only comparison cannot see.
+
+  Fallback method:
+  - If the draw.io binary is unavailable or errors, render the official
+    SVG companion through cairosvg and compare it to the official PNG.
+  - This verifies provenance and Oracle asset identity, but it is not a
+    substitute for rebuilt draw.io fidelity.
+
+  Recommended threshold: 0.90.
+  - Rebuilt draw.io exports that are truly aligned with the reference land
+    at ~0.90–0.93 on the perceptual metric.
+  - Official SVG companion renders land at ~0.95–1.00.
+  - Below 0.90 usually means either icon-family coverage is incomplete or
+    the rebuilt draw.io still carries label/layout deviations worth fixing.
+
+drawio_visual_validator: |
+  Added 2026-04-25 to catch bugs the raster eval misses:
+  - fontSize ≥ 50pt (PPTX 1/100-pt vs drawio pt unit confusion)
+  - duplicate cell ids
+  - off-canvas geometry
+  - dangling edge endpoints
+  - compressed official draw.io payloads that would otherwise report
+    `cell_count=0`
+
+  Run before the raster eval. Surfaces issues raster comparisons
+  cannot — e.g. a 700pt label that visually breaks PowerPoint but
+  doesn't move enough pixels to trip the RMS metric.
+
+drawio_render_via_drawio_exe: |
+  CANONICAL fidelity test for the rebuilt drawio (added 2026-04-25
+  rev. 3). Why this is the canonical method, not just a fallback:
+
+  - The earlier path rendered the OFFICIAL .svg companion through
+    cairosvg and compared it against the OFFICIAL .png. That validates
+    Oracle's identity (svg and png come from the same drawio source)
+    but is BLIND to bugs introduced by our reconstruction. It would
+    have happily reported PASS on a rebuilt drawio with a 700pt title
+    or empty service boxes.
+  - The canonical method now exports the *rebuilt* drawio through
+    draw.io itself (drawio.exe under WSL on the developer's Windows
+    host) and pixel-diffs that PNG against the canonical PNG. This
+    is the only path that catches rebuild regressions.
+
+  Implementation:
+  - tools/drawio_to_png.py — WSL-aware wrapper. Maps /mnt/c/... →
+    C:\... so drawio.exe (a Windows binary) can read/write the file.
+    Stages WSL-only paths into project tmp/drawio-render-stage/.
+    Falls back to a Linux drawio binary if found via PATH.
+  - tools/drawio_fidelity_eval.py — accepts either --drawio (preferred,
+    via the helper above) or --svg (cairosvg fallback). Uses a
+    perceptual diff: 256px downsample + 1.0px Gaussian blur, so
+    rasterizer anti-aliasing differences don't dominate the score.
+  - tools/archcenter_case_runner.py — Step 7 detects drawio.exe via
+    DRAWIO_WINDOWS_CANDIDATES (env DRAWIO_EXE override + standard
+    install paths) and prefers that path. Records `method` in the
+    fidelity payload so reports state which path was taken.
+  - kb/diagram/oci-icons.json — drawio's stencil library; harvest the
+    relevant icons from official Architecture Center .drawio files
+    when adding new ones (policies, route_table_and_security_list,
+    oracle_exadata_database_service were added 2026-04-25).
+
+  Operating procedure:
+  - Always prefer the drawio.exe path on Windows/WSL hosts. If a case
+    drops below threshold, the diff PNG (under renders/) shows what
+    moved; common causes are missing icon stencils in
+    `kb/diagram/oci-icons.json`, wrong canvas dimensions, or
+    incorrect fontSize unit.
+  - If drawio.exe fails for a case, `archcenter_case_runner.py` now
+    records the CLI error and falls back cleanly to SVG fidelity rather
+    than aborting the entire case.
+  - When extending the harness for a new env, set DRAWIO_EXE to the
+    full path of the binary or add the path to
+    DRAWIO_WINDOWS_CANDIDATES in archcenter_case_runner.py.
+
+  This is the persistent test method — do not regress to SVG-only
+  comparisons across sessions.
+
+pptx_render_without_libreoffice: |
+  Native PPTX fidelity no longer depends on `soffice`.
+
+  - `tools/oci_pptx_render.py` renders the editable slide directly from
+    OpenXML using lxml + Pillow + cairosvg.
+  - The renderer supports `sp`, `grpSp`, `pic`, and `cxnSp`, which is
+    enough for the OCI-native diagram slides emitted by this repo.
+  - Unsupported `WMF/EMF` media are skipped and recorded under
+    `skipped_media` instead of aborting the benchmark. This keeps the
+    run deterministic while surfacing the exact missing assets.
+
+icon_aliases_added_2026_04_25:
+  - exadata, exacs, oracle_exadata_database_service → oracle_exadata_database_service
+  - drg, dynamic_routing_gateway → drg
+  - policies, iam_policies → policies
+  - security_list(s), route_table(_and_security_list) →
+    route_table_and_security_list / security_lists
+  - fastconnect, vpn, site_to_site_vpn, nat_gateway, natgw → matching shapes
+  - bastion, vault, cloud_guard, maximum_security_zone, full_stack_disaster_recovery
+  - data_catalog, data_integration, oci_data_integration, goldengate
+  - block_storage, file_storage, network_firewall (→ firewall),
+    web_application_firewall (→ waf)
+
+how_to_run: |
+  Single case:
+    python tools/archcenter_case_runner.py \
+      --case-id <id> --drawio <path> --png <path> \
+      --title "<title>" --source-url "<url>" \
+      --threshold 0.82 --fidelity-threshold 0.90
+  Batch (20 cases):
+    python tools/oci_archcenter_batch.py \
+      --limit 20 \
+      --threshold 0.82 \
+      --fidelity-threshold 0.90 \
+      --output-root examples/eval-2026-04-25-archcenter-native-20-v8
+
+latest_verified_run:
+  output_root: examples/eval-2026-04-25-archcenter-native-20-v8
+  considered: 28
+  processed: 20
+  skipped: 8
+  pass: 20
+  fail: 0
+  notes:
+    - Case 12 now passes because the rebuilt draw.io preserves both `raw_icon_cells` and non-semantic `raw_underlay_cells` before export through `draw.io.exe`.
+    - The validated 20-case pool has no open FAILs as of 2026-04-25.
+    - Remaining gaps are limited to the skipped pool and should be solved by expanding draw.io icon coverage or by explicitly keeping those cases out of the native benchmark set.

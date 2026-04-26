@@ -1,0 +1,297 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="topic">
+      <meta name="DC.Title" content="Learn about Deploying Active Data Guard Far Sync">
+      <meta name="abstract" content="Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.">
+      <meta name="description" content="Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Date.Created" content="February 2025">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-D17BA324-11FB-488B-976A-24D25CDFD6BB">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.">
+      <meta name="description" content="Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.">
+      <title>Learn about Deploying Active Data Guard Far Sync</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions">
+      <meta property="og:description" content="Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="Azure, Compute, Database Services, Oracle Cloud Infrastructure (OCI), Multicloud, Networking">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-02-20T13:29:14-08:00">
+      <meta name="dcterms.title" content="Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions">
+      <meta name="dcterms.dateCopyrighted" content="2025">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="G24005-02">
+      
+      <meta name="dcterms.product" content="en/solutions;en/cloud/oracle-cloud-infrastructure/oracle-database-at-azure;en/cloud/paas/exadata-cloud">
+      <meta name="dcterms.release" content="Test Release">
+      <link rel="next" href="install-oci-compute-virtual-machines-far-sync.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"develop","element_name":"Develop","display_in_url":false},"product_group":{"short_name":"deployment","element_name":"Deployment","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="ACTIVE-DATA-GUARD-FAR-SYNC-ORACLE-DB-AT-AZURE">
+  <script type="application/ld+json"> {"@context":"https://schema.org","@type":"WebPage","name":"Learn about Deploying Active Data Guard Far Sync","description":"Oracle Database@Azure enables you to run your mission-critical Oracle databases using Oracle Exadata Database Service on Dedicated Infrastructure in Microsoft Azure's data center.","datePublished":"2025-02-10 CST","dateModified":"2025-02-20 CST"} </script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/active-data-guard-far-sync-oracle-db-at-azure/index.html">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="install-oci-compute-virtual-machines-far-sync.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article>
+         <header>
+            <ol class="breadcrumb" vocab="http://schema.org/" typeof="BreadcrumbList">
+               <li property="itemListElement" typeof="ListItem"><a href="index.html" property="item" typeof="WebPage"><span property="name">Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions</span></a></li>
+               <li class="active" property="itemListElement" typeof="ListItem">Learn about Deploying Active Data Guard Far Sync</li>
+            </ol>
+            <a id="GUID-D17BA324-11FB-488B-976A-24D25CDFD6BB" name="GUID-D17BA324-11FB-488B-976A-24D25CDFD6BB"></a>
+            
+            <h2 id="IAIGF-GUID-D17BA324-11FB-488B-976A-24D25CDFD6BB" class="sect2">Learn about Deploying <span>Active Data Guard Far Sync</span></h2>
+         </header>
+         <div class="ind">
+            <div>
+               <p><span>Oracle Database@Azure</span> enables you to run your mission-critical Oracle databases using <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> in <span>Microsoft Azure</span>'s data center.
+               </p>
+               <p>Take advantage of the built-in high availability, performance, and
+            scalability of <span>Oracle Exadata Database
+                        Service</span> and <span>Oracle Real Application Clusters (Oracle
+                        RAC)</span> while benefiting from low latency for <span>Azure</span> applications.
+               </p>
+               <p>Extending the architecture with a standby database hosted on another Exadata
+            virtual machine (VM) cluster provides disaster recovery (DR) protection against database
+            and cluster failures. Placing the standby in a different <span>Azure</span> availability zone (AZ) further enhances the solution, ensuring protection against an
+            entire AZ failure. For comprehensive regional disaster recovery, the standby database
+            should be deployed in a separate region.
+               </p>
+               <p><span>Oracle Data Guard</span> enables you to synchronously transport the redo to the standby database to ensure
+            zero data loss. However, when the standby database is geographically too far, the
+            latency increases, impacting the commit response time and the transaction throughput at
+            the primary database. <span>Active Data Guard Far Sync</span> can ensure zero data loss at any distance with minimal impact on the primary database
+            performance. Far Sync, a lightweight instance, provides synchronous redo protection and
+            zero data loss fail over without requiring a synchronous local standby database.
+               </p>
+            </div>
+            <div class="sect2"><a id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2" name="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2"></a><h3 id="IAIGF-GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2" class="sect3">Architecture</h3>
+               <div>
+                  <p>This reference architecture shows a cross-region disaster recovery with <span>Active Data Guard</span>.
+                  </p>
+                  <p>Two <span>Active Data Guard</span> far sync instances are created in the corresponding <span>Oracle Cloud
+                                Infrastructure</span> (OCI) regions. The primary database in Toronto sends the redo data in SYNC mode to
+            the local far sync instance in Toronto, which forwards the redo data in ASYNC mode to
+            the standby database in the remote Sydney region.
+                  </p>
+                  <p>After a role switch and the database in Sydney becomes the primary, it sends
+            the redo data in SYNC mode to its local far sync instance in Sydney, which forwards the
+            redo data in ASYNC mode to the standby database in the remote Toronto region.</p>
+                  <p>The <span>Oracle Exadata Database
+                        Service</span> on the <span>Oracle Database@Azure</span> network is connected to the Exadata client subnet using a dynamic routing gateway
+            (DRG) managed by Oracle. A DRG is also required to create a peer connection between VCNs
+            in different regions. Because only one DRG is allowed per VCN in OCI, a second VCN with
+            its own DRG is required to connect the primary and standby VCNs in each region.
+                  </p>
+                  <p>The application is replicated across regions to access the database in the same region
+            and achieve the lowest latency and highest performance.</p>
+                  <p>The following diagram illustrates this reference architecture.</p><br><div class="imageleft"><img class="imageleft" id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__IMAGE_OPD_T33_C2C" height="977" width="1256" src="img/active-data-guard-far-sync-dba.png" alt="Description of active-data-guard-far-sync-dba.png follows" title="Description of active-data-guard-far-sync-dba.png follows" longdesc="img_text/active-data-guard-far-sync-dba.html"><br><a href="img_text/active-data-guard-far-sync-dba.html">Description of the illustration active-data-guard-far-sync-dba.png</a></div><br><p><a href="img/active-data-guard-far-sync-dba-oracle.zip" class="de-download">active-data-guard-far-sync-dba-oracle.zip</a></p>
+                  <p><span>Microsoft Azure</span> provides the following components:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__UL_HZN_W33_C2C">
+                     <li><span class="bold">Azure Region</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d5e198">An <span>Azure</span> region is a geographical area in which one or more
+                                        physical <span>Azure</span> data centers, called availability zones, reside. Regions
+                                        are independent of other regions, and vast distances can
+                                        separate them (across countries or even continents).
+                        </p>
+                        <p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d5e205"><span>Azure</span> and OCI regions are localized geographic areas. For <span>Oracle Database@Azure</span>, an <span>Azure</span> region is connected to an OCI region, with availability
+                                        zones (AZs) in <span>Azure</span> connected to availability domains (ADs) in OCI. <span>Azure</span> and OCI region pairs are selected to minimize distance
+                                        and
+                                latency.
+                        </p>
+                     </li>
+                     <li><span class="bold">Azure VNet</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d5e267">Microsoft Azure Virtual Network (VNet) is
+                                        the fundamental building block for your private network in
+                                        Azure. VNet enables many types of Azure resources, such as
+                                        Azure virtual machines (VM), to securely communicate with
+                                        each other, the internet, and on-premises networks.</p>
+                     </li>
+                     <li><span class="bold">Azure Delegated Subnet</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d5e280">Subnet delegation is
+                                        Microsoft's ability to inject a managed service,
+                                        specifically a platform-as-a-service (PaaS) service,
+                                        directly into your virtual network. This allows you to
+                                        designate or delegate a subnet to be a home for an external
+                                        managed service inside of your virtual network, such that
+                                        external service acts as a virtual network resource, even
+                                        though it is an external PaaS service.</p>
+                     </li>
+                     <li><span class="bold">Azure VNIC</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d5e273">The services in Azure
+                                        data centers have physical network interface cards (NICs).
+                                        Virtual machine instances communicate using virtual NICs
+                                        (VNICs) associated with the physical NICs. Each instance has
+                                        a primary VNIC that's automatically created and attached
+                                        during launch and is available during the instance's
+                                        lifetime.</p>
+                     </li>
+                  </ul>
+                  <p><span>Oracle Cloud
+                                Infrastructure</span> provides the following components:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__UL_FMY_1J3_C2C">
+                     <li><span class="bold">Region</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e1136">An <span>Oracle Cloud
+                                Infrastructure</span> region is a localized geographic area that contains one or more data centers, called availability domains. Regions are independent of other regions, and vast distances can separate them (across countries or even continents).
+                        </p>
+                     </li>
+                     <li><span class="bold">Virtual cloud network (VCN) and subnet</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e1268">A VCN is a customizable, software-defined network that you set up in an <span>Oracle Cloud
+                                Infrastructure</span> region. Like traditional data center networks, VCNs give you control over your network environment. A VCN can have multiple non-overlapping CIDR blocks that you can change after you create the VCN. You can segment a VCN into subnets, which can be scoped to a region or to an availability domain. Each subnet consists of a contiguous range of addresses that don't overlap with the other subnets in the VCN. You can change the size of a subnet after creation. A subnet can be public or private. 
+                        </p>
+                     </li>
+                     <li><span class="bold">Route table</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e1159">Virtual route tables contain rules to route traffic from subnets to destinations outside a VCN, typically through gateways.</p>
+                     </li>
+                     <li><span class="bold">Security list</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e1165">For each subnet, you can create security rules that specify the source, destination, and type of traffic that must be allowed in and out of the subnet.</p>
+                     </li>
+                     <li><span class="bold">Dynamic routing gateway (DRG)</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e437">The DRG is a virtual router that provides a path for private network traffic between VCNs in the same region, between a VCN and a network outside the region, such as a VCN in another <span>Oracle Cloud
+                                Infrastructure</span> region, an on-premises network, or a network in another cloud provider.
+                        </p>
+                     </li>
+                     <li><span class="bold">Local peering gateway (LPG)</span><p>An LPG enables you to peer one VCN with another
+                    VCN in the same region. Peering means the VCNs communicate using private IP
+                    addresses, without the traffic traversing the internet or routing through your
+                    on-premises network.</p>
+                     </li>
+                     <li><span class="bold">Data Guard</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e285"><span>Oracle Data Guard</span> and Oracle Active Data Guard provide a comprehensive set of services that create, maintain, manage, and monitor one or more standby databases and that enable production Oracle databases to remain available without interruption. <span>Oracle Data Guard</span> maintains these standby databases as copies of the production database by using in-memory replication. If the production database becomes unavailable due to a planned or an unplanned outage, <span>Oracle Data Guard</span> can switch any standby database to the production role, minimizing the downtime associated with the outage. Oracle Active Data Guard provides the additional ability to offload read-mostly workloads to standby databases and also provides advanced data protection features.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Active Data Guard Far Sync</span></span><p>Oracle <span>Active Data Guard Far Sync</span> is a lightweight Oracle database instance that receives redo data
+                    synchronously from the primary database and forwards it asynchronously to one or
+                    more standby databases. It ensures zero data loss at any distance with minimal
+                    impact on the primary database performance and without requiring a local
+                    synchronous standby database.
+                        </p>
+                     </li>
+                     <li><span class="bold">Exadata Database Service on Dedicated Infrastructure</span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e499"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> enables you to leverage the power of Exadata in
+                                                  the cloud. <span>Oracle Exadata Database
+                        Service</span> delivers proven <span>Oracle Database</span> capabilities on purpose-built, optimized Oracle
+                                                  Exadata infrastructure in the public cloud.
+                                                  Built-in cloud automation, elastic resource
+                                                  scaling, security, and fast performance for all
+                                                  <span>Oracle Database</span> workloads helps you simplify management and
+                                                  reduce costs.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Database@Azure</span></span><p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e918"><span>Oracle Database@Azure</span> is the Oracle Database service (<span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> and <span>Oracle Autonomous Database Serverless</span>) running on <span>Oracle Cloud
+                                Infrastructure</span> (OCI), deployed in Microsoft Azure data centers. The service offers features and price parity with OCI. Purchase the service on Azure Marketplace.
+                        </p>
+                        <p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e927"><span>Oracle Database@Azure</span> integrates <span>Oracle Exadata Database
+                        Service</span>, <span>Oracle Real Application Clusters (Oracle
+                        RAC)</span>, and <span>Oracle Data Guard</span> technologies into the Azure platform. Users manage the service on the Azure console and with Azure automation tools. The service is deployed in Azure Virtual Network (VNet) and integrated with the Azure identity and access management system. The OCI and <span>Oracle Database</span> generic metrics and audit logs are natively available in Azure. The service requires users to have an Azure subscription and an OCI tenancy. 
+                        </p>
+                        <p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e938"><span>Autonomous Database</span> is built on Oracle Exadata infrastructure, is self-managing, self-securing, and self-repairing, helping eliminate manual database management and human errors. <span>Autonomous Database</span> enables development of scalable AI-powered apps with any data using built-in AI capabilities using your choice of large language model (LLM) and deployment location.
+                        </p>
+                        <p id="GUID-48F0D8A9-06D6-411A-AF04-2867963E98D2__d204e943">Both <span>Oracle Exadata Database
+                        Service</span> and <span>Oracle Autonomous Database Serverless</span> are easily provisioned through the native Azure Portal, enabling access to the broader Azure ecosystem.
+                        </p>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-DC67E72F-8C19-4792-9AFF-DE6DDBC968B8" name="GUID-DC67E72F-8C19-4792-9AFF-DE6DDBC968B8"></a><h3 id="IAIGF-GUID-DC67E72F-8C19-4792-9AFF-DE6DDBC968B8" class="sect3">Recommendations</h3>
+               <div>
+                  <div><span>Use the following recommendations as a starting point.
+        </span>Your requirements might differ from the architecture described here.
+                  </div>
+                  <ul style="list-style-type: disc;" id="GUID-DC67E72F-8C19-4792-9AFF-DE6DDBC968B8__UL_FWK_JBG_RKB">
+                     <li>The far sync instance should be far enough from the primary database to
+                ensure it can’t be affected by the same failure or disaster but close enough to
+                minimize the network latency.</li>
+                     <li>Create two far sync instances per region for high availability. Without
+                an alternate far sync instance, or if all far sync instances in the primary region
+                are unavailable, the <span>Oracle Data Guard</span> redo transport will be directly shipped to the standby database in ASYNC mode,
+                affecting the zero data loss protection, and, depending on the configuration and
+                distance, it might result in transport lag further impacting RPO.
+                     </li>
+                     <li>As the storage performance of the far sync instance is critical, the
+                IOPS capacity should be adequate to support the workload. The far sync instance's
+                storage should have an IOPS performance equal to or better than the primary
+                database's online redo logs storage.</li>
+                     <li>Use <span>Oracle Data Guard</span> across regions for the databases provisioned in the Exadata VM cluster on <span>Oracle Database@Azure</span> by using an OCI Managed network.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-BE8EBF3A-9557-4952-B79B-35AABA5ED0D7" name="GUID-BE8EBF3A-9557-4952-B79B-35AABA5ED0D7"></a><h3 id="IAIGF-GUID-BE8EBF3A-9557-4952-B79B-35AABA5ED0D7" class="sect3">Considerations for Cross-Regional
+        Disaster Recovery</h3>
+               <div>
+                  <p>When performing cross-regional disaster recovery for <span>Oracle Exadata Database
+                        Service</span> on <span>Oracle Database@Azure</span>, consider the following.
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-BE8EBF3A-9557-4952-B79B-35AABA5ED0D7__UL_AVT_VJ3_C2C">
+                     <li><span>Oracle Cloud
+                                Infrastructure</span> is the preferred network for achieving better performance, measured by latency
+                and throughput, and for reducing costs, as the first 10 TB/Month are free.
+                     </li>
+                     <li>Far sync is a lightweight instance. However, disk performance is
+                critical as far sync writes the received redo to disk before acknowledging back to
+                the primary, which might impact the application performance.</li>
+                     <li>The network performance of the far sync instance is critical for heavy
+                workloads.</li>
+                     <li>With multiple standby databases and far sync instances, the
+                configuration might get more complicated. Use the <span>Active Data Guard</span> broker RedoRoutes property to simplify the definition of how redo is transported
+                to the various destinations.
+                     </li>
+                     <li>Using far sync requires the <span>Active Data Guard</span> option.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Deploy Active Data Guard Far Sync to protect data across Oracle Database@Azure regions</p>
+            <p class="legal">G24005-02</p>
+            <p class="date legal">February 2025</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2025, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>

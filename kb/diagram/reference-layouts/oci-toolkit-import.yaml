@@ -1,0 +1,45 @@
+---
+last_verified: 2026-04-25
+source_zip: https://docs.oracle.com/iaas/Content/Resources/Assets/OCI-Style-Guide-for-Drawio.zip
+toolkit_version: v24.2
+toolkit_path: kb/diagram/assets/oci-toolkit-drawio/
+indexer: tools/import_oci_library.py
+refresh: tools/refresh_oci_drawio_toolkit.py
+---
+
+audit_2026_04_25:
+  finding: |
+    The hand-curated kb/diagram/oci-icons.json had 67 entries, mostly
+    harvested ad-hoc from a few Architecture Center exports. The official
+    OCI Library.xml (Oracle Style Guide for Drawio v24.2) ships 223 shapes
+    spread across 20 categories. Without a bulk importer, whole product
+    families silently rendered as fallback rectangles in user diagrams.
+
+  category_breakdown:
+    Logical: 34
+    Identity_and_Security: 27
+    Physical: 26
+    Database: 25
+    Applications: 20
+    Networking: 18
+    Developer_Services: 15
+    Analytics_and_AI: 14
+    Observability_and_Management: 13
+    Storage: 10
+    Compute: 7
+    Governance_and_Administration: 5
+    Migration: 2
+    Container: 1
+    Marketplace: 1
+    Cloud: 1
+    other: 9
+
+  fix:
+    - "tools/import_oci_library.py decodes every entry (zlib + base64 + URL-encoded XML), normalises geometry so the wrapper sits at (0, 0, w, h), and writes oci-icons.json."
+    - "tools/refresh_oci_drawio_toolkit.py fetches the Style Guide zip and stages it under kb/diagram/assets/oci-toolkit-drawio/."
+    - "After import: 67 → 302 entries (223 canonical + 79 short aliases like 'adb' → 'database_autonomous_database')."
+
+operating_procedure:
+  - "When Oracle ships a new toolkit version, run `python tools/refresh_oci_drawio_toolkit.py` then `python tools/import_oci_library.py` (the importer overwrites; pass --keep-existing to preserve hand-curated entries)."
+  - "When a service type appears as a fallback colored rectangle in generated diagrams, first check oci-icons.json for the canonical key, then add a new alias to import_oci_library.py::SHORT_ALIASES if the user's spec uses a friendly short name."
+  - "Container-corner markers (per OCI Toolkit slide 18 'Grouping'): VCN gets vcn_icon, Subnet gets route_table_and_security_list, both at half-size in the top-right. OPTIONAL but standard — see oci-toolkit-styles.yaml § design_rules."

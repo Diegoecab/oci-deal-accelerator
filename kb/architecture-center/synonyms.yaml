@@ -1,0 +1,99 @@
+# Query-expansion synonyms for tools/archcenter_pattern_lookup.py
+#
+# Each canonical phrase is expanded with its aliases at query time so
+# free-text searches like "LB HA cross AD" match catalog entries
+# tagged "load balancer", "high availability", "availability domain".
+#
+# Add new entries when a query misses an obvious match. Keep aliases
+# lower-case alphanumeric — the tokenizer drops everything else.
+
+synonyms:
+  # Networking
+  - canonical: load balancer
+    aliases: [lb, lbaas, nlb, network load balancer, application load balancer, alb]
+  - canonical: virtual cloud network
+    aliases: [vcn]
+  - canonical: dynamic routing gateway
+    aliases: [drg]
+  - canonical: internet gateway
+    aliases: [igw]
+  - canonical: nat gateway
+    aliases: [natgw]
+  - canonical: service gateway
+    aliases: [sgw]
+  - canonical: site to site vpn
+    aliases: [vpn, ipsec, ipsec vpn]
+  - canonical: fastconnect
+    aliases: [fc, dx, direct connect, expressroute]
+  - canonical: remote peering connection
+    aliases: [rpc]
+  - canonical: web application firewall
+    aliases: [waf]
+  - canonical: network firewall
+    aliases: [nfw, ngfw]
+
+  # Compute / Containers
+  - canonical: virtual machine
+    aliases: [vm, ec2, gce, compute instance]
+  - canonical: container engine kubernetes
+    aliases: [oke, k8s, kubernetes, eks, gke, aks]
+  - canonical: bare metal
+    aliases: [bm, bms]
+
+  # Database
+  - canonical: autonomous database
+    aliases: [adb, adb-s, adb-d, atp, adw]
+  - canonical: exadata database service
+    aliases: [exacs, exadb, exa, exadata]
+  - canonical: base database service
+    aliases: [base db, dbcs, vm db]
+  - canonical: data guard
+    aliases: [dg, adg, active data guard]
+  - canonical: goldengate
+    aliases: [gg, ogg]
+  - canonical: mysql heatwave
+    aliases: [mysql, heatwave, mysql database service, mds]
+
+  # Availability / DR
+  - canonical: high availability
+    aliases: [ha, maa, maximum availability]
+  - canonical: disaster recovery
+    aliases: [dr, ha-dr, business continuity, bcdr]
+  - canonical: full stack disaster recovery
+    aliases: [fsdr]
+  - canonical: availability domain
+    aliases: [ad, az, availability zone]
+  - canonical: fault domain
+    aliases: [fd]
+  - canonical: cross region
+    aliases: [multi region, multiregion]
+
+  # Multicloud
+  - canonical: oracle database at azure
+    aliases: [odbaa, db at azure, dbaa, oracle@azure, azure-oracle]
+  - canonical: oracle database at aws
+    aliases: [odbaaws, db at aws, oracle@aws, aws-oracle]
+  - canonical: oracle database at google cloud
+    aliases: [odbagcp, db at gcp, oracle@gcp, gcp-oracle]
+
+  # Observability / Security
+  - canonical: monitoring
+    aliases: [mon, metrics]
+  - canonical: logging
+    aliases: [logs]
+  - canonical: cloud guard
+    aliases: [cg]
+  - canonical: data safe
+    aliases: [ds]
+  - canonical: security zone
+    aliases: [maximum security zone, msz]
+
+  # Workloads
+  - canonical: e business suite
+    aliases: [ebs, e-biz]
+  - canonical: peoplesoft
+    aliases: [psft]
+  - canonical: jd edwards
+    aliases: [jde, jd-e]
+  - canonical: artificial intelligence
+    aliases: [ai, gen ai, genai, ml]

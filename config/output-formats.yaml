@@ -4,7 +4,7 @@
 output_selection:
   description: |
     The architect can specify output format when requesting deliverables:
-      deck              ← default, just the slide deck
+      deck              ← default, slide deck with native OCI PowerPoint diagram when applicable
       deck + drawio     ← deck + editable diagram
       deck + doc        ← deck + detailed technical document
       deck + xlsx       ← deck + detailed cost spreadsheet
@@ -22,12 +22,12 @@ output_selection:
     deck:
       extension: ".pptx"
       generator: "tools/oci_deck_gen.py"
-      description: "10-12 slide architecture proposal"
+      description: "10-12 slide architecture proposal with native OCI PowerPoint diagram when applicable"
 
     drawio:
       extension: ".drawio"
       generator: "tools/oci_diagram_gen.py"
-      description: "Editable architecture diagram (draw.io)"
+      description: "Editable architecture diagram (draw.io) for technical editing workflows"
 
     doc:
       extension: ".docx"
@@ -133,7 +133,7 @@ deck_structure:
 
     - number: 3
       type: architecture_diagram
-      content: "Full architecture diagram (85% of slide)"
+      content: "Full architecture diagram (85% of slide), preferring native OCI PowerPoint shapes over pasted images"
       style: "White background, diagram fills slide"
 
     - number: 4

@@ -1,0 +1,49 @@
+---
+last_verified: 2026-04-25
+scope: Oracle Architecture Center batch visual benchmarking
+tool: tools/oci_archcenter_batch.py
+make_target: archcenter-benchmark-20
+---
+
+purpose:
+  - Validate acquisition, provenance, editable reconstruction, and comparison plumbing across at least 20 official Architecture Center reference architectures.
+  - Prefer ZIP-backed native reconstruction and use page-image fallback only when an official ZIP is unavailable or unusable.
+
+acceptance_states:
+  visual_pass:
+    definition: Official diagram asset was downloaded and the coordinate-faithful render matches the official image threshold.
+    caveat: This state alone does not guarantee editable/native PPTX quality.
+  native_editable_pass:
+    definition: The generated draw.io and PowerPoint contain reconstructed editable OCI elements and pass structural and visual comparison against the official reference.
+    required_evidence:
+      - generated .drawio
+      - generated .pptx
+      - reference assets
+      - render/diff evidence
+      - structural validation
+      - icon alias/mapping coverage
+
+operating_procedure:
+  - Run `make archcenter-benchmark-20`.
+  - Inspect `examples/eval-2026-04-25-archcenter-native-20-v8/batch-summary.md`.
+  - For pages with multiple ZIP assets, prefer filenames containing `architecture`, `physical`, `logical`, `topology`, or `arch`; penalize `functional`, `overview`, `process`, and `context`.
+  - Treat draw.io fidelity as the primary editable benchmark: export the rebuilt `.drawio` with the real `draw.io.exe` binary and diff that PNG against the official Oracle PNG.
+  - Treat native PPTX fidelity as a required gate: rasterize the editable slide with `tools/oci_pptx_render.py`, not `soffice` or LibreOffice.
+  - Curate the benchmark pool before counting a case toward the 20 processed target. Skip diagrams that are annotation-dominant or that require multiple draw.io icon families still missing from `kb/diagram/oci-icons.json`.
+  - Treat low icon-cluster coverage as FAIL even when pixel similarity passes, to avoid false positives on business-context or unlabeled functional diagrams.
+  - Persist any learned icon aliases, layout conventions, renderer fixes, or benchmark-selection heuristics in `kb/diagram/reference-layouts/` and the corresponding generator code.
+
+latest_run:
+  output_root: examples/eval-2026-04-25-archcenter-native-20-v8
+  requested: 20
+  considered: 28
+  processed: 20
+  skipped: 8
+  native_pass: 20
+  fail: 0
+  notes:
+    - Primary visual truth is now the rebuilt draw.io exported through `draw.io.exe` under Windows/WSL; SVG-only comparison is fallback-only.
+    - The benchmark now uses pure-Python native PPTX rasterization (`tools/oci_pptx_render.py`), so slide fidelity no longer depends on LibreOffice availability.
+    - Preserving official `raw_icon_cells` plus background/context `raw_underlay_cells` closed the last native draw.io benchmark gap in the validated pool.
+    - The latest verified run is 20 PASS / 0 FAIL over 20 processed cases while still considering 28 official references.
+    - Remaining work is confined to the skipped pool, not the validated benchmark set: annotation-heavy diagrams and missing draw.io icon families such as DNS/VPN/maximum-security-zone variants.

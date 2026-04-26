@@ -4,8 +4,8 @@ __pycache__/
 *.pyo
 output/
 *.pptx
-!examples/sample-output/*.pptx
 !templates/Oracle_PPT-template_FY26.pptx
+!kb/diagram/assets/OCI_Icons.pptx
 
 # OCI Toolkit binary (download from Oracle, don't commit)
 kb/diagram/OCI Library.xml
@@ -13,24 +13,10 @@ kb/diagram/OCI Library.xml
 # Build prompt (internal)
 COMPLETE-BUILD-PROMPT.md
 
-# Client-specific examples (never commit customer data)
-examples/farma-sa-*
+# Ignore all examples content
+examples/
 
-# Skill-generated output folders (customer-specific, never commit)
-examples/output-*/
-
-# Exported screenshots (temporary)
-examples/*.png
-
-# Exported ppts
-examples/*.ppts
-
-# Exported diagrams
-examples/*.drawio
-
-# Exported YAML files
-examples/*.yaml
-
-# Exported PDFfiles
-examples/*.pdf
-examples/*.xlsx
+# Workspace / sandbox artifacts (never committed)
+tmp/
+.claude/scheduled_tasks.lock
+.claude/worktrees/

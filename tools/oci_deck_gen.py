@@ -27,7 +27,10 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-from oci_pptx_base import Colors, Layouts, OraclePresBase
+try:
+    from oci_pptx_base import Colors, Layouts, OraclePresBase
+except ModuleNotFoundError:
+    from tools.oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
@@ -625,6 +628,7 @@ class OCIDeckGenerator(OraclePresBase):
         self.project = project
         self.architect = architect
         self.firm = firm
+        self._native_pptx_jobs = []
 
     # ---- Architecture visual helpers ----
 
@@ -702,10 +706,11 @@ class OCIDeckGenerator(OraclePresBase):
             self._set_placeholder(slide, 34, info)
 
     def add_summary_slide(self, why: str, current_state: list,
-                          target_state: str, timeline: str):
+                          target_state: str, timeline: str,
+                          title: str = "Engagement Summary"):
         """Slide 2: Engagement Summary."""
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Engagement Summary", margin=self.MARGIN)
+        self._add_title_bar(slide, title, margin=self.MARGIN)
 
         y = Inches(1.2)
 
@@ -753,16 +758,39 @@ class OCIDeckGenerator(OraclePresBase):
 
     def add_architecture_slide(self, diagram_path: Optional[str] = None,
                                 description: str = "",
-                                visual: Optional[dict] = None):
+                                visual: Optional[dict] = None,
+                                title: str = "Architecture Overview",
+                                footer: str = ""):
         """Slide 3: Architecture Overview with diagram or visual layout.
 
         visual: optional dict with structured architecture data for rendering
                 as colored blocks. Keys: regions, on_prem, security_footer.
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Architecture Overview", margin=self.MARGIN)
+        self._add_title_bar(slide, title, margin=self.MARGIN)
+        native_requested = self._is_native_pptx_visual(visual)
+        content_top = Inches(1.1)
 
-        if diagram_path:
+        if native_requested:
+            if description:
+                self._add_textbox(
+                    slide, self.MARGIN, Inches(1.1),
+                    Inches(12), Inches(0.4),
+                    text=description, font_size=11, italic=True,
+                    color=Colors.SECONDARY_TEXT,
+                )
+                content_top = Inches(1.55)
+            self._native_pptx_jobs.append({
+                "slide_number": len(self.prs.slides),
+                "visual": visual,
+                "content_box": {
+                    "x": int(Inches(0.5)),
+                    "y": int(content_top),
+                    "cx": int(Inches(12.3)),
+                    "cy": int(Inches(5.2 if description else 5.65)),
+                },
+            })
+        elif diagram_path:
             try:
                 slide.shapes.add_picture(
                     diagram_path,
@@ -777,6 +805,13 @@ class OCIDeckGenerator(OraclePresBase):
                     font_size=14, color=Colors.SECONDARY_TEXT,
                 )
         elif visual:
+            if description:
+                self._add_textbox(
+                    slide, self.MARGIN, Inches(1.1),
+                    Inches(12), Inches(0.4),
+                    text=description, font_size=11, italic=True,
+                    color=Colors.SECONDARY_TEXT,
+                )
             self._render_architecture_visual(slide, visual)
         else:
             self._add_textbox(
@@ -785,6 +820,435 @@ class OCIDeckGenerator(OraclePresBase):
                 text=description or "[Insert architecture diagram — export from .drawio file]",
                 font_size=14, color=Colors.SECONDARY_TEXT, italic=True,
                 alignment=PP_ALIGN.CENTER,
+            )
+
+        if footer:
+            self._add_textbox(
+                slide, self.MARGIN, Inches(6.85),
+                Inches(12.1), Inches(0.3),
+                text=footer, font_size=9, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+
+    @staticmethod
+    def _is_native_pptx_visual(visual: Optional[dict]) -> bool:
+        if not isinstance(visual, dict):
+            return False
+        if visual.get("native_pptx") is True:
+            return True
+        return visual.get("render_mode") == "native_pptx"
+
+    def save(self, filepath: str, validate: bool = True) -> dict:
+        super().save(filepath)
+        if self._native_pptx_jobs:
+            try:
+                from oci_pptx_diagram_gen import NativePPTXDiagramRenderer
+            except ModuleNotFoundError:
+                from tools.oci_pptx_diagram_gen import NativePPTXDiagramRenderer
+            renderer = NativePPTXDiagramRenderer()
+            renderer.apply_jobs(filepath, self._native_pptx_jobs)
+
+        report: dict = {"path": filepath}
+        if validate:
+            report["pptx"] = self._validate_pptx(filepath)
+        return report
+
+    @staticmethod
+    def _validate_pptx(filepath: str) -> dict:
+        """Pre-delivery sanity check on the generated .pptx.
+
+        Catches the bugs that historically made PowerPoint prompt to
+        "repair" the file:
+        - Missing Content_Types Default for any embedded media extension.
+        - Slide rels pointing to absent media.
+        - Duplicate cNvPr ids.
+
+        Always non-fatal; prints diagnostics to stderr.
+        """
+        import sys as _sys
+        import zipfile as _zf
+        from posixpath import normpath as _np
+        try:
+            from lxml import etree as _et
+        except Exception as exc:
+            print(f"[pptx-validator] WARN: lxml not available ({exc})", file=_sys.stderr)
+            return {"status": "skipped", "error": str(exc)}
+        try:
+            with _zf.ZipFile(filepath) as z:
+                names = z.namelist()
+                CT = "http://schemas.openxmlformats.org/package/2006/content-types"
+                PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
+                P_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
+                R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+                ct_root = _et.fromstring(z.read("[Content_Types].xml"))
+                defaults = {d.get("Extension","").lower(): d.get("ContentType")
+                            for d in ct_root.findall(f"{{{CT}}}Default")}
+                missing_default = []
+                for n in names:
+                    if not n.startswith("ppt/media/"):
+                        continue
+                    ext = n.rsplit(".", 1)[-1].lower()
+                    if ext and ext not in defaults:
+                        missing_default.append(ext)
+                missing_default = sorted(set(missing_default))
+                broken_rels: list[str] = []
+                for n in names:
+                    if "slides/_rels" not in n or not n.endswith(".rels"):
+                        continue
+                    slide_dir = "/".join(n.split("/")[:-2])
+                    rels = _et.fromstring(z.read(n))
+                    for rel in rels.findall(f"{{{PKG}}}Relationship"):
+                        tgt = rel.get("Target") or ""
+                        if tgt.startswith("http"):
+                            continue
+                        resolved = _np(f"{slide_dir}/{tgt}") if not tgt.startswith("/") else tgt.lstrip("/")
+                        if resolved not in names:
+                            broken_rels.append(f"{n}: rId {rel.get('Id')} → {resolved}")
+                dup_ids = []
+                for n in names:
+                    if not (n.startswith("ppt/slides/slide") and n.endswith(".xml")):
+                        continue
+                    root = _et.fromstring(z.read(n))
+                    seen = {}
+                    for cn in root.findall(f".//{{{P_NS}}}cNvPr"):
+                        cid = cn.get("id") or ""
+                        if cid:
+                            seen[cid] = seen.get(cid, 0) + 1
+                    dup_ids.extend(f"{n}:{c}" for c, k in seen.items() if k > 1)
+            issues = []
+            if missing_default:
+                issues.append(("MISSING_CONTENT_TYPE",
+                               f"Content_Types.xml missing Default for: {missing_default}. "
+                               "PowerPoint will prompt to 'repair' the file."))
+            if broken_rels:
+                issues.append(("BROKEN_REL", f"{len(broken_rels)} broken relationship target(s)"))
+            if dup_ids:
+                issues.append(("DUP_CNVPR", f"{len(dup_ids)} duplicate cNvPr ids"))
+            status = "fail" if issues else "pass"
+            if issues:
+                print(f"[pptx-validator] FAIL on {filepath}: {len(issues)} issue(s)", file=_sys.stderr)
+                for code, msg in issues:
+                    print(f"  - {code}: {msg}", file=_sys.stderr)
+            else:
+                print(f"[pptx-validator] OK on {filepath}", file=_sys.stderr)
+            return {"status": status, "issues": [{"code": c, "message": m} for c, m in issues]}
+        except Exception as exc:
+            print(f"[pptx-validator] WARN: could not validate ({exc})", file=_sys.stderr)
+            return {"status": "error", "error": str(exc)}
+
+    def add_bullets_slide(self, title: str, sections: list,
+                          subtitle: str = "", footer: str = ""):
+        """Generic sectioned bullets slide for executive content."""
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title, margin=self.MARGIN)
+
+        y = Inches(1.12)
+        if subtitle:
+            self._add_textbox(
+                slide, self.MARGIN, y,
+                Inches(12.1), Inches(0.35),
+                text=subtitle, font_size=11, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+            y += Inches(0.42)
+
+        for section in sections:
+            heading = section.get("heading", "")
+            body = section.get("body", "")
+            bullets = coerce_list(section.get("bullets"))
+
+            if heading:
+                self._add_textbox(
+                    slide, self.MARGIN, y,
+                    Inches(12.1), Inches(0.32),
+                    text=heading, font_size=13, bold=True,
+                    color=Colors.TEAL,
+                )
+                y += Inches(0.34)
+
+            if body:
+                self._add_textbox(
+                    slide, self.MARGIN + Inches(0.05), y,
+                    Inches(11.9), Inches(0.42),
+                    text=body, font_size=11,
+                )
+                y += Inches(0.42)
+
+            for bullet in bullets:
+                self._add_textbox(
+                    slide, Inches(0.7), y,
+                    Inches(11.2), Inches(0.32),
+                    text=f"• {bullet}", font_size=11,
+                )
+                y += Inches(0.31)
+
+            y += Inches(0.12)
+            if y > Inches(6.35):
+                break
+
+        if footer:
+            self._add_textbox(
+                slide, self.MARGIN, Inches(6.82),
+                Inches(12.1), Inches(0.28),
+                text=footer, font_size=9, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+
+    def add_table_slide(self, title: str, columns: list, rows: list,
+                        subtitle: str = "", footer: str = ""):
+        """Generic table slide.
+
+        columns: list of {"header": str, "key": str, "width": float}
+        rows: list of dicts or lists
+        """
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title, margin=self.MARGIN)
+
+        y = Inches(1.12)
+        if subtitle:
+            self._add_textbox(
+                slide, self.MARGIN, y,
+                Inches(12.1), Inches(0.34),
+                text=subtitle, font_size=11, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+            y += Inches(0.4)
+
+        col_defs = []
+        for idx, column in enumerate(columns):
+            if isinstance(column, dict):
+                col_defs.append({
+                    "header": column.get("header", column.get("key", f"Column {idx + 1}")),
+                    "key": column.get("key", f"col_{idx}"),
+                    "width": column.get("width"),
+                })
+            else:
+                col_defs.append({
+                    "header": str(column),
+                    "key": f"col_{idx}",
+                    "width": None,
+                })
+
+        num_rows = len(rows) + 1
+        table_height = min(5.4, 0.42 * max(num_rows, 2))
+        table = self._add_table(
+            slide, num_rows, len(col_defs),
+            self.MARGIN, y,
+            Inches(12.1), Inches(table_height),
+        )
+
+        explicit_widths = [c.get("width") for c in col_defs]
+        if all(w is None for w in explicit_widths):
+            even_width = 12.1 / max(len(col_defs), 1)
+            explicit_widths = [even_width] * len(col_defs)
+        else:
+            remaining = 12.1 - sum(w for w in explicit_widths if w is not None)
+            auto_count = sum(1 for w in explicit_widths if w is None)
+            fallback = remaining / auto_count if auto_count else 0
+            explicit_widths = [w if w is not None else fallback for w in explicit_widths]
+
+        for idx, width in enumerate(explicit_widths):
+            table.columns[idx].width = Inches(width)
+
+        for idx, column in enumerate(col_defs):
+            self._style_table_cell(
+                table.cell(0, idx), column["header"],
+                font_size=10, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        for row_idx, row in enumerate(rows, start=1):
+            bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
+            for col_idx, column in enumerate(col_defs):
+                if isinstance(row, dict):
+                    value = row.get(column["key"], "")
+                elif isinstance(row, list):
+                    value = row[col_idx] if col_idx < len(row) else ""
+                else:
+                    value = str(row)
+                self._style_table_cell(
+                    table.cell(row_idx, col_idx), str(value),
+                    font_size=9, bg_color=bg,
+                )
+
+        if footer:
+            self._add_textbox(
+                slide, self.MARGIN, Inches(6.82),
+                Inches(12.1), Inches(0.28),
+                text=footer, font_size=9, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+
+    def add_flow_architecture_slide(self, title: str, columns: list,
+                                    connections: list = None,
+                                    subtitle: str = "", notes: list = None,
+                                    footer: str = ""):
+        """Executive architecture slide with columns, nodes, and flow arrows."""
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title, margin=self.MARGIN)
+
+        y_top = Inches(1.1)
+        if subtitle:
+            self._add_textbox(
+                slide, self.MARGIN, y_top,
+                Inches(12.1), Inches(0.32),
+                text=subtitle, font_size=11, italic=True,
+                color=Colors.SECONDARY_TEXT,
+            )
+            y_top += Inches(0.36)
+
+        notes = coerce_list(notes)
+        notes_h = Inches(0.9 + 0.2 * min(len(notes), 4)) if notes else Inches(0)
+        columns_top = y_top
+        columns_height = Inches(5.55) - notes_h
+        columns_left = self.MARGIN
+        total_width = Inches(12.1)
+        spacing = Inches(0.12)
+        col_width = (total_width - spacing * max(len(columns) - 1, 0)) / max(len(columns), 1)
+
+        tone_fill = {
+            "primary": RGBColor(0xF5, 0xF4, 0xF2),
+            "secondary": RGBColor(0xFC, 0xFB, 0xFA),
+            "standby": RGBColor(0xF1, 0xEF, 0xEC),
+            "bridge": RGBColor(0xF8, 0xF5, 0xF2),
+        }
+        tone_border = {
+            "primary": Colors.TEAL,
+            "secondary": Colors.BURNT_ORANGE,
+            "standby": Colors.SECONDARY_TEXT,
+            "bridge": Colors.PURPLE,
+        }
+        node_colors = {
+            "database": Colors.COPPER,
+            "bridge": Colors.PURPLE,
+            "integration": Colors.PURPLE,
+            "service": Colors.TEAL,
+            "standby": RGBColor(0x70, 0x66, 0x5E),
+            "external": Colors.SECONDARY_TEXT,
+        }
+
+        node_centers = {}
+        ratios = [max(float(column.get("width_ratio", 1.0)), 0.4) for column in columns]
+        ratio_total = sum(ratios) or 1.0
+        left = columns_left
+
+        for idx, column in enumerate(columns):
+            col_width = (
+                (total_width - spacing * max(len(columns) - 1, 0))
+                * (ratios[idx] / ratio_total)
+            )
+            tone = column.get("tone", "secondary")
+            border = tone_border.get(tone, Colors.TEAL)
+            fill = tone_fill.get(tone, RGBColor(0xF5, 0xF4, 0xF2))
+            label = column.get("title", f"Column {idx + 1}")
+            subtitle_text = column.get("subtitle", "")
+            full_label = label if not subtitle_text else f"{label}  |  {subtitle_text}"
+            self._add_container(
+                slide, left, columns_top, col_width, columns_height,
+                label=full_label, border_color=border,
+                fill_color=fill, dashed=False, label_size=10,
+            )
+
+            nodes = coerce_list(column.get("nodes"))
+            node_gap = Inches(0.12)
+            node_left = left + Inches(0.15)
+            node_width = col_width - Inches(0.3)
+            node_y = columns_top + Inches(0.45)
+
+            for node in nodes:
+                node_id = node.get("id") or f"node_{idx}_{len(node_centers)}"
+                node_kind = node.get("kind", "service")
+                node_color = node_colors.get(node_kind, Colors.TEAL)
+                label = node.get("label", "")
+                label_lines = max(1, str(label).count("\n") + 1)
+                node_h = Inches(max(0.62, 0.17 * label_lines + 0.18))
+
+                card = self._add_rect(
+                    slide, node_left, node_y, node_width, node_h,
+                    fill_color=Colors.WHITE, border_color=node_color,
+                )
+                card.line.width = Pt(1.6)
+                if node_kind == "standby":
+                    card.line.dash_style = 2
+
+                accent = self._add_rect(
+                    slide, node_left, node_y, Inches(0.08), node_h,
+                    fill_color=node_color, border_color=node_color,
+                )
+                accent.line.fill.background()
+
+                text_box = self._add_textbox(
+                    slide, node_left + Inches(0.16), node_y + Inches(0.08),
+                    node_width - Inches(0.24), node_h - Inches(0.12),
+                    text=label, font_size=10,
+                    color=Colors.PRIMARY_TEXT,
+                )
+                if text_box.text_frame.paragraphs:
+                    text_box.text_frame.paragraphs[0].font.bold = True
+
+                node_centers[node_id] = (
+                    node_left + node_width / 2,
+                    node_y + node_h / 2,
+                    node_left,
+                    node_y,
+                    node_width,
+                    node_h,
+                )
+                node_y += node_h + node_gap
+                if node_y + node_h > columns_top + columns_height - Inches(0.2):
+                    break
+
+            left += col_width + spacing
+
+        for conn in coerce_list(connections):
+            source = node_centers.get(conn.get("from"))
+            target = node_centers.get(conn.get("to"))
+            if not source or not target:
+                continue
+            sx = source[2] + source[4]
+            sy = source[1]
+            tx = target[2]
+            ty = target[1]
+            dashed = str(conn.get("style", "")).lower() in {"dashed", "bridge", "replication"}
+            color = Colors.PURPLE if dashed else Colors.TEAL
+            self._add_arrow(slide, sx, sy, tx, ty, color=color, dashed=dashed)
+            label = conn.get("label", "")
+            if label:
+                label_x = min(max((sx + tx) / 2 - Inches(0.9), self.MARGIN), Inches(11.3))
+                label_y = min(sy, ty) - Inches(0.14)
+                self._add_textbox(
+                    slide, label_x, label_y,
+                    Inches(1.8), Inches(0.24),
+                    text=label, font_size=8,
+                    color=Colors.SECONDARY_TEXT,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
+        if notes:
+            note_top = columns_top + columns_height + Inches(0.14)
+            self._add_container(
+                slide, self.MARGIN, note_top,
+                Inches(12.1), notes_h,
+                label="Notes", border_color=Colors.BURNT_ORANGE,
+                fill_color=RGBColor(0xFC, 0xFB, 0xFA),
+                dashed=False, label_size=10,
+            )
+            note_y = note_top + Inches(0.22)
+            for note in notes[:4]:
+                self._add_textbox(
+                    slide, Inches(0.75), note_y,
+                    Inches(11.2), Inches(0.22),
+                    text=f"• {note}", font_size=9,
+                )
+                note_y += Inches(0.2)
+
+        if footer:
+            self._add_textbox(
+                slide, self.MARGIN, Inches(6.85),
+                Inches(12.1), Inches(0.25),
+                text=footer, font_size=9, italic=True,
+                color=Colors.SECONDARY_TEXT,
             )
 
     def _render_architecture_visual(self, slide, visual: dict):
@@ -1470,14 +1934,15 @@ class OCIDeckGenerator(OraclePresBase):
                 )
 
     def add_migration_slide(self, phases: list, tools: list = None,
-                            downtime: str = ""):
+                            downtime: str = "",
+                            title: str = "Migration Approach"):
         """Migration Approach slide.
 
         phases: list of {"name": str, "duration"|"weeks": str,
                         "milestones"|"tasks": [...]}
         """
         slide = self._add_blank_slide()
-        self._add_title_bar(slide, "Migration Approach", margin=self.MARGIN)
+        self._add_title_bar(slide, title, margin=self.MARGIN)
 
         phase_colors = [Colors.TEAL, Colors.BURNT_ORANGE, Colors.FOREST, Colors.PURPLE]
 
@@ -1549,28 +2014,47 @@ class OCIDeckGenerator(OraclePresBase):
             )
 
     def add_operational_raci_slide(self, raci_items: list,
-                                   model: str = "co_managed"):
+                                   model: str = "co_managed",
+                                   customer_label: str = "Customer",
+                                   oracle_label: str = "Oracle / Partner",
+                                   owner_order: str = "customer_first",
+                                   title: str | None = None):
         """Operational RACI slide — responsibility matrix.
 
-        raci_items: list of {"activity": str, "customer": str, "oracle": str}
+        raci_items: list of {"activity": str, "customer": str, "oracle": str, "notes": str}
         model: "fully_managed", "co_managed", or "self_managed"
         """
         slide = self._add_blank_slide()
         model_label = model.replace("_", "-").title()
-        self._add_title_bar(slide, f"Operational Responsibilities ({model_label})", margin=self.MARGIN)
+        self._add_title_bar(slide, title or f"Operational Responsibilities ({model_label})", margin=self.MARGIN)
+
+        include_notes = any(str(item.get("notes", "")).strip() for item in raci_items)
+        headers = ["Activity"]
+        value_keys = ["activity"]
+        if owner_order == "oracle_first":
+            headers.extend([oracle_label, customer_label])
+            value_keys.extend(["oracle", "customer"])
+        else:
+            headers.extend([customer_label, oracle_label])
+            value_keys.extend(["customer", "oracle"])
+        if include_notes:
+            headers.append("Notes")
+            value_keys.append("notes")
 
         rows = len(raci_items) + 1
         table = self._add_table(
-            slide, rows, 3,
+            slide, rows, len(headers),
             self.MARGIN, Inches(1.2),
-            Inches(10), Inches(0.38 * rows),
+            Inches(12.1), Inches(0.38 * rows),
         )
 
-        table.columns[0].width = Inches(5.0)
-        table.columns[1].width = Inches(2.5)
-        table.columns[2].width = Inches(2.5)
+        if include_notes:
+            widths = [4.4, 1.4, 1.4, 4.9]
+        else:
+            widths = [5.0, 2.5, 2.5]
+        for idx, width in enumerate(widths[:len(headers)]):
+            table.columns[idx].width = Inches(width)
 
-        headers = ["Activity", "Customer", "Oracle / Partner"]
         for j, h in enumerate(headers):
             self._style_table_cell(
                 table.cell(0, j), h, font_size=11, bold=True,
@@ -1581,9 +2065,13 @@ class OCIDeckGenerator(OraclePresBase):
         for i, item in enumerate(raci_items):
             row_idx = i + 1
             bg = Colors.TABLE_ALT_ROW if row_idx % 2 == 0 else None
-            self._style_table_cell(table.cell(row_idx, 0), item.get("activity", ""), font_size=10, bg_color=bg)
-            self._style_table_cell(table.cell(row_idx, 1), item.get("customer", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
-            self._style_table_cell(table.cell(row_idx, 2), item.get("oracle", ""), font_size=10, bg_color=bg, alignment=PP_ALIGN.CENTER)
+            for col_idx, key in enumerate(value_keys):
+                align = PP_ALIGN.CENTER if key in {"customer", "oracle"} else PP_ALIGN.LEFT
+                self._style_table_cell(
+                    table.cell(row_idx, col_idx), item.get(key, ""),
+                    font_size=9 if key == "notes" else 10,
+                    bg_color=bg, alignment=align,
+                )
 
         # Legend
         legend_y = Inches(1.2) + Inches(0.38 * rows) + Inches(0.2)
@@ -1806,7 +2294,79 @@ class OCIDeckGenerator(OraclePresBase):
                 current_state=coerce_list(s.get("current_state")),
                 target_state=pick(s, "target_state"),
                 timeline=pick(s, "timeline"),
+                title=pick(s, "title", default="Engagement Summary"),
             )
+
+        render_standard_sections = spec.get("render_standard_sections", True)
+
+        def render_custom_slide(item: dict):
+            slide_type = item.get("type")
+            if slide_type == "bullets":
+                gen.add_bullets_slide(
+                    title=item.get("title", "Executive Summary"),
+                    sections=pick_list(item, "sections"),
+                    subtitle=item.get("subtitle", ""),
+                    footer=item.get("footer", ""),
+                )
+            elif slide_type == "table":
+                gen.add_table_slide(
+                    title=item.get("title", "Table"),
+                    columns=pick_list(item, "columns"),
+                    rows=pick_list(item, "rows"),
+                    subtitle=item.get("subtitle", ""),
+                    footer=item.get("footer", ""),
+                )
+            elif slide_type == "flow_architecture":
+                gen.add_flow_architecture_slide(
+                    title=item.get("title", "Architecture"),
+                    columns=pick_list(item, "columns"),
+                    connections=pick_list(item, "connections"),
+                    subtitle=item.get("subtitle", ""),
+                    notes=pick_list(item, "notes"),
+                    footer=item.get("footer", ""),
+                )
+            elif slide_type == "migration":
+                gen.add_migration_slide(
+                    phases=pick_list(item, "phases"),
+                    tools=pick_list(item, "tools"),
+                    downtime=item.get("downtime", ""),
+                    title=item.get("title", "Migration Approach"),
+                )
+            elif slide_type == "environment_catalogue":
+                gen.add_environment_catalogue_slide(
+                    environments=pick_list(item, "environments"),
+                    cost_notes=item.get("cost_notes"),
+                )
+            elif slide_type == "raci":
+                labels = item.get("labels", {}) if isinstance(item.get("labels"), dict) else {}
+                gen.add_operational_raci_slide(
+                    raci_items=pick_list(item, "raci_items", "items", "activities"),
+                    model=item.get("model", "co_managed"),
+                    customer_label=labels.get("customer", "Customer"),
+                    oracle_label=labels.get("oracle", "Oracle / Partner"),
+                    owner_order=item.get("owner_order", "customer_first"),
+                    title=item.get("title"),
+                )
+            elif slide_type == "diagram":
+                gen.add_architecture_slide(
+                    diagram_path=item.get("diagram_path"),
+                    description=item.get("description", ""),
+                    visual=item.get("visual"),
+                    title=item.get("title", "Architecture Overview"),
+                    footer=item.get("footer", ""),
+                )
+
+        if not render_standard_sections:
+            for custom_slide in pick_list(spec, "custom_slides"):
+                if isinstance(custom_slide, dict):
+                    render_custom_slide(custom_slide)
+            if "next_steps" in spec:
+                ns = spec["next_steps"]
+                gen.add_next_steps_slide(
+                    steps=pick_list(ns, "steps"),
+                    contact_info=pick(ns, "contact_info"),
+                )
+            return gen
 
         # Slide 3: Service Tiering (ECAL)
         if "service_tiering" in spec:
@@ -1850,12 +2410,23 @@ class OCIDeckGenerator(OraclePresBase):
                 if dr_region.lower() not in names:
                     regions.append({"name": dr_region, "primary": False, "label": "DR STANDBY"})
                     visual["regions"] = regions
+            # Single-region fallback: if we know the primary region but no
+            # visual or diagram was supplied, render one big PRIMARY block
+            # so the slide isn't just a lonely description line.
+            if not visual and not a.get("diagram_path") and primary_region:
+                visual = {
+                    "regions": [
+                        {"name": primary_region, "primary": True, "label": "PRIMARY"},
+                    ],
+                }
             if dr_region and description and dr_region.lower() not in description.lower():
                 description = f"{description}  •  DR region: {dr_region}"
             gen.add_architecture_slide(
                 diagram_path=a.get("diagram_path"),
                 description=description,
                 visual=visual,
+                title=pick(a, "title", default="Architecture Overview"),
+                footer=a.get("footer", ""),
             )
 
         # Slide 6: Decisions
@@ -1911,6 +2482,7 @@ class OCIDeckGenerator(OraclePresBase):
                 phases=pick_list(m, "phases"),
                 tools=pick_list(m, "tools"),
                 downtime=pick(m, "downtime"),
+                title=pick(m, "title", default="Migration Approach"),
             )
 
         # Slide 13: Operational RACI (ECAL)
@@ -1924,8 +2496,14 @@ class OCIDeckGenerator(OraclePresBase):
             raci_items = []
             if isinstance(raci_payload, str):
                 model = raci_payload
+                raci_labels = {}
+                owner_order = "customer_first"
+                title = None
             elif isinstance(raci_payload, list):
                 raci_items = [r for r in raci_payload if isinstance(r, dict)]
+                raci_labels = {}
+                owner_order = "customer_first"
+                title = None
             elif isinstance(raci_payload, dict):
                 model = raci_payload.get("model") or raci_payload.get("engagement_model") or "co_managed"
                 items = (
@@ -1935,12 +2513,23 @@ class OCIDeckGenerator(OraclePresBase):
                     or []
                 )
                 raci_items = [r for r in items if isinstance(r, dict)]
+                raci_labels = raci_payload.get("labels") if isinstance(raci_payload.get("labels"), dict) else {}
+                owner_order = raci_payload.get("owner_order", "customer_first")
+                title = raci_payload.get("title")
             if not raci_items:
                 raci_items = _default_operational_raci(model)
             gen.add_operational_raci_slide(
                 raci_items=raci_items,
                 model=model,
+                customer_label=raci_labels.get("customer", "Customer"),
+                oracle_label=raci_labels.get("oracle", "Oracle / Partner"),
+                owner_order=owner_order,
+                title=title,
             )
+
+        for custom_slide in pick_list(spec, "custom_slides"):
+            if isinstance(custom_slide, dict):
+                render_custom_slide(custom_slide)
 
         # Slide 14: Risks
         if "risks" in spec:

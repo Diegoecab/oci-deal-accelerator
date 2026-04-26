@@ -16,6 +16,7 @@ Or import and use programmatically:
 
 import yaml
 import argparse
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List, Dict
@@ -25,7 +26,10 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 
-from oci_pptx_base import Colors, Layouts, OraclePresBase
+try:
+    from oci_pptx_base import Colors, Layouts, OraclePresBase
+except ModuleNotFoundError:
+    from tools.oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 # ============================================================
@@ -57,6 +61,184 @@ def pick_list(mapping: dict, *keys):
                 return value
             return [value]
     return []
+
+
+def _timeline_to_weeks(text: str) -> int | None:
+    """Parse a simple duration phrase like '12 weeks' or '6 months'."""
+    if not text:
+        return None
+    value = str(text).lower()
+    match = re.search(r"(\d+)\s*(week|weeks|month|months)", value)
+    if not match:
+        return None
+    amount = int(match.group(1))
+    unit = match.group(2)
+    return amount * 4 if unit.startswith("month") else amount
+
+
+def _extract_business_case_text(bc: dict) -> str:
+    parts = [
+        pick(bc, "executive_summary", "summary"),
+        pick(bc, "primary_driver", "main_driver"),
+    ]
+    drivers = bc.get("drivers", {})
+    if isinstance(drivers, dict):
+        parts.extend([
+            pick(drivers, "primary", "primary_driver", "main_driver"),
+            pick(drivers, "urgency", "why_now"),
+        ])
+        coi = drivers.get("cost_of_inaction", {}) or {}
+        if isinstance(coi, dict):
+            parts.extend(coi.values())
+    return " ".join(str(p) for p in parts if p)
+
+
+def _infer_driver_headline(text: str) -> str:
+    lowered = text.lower()
+    if any(token in lowered for token in ("budget", "cost", "tco", "license", "refresh")):
+        return "Reduce cost and avoid infrastructure refresh"
+    if any(token in lowered for token in ("dr", "disaster recovery", "resilien", "rto", "rpo")):
+        return "Improve resilience and business continuity"
+    if any(token in lowered for token in ("pci", "regulator", "compliance", "data residency", "sovereignty")):
+        return "Address compliance and sovereignty requirements"
+    return "Modernize the platform on OCI"
+
+
+def _infer_driver_objective(text: str) -> str:
+    """Return a noun phrase suitable for recommendation prose."""
+    lowered = text.lower()
+    if any(token in lowered for token in ("budget", "cost", "tco", "license", "refresh")):
+        return "the cost-reduction and refresh-avoidance case"
+    if any(token in lowered for token in ("dr", "disaster recovery", "resilien", "rto", "rpo")):
+        return "the resilience and business-continuity posture"
+    if any(token in lowered for token in ("pci", "regulator", "compliance", "data residency", "sovereignty")):
+        return "the compliance and sovereignty position"
+    return "the OCI modernization approach"
+
+
+def _infer_business_case_drivers(text: str) -> dict:
+    headline = _infer_driver_headline(text)
+    urgency = "Use the current planning window to validate scope, commercials, and delivery readiness."
+    if _timeline_to_weeks(text):
+        urgency = f"Align the case with the stated delivery window ({_timeline_to_weeks(text)} weeks)."
+    return {
+        "primary": headline,
+        "urgency": urgency,
+        "cost_of_inaction": {
+            "financial": "Continuing with the current platform preserves avoidable run costs and refresh exposure.",
+            "operational": "The delivery team keeps spending time on manual operations instead of modernization work.",
+            "strategic": "Delaying the decision extends technical debt and slows business change.",
+        },
+    }
+
+
+def _infer_business_case_risks(text: str) -> dict:
+    lowered = text.lower()
+    migration = [
+        {
+            "risk": "Migration scope may be larger than the initial discovery captured.",
+            "mitigation": "Baseline applications, data stores, and dependencies before locking the plan.",
+        },
+        {
+            "risk": "Operating model changes may require team enablement before go-live.",
+            "mitigation": "Define the target RACI and training plan during design.",
+        },
+    ]
+    if any(token in lowered for token in ("dr", "disaster recovery", "rto", "rpo")):
+        migration.append({
+            "risk": "Resilience objectives may require rehearsal and explicit runbooks.",
+            "mitigation": "Schedule failover validation before production cutover.",
+        })
+    do_nothing = [
+        {
+            "risk": "Technical debt and platform constraints continue to accumulate.",
+            "impact": "Higher delivery risk and slower response to business demand.",
+        },
+        {
+            "risk": "Commercial and capacity assumptions remain unvalidated.",
+            "impact": "Procurement or renewal decisions may be made without a current baseline.",
+        },
+    ]
+    return {
+        "migration_risks": migration[:4],
+        "do_nothing_risks": do_nothing[:4],
+    }
+
+
+def _infer_business_case_roadmap(text: str) -> dict:
+    total_weeks = _timeline_to_weeks(text)
+    if total_weeks and total_weeks >= 6:
+        define = max(1, round(total_weeks * 0.25))
+        design = max(1, round(total_weeks * 0.35))
+        deliver = max(1, total_weeks - define - design)
+        total_duration = f"{total_weeks} weeks"
+    else:
+        define, design, deliver = 2, 4, 6
+        total_duration = "12 weeks (to validate)"
+    return {
+        "total_duration": total_duration,
+        "phases": [
+            {
+                "name": "Define",
+                "duration": f"{define} weeks",
+                "deliverables": ["Scope baseline", "Business case validation"],
+                "milestones": ["Stakeholder alignment"],
+            },
+            {
+                "name": "Design",
+                "duration": f"{design} weeks",
+                "deliverables": ["Target architecture", "Security and operating model"],
+                "milestones": ["Design sign-off"],
+            },
+            {
+                "name": "Deliver",
+                "duration": f"{deliver} weeks",
+                "deliverables": ["Migration execution", "Cutover and stabilization"],
+                "milestones": ["Go-live readiness"],
+            },
+        ],
+    }
+
+
+def _infer_business_case_recommendation(text: str) -> dict:
+    objective = _infer_driver_objective(text)
+    return {
+        "summary": f"Proceed to detailed design on OCI to validate {objective} with customer-specific sizing and commercials.",
+        "next_steps": [
+            "Confirm scope, current-state baseline, and success criteria.",
+            "Validate commercials, licensing assumptions, and target delivery model.",
+            "Run a design workshop and prepare the first migration wave.",
+        ],
+    }
+
+
+def _enrich_sparse_business_case(spec: dict) -> dict:
+    """Fill safe narrative sections so sparse business cases still render professionally."""
+    if not isinstance(spec, dict):
+        return spec
+    bc = spec.get("business_case", spec)
+    if not isinstance(bc, dict):
+        return spec
+
+    text = _extract_business_case_text(bc)
+    if not text.strip():
+        return spec
+
+    enriched_bc = dict(bc)
+    if "drivers" not in enriched_bc:
+        enriched_bc["drivers"] = _infer_business_case_drivers(text)
+    if "risks" not in enriched_bc:
+        enriched_bc["risks"] = _infer_business_case_risks(text)
+    if "roadmap" not in enriched_bc:
+        enriched_bc["roadmap"] = _infer_business_case_roadmap(text)
+    if "recommendation" not in enriched_bc:
+        enriched_bc["recommendation"] = _infer_business_case_recommendation(text)
+
+    if "business_case" in spec:
+        enriched = dict(spec)
+        enriched["business_case"] = enriched_bc
+        return enriched
+    return enriched_bc
 
 
 # ============================================================
@@ -619,6 +801,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
     @classmethod
     def from_spec(cls, spec: dict, template: Optional[str] = None) -> "BusinessCaseDeckGenerator":
         """Build a complete business case deck from a YAML specification."""
+        spec = _enrich_sparse_business_case(spec)
         bc = spec.get("business_case", spec)  # Support both wrapped and unwrapped
         gen = cls(template=template)
 

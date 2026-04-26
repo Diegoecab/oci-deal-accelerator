@@ -74,3 +74,18 @@ def test_from_spec_accepts_source_target_and_omits_unresolved_connections():
     gen = OCIDiagramGenerator.from_spec(spec)
 
     assert gen._connection_count == 1
+
+
+def test_drawio_icon_resolution_accepts_common_native_aliases():
+    gen = OCIDiagramGenerator()
+
+    db_icon, db_key = gen._resolve_icon_entry("database_system")
+    vm_icon, vm_key = gen._resolve_icon_entry("virtual_machine")
+    stream_icon, stream_key = gen._resolve_icon_entry("oci_streaming")
+
+    assert db_icon is not None
+    assert db_key in {"db_system", "dbcs"}
+    assert vm_icon is not None
+    assert vm_key in {"compute", "vm"}
+    assert stream_icon is not None
+    assert stream_key in {"streaming", "kafka"}

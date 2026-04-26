@@ -154,7 +154,12 @@ kb/services/dbexpert-api-reference.yaml  # API endpoints and refresh procedure
 
 ### Architecture Center Catalog
 
-**123 Oracle Architecture Center reference architectures** (`kb/architecture-center/catalog.yaml`) covering Database@Azure/AWS/Google Cloud, networking, security, AI/ML, migration, HA/DR, and more.
+**123 Oracle Architecture Center reference architectures** (`kb/architecture-center/catalog.yaml`) covering Database@Azure/AWS/Google Cloud, networking, security, AI/ML, migration, HA/DR, and more. Each entry includes title, URL, tags, services, and a 1-line summary; **121 also have a cached `_description.md`** with the full "About this architecture" text fetched from docs.oracle.com.
+
+Cached locally under `kb/diagram/assets/archcenter-refs/<slug>/`:
+- `_description.md` — Oracle's architecture rationale (used by both the lookup tool and SKILL.md option 10 "Reference architecture lookup")
+- `*.drawio` — official editable source for ~110 references (where Oracle ships a zip)
+- `*.svg` / `*.png` — raster fallback for the rest
 
 During **Phase 2 (DESIGN)**, the skill automatically matches the proposed architecture against the catalog:
 
@@ -166,6 +171,13 @@ python tools/refresh_arch_catalog.py --whats-new      # crawl What's New pages
 python tools/refresh_arch_catalog.py --url <url>       # add a single entry
 python tools/refresh_arch_catalog.py --validate        # validate catalog integrity
 python tools/refresh_arch_catalog.py --check-links     # check for broken URLs (404s, redirects)
+
+# Topology lookup — base your diagram on the closest Oracle reference
+python tools/archcenter_pattern_lookup.py "mysql heatwave high availability load balancer"
+python tools/archcenter_pattern_lookup.py "fastconnect exacs cross region" --top 10
+
+# Re-fetch description text after a catalog refresh
+python tools/archcenter_description_fetcher.py --limit 200
 ```
 
 ### KB Health & Freshness
@@ -177,7 +189,8 @@ The KB is automatically monitored for staleness and broken links:
 | **Broken links** | `python tools/refresh_arch_catalog.py --check-links` | Weekly (CI), or on demand |
 | **Stale prices** | `python tools/refresh_sku_catalog.py --validate` | Weekly (CI), or on demand |
 | **KB freshness** | `python tools/kb_freshness.py --check` | On skill startup (pre-flight) |
-| **Diagram quality** | `python scripts/validate-diagram.py <file.drawio>` | After every diagram generation |
+| **Diagram spec geometry** | `python tools/diagram_spec_validator.py --spec <spec.yaml>` | Auto, before every drawio/PPTX render |
+| **Diagram XML output** | `python tools/drawio_visual_validator.py <file.drawio>` | Auto, after `oci_diagram_gen.py` saves |
 
 **Automated CI/CD:**
 - **Deploy workflow** (`.gitea/workflows/deploy.yaml`) — auto-deploys to MCP server on every push to `main`
@@ -355,11 +368,19 @@ python tools/oci_pdf_gen.py --spec examples/proposal-spec.yaml --output proposal
 # Business case deck
 python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case.pptx
 
-# Architecture diagram
-python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio
+# Architecture diagram — see docs/skill/output-formats.md
+# § "Standard diagram-generation procedure (MANDATORY)" for the full
+# workflow: ref-arch lookup → pre-generation review → spec authoring
+# → automatic spec validator → render → visual verification.
+python tools/archcenter_pattern_lookup.py "<topology keywords>"   # 1. find canonical Oracle reference
+python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio  # 2. render (validators run automatically)
+python tools/oci_pptx_render.py --pptx arch.pptx --output arch.png --width 1600         # 3. rasterize PPTX for visual review
 
-# Validate diagram quality (icon sizes, overlaps, container overflow)
-python scripts/validate-diagram.py arch.drawio
+# Pre-render geometry validator (auto-invoked by both renderers; CLI for ad-hoc spec checks)
+python tools/diagram_spec_validator.py --spec examples/diagram-spec.yaml --strict
+
+# Post-render XML validator (auto-invoked inside OCIDiagramGenerator.save())
+python tools/drawio_visual_validator.py arch.drawio
 
 # Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/

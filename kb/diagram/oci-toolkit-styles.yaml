@@ -152,9 +152,69 @@ design_rules:
   - "VCN and Subnet labels are BOLD, ORANGE (#AE562C), left-aligned inside the container (top-left)"
   - "Subnet labels sometimes include CIDR notation below in smaller text (10pt gray)"
 
-  # VCN/Subnet containers — NO corner badges
-  - "VCN and Subnet containers do NOT have badges or icons at the corners"
-  - "Confirmed by re-checking original Architecture Center drawio files (e-commerce, ExaCS, etc.)"
+  # Visual hygiene rules — observed from OCI Toolkit v24.2 reference
+  # diagrams + diagram best practices. Added 2026-04-25 after Diego
+  # flagged labels overlapping connectors and containers stacked
+  # without breathing room.
+  # Connector labels — verified from OCI Toolkit v24.2 slide 11 "Connector Labels":
+  #   "Use connector labels to distinguish different types of logical connections and relationships."
+  #   "Use 8pt font size and Bark color for label text."
+  #   "Place connector labels on the horizontal portions of a line whenever possible."
+  #   "Center connector labels on the connector line."
+  - "Connector labels are a PROPERTY of the connector edge, not a standalone text shape — set them on the connection's `label` field, not in a separate labels[] entry"
+  - "Connector label typography: fontSize=8 (raw points), fontColor=#312D2A (Bark), Oracle Sans"
+  - "Center the label on the connector — drawio's edge labels carve a small whitespace cutout in the line so text remains legible without a white background box"
+  - "Place labels on the HORIZONTAL portion of the line whenever possible (avoid placing on a vertical segment)"
+  - "Do NOT use a separate text shape and labelBackgroundColor=#FFFFFF — that's a workaround that breaks if the line moves"
+  - "Container minimum padding: 18px between an inner container's bottom edge and its parent's bottom edge (so nested borders don't visually merge)"
+  - "Container minimum padding: 12px between an inner container's top edge and the parent container's label baseline"
+  - "Vertical gap between sibling subnets inside a VCN: ≥20px (Oracle ref average)"
+  - "Service icons inside a subnet: ≥18px from the subnet top edge so the subnet label doesn't visually collide with the icon"
+  - "Two service icons in the same row: ≥30px horizontal gap (Oracle ref average)"
+  - "When two ADs span the same subnet horizontally, leave ≥25px gap between AD right and AD left so the subnet's vertical band reads as continuous"
+
+  # VCN/Subnet corner markers — clarification 2026-04-25
+  # Per OCI Toolkit v24.2 slide 18 ("Grouping"):
+  #   "VCN, routing table, and security list icons are used at half size as
+  #    labels to differentiate the VCN and subnet."
+  # OPTIONAL ("if they add clarity") but the documented standard. Many
+  # Architecture Center references omit them on simple diagrams; reference
+  # diagrams with multiple VCNs/subnets typically use them.
+  - "OPTIONAL: VCN containers may carry a half-size vcn_icon at the top-right corner"
+  - "OPTIONAL: Subnet containers may carry a half-size route_table_and_security_list icon at the top-right corner"
+  - "Authoring rule (absolute_layout): add as a service with type=route_table_and_security_list at (container.x + container.w - 24, container.y - 4) with w=h=22 for VCN, 18 for subnet"
+  - "DEFAULT: ONE marker per VCN, NOT per subnet. Six markers in a 2-region diagram is visual noise that competes with the data flow — the validator's EXCESSIVE_CORNER_MARKERS warns at ≥6"
+  - "Skip these markers on simple diagrams — they reduce clutter only when there is a single VCN/subnet"
+
+  # Connection edge ports — added 2026-04-25 after Diego flagged
+  # "colita / semicírculo al inicio de las flechas" caused by
+  # mismatched waypoints with explicit ports.
+  - "Use exit_x/exit_y/entry_x/entry_y on connections to disambiguate parallel edges from the same source (e.g. Local DG and Remote DG both leaving exa_primary)"
+  - "Distinct exit_y values: 0.4 vs 0.8 routes the two arrows on different horizontal bands"
+  - "When using explicit ports, DO NOT also pass waypoints — drawio auto-routes orthogonally between ports. Mismatched waypoints behind the exit port make drawio draw a curve-loop 'tail' at the source"
+  - "The renderer drops waypoints automatically when ports are explicit, with a stderr warning, but the spec author should not author both"
+  - "Auto-port detection in the renderer is also disabled when waypoints are present: if the spec author chose explicit waypoints, they own the route — adding auto-ports on top would re-introduce the curve-tail bug for every connection in the spec"
+
+  # Multi-cloud diagrams — added 2026-04-25 (Diego: "si usa AWS-branded
+  # cuando sea necesario claro, no solo ec2 tambien los demas componentes")
+  - "Multi-cloud diagrams: use the official provider stencil (AWS, GCP, Azure) for components that belong to that cloud — NOT an OCI stencil. Spec field: cloud_icon (e.g. cloud_icon: ec2, cloud_icon: rds, cloud_icon: s3). The renderer maps to mxgraph.aws4.* / mxgraph.gcp2.* via _aws_icon_style / _gcp_icon_style"
+  - "Available AWS keys: ec2, eks, ecs, lambda, rds, aurora, dynamodb, s3, elb, alb, cloudfront, vpc, direct_connect, route53, sqs, sns, kinesis, api_gateway, cognito, iam, cloudwatch, sagemaker, bedrock (see AWS_ICONS in tools/oci_diagram_gen.py — extend by adding entries to that table)"
+  - "Available GCP keys: gce, gke, cloud_sql, bigquery, cloud_storage, cloud_run, cloud_functions, pub_sub, cloud_dns, cloud_load_balancing, cloud_cdn, cloud_iam, cloud_armor, spanner, firestore, memorystore, ai_platform, vertex_ai, dataflow, dataproc, composer (GCP_ICONS table)"
+  - "Available Azure keys: vm, virtual_machine, vmss, aks, app_service, function, container_instance, sql_database, cosmos_db, blob_storage, data_lake, vnet, load_balancer, application_gateway, expressroute, vpn_gateway, azure_dns, front_door, key_vault, active_directory, sentinel, monitor, log_analytics, event_grid, service_bus, api_management, openai, ml_studio (AZURE_ICONS table — added 2026-04-25)"
+
+  # Multi-cloud CONTAINER styles (added 2026-04-25 — Diego: "vpc de aws
+  # por ejemplo no tiene una forma en particular?"):
+  - "Multi-cloud containers: spec a container with `cloud: aws|gcp|azure` plus the standard `type` field, and the renderer applies the cloud-native style (color, dash, font). Falls through to OCI style if no cloud match"
+  - "AWS container types: region, vpc, subnet, subnet_public, subnet_private, az — colors per AWS Architecture Icon Guidelines (#232F3E text, #8C4FFF VPC, #7AA116 public subnet, #00A4A6 private subnet)"
+  - "GCP container types: project, region, vpc, subnet — Google blue #4285F4, lighter #669DF6 for subnets"
+  - "Azure container types: subscription, region, vnet, subnet — Azure #0078D4 throughout, Segoe UI font"
+  - "When unsure, default to OCI stencil (type=...) rather than guessing a wrong AWS key — the visual is OCI-compatible and clearly distinguishable from native AWS shapes"
+  - "Visual-weight parity: AWS/GCP filled-square stencils render ~72% of the spec bbox so they match the visual weight of OCI line-art stencils at identical w/h. The renderer applies this scaling automatically when cloud_icon is set"
+
+  # CIDR conventions — added 2026-04-25 (Diego: "le agregaste cidr a la
+  # network y eso no lo pedi")
+  - "Do NOT add CIDR notation to subnet/VCN labels unless the user explicitly requested it. The label is just 'VCN', 'DB Subnet', etc. CIDRs are an implementation detail that clutters high-level architecture diagrams"
+  - "Same rule for IP addresses, port numbers, instance counts, SLA numbers — add only what the user asked for, nothing else"
 
   # Service icon rules (confirmed from 7 Oracle Architecture Center reference diagrams)
   - "Service icons are LINE ART / OUTLINE style in teal (#2D5967) — NOT filled colored rectangles"

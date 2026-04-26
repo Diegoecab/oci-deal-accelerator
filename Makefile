@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20
 
 # Use venv if present, otherwise find best available python3
 ifneq (,$(wildcard .venv/bin/python))
@@ -71,6 +71,17 @@ codex-package: ## Package as Codex skill
 update-icons: ## Re-extract OCI icons after updating OCI Library.xml
 	$(PYTHON) tools/oci_icon_extractor.py
 	@echo "Updated kb/diagram/oci-icons.json from OCI Library.xml"
+
+pptx-icons-refresh: ## Refresh bundled OCI_Icons.pptx asset + manifest/index for native PPTX diagrams
+	$(PYTHON) tools/refresh_pptx_icon_index.py
+	@echo "Updated kb/diagram/oci-pptx-icons-manifest.yaml and oci-pptx-icons-index.json"
+
+archcenter-benchmark-20: ## Run 20-case Oracle Architecture Center native benchmark
+	$(PYTHON) tools/oci_archcenter_batch.py \
+		--limit 20 \
+		--threshold 0.82 \
+		--fidelity-threshold 0.90 \
+		--output-root examples/eval-2026-04-25-archcenter-native-20-v8
 
 clean: ## Remove generated output files
 	rm -f examples/sample-output/*.drawio

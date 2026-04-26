@@ -1,0 +1,43 @@
+---
+last_verified: 2026-04-25
+source: https://docs.oracle.com/en/solutions/implement-lbaas-error-page/index.html
+diagram_asset: https://docs.oracle.com/en/solutions/implement-lbaas-error-page/img/lbaas-maintenance-page.png
+pattern: cloud-native-lbaas-error-page
+classification: single-region cloud-native operations workflow
+---
+
+lessons:
+  - Oracle Architecture Center operational workflow diagrams can place regional managed services outside the VCN while still inside the OCI region boundary. Do not force Object Storage, Monitoring, Notifications, or DNS into a subnet unless the source diagram does.
+  - Numbered flow badges are part of the official visual grammar for process-oriented reference architectures. Render them only when the spec provides `flow_order`.
+  - The LBaaS custom error page reference uses a fixed-coordinate composition rather than a standard tiered top-to-bottom layout: users and Object Storage are left of the VCN, Monitoring and Notifications are below the VCN, and DNS sits at the lower-right edge of the VCN.
+  - Native PowerPoint reconstruction needs icon aliases for `internet_gateway`, `functions`, `monitoring`, `notifications`, and `dns`; otherwise the renderer falls back to generic service cards.
+
+layout_rules:
+  absolute_layout:
+    use_when:
+      - Reconstructing an official Architecture Center diagram from a PNG/SVG reference.
+      - The source diagram uses non-grid subnets, regional services outside VCN, or numbered workflow connectors.
+    required_fields:
+      - canvas
+      - containers
+      - services
+      - connections
+    validation:
+      - Generate draw.io and native PPTX from the same coordinate model.
+      - Render the coordinate model to PNG using `tools/oci_archcenter_eval.py`.
+      - Compare against the official PNG and inspect deviations before accepting.
+
+service_aliases:
+  internet_gateway: internet_gateway
+  igw: internet_gateway
+  functions: oci_functions
+  function: oci_functions
+  monitoring: monitoring
+  notifications: notifications
+  notification: notifications
+  dns: dns
+
+benchmark_case:
+  workspace: examples/eval-2026-04-25-lbaas-error-page
+  drawio_spec: examples/eval-2026-04-25-lbaas-error-page/specs/lbaas-error-page-diagram-spec.yaml
+  deck_spec: examples/eval-2026-04-25-lbaas-error-page/specs/lbaas-error-page-deck-spec.yaml

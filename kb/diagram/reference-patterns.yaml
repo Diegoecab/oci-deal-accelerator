@@ -1,0 +1,223 @@
+---
+# Oracle Architecture Center — reference-pattern KB
+#
+# Catalogs the official .drawio reference architectures shipped under
+# kb/diagram/assets/archcenter-refs/ by topology pattern + visual conventions, so
+# spec authors can look up "what does Oracle do for X?" instead of
+# guessing.
+#
+# Each entry includes:
+#   - source: Oracle Architecture Center URL
+#   - assets: cached .drawio + .png + .svg paths
+#   - topology: one-line description of the pattern
+#   - canvas: typical canvas dimensions Oracle uses
+#   - components: key services Oracle places in the diagram
+#   - conventions: notable visual conventions (badge placement,
+#     connector style, container nesting)
+#
+# Use this index when authoring an absolute_layout spec — find the
+# closest matching pattern and reuse Oracle's geometry/conventions
+# rather than inventing layout from scratch.
+last_verified: 2026-04-25
+
+patterns:
+
+  in-region-data-guard-on-exadata:
+    title: "Data Guard within a single OCI region (cross-AD)"
+    source: https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.drawio
+      png:    kb/diagram/assets/archcenter-refs/exadata-dedicated-in-region-dataguard/exadata-dedicated-in-region-dataguard.png
+    topology: |
+      One OCI region, two ADs, one VCN spanning both ADs with two
+      horizontal subnet bands (Client + Backup). Each AD contains an
+      ExaDB-D stencil. Data Guard label centered between the icons.
+    canvas: {width: 627, height: 389}
+    components: [oci_region, vcn, two_ads, client_subnet, backup_subnet, exadb_d_primary, exadb_d_standby, drg, policies, route_table_marker]
+    conventions:
+      - "DRG on the LEFT outside the VCN with 'DRG' label below"
+      - "Policies icon top-right outside VCN (governance scope)"
+      - "Half-size route_table_and_security_list marker per subnet on the right edge"
+      - "Data Guard rendered as a TEXT label between the two ExaDB icons (no edge label, no connector)"
+      - "Subnet labels in burnt orange (#AE562C), left-aligned"
+
+  cross-region-data-guard-on-exadata:
+    title: "Data Guard across two OCI regions"
+    source: https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.drawio
+      png:    kb/diagram/assets/archcenter-refs/exadata-dedicated-cross-region-dataguard/exadata-dedicated-cross-region-dataguard.png
+    topology: |
+      Two OCI regions side-by-side, each with its own VCN and
+      ExaDB-D. DRG-to-DRG private RPC backbone between the regions.
+    canvas: {width: 850, height: 400}
+    components: [primary_region, dr_region, two_vcns, two_drgs, exadb_d_primary, exadb_d_standby, rpc_backbone]
+    conventions:
+      - "Two regions side-by-side, equal width"
+      - "RPC label as standalone text in the whitespace between DRGs (NOT on the connector line)"
+
+  active-data-guard-far-sync:
+    title: "Active Data Guard with Far Sync (synchronous + asynchronous)"
+    source: https://docs.oracle.com/en/solutions/active-data-guard-far-sync-db-at-aws/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.drawio
+      svg:    kb/diagram/assets/archcenter-refs/active-data-guard-far-sync-dba-oracle/active-data-guard-far-sync-dba.svg
+    topology: |
+      Primary + Far Sync instance + Standby. Far Sync provides SYNC
+      replication to a nearby AD/region; the Standby is ASYNC for DR.
+    components: [primary, far_sync, standby, dataguard_arrows]
+    conventions:
+      - "Far Sync icon between primary and standby — same Database stencil tinted differently"
+
+  adb-on-azure:
+    title: "Autonomous Database deployed on Database@Azure"
+    source: https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.drawio
+      svg:    kb/diagram/assets/archcenter-refs/autonomous-database-db-at-azure-diagram-oracle/autonomous-database-db-at-azure-diagram.svg
+    topology: |
+      Azure VNet + Azure subnet + ADB-S deployed via Database@Azure.
+      Two-cloud diagram: Azure region containing OCI ADB.
+    components: [azure_region, vnet, azure_subnet, adb_s, oci_compartment]
+    conventions:
+      - "Azure region uses #0078D4 borders + Segoe UI; nested OCI ADB uses OCI styles"
+      - "Half-size VCN/Subnet markers on top-right corners"
+
+  exadb-d-on-aws:
+    title: "ExaDB-D as a multi-cloud DB on AWS (Database@AWS) + DR cross-region"
+    source: https://docs.oracle.com/en/solutions/exadb-dr-on-db-at-aws/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.drawio
+      svg:    kb/diagram/assets/archcenter-refs/exadb-dbaws-dr-arch-oracle/exadb-dbaws-dr-arch.svg
+    topology: |
+      Two AWS regions side-by-side, each hosting an OCI ExaDB-D via
+      Database@AWS. Cross-region replication via FastConnect or RPC.
+    components: [aws_region_primary, aws_region_dr, fastconnect, exadb_d_primary, exadb_d_standby]
+    conventions:
+      - "AWS region uses gray-blue dashed border + AWS purple #8C4FFF for VPC"
+      - "FastConnect rendered as ICON+LABEL group beside the connector — see § fastconnect-badge"
+
+  exadb-d-on-azure:
+    title: "ExaDB-D DR on Database@Azure (cross-region)"
+    source: https://docs.oracle.com/en/solutions/exadb-dr-on-db-at-azure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.drawio
+      svg:    kb/diagram/assets/archcenter-refs/exadb-dr-on-db-at-azure-oracle/exadb-dr-on-db-at-azure.svg
+    topology: |
+      Azure region with two AZs hosting ExaDB-D primary + standby
+      via Database@Azure. ExpressRoute or backbone between AZs.
+    components: [azure_region, two_azs, vnet, exadb_d_primary, exadb_d_standby, expressroute]
+
+  cross-az-dr-on-azure:
+    title: "Cross-AZ MAA on Database@Azure (intra-region HA)"
+    source: https://docs.oracle.com/en/solutions/oracle-maa-db-at-azure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.drawio
+      svg:    kb/diagram/assets/archcenter-refs/cross-az-dr-oracle/cross-az-dr.svg
+    topology: |
+      Single Azure region, two AZs, ExaDB-D primary in AZ1 and
+      Active Data Guard standby in AZ2. SYNC replication.
+
+  multi-region-standby-azure:
+    title: "Multi-region standby DR on Database@Azure"
+    source: https://docs.oracle.com/en/solutions/multi-region-standby-dr-db-at-azure/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/multi-region-standby-dr-db-azure-arch-oracle/multi-region-standby-dr-db-azure-arch.drawio
+
+  jde-on-adb-exadata:
+    title: "JD Edwards on ADB + Exadata Database Service (with FastConnect to on-premises)"
+    source: https://docs.oracle.com/en/solutions/oci-jde-with-adb-and-exadata/index.html
+    assets:
+      drawio: kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.drawio
+      svg:    kb/diagram/assets/archcenter-refs/oracle-adb-jde-exadata-arch-oracle/oracle-adb-jde-exadata-arch.svg
+    topology: |
+      OCI region with multiple subnets (web, app, DB), JD Edwards on
+      compute, ADB-S + Exadata DB. On-premises connected via
+      FastConnect.
+    canvas: {width: 1200, height: 800}
+    conventions:
+      - "FastConnect rendered as a compound BADGE: 63x44 lightning icon + 'OCI FastConnect' text label below, positioned beside the line — see § fastconnect-badge"
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Visual conventions extracted from the patterns above
+# ─────────────────────────────────────────────────────────────────────
+
+conventions:
+
+  fastconnect-badge:
+    summary: |
+      Oracle's reference architectures render FastConnect as a
+      compound BADGE GROUP, not as a label on the edge.
+    pattern:
+      - "63×44 px FastConnect lightning icon (type: fastconnect in our oci-icons.json)"
+      - "Text 'OCI FastConnect' (or 'FastConnect') in a 254×20 box DIRECTLY BELOW the icon"
+      - "Group is positioned ON the connection line, not next to it (the line passes behind/through the badge)"
+      - "Connection line waypoints: pre-badge → through badge midpoint → post-badge"
+    spec_recipe: |
+      services:
+        - {id: fc_badge, label: "", type: fastconnect, x: 410, y: 188, w: 60, h: 46}
+      labels:
+        - {id: lbl_fc, text: "FastConnect", x: 380, y: 236, w: 120, h: 22, fontSize: 1100, bold: true}
+      connections:
+        - {id: c, from: A, to: B, type: fastconnect, points: [[A_x, line_y], [badge_x, line_y], [B_x, line_y]]}
+
+  drg-icon-position:
+    summary: "DRG sits OUTSIDE the VCN on the LEFT edge, not inside it"
+    pattern:
+      - "55×66 px DRG stencil at x ≈ 7-22 (against canvas left edge)"
+      - "y ≈ middle of the VCN vertically"
+      - "Label 'DRG' directly below the icon (4-6 px gap)"
+
+  policies-icon-position:
+    summary: "Policies (governance) icon sits TOP-RIGHT outside the VCN"
+    pattern:
+      - "42×40 px policies stencil"
+      - "Positioned just inside the region container's top-right corner"
+
+  route-table-marker:
+    summary: "Half-size route_table_and_security_list icon at top-right of subnet/VCN container"
+    pattern:
+      - "22×22 (VCN) or 18×18 (subnet) route_table_and_security_list stencil"
+      - "Optional — 'if it adds clarity' per Toolkit slide 18; 1 per VCN max for clean diagrams"
+
+  data-guard-label:
+    summary: "Data Guard rendered as TEXT between two database icons (no separate connector)"
+    pattern:
+      - "Standalone text shape '← Oracle Data Guard →' or 'Active Data Guard' centered between primary and standby"
+      - "Located in the whitespace between the icons; no white background"
+      - "Optional: a separate dashed line below if RPC/replication path needs to be shown"
+
+  multi-cloud-region:
+    summary: "Mixing OCI with AWS/GCP/Azure — each cloud uses its native styling"
+    pattern:
+      - "OCI region: gray solid border, #F5F4F2 fill"
+      - "AWS region: dashed AWS dark blue (#232F3E) border"
+      - "Azure region: dashed Azure blue (#0078D4) border"
+      - "GCP region: dashed Google blue (#4285F4) border"
+      - "Inside each region, that cloud's own VPC/VNet styling and service icons"
+
+
+# ─────────────────────────────────────────────────────────────────────
+# Authoring procedure
+# ─────────────────────────────────────────────────────────────────────
+
+how_to_use:
+  - "When authoring a new spec, identify the closest matching pattern above by topology"
+  - "Open the assets[].drawio in draw.io desktop to see Oracle's exact geometry"
+  - "Copy canvas dimensions, container hierarchy, and badge placements verbatim"
+  - "Apply the relevant conventions[] entries (fastconnect-badge, drg-icon-position, etc.)"
+  - "Run the case through tools/archcenter_case_runner.py to extract the absolute_layout YAML if you want a starting point"
+
+  # Discovery / lookup tooling — added 2026-04-25
+discovery:
+  catalog: kb/architecture-center/catalog.yaml             # 123 OCI ref archs (URLs + tags + services)
+  cached_drawios: kb/diagram/assets/archcenter-refs/                    # ~50 .drawio + .png/.svg downloaded by archcenter_zip_downloader.py
+  lookup_tool: tools/archcenter_pattern_lookup.py          # query: "aws fastconnect exacs" → top matches with cached_assets paths
+  refresh_tool: tools/archcenter_zip_downloader.py         # bulk-fetch additional ref-arch zips from docs.oracle.com
+  workflow: |
+    1. Spec author runs: python tools/archcenter_pattern_lookup.py "<topology>"
+    2. Top match returns cached_assets[drawio] (open in draw.io desktop)
+    3. Copy Oracle's geometry, container hierarchy, badge placements
+    4. Apply visual_conventions[] from this file (fastconnect-badge, drg-icon-position, …)
+    5. Author absolute_layout spec, run through OCIDiagramGenerator (validators auto-run on save)

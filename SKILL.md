@@ -83,9 +83,9 @@ Present these options as a compact numbered list. Each option has a bold title f
 ```
  DESIGN & PROPOSE
  ─────────────────
- 1. 📋 Full proposal — *notes → architecture + deck + diagram + costs*
- 2. 📐 Architecture diagram — *YAML or description → .drawio*
- 3. 📊 Slide deck — *architecture → .pptx*
+ 1. 📋 Full proposal — *notes → architecture + deck + native PPTX diagram + costs*
+ 2. 📐 Architecture diagram — *description → .drawio or native PPTX*
+ 3. 📊 Slide deck — *architecture → .pptx with native OCI diagram*
  4. 💰 Cost estimate — *services + sizing → PAYG vs BYOL*
 
  VALIDATE & CHECK
@@ -120,8 +120,8 @@ Pick a number, or just describe what you need.
 ### Behavior Rules
 
 - If the user picks **1**, ask: "Paste your discovery notes (meeting notes, emails, whatever you have)."
-- If the user picks **2**, ask: "Describe the architecture you want to diagram, or paste a YAML spec if you have one."
-- If the user picks **3**, ask: "Describe the architecture or paste the spec. I'll generate the deck."
+- If the user picks **2**, ask: "Describe the architecture you want to diagram, or paste a YAML spec if you have one. If you want an editable technical diagram I'll generate `.drawio`; if you want presentation-ready Oracle-style visuals I'll generate a native `.pptx` diagram/slide." Then **follow the standard diagram-generation procedure in `docs/skill/output-formats.md` § Standard diagram-generation procedure (MANDATORY)** — reference-architecture lookup → pre-generation review → spec authoring → automatic spec validator → render → visual verification. Do not skip the lookup step; deriving geometry from a similar Oracle ref arch prevents the subnet-collapse / label-overflow regressions the spec validator now blocks.
+- If the user picks **3**, ask: "Describe the architecture or paste the spec. I'll generate the deck with a native OCI PowerPoint diagram when the architecture is structured enough."
 - If the user picks **4**, ask: "What services and sizing? (e.g., 'ADB-S 8 OCPU + 2 VMs + FastConnect')"
 - If the user picks **5**, ask: "Describe your architecture or paste the spec. I'll run the 5-pillar review." Then follow the WA review flow:
   1. Parse input to build a workload profile YAML (flags) and architecture YAML
@@ -146,7 +146,7 @@ Pick a number, or just describe what you need.
   6. Assess migration risks from `kb/field-knowledge/gotchas.yaml` and do-nothing risks
   7. Compare with alternatives using `kb/competitive/*`
   8. Generate implementation roadmap based on engagement tier
-  9. Produce a 8-10 slide deck using Oracle FY26 template (`config/oracle-pptx-layouts.yaml` → `business_case` type)
+  9. Produce a 8-10 slide deck using Oracle FY26 template (`config/oracle-pptx-layouts.yaml` → `business_case` type), using a native OCI PowerPoint diagram when the architecture is structured enough
   10. Output: business-case.pptx + business-case.yaml (reusable spec)
 - If the user picks **9**, ask: "What topic? (e.g., 'DEP', 'TAC', 'maintenance window', 'vector search')"
 - If the user picks **10**, ask: "What kind of architecture? (e.g., 'ADB + APEX', 'cross-region DR', 'data lakehouse')"

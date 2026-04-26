@@ -16,7 +16,10 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-from oci_pptx_base import Colors, Layouts, OraclePresBase
+try:
+    from oci_pptx_base import Colors, Layouts, OraclePresBase
+except ModuleNotFoundError:
+    from tools.oci_pptx_base import Colors, Layouts, OraclePresBase
 
 
 class DemoDeckGenerator(OraclePresBase):

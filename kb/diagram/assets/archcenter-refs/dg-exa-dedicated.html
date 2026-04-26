@@ -1,0 +1,248 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="topic">
+      <meta name="DC.Title" content="About Configuring Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure">
+      <meta name="copyright" content="(C) Copyrightfr 2023" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2023" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Date.Created" content="July 2025">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-994822BF-2264-4B8E-B406-0C6ED38BE54A">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>About Configuring Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Configure Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure">
+      <meta property="og:description" content>
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Configure Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="Database, Database Services, HA/DR">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-07-23T09:48:35-07:00">
+      <meta name="dcterms.title" content="Configure Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure">
+      <meta name="dcterms.dateCopyrighted" content="2023, 2025">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="F81694-03">
+      
+      <meta name="dcterms.product" content="en/solutions;en/engineered-systems/exadata-cloud-service">
+      <meta name="dcterms.release" content="Test Release">
+      <link rel="next" href="configure-oracle-data-guard1.html" title="Next" type="text/html">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"integrate","element_name":"Integrate","display_in_url":false},"product_group":{"short_name":"integration","element_name":"Integration","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="CQEDS">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"About Configuring Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure","datePublished":"2025-07-23 CST","dateModified":"2025-07-23 CST"}</script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/dataguard-exadata-dedicated-infrastructure/toc.htm">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="configure-oracle-data-guard1.html" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-994822BF-2264-4B8E-B406-0C6ED38BE54A" name="GUID-994822BF-2264-4B8E-B406-0C6ED38BE54A"></a>
+         
+         <h2 id="CQEDS-GUID-994822BF-2264-4B8E-B406-0C6ED38BE54A" class="sect2">About Configuring <span>Oracle Data Guard</span> for <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></h2>
+         <div class="ind">
+            <div>
+               <p>In the event of a disaster, your <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> primary database could become unavailable. A standby database is a copy of the production database that becomes available in the event of a production database outage. Configuring <span>Oracle Data Guard</span> for your primary database automatically creates a standby database. For the highest availability, we recommend configuring primary and standby databases in different OCI regions. Configuring the primary and standby databases in the same OCI region is also supported.
+               </p>
+               <p><span>Oracle Data Guard</span> ensures high availability, data protection, and disaster recovery for enterprise data in an <span>Oracle Database</span>. <span>Oracle Data Guard</span> provides a comprehensive set of services that create, maintain, manage, and monitor one or more standby databases to enable production Oracle databases to survive disasters and data corruptions. <span>Oracle Data Guard</span> maintains these standby databases as copies of the primary production database. If the primary database becomes unavailable because of a planned or an unplanned outage, <span>Oracle Data Guard</span> can switch any standby database to primary, minimizing the downtime associated with the outage.
+               </p>
+               <p>This playbook describes how to configure <span>Oracle Data Guard</span> for <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> using the OCI console.
+               </p>
+            </div>
+            <div class="sect2"><a id="GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3" name="GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3"></a><h3 id="CQEDS-GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3" class="sect3">Architecture</h3>
+               <div>
+                  <p>This architecture shows two <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> databases located in different regions, with <span>Oracle Data Guard</span> configured between the databases to keep them both in sync.
+                  </p>
+                  <p>The following diagram illustrates this architecture.</p>
+                  <p><br><span class="imageleft"><img class="imageleft" id="GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3__IMAGE_WZW_1QC_WXB" height="590" width="996" src="img/exadata-dedicated-cross-region-dataguard.png" alt="Description of exadata-dedicated-cross-region-dataguard.png follows" title="Description of exadata-dedicated-cross-region-dataguard.png follows" longdesc="img_text/exadata-dedicated-cross-region-dataguard.html"><br><a href="img_text/exadata-dedicated-cross-region-dataguard.html">Description of the illustration exadata-dedicated-cross-region-dataguard.png</a></span><br></p>
+                  <p><a href="img/exadata-dedicated-cross-region-dataguard.zip" class="de-download">exadata-dedicated-cross-region-dataguard.zip</a></p>
+                  <p>Alternatively, your <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> databases can be located within the same region.
+                  </p>
+                  <p>The following diagram illustrates this architecture.</p>
+                  <p><br><span class="imageleft"><img class="imageleft" id="GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3__IMAGE_EJ5_CQC_WXB" height="368" width="593" src="img/exadata-dedicated-region-dataguard.png" alt="Description of exadata-dedicated-region-dataguard.png follows" title="Description of exadata-dedicated-region-dataguard.png follows" longdesc="img_text/exadata-dedicated-region-dataguard.html"><br><a href="img_text/exadata-dedicated-region-dataguard.html">Description of the illustration exadata-dedicated-region-dataguard.png</a></span><br></p>
+                  <p><a href="img/exadata-dedicated-region-dataguard.zip" class="de-download">exadata-dedicated-region-dataguard.zip</a></p>
+                  <p>When configuring <span>Oracle Data Guard</span>, we recommend configuring your <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> primary and standby databases accordingly to ensure maximum availability:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-E675FBE3-27A9-48DC-86BD-7D2B41828CB3__UL_LRG_VQ1_1YB">
+                     <li>Maximum availability: Primary and standby databases in different OCI regions.</li>
+                     <li>Higher availability: Primary and standby databases in the same region, but different availability domains.</li>
+                     <li>High availability: Primary and standby databases in the same region and availability domain.</li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-25E6E61F-561C-4731-BBC8-753477F7EF14" name="GUID-25E6E61F-561C-4731-BBC8-753477F7EF14"></a><h3 id="CQEDS-GUID-25E6E61F-561C-4731-BBC8-753477F7EF14" class="sect3">Before You Begin</h3>
+               <p>Before you begin, check the versions of major software components used in this setup and review the product documentation for later reference.</p>
+               <div class="sect3"><a id="GUID-F8E39412-465B-4398-B172-9292C3A3CC6A" name="GUID-F8E39412-465B-4398-B172-9292C3A3CC6A"></a><h4 id="CQEDS-GUID-F8E39412-465B-4398-B172-9292C3A3CC6A" class="sect4">Review Software Requirements</h4>
+                  <div>
+                     <p></p>
+                     <ul style="list-style-type: disc;">
+                        <li><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></li>
+                        <li>Exaimage 22.1.30 or newer (source database)</li>
+                        <li>Exaimage 24.1.8 or newer (target database)</li>
+                        <li><span>Oracle Database</span> 19.25 or newer
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div class="sect3"><a id="GUID-CE36622E-23D1-4CC2-B73F-83C41A7C3E33" name="GUID-CE36622E-23D1-4CC2-B73F-83C41A7C3E33"></a><h4 id="CQEDS-GUID-CE36622E-23D1-4CC2-B73F-83C41A7C3E33" class="sect4">Review Documentation</h4>
+                  <div>
+                     <p></p>
+                     <ul style="list-style-type: disc;">
+                        <li><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-remote-vcn-peering" target="_blank">"Remote VCN Peering using a Legacy DRG"</a> in <span class="italic"><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> documentation</a></span></li>
+                        <li><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=exadata-dbd-dg-doc" target="_blank">"Using the Console to Enable Data Guard on an Exadata Cloud Infrastructure System" </a> in <span class="italic"><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> documentation</a></span></li>
+                        <li><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=exadata-dbd-manage-db-doc" target="_blank">"Creating a new Oracle Exadata Database Service on Dedicated Infrastructure database with Customer Managed Keys"</a> in <span class="italic"><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> documentation</a></span></li>
+                        <li><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=exadata-dbd-use-cx-managed-keys" target="_blank">"Switching an Oracle Exadata Database Service on Dedicated Infrastructure Database from Oracle Managed Keys to Customer Managed Keys"</a> in <span class="italic"><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> documentation</a></span></li>
+                        <li><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc-replicating-vaults" target="_blank">"Setting Up Replication for OCI Vault"</a> in <span class="italic"><a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> documentation</a></span></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-86DBAFCE-E2B8-411E-89C8-ADF0FB899D7D" name="GUID-86DBAFCE-E2B8-411E-89C8-ADF0FB899D7D"></a><h3 id="CQEDS-GUID-86DBAFCE-E2B8-411E-89C8-ADF0FB899D7D" class="sect3">Considerations for Configuration</h3>
+               <div>
+                  <p>Before you begin to configure <span>Oracle Data Guard</span>, review these assumptions and considerations. 
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-86DBAFCE-E2B8-411E-89C8-ADF0FB899D7D__UL_CJN_DBK_4XB">
+                     <li>The <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> primary and standby databases must be managed in the same OCI tenancy.
+                     </li>
+                     <li>The standby database is a physical standby.</li>
+                     <li>A primary database supports up to a maximum of six standby databases
+                using the new Data Guard Group model (19c and later). If you have an existing
+                standby database using the Data Guard Association model, you can change your
+                configuration to a Data Guard Group. This model switch only changes the OCI tooling
+                metadata, and does not affect the databases. See <span class="italic">Change an Oracle Data Guard
+                    Association to an Oracle Data Guard Group</span> section to learn more. 
+                     </li>
+                     <li>The primary and standby databases can run different release updates of
+                the same major database version, particularly when performing maintenance and update
+                operations.</li>
+                     <li>For databases running versions 11g and 12c, the OCI interface limits
+                the Data Guard configuration to one standby database for each primary database,
+                called a Data Guard Association. If more than one standby is required, then Data
+                Guard configuration must be done manually. Automatic backups cannot be enabled on
+                standby databases, for database versions 11g and 12c.</li>
+                     <li><span>Data Guard</span> or <span>Active Data Guard</span> must be enabled to setup a standby database. With Data Guard, the standby
+                database runs in mounted mode, while with Active Data Guard, the standby database
+                runs in Read-Only mode. Data Guard is the default option and is part of Oracle
+                Enterprise Edition license. Configuring Active Data Guard requires proper feature
+                licensing. 
+                     </li>
+                     <li>To ensure maximum fault isolation for production workloads, we recommend primary and
+                standby databases are configured on different Exadata Infrastructures. The Data
+                Guard Group model enables in-region and cross-region standbys. Configuring cascade
+                standby databases is not supported.</li>
+                     <li>DBaaS Tools and Dbcs Agent versions must be identical between primary
+                and standby VM Clusters. Use the <code class="codeph">dbaascli</code> or <code class="codeph">rpm
+                    utility</code> to verify the DBaaS Tools and Dbcs Agent versions.
+                     </li>
+                     <li>You can use the OCI interface to configure <span>Oracle Data Guard</span> for databases in the same region and across different regions that use
+                Transparent Data Encryption (TDE) with customer-managed keys with <span>OCI Vault</span>. Before configuring Data Guard for a database that uses or will use OCI Vault to
+                store customer-managed keys, see the section <span class="italic">Verify Security Policies and Dynamic
+                    Groups</span>.
+                        <div class="infoboxnote" id="GUID-86DBAFCE-E2B8-411E-89C8-ADF0FB899D7D__GUID-FC2F21C3-5FED-41DA-A352-1915BBBD69B6">
+                           <p class="notep1">Note:</p>After a database
+                    is configured to use customer-managed keys with <span>OCI Vault</span>, it cannot be re-configured to use Oracle-managed keys, regardless of whether
+                        <span>Oracle Data Guard</span> is configured or not.
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-690AF43B-9B7F-4C1C-A9CF-88E98D2E4977" name="GUID-690AF43B-9B7F-4C1C-A9CF-88E98D2E4977"></a><h3 id="CQEDS-GUID-690AF43B-9B7F-4C1C-A9CF-88E98D2E4977" class="sect3">About Required Products and Roles</h3>
+               <div>
+                  <p>This solution requires the following products:</p>
+                  <ul style="list-style-type: disc;">
+                     <li><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></li>
+                     <li><span>Oracle Database</span></li>
+                  </ul>
+                  <p>These are the roles needed for each product.</p>
+                  <div class="tblformal" id="GUID-690AF43B-9B7F-4C1C-A9CF-88E98D2E4977__GUID-B2F4B89E-BD22-4C28-999A-07BA1CF1C66B">
+                     <table cellpadding="4" cellspacing="0" class="Formal" title summary="Lists products and roles for this solution" frame="hsides" border="1" rules="rows">
+                        <thead>
+                           <tr align="left" valign="top">
+                              <th align="left" valign="bottom" width="20%" id="d322e340">Product Name: Role</th>
+                              <th align="left" valign="bottom" width="20%" id="d322e342">Required to...</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr align="left" valign="top">
+                              <td align="left" valign="top" width="20%" id="d322e346" headers="d322e340 "><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span>: <code class="codeph">database admin</code></td>
+                              <td align="left" valign="top" width="20%" headers="d322e346 d322e342 ">Create <span>Data Guard</span> Association for primary database.
+                              </td>
+                           </tr>
+                           <tr align="left" valign="top">
+                              <td align="left" valign="top" width="20%" id="d322e358" headers="d322e340 "><span>Oracle Database</span>: <code class="codeph">sys</code></td>
+                              <td align="left" valign="top" width="20%" headers="d322e358 d322e342 ">Create <span>Data Guard</span> Association using primary database <code class="codeph">sys</code> password.
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+                  <p>See <a href="/pls/topic/lookup?ctx=en/solutions/dataguard-exadata-dedicated-infrastructure&amp;id=oracle-products-and-services" target="_blank">Oracle Products, Solutions, and Services</a> to get what you need.
+                  </p>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Configure Oracle Data Guard for Oracle Exadata Database Service on Dedicated Infrastructure</p>
+            <p class="legal">F81694-03</p>
+            <p class="date legal">July 2025</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2023,2025, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>

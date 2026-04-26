@@ -1,0 +1,117 @@
+asset:
+  bundled_path: kb/diagram/assets/OCI_Icons.pptx
+  manifest_path: kb/diagram/oci-pptx-icons-manifest.yaml
+  index_path: kb/diagram/oci-pptx-icons-index.json
+  env_var: OCI_ICONS_PPTX_PATH
+  search_globs:
+    - /mnt/c/Users/*/Downloads/OCI_Icons*.pptx
+    - ~/Downloads/OCI_Icons*.pptx
+    - kb/diagram/assets/OCI_Icons*.pptx
+
+refresh:
+  sync_discovered_asset_into_bundle: true
+  choose_newest_discovered_match: true
+
+instruction_index:
+  noise_contains:
+    - "copyright"
+    - "oracle and/or its affiliates"
+  noise_exact:
+    - "tip"
+
+semantic_markers:
+  connectors_logical:
+    title_contains: "Connectors"
+    all_text:
+      - "Open Arrowhead style"
+      - "Bark color"
+      - "relationships between icons and grouping boxes"
+  connector_labels:
+    all_text:
+      - "connector labels"
+      - "Place connector labels on the horizontal portions"
+  grouping:
+    title_contains: "Grouping"
+    all_text:
+      - "OCI Region"
+      - "Availability Domain"
+      - "Compartment"
+  landscape_blank_template:
+    all_text:
+      - "Landscape Blank Template"
+      - "Location Canvas"
+      - "OCI Region"
+  portrait_blank_template:
+    all_text:
+      - "Portrait Blank Template"
+      - "OCI Region"
+  landscape_sample_db_dr:
+    all_text:
+      - "Landscape Sample"
+      - "Primary"
+      - "Standby"
+      - "Database"
+      - "VCN"
+  database_icons:
+    title_contains: "Database"
+    any_text:
+      - "ADB-D"
+      - "ATP-D"
+      - "ADW-D"
+      - "Data Guard"
+  migration_icons:
+    title_contains: "Migration"
+    any_text:
+      - "Database Migration"
+      - "Oracle Cloud Migration Advisor"
+
+extracted_shapes:
+  grouping_labels:
+    - "OCI Region"
+    - "Availability Domain"
+    - "Fault Domain"
+    - "Tier"
+    - "Tenancy"
+    - "Compartment"
+    - "VCN"
+    - "Subnet"
+  database_icon_labels:
+    - "Database"
+    - "Oracle Autonomous Database"
+    - "ADW-D"
+    - "ATP-D"
+    - "ADB-D"
+    - "Oracle Exadata Database Service"
+    - "Data Safe"
+    - "NoSQL Database"
+    - "Database Management"
+    - "Data Guard"
+    - "Data Guard Recovery"
+
+design_tokens:
+  palette:
+    bark: "312D2A"
+    bark_soft: "66615C"
+    gray_divider: "9E9892"
+    gray_tick: "C8C5C1"
+    bg_warm: "FBF6F0"
+    white: "FFFFFF"
+    oracle_red: "C74634"
+    oracle_red_soft: "AE562C"
+    oracle_blue: "3F7CC4"
+    oracle_green: "00875A"
+    oracle_amber: "E8A92F"
+    tl_green: "EAF2DE"
+    tl_yellow: "FBF1C7"
+    tl_amber: "F8D9A8"
+    tl_red: "F6CAC4"
+  typography:
+    primary_font: "Oracle Sans"
+  connector_style:
+    line_width_emu: 12700
+    line_width_soft_emu: 9525
+    color: "312D2A"
+    arrowhead:
+      type: "triangle"
+      width: "sm"
+      length: "sm"

@@ -1,0 +1,290 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="concept">
+      <meta name="DC.Title" content="Deploy Oracle Autonomous Database on Oracle Database@Azure">
+      <meta name="abstract" content="Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.">
+      <meta name="description" content="Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.">
+      <meta name="copyright" content="(C) Copyrightfr 2024" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2024" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2024" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2024" type="secondary">
+      <meta name="DC.Date.Created" content="October 2024">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-23EC4595-5EC2-4599-B574-1998B3409D9E">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.">
+      <meta name="description" content="Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.">
+      <title>Deploy Oracle Autonomous Database on Oracle Database@Azure</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Deploy Autonomous Database on Oracle Database@Azure">
+      <meta property="og:description" content="Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Deploy Autonomous Database on Oracle Database@Azure">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="AI and Machine Learning,Database,Azure,HA/DR,Serverless,Multicloud">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2024-10-07T17:04:33-07:00">
+      <meta name="dcterms.title" content="Deploy Autonomous Database on Oracle Database@Azure">
+      <meta name="dcterms.dateCopyrighted" content="2024">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="G13089-02">
+      
+      <meta name="dcterms.product" content="en/solutions;en/cloud/saas/analytics;en/cloud/paas/autonomous-data-warehouse-cloud;en/cloud/paas/autonomous-database/serverless;en/cloud/paas/atp-cloud;en/cloud/oracle-cloud-infrastructure/oracle-database-at-azure;en/cloud/paas/autonomous-json-database">
+      <meta name="dcterms.release" content="Test Release">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"reference-architectures","element_name":"Reference Architectures","display_in_url":false},"product_group":{"short_name":"oci","element_name":"OCI Architectures","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="DEPLOY-AUTONOMOUS-DATABASE-DB-AT-AZURE">
+  <script type="application/ld+json"> {"@context":"https://schema.org","@type":"WebPage","name":"Deploy Oracle Autonomous Database on Oracle Database@Azure","description":"Provision Oracle Autonomous Database as a highly resilient data store for a micro-services application deployed within a multi-availability zone Microsoft Azure region.","datePublished":"2024-10-07 22:50:46 GMT","dateModified":"2024-10-08 00:07:25 GMT"} </script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/deploy-autonomous-database-db-at-azure/index.html">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="#" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article>
+         <header>
+            <ol class="breadcrumb" vocab="http://schema.org/" typeof="BreadcrumbList">
+               <li property="itemListElement" typeof="ListItem"><a href="index.html" property="item" typeof="WebPage"><span property="name">Deploy Autonomous Database on Oracle Database@Azure</span></a></li>
+               <li class="active" property="itemListElement" typeof="ListItem">Deploy Oracle Autonomous Database on Oracle Database@Azure</li>
+            </ol>
+            <a id="GUID-23EC4595-5EC2-4599-B574-1998B3409D9E" name="GUID-23EC4595-5EC2-4599-B574-1998B3409D9E"></a>
+            
+            <h2 id="DADZD-GUID-23EC4595-5EC2-4599-B574-1998B3409D9E" class="sect2">Deploy <span>Oracle Autonomous Database</span> on <span>Oracle Database@Azure</span></h2>
+         </header>
+         <div class="ind">
+            <div>
+               <p>Provision <span>Oracle Autonomous Database</span> as a highly resilient data store for a micro-services application deployed within a
+        multi-availability zone Microsoft Azure region.
+               </p>
+               <p>Oracle databases provide enterprise-level business continuity by layering
+            core building blocks like Exadata, <span>Oracle Real Application Clusters (Oracle
+                        RAC)</span>, <span>Data Guard</span>, and Oracle Application Continuity together. To date, these core building blocks
+            could be configured manually in on-premises environments, semi-manually on <span>Oracle Cloud
+                                Infrastructure</span> (OCI) using the <span>Oracle Exadata Database
+                        Service</span>, or be fully automated using the <span>Oracle Autonomous Database</span> service. The fully managed <span>Oracle Autonomous Database</span> service is now available in an increasing number of <span>Microsoft Azure</span> regions across the globe.
+               </p>
+               <p>Many <span>Azure</span> cloud regions provide multiple available zones (AZs) to help maximize business
+            continuity. These availability zones are unique physical locations that help protect
+            applications and data from data center failures.
+               </p>
+            </div>
+            <div class="sect2"><a id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B" name="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B"></a><h3 id="DADZD-GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B" class="sect3">Architecture</h3>
+               <div>
+                  <p>This reference architecture describes some best practices for deploying <span>Oracle Autonomous Database</span> in a <span>Microsoft Azure</span> multi-availability zone (AZ) region.
+                  </p>
+                  <p>Business continuity practices and high availability topologies should always be
+            considered when designing mission-critical database applications. The architecture below
+            shows a containerized application using <span>Azure Kubernetes Service</span> (AKS). The container images are stored in the <span>Azure</span> container registry. Users access the application externally through a public load
+            balancer. Since <span>Oracle Autonomous Database</span> is a PaaS service, there is no administrative control over into which AZ the
+            Autonomous Database will be provisioned. However, in the unlikely event of an <span>Azure</span> AZ failure, Oracle ensures that a local Autonomous Data Guard standby is always
+            deployed in a different AZ (data center) from its primary.
+                  </p>
+                  <div class="infoboxnote" id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__GUID-5DE78187-7A03-49B7-9852-39A506FFC5C2">
+                     <p class="notep1">Note:</p>If application-to-database-availability-zone affinity is required, Autonomous Database
+            provides a user queryable database view to determine its AZ placement. Once the AZ of
+            the Autonomous Database is determined, networking can be aligned as appropriate.
+                  </div>
+                  <p>In the diagram below, the application virtual network (VNet) connects to the database
+            VNet in availability zone 1 (AZ1) using VNet peering. The AKS-hosted application
+            accesses the database via a private endpoint that connects to the <span>Oracle Database@Azure</span> delegated subnet. If multi-AZ business continuity is required, Autonomous Data Guard
+            can optionally be enabled, in which case, it is availability zone 2 (AZ2). Autonomous
+            Data Guard keeps the primary database and local standby in sync and automatically fails
+            over in the case of a primary AZ outage. Oracle-managed automatic backups are always
+            enabled by default.
+                  </p>
+                  <p>The following diagram illustrates this reference architecture.</p><br><div class="imageleft"><img class="imageleft" id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__IMAGE_ZJD_5XF_LCC" height="576" width="1168" src="img/autonomous-database-db-azure-diagram.png" alt="Description of autonomous-database-db-azure-diagram.png follows" title="Description of autonomous-database-db-azure-diagram.png follows" longdesc="img_text/autonomous-database-db-azure-diagram.html"><br><a href="img_text/autonomous-database-db-azure-diagram.html">Description of the illustration autonomous-database-db-azure-diagram.png</a></div><br><p><a href="img/autonomous-database-db-azure-diagram-oracle.zip" class="de-download">autonomous-database-db-azure-diagram-oracle.zip</a></p>
+                  <p>The architecture has the following components:</p>
+                  <ul style="list-style-type: disc;" id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__UL_QDH_4LM_CKB">
+                     <li><span class="bold">Region</span><p>An <span>Oracle Cloud
+                                Infrastructure</span> region is a localized geographic area that
+                                                  contains one or more data centers, called
+                                                  availability domains. Regions are independent of
+                                                  other regions, and vast distances can separate
+                                                  them (across countries or even
+                                                  continents).
+                        </p>
+                     </li>
+                     <li><span class="bold">Virtual cloud network (VCN) and subnets</span><p>A VCN is a customizable,
+                                                  software-defined network that you set up in an <span>Oracle Cloud
+                                Infrastructure</span> region. Like traditional data center networks,
+                                                  VCNs give you control over your network
+                                                  environment. A VCN can have multiple
+                                                  non-overlapping CIDR blocks that you can change
+                                                  after you create the VCN. You can segment a VCN
+                                                  into subnets, which can be scoped to a region or
+                                                  to an availability domain. Each subnet consists of
+                                                  a contiguous range of addresses that don't overlap
+                                                  with the other subnets in the VCN. You can change
+                                                  the size of a subnet after creation. A subnet can
+                                                  be public or private. 
+                        </p>
+                     </li>
+                     <li><span class="bold">Autonomous
+                                                  Database</span><p id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__d5e89">
+                           <span>Oracle Autonomous Database</span> is a fully managed, preconfigured database
+                                                  environments that you can use for transaction
+                                                  processing and data warehousing workloads. You do
+                                                  not need to configure or manage any hardware, or
+                                                  install any software. <span>Oracle Cloud
+                                Infrastructure</span> handles creating the database, as well as
+                                                  backing up, patching, upgrading, and tuning the
+                                                  database.
+                        </p>
+                     </li>
+                     <li><span class="bold">Object storage</span><p id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__d5e725">
+                           <span>Oracle Cloud
+                                Infrastructure</span> Object Storage provides quick access to large
+                                                  amounts of structured and unstructured data of any
+                                                  content type, including database backups, analytic
+                                                  data, and rich content such as images and videos.
+                                                  You can safely and securely store and then
+                                                  retrieve data directly from the internet or from
+                                                  within the cloud platform. You can scale storage
+                                                  without experiencing any degradation in
+                                                  performance or service reliability. Use standard
+                                                  storage for "hot" storage that you need to access
+                                                  quickly, immediately, and frequently. Use archive
+                                                  storage for "cold" storage that you retain for
+                                                  long periods of time and seldom or rarely
+                                                  access.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Azure</span> Container Registry</span><p><span>Azure</span> Container Registry (ACR) is a managed service for storing and managing
+                    container images and related artifacts.
+                        </p>
+                     </li>
+                     <li><span class="bold">Azure availability zone</span><p>An availability zone is a physically separate data
+                    center within a region designed to be available and fault-tolerant. Availability
+                    zones are close enough to have low-latency connections to other availability
+                    zones.</p>
+                     </li>
+                     <li><span class="bold"><span>Azure Kubernetes Service</span></span><p><span>Azure Kubernetes Service</span> (AKS) is a managed Kubernetes service offered by <span>Microsoft Azure</span>.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Azure</span> Load Balancer</span><p><span>Azure</span> Load Balancer provides automated traffic distribution from a single entry
+                    point to multiple servers in the back end.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Microsoft Azure</span> Virtual Network</span><p><span>Microsoft Azure</span> Virtual Network (VNet) is the fundamental building block for your private
+                    network in Azure. VNet enables many <span>Azure</span> resources, such as Azure virtual machines (VMs), to securely communicate with
+                    each other, the internet, and on-premises networks.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Database@Azure</span></span><p id="GUID-1548A5AA-D6B9-4DAD-AE43-7162769AD34B__d5e822"><span>Oracle Database@Azure</span> is an Oracle Cloud Database service that runs
+                                                  Oracle Database workloads in your Azure
+                                                  environment. All hardware for <span>Oracle Database@Azure</span> is colocated in Azure's data centers and uses
+                                                  Azure networking. The service benefits from the
+                                                  simplicity, security, and low latency of a single
+                                                  operating environment within Azure. Federated
+                                                  identity and access management for <span>Oracle Database@Azure</span> is provided by Microsoft Entra ID. <span>Oracle Database</span> metrics and audit logs are natively available
+                                                  in Azure. The service requires that users have an
+                                                  Azure tenancy and an OCI tenancy.
+                        </p>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-8B318CF8-81D2-44E5-8D8F-AE74F4E0A422" name="GUID-8B318CF8-81D2-44E5-8D8F-AE74F4E0A422"></a><h3 id="DADZD-GUID-8B318CF8-81D2-44E5-8D8F-AE74F4E0A422" class="sect3">Recommendations</h3>
+               <div>
+                  <div><span>Use the following recommendations as a starting point.
+        </span>Your requirements might differ from the architecture described here. 
+                  </div>
+                  <ul style="list-style-type: disc;" id="GUID-8B318CF8-81D2-44E5-8D8F-AE74F4E0A422__UL_FWK_JBG_RKB">
+                     <li>Primary and standby database subnets should be in distinct VNets
+                configured with non-overlapping IP classless inter-domain routing (CIDR)
+                ranges.</li>
+                     <li>The application tier (AKS, Docker, VMs, etc.) should span at least two
+                AZs, with the application VNet peered to both the primary and standby VNet of the
+                    <span>Autonomous Database</span>.
+                     </li>
+                     <li>Optionally, client applications can be configured to use Oracle
+                transparent application continuity (TAP) to maximize availability during planned and
+                unplanned outages.</li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-A13AEEB5-B270-4D38-9142-F89DE81A04CF" name="GUID-A13AEEB5-B270-4D38-9142-F89DE81A04CF"></a><h3 id="DADZD-GUID-A13AEEB5-B270-4D38-9142-F89DE81A04CF" class="sect3">Explore More</h3>
+               <div>
+                  <p>For more details about the components and considerations shared in this
+                document, please refer to the following links.</p>
+                  <p>Review these additional resources:</p>
+                  <ul style="list-style-type: disc;">
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=adb-serverless" target="_blank">Oracle Autonomous
+                                        Database Serverless</a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=oracle-database-at-azure" target="_blank">Oracle
+                                        Database@Azure</a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=BODAT" target="_blank"><span><cite>Learn about selecting
+                              network topologies for Oracle Database@Azure</cite></span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=adb-config-app-continuity" target="_blank">Configure Application Continuity on Autonomous
+                                        Database</a> in <cite>Using Oracle Autonomous
+                                        Database Serverless</cite></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=oracle-db-at-azure-videos" target="_blank">Oracle
+                                        Database@Azure Videos</a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span> Documentation</a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=GVVGQ" target="_blank"><span><cite>Best practices framework
+                              for Oracle Cloud Infrastructure</cite></span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=oci-calc" target="_blank">Oracle Cloud Cost
+                                        Estimator</a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/deploy-autonomous-database-db-at-azure&amp;id=cloud-adoption-framework" target="_blank">Cloud Adoption
+                                        Framework</a></li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-EBDB0E20-86F8-4A31-BFD2-84D996FCE557" name="GUID-EBDB0E20-86F8-4A31-BFD2-84D996FCE557"></a><h3 id="DADZD-GUID-EBDB0E20-86F8-4A31-BFD2-84D996FCE557" class="sect3">Acknowledgments</h3>
+               <div>
+                  <ul style="list-style-type: disc;">
+                     <li><span class="bold">Authors</span>: <span translate="no">Domenick Ficarella, Can Tuzla, Martin
+                Gubar</span></li>
+                     <li><span class="bold">Contributors</span>: <span translate="no">Wei Han, John Sulyok</span></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Deploy Autonomous Database on Oracle Database@Azure</p>
+            <p class="legal">G13089-02</p>
+            <p class="date legal">October 2024</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2024, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>

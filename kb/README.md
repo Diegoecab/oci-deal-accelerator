@@ -18,7 +18,7 @@ skill itself read these YAMLs at runtime.
 | `architecture-center/` | Auto-curated index of Oracle Architecture Center reference architectures. | Single `catalog.yaml` |
 | `field-knowledge/` | Real-world gotchas, lessons learned, undocumented limits. | Frontmatter + body |
 | `field-findings/` | Tracker of newly logged field issues with confidence decay. | Single `tracker.yaml` |
-| `diagram/` | OCI icon library and reference layouts for diagram generation. | Mixed |
+| `diagram/` | OCI icon libraries, native PPTX icon index, and reference layouts for diagram generation. | Mixed |
 
 ## Required frontmatter
 
@@ -62,6 +62,7 @@ Use a directory when you need multiple files (pattern + diagrams + ADRs).
 | `kb/pricing/oci-sku-catalog.yaml` | `python tools/refresh_sku_catalog.py --refresh` (Oracle pricing API) |
 | `kb/pricing/compute.yaml` | `python tools/refresh_sku_catalog.py --refresh-domain compute` (same API, shape-level) |
 | `kb/architecture-center/catalog.yaml` | `python tools/refresh_arch_catalog.py --whats-new` (web crawl) |
+| `kb/diagram/assets/OCI_Icons.pptx` + `kb/diagram/oci-pptx-icons-index.json` | `python tools/refresh_pptx_icon_index.py [--source /path/to/OCI_Icons.pptx]` |
 | Other `kb/pricing/<domain>.yaml` | Not yet automated. Add a new entry to `DOMAIN_REGISTRY` in `tools/refresh_sku_catalog.py` and write a domain-specific refresher (see `refresh_compute_yaml` as a template). |
 | Everything else | **Manual** — review against Oracle docs, bump `last_verified` |
 
@@ -70,7 +71,83 @@ The shortcut for everyone:
 ```bash
 make freshness            # report stale files
 make freshness-refresh    # run automatic refreshes for files that support them
+make pptx-icons-refresh   # sync new OCI_Icons.pptx revision + rebuild manifest/index
 ```
+
+For native PowerPoint diagram generation, the repo now carries a bundled
+`kb/diagram/assets/OCI_Icons.pptx` plus a derived manifest/index. If Oracle
+publishes a newer icon deck, replace it or point the refresh tool at the new
+file and rebuild:
+
+```bash
+make pptx-icons-refresh
+python tools/refresh_pptx_icon_index.py --source ~/Downloads/OCI_Icons.pptx
+```
+
+## Architecture Center native benchmark
+
+This repo now has a fixed, reusable benchmark path for Oracle Architecture
+Center visual fidelity. Keep this workflow stable because future sessions
+must re-run it exactly, not reconstruct it from memory.
+
+Primary validation method:
+
+- `draw.io` fidelity is measured by exporting the generated `*-rebuilt.drawio`
+  with the real draw.io binary and comparing that PNG against the official
+  Architecture Center PNG.
+- In this WSL setup, the primary binary is
+  `/mnt/c/Program Files/draw.io/draw.io.exe`.
+- Only if the draw.io CLI is unavailable or fails should the runner fall back
+  to the official bundled SVG companion.
+- Native `.pptx` fidelity is measured by rasterizing the editable PPTX slide
+  with `tools/oci_pptx_render.py`. Do not depend on `soffice` or LibreOffice.
+
+Operational notes that must remain persisted:
+
+- Many official Oracle `.drawio` files are compressed inside `<diagram>` as
+  base64 + raw-deflate XML. Extraction and validation must support that form.
+- `tools/drawio_visual_validator.py` is a structural gate before raster diff:
+  it catches giant fonts, duplicate ids, off-canvas geometry, and dangling
+  edges, including in compressed official `.drawio` files.
+- `tools/oci_pptx_render.py` is intentionally tolerant of unsupported
+  `WMF/EMF` media. It skips those assets, records them in `skipped_media`,
+  and keeps the benchmark running instead of aborting the case.
+
+Standard rerun command:
+
+```bash
+make archcenter-benchmark-20
+```
+
+Equivalent explicit command:
+
+```bash
+.venv/bin/python tools/oci_archcenter_batch.py \
+  --limit 20 \
+  --threshold 0.82 \
+  --fidelity-threshold 0.90 \
+  --output-root examples/eval-2026-04-25-archcenter-native-20-v8
+```
+
+Acceptance contract:
+
+- Official page + ZIP assets staged per case
+- Editable `drawio` rebuilt successfully
+- `draw.io` CLI fidelity `PASS` against official PNG, or documented SVG fallback
+- Icon-cluster coverage `>= 0.55`
+- Native PPTX generated with no unresolved or oversize icon refs
+- Native PPTX raster fidelity `PASS` against official PNG
+- Evidence written under each case: reference assets, generated outputs,
+  raster renders, diff images, JSON summaries, and markdown reports
+
+Latest verified run:
+
+- `examples/eval-2026-04-25-archcenter-native-20-v8`
+- `considered=28`, `processed=20`, `skipped=8`, `PASS=20`, `FAIL=0`
+- The verified pool currently has no open native benchmark failures. The
+  remaining gaps are confined to the skipped pool, which is still filtered
+  out for annotation-heavy diagrams or missing draw.io icon families such as
+  DNS/VPN/maximum-security-zone variants.
 
 ## Pricing files
 

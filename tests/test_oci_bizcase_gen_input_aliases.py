@@ -81,3 +81,22 @@ def test_from_spec_accepts_roadmap_aliases_and_mixed_next_steps():
     assert "Approve budget" in text
     assert "Finance" in text
     assert "May" in text
+
+
+def test_from_spec_enriches_sparse_business_case_from_executive_summary():
+    spec = {
+        "customer_name": "Acme Corp",
+        "executive_summary": (
+            "Acme wants to move an on-prem Oracle platform to OCI to reduce cost "
+            "and improve disaster recovery in 12 weeks."
+        ),
+    }
+
+    gen = BusinessCaseDeckGenerator.from_spec(spec)
+    text = _collect_slide_text(gen)
+
+    assert "Business Drivers" in text
+    assert "Risk Assessment" in text
+    assert "Implementation Roadmap" in text
+    assert "Our Recommendation" in text
+    assert "12 weeks" in text

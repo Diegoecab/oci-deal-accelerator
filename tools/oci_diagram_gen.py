@@ -356,14 +356,65 @@ AWS_ICONS = {
 
 # GCP service type → (shape path, fillColor)
 GCP_ICONS = {
-    "gce":           ("mxgraph.gcp2.compute_engine", "#4285F4"),
-    "gke":           ("mxgraph.gcp2.google_kubernetes_engine", "#4285F4"),
-    "cloud_sql":     ("mxgraph.gcp2.cloud_sql", "#4285F4"),
-    "bigquery":      ("mxgraph.gcp2.bigquery", "#4285F4"),
-    "cloud_storage": ("mxgraph.gcp2.cloud_storage", "#4285F4"),
-    "cloud_run":     ("mxgraph.gcp2.cloud_run", "#4285F4"),
-    "cloud_functions":("mxgraph.gcp2.cloud_functions", "#4285F4"),
-    "pub_sub":       ("mxgraph.gcp2.cloud_pubsub", "#4285F4"),
+    "gce":             ("mxgraph.gcp2.compute_engine", "#4285F4"),
+    "gke":             ("mxgraph.gcp2.kubernetes_engine", "#4285F4"),
+    "cloud_sql":       ("mxgraph.gcp2.cloud_sql", "#4285F4"),
+    "bigquery":        ("mxgraph.gcp2.bigquery", "#669DF6"),
+    "cloud_storage":   ("mxgraph.gcp2.cloud_storage", "#AECBFA"),
+    "cloud_run":       ("mxgraph.gcp2.cloud_run", "#4285F4"),
+    "cloud_functions": ("mxgraph.gcp2.cloud_functions", "#4285F4"),
+    "pub_sub":         ("mxgraph.gcp2.pub_sub", "#4285F4"),
+    "cloud_dns":       ("mxgraph.gcp2.cloud_dns", "#4285F4"),
+    "cloud_load_balancing": ("mxgraph.gcp2.cloud_load_balancing", "#4285F4"),
+    "cloud_cdn":       ("mxgraph.gcp2.cloud_cdn", "#4285F4"),
+    "cloud_iam":       ("mxgraph.gcp2.cloud_iam", "#DD344C"),
+    "cloud_armor":     ("mxgraph.gcp2.cloud_armor", "#DD344C"),
+    "spanner":         ("mxgraph.gcp2.cloud_spanner", "#4285F4"),
+    "firestore":       ("mxgraph.gcp2.firestore", "#4285F4"),
+    "memorystore":     ("mxgraph.gcp2.memorystore", "#4285F4"),
+    "ai_platform":     ("mxgraph.gcp2.ai_platform", "#01A88D"),
+    "vertex_ai":       ("mxgraph.gcp2.vertex_ai", "#01A88D"),
+    "dataflow":        ("mxgraph.gcp2.dataflow", "#669DF6"),
+    "dataproc":        ("mxgraph.gcp2.cloud_dataproc", "#669DF6"),
+    "composer":        ("mxgraph.gcp2.cloud_composer", "#669DF6"),
+}
+
+# Azure service type → (resIcon stencil, fillColor).
+# drawio includes mxgraph.azure2.* for the modern Azure shape library;
+# fallback to mxgraph.azure.* on older shape sets. Colors follow the
+# Microsoft Azure brand: blue #0078D4 by default, with category tints.
+AZURE_ICONS = {
+    "vm":               ("mxgraph.azure2.virtual_machine", "#0078D4"),
+    "virtual_machine":  ("mxgraph.azure2.virtual_machine", "#0078D4"),
+    "vmss":             ("mxgraph.azure2.virtual_machine_scale_set", "#0078D4"),
+    "aks":              ("mxgraph.azure2.kubernetes_services", "#0078D4"),
+    "app_service":      ("mxgraph.azure2.app_services", "#0078D4"),
+    "function":         ("mxgraph.azure2.function_apps", "#0078D4"),
+    "azure_function":   ("mxgraph.azure2.function_apps", "#0078D4"),
+    "container_instance":("mxgraph.azure2.container_instances", "#0078D4"),
+    "sql_database":     ("mxgraph.azure2.sql_database", "#C925D1"),
+    "azure_sql":        ("mxgraph.azure2.sql_database", "#C925D1"),
+    "cosmos_db":        ("mxgraph.azure2.cosmos_db", "#C925D1"),
+    "blob_storage":     ("mxgraph.azure2.storage_accounts", "#3F8624"),
+    "storage":          ("mxgraph.azure2.storage_accounts", "#3F8624"),
+    "data_lake":        ("mxgraph.azure2.data_lake_storage_gen2", "#3F8624"),
+    "vnet":             ("mxgraph.azure2.virtual_networks", "#0078D4"),
+    "load_balancer":    ("mxgraph.azure2.load_balancers", "#0078D4"),
+    "application_gateway":("mxgraph.azure2.application_gateways", "#0078D4"),
+    "expressroute":     ("mxgraph.azure2.expressroute_circuits", "#0078D4"),
+    "vpn_gateway":      ("mxgraph.azure2.vpn_gateways", "#0078D4"),
+    "azure_dns":        ("mxgraph.azure2.dns_zones", "#0078D4"),
+    "front_door":       ("mxgraph.azure2.front_door_and_cdn_profiles", "#0078D4"),
+    "key_vault":        ("mxgraph.azure2.key_vaults", "#DD344C"),
+    "active_directory": ("mxgraph.azure2.azure_active_directory", "#DD344C"),
+    "sentinel":         ("mxgraph.azure2.azure_sentinel", "#DD344C"),
+    "monitor":          ("mxgraph.azure2.monitor", "#E7157B"),
+    "log_analytics":    ("mxgraph.azure2.log_analytics_workspaces", "#E7157B"),
+    "event_grid":       ("mxgraph.azure2.event_grid", "#E7157B"),
+    "service_bus":      ("mxgraph.azure2.service_bus", "#E7157B"),
+    "api_management":   ("mxgraph.azure2.api_management_services", "#E7157B"),
+    "openai":           ("mxgraph.azure2.azure_openai", "#01A88D"),
+    "ml_studio":        ("mxgraph.azure2.machine_learning", "#01A88D"),
 }
 
 def _aws_icon_style(service_type: str) -> Optional[str]:
@@ -395,6 +446,112 @@ def _gcp_icon_style(service_type: str) -> Optional[str]:
         f"aspect=fixed;"
         f"shape={stencil};"
     )
+
+
+def _azure_icon_style(service_type: str) -> Optional[str]:
+    """Return draw.io style string for an Azure service icon, or None."""
+    entry = AZURE_ICONS.get(service_type)
+    if not entry:
+        return None
+    stencil, fill = entry
+    return (
+        f"outlineConnect=0;fontColor=#0078D4;gradientColor=none;"
+        f"fillColor={fill};strokeColor=none;dashed=0;"
+        f"verticalLabelPosition=bottom;verticalAlign=top;"
+        f"align=center;html=1;fontSize=10;fontStyle=0;"
+        f"aspect=fixed;"
+        f"shape={stencil};"
+    )
+
+
+# Cloud-specific container styles. Each cloud has its own visual
+# convention for region/VPC/subnet — using the right one makes a
+# multi-cloud diagram instantly readable. The styles mirror what
+# we have for OCI but with each provider's brand color and dash
+# pattern.
+CLOUD_CONTAINER_STYLES = {
+    # ── AWS (per AWS Architecture Icon Guidelines) ──
+    "aws_region": (
+        "whiteSpace=wrap;html=1;align=left;fontFamily=Helvetica;"
+        "verticalAlign=top;fillColor=#F2F4F4;rounded=1;arcSize=4;"
+        "strokeColor=#232F3E;fontColor=#232F3E;fontSize=12;fontStyle=1;"
+        "spacingLeft=8;spacingTop=5;dashed=1;dashPattern=8 4;"
+    ),
+    "aws_vpc": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=none;"
+        "fontColor=#8C4FFF;strokeColor=#8C4FFF;fontSize=12;"
+        "spacingLeft=5;dashPattern=8 4;"
+    ),
+    "aws_subnet_public": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=#E9F3E6;"
+        "fontColor=#7AA116;strokeColor=#7AA116;fontSize=12;"
+        "spacingLeft=5;dashPattern=4 4;"
+    ),
+    "aws_subnet_private": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=#E6F2F8;"
+        "fontColor=#00A4A6;strokeColor=#00A4A6;fontSize=12;"
+        "spacingLeft=5;dashPattern=4 4;"
+    ),
+    "aws_az": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=center;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=#FAFAFA;"
+        "fontColor=#545B64;strokeColor=#545B64;fontSize=11;"
+        "fontStyle=1;dashPattern=4 4;"
+    ),
+    # ── GCP ──
+    "gcp_project": (
+        "whiteSpace=wrap;html=1;align=left;fontFamily=Helvetica;"
+        "verticalAlign=top;fillColor=#F1F8FF;rounded=1;arcSize=4;"
+        "strokeColor=#4285F4;fontColor=#4285F4;fontSize=12;fontStyle=1;"
+        "spacingLeft=8;spacingTop=5;"
+    ),
+    "gcp_vpc": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=none;"
+        "fontColor=#4285F4;strokeColor=#4285F4;fontSize=12;"
+        "spacingLeft=5;dashPattern=8 4;"
+    ),
+    "gcp_subnet": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=#E8F0FE;"
+        "fontColor=#669DF6;strokeColor=#669DF6;fontSize=12;"
+        "spacingLeft=5;dashPattern=4 4;"
+    ),
+    "gcp_region": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=center;"
+        "fontFamily=Helvetica;verticalAlign=top;fillColor=#FAFAFA;"
+        "fontColor=#5F6368;strokeColor=#5F6368;fontSize=11;"
+        "fontStyle=1;dashPattern=4 4;"
+    ),
+    # ── Azure ──
+    "azure_subscription": (
+        "whiteSpace=wrap;html=1;align=left;fontFamily=Segoe UI;"
+        "verticalAlign=top;fillColor=#F2F8FD;rounded=1;arcSize=4;"
+        "strokeColor=#0078D4;fontColor=#0078D4;fontSize=12;fontStyle=1;"
+        "spacingLeft=8;spacingTop=5;"
+    ),
+    "azure_vnet": (
+        "whiteSpace=wrap;html=1;strokeWidth=2;dashed=1;align=left;"
+        "fontFamily=Segoe UI;verticalAlign=top;fillColor=none;"
+        "fontColor=#0078D4;strokeColor=#0078D4;fontSize=12;"
+        "spacingLeft=5;dashPattern=8 4;"
+    ),
+    "azure_subnet": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=left;"
+        "fontFamily=Segoe UI;verticalAlign=top;fillColor=#E5F1FB;"
+        "fontColor=#0078D4;strokeColor=#0078D4;fontSize=12;"
+        "spacingLeft=5;dashPattern=4 4;"
+    ),
+    "azure_region": (
+        "whiteSpace=wrap;html=1;strokeWidth=1;dashed=1;align=center;"
+        "fontFamily=Segoe UI;verticalAlign=top;fillColor=#FAFAFA;"
+        "fontColor=#605E5C;strokeColor=#605E5C;fontSize=11;"
+        "fontStyle=1;dashPattern=4 4;"
+    ),
+}
 
 
 # Map observability bar labels to icon service types
@@ -491,6 +648,9 @@ def _normalize_diagram_spec(spec: dict) -> dict:
 
     normalized = {
         "title": spec.get("title", ""),
+        "banner": spec.get("banner"),
+        "callouts": spec.get("callouts") or [],
+        "absolute_layout": spec.get("absolute_layout"),
         "external": [],
         "clouds": [],
         "tenancy": {},
@@ -529,6 +689,10 @@ def _normalize_diagram_spec(spec: dict) -> dict:
         normalized_region["availability_domains"] = []
         normalized_region["vcns"] = []
         normalized_region["compartments"] = []
+        normalized_region["services"] = [
+            normalize_service(svc, "region-svc", default_type="compute")
+            for svc in pick_list(raw_region, "services")
+        ]
         normalized_region["observability"] = pick_list(raw_region, "observability")
         remember(raw_region, normalized_region["id"])
 
@@ -587,6 +751,10 @@ def _normalize_diagram_spec(spec: dict) -> dict:
                 normalize_vcn(dict(vcn or {}))
                 for vcn in pick_list(raw_comp, "vcns")
             ]
+            normalized_comp["services"] = [
+                normalize_service(svc, "comp-svc", default_type="compute")
+                for svc in pick_list(raw_comp, "services")
+            ]
             remember(raw_comp, normalized_comp["id"])
             normalized_region["compartments"].append(normalized_comp)
 
@@ -637,6 +805,22 @@ class OCIDiagramGenerator:
 
     # Lazily loaded icon cache from kb/diagram/oci-icons.json
     ICON_CACHE = None
+    ICON_TYPE_ALIASES = {
+        "database_system": ["db_system", "dbcs"],
+        "base_db": ["db_system", "dbcs"],
+        "virtual_machine": ["compute", "vm"],
+        "compute_instance": ["compute", "vm"],
+        "oci_functions": ["functions"],
+        "function": ["functions"],
+        "adb_d": ["adb_d", "adb", "autonomous_db"],
+        "adw_d": ["adw", "autonomous_db"],
+        "atp_d": ["atp", "autonomous_db"],
+        "block_volume": ["block_storage"],
+        "oci_streaming": ["streaming", "kafka"],
+        "web_application_firewall": ["waf"],
+        "network_firewall": ["network_firewall"],
+        "queue": ["queue", "oci_queue"],
+    }
 
     @classmethod
     def _load_icon_cache(cls):
@@ -657,12 +841,25 @@ class OCIDiagramGenerator:
         # Not found — fall back to empty dict (colored rectangles)
         cls.ICON_CACHE = {}
 
+    @classmethod
+    def _resolve_icon_entry(cls, service_type: str):
+        if cls.ICON_CACHE is None:
+            cls._load_icon_cache()
+        candidates = [service_type]
+        candidates.extend(cls.ICON_TYPE_ALIASES.get(service_type, []))
+        for candidate in candidates:
+            icon_entry = cls.ICON_CACHE.get(candidate) if cls.ICON_CACHE else None
+            if icon_entry:
+                return icon_entry, candidate
+        return None, None
+
     def __init__(self):
         self._load_icon_cache()
         self.file = drawpyo.File()
         self.page = drawpyo.Page(file=self.file)
         self._objects = {}        # cell_id (str) -> drawpyo Object
         self._abs_positions = {}  # cell_id -> (abs_x, abs_y) for relative→absolute conversion
+        self._raw_underlay_cells = []  # raw mxCell XML strings for page underlay/context stencils
         self._raw_cells = []      # raw mxCell XML strings for icon stencil cells
         self._edge_extras = {}    # drawpyo edge id -> extra style attrs string
         self._edge_objects = {}   # drawpyo edge id -> (source_id, target_id) for badge placement
@@ -708,21 +905,25 @@ class OCIDiagramGenerator:
         Used by both auto-sizing (pre-calculation) and rendering to ensure
         containers are always big enough for their content.
         """
-        n_lines = label.count('\n') + 1
-        label_h = max(n_lines * 16 + 4, 20)
+        if label:
+            n_lines = label.count('\n') + 1
+            label_h = max(n_lines * 16 + 4, 20)
+        else:
+            label_h = 0
 
         # Estimate icon height using Oracle ref targets (63px height, 45px min width)
-        icon_entry = cls.ICON_CACHE.get(service_type) if cls.ICON_CACHE else None
+        icon_entry, _ = cls._resolve_icon_entry(service_type)
         if icon_entry:
             iw, ih = icon_entry["w"], icon_entry["h"]
             scale = min(63 / ih, 1.0)
             if iw * scale < 45:
                 scale = 45 / iw
             icon_h = int(ih * scale)
-        else:
-            icon_h = 63
+            return icon_h + 2 + label_h  # icon + gap + label
 
-        return icon_h + 2 + label_h  # icon + gap + label
+        # No icon → the service is rendered as a plain coloured pill whose
+        # height IS the label's content.  Don't reserve phantom icon space.
+        return label_h + 10
 
     @classmethod
     def _calc_subnet_h(cls, subnet_spec: dict) -> int:
@@ -735,12 +936,40 @@ class OCIDiagramGenerator:
             max_svc_h = max(max_svc_h, block_h)
         return 30 + max_svc_h + 15  # top pad + content + bottom pad
 
-    def _get_svc_style(self, service_type: str, font_size: Optional[int] = None) -> str:
-        """Get the style string for a service type."""
+    # Tone palette — named state overrides used on databases/services to show
+    # role/health ("primary", "standby_real", "clone_warning", ...) orthogonal
+    # to the technology category. Values specify (strokeColor, fontColor,
+    # fillColor).
+    TONE_COLORS = {
+        "primary":       ("#C74634", "#C74634", "#FCFBFA"),  # Oracle red
+        "standby":       ("#6E89AD", "#6E89AD", "#FCFBFA"),  # slate blue
+        "standby_real":  ("#6E89AD", "#6E89AD", "#FCFBFA"),  # slate blue
+        "dr":            ("#6E89AD", "#6E89AD", "#FCFBFA"),  # slate blue (DR)
+        "adg":           ("#00875A", "#00875A", "#FCFBFA"),  # Oracle green
+        "adg_standby":   ("#00875A", "#00875A", "#FCFBFA"),
+        "clone_warning": ("#E8A92F", "#7A5510", "#FDF4E1"),  # amber
+        "warning":       ("#E8A92F", "#7A5510", "#FDF4E1"),
+        "removed":       ("#9E9892", "#70665E", "#F2F0EC"),  # muted gray
+    }
+
+    def _get_svc_style(
+        self,
+        service_type: str,
+        font_size: Optional[int] = None,
+        tone: Optional[str] = None,
+    ) -> str:
+        """Get the style string for a service type, with optional tone override."""
         category = SVC_CATEGORY.get(service_type, "svc_infra")
         style = STYLES[category]
         if font_size:
             style = re.sub(r"fontSize=\d+", f"fontSize={font_size}", style)
+        if tone:
+            colors = self.TONE_COLORS.get(tone)
+            if colors:
+                stroke, font_col, fill = colors
+                style = re.sub(r"strokeColor=[^;]+", f"strokeColor={stroke}", style)
+                style = re.sub(r"fontColor=[^;]+", f"fontColor={font_col}", style)
+                style = re.sub(r"fillColor=[^;]+", f"fillColor={fill}", style)
         return style
 
     def _create_object(
@@ -826,12 +1055,53 @@ class OCIDiagramGenerator:
         self._container_count += 1
         return cell_id
 
+    # Compartment tone fills — light, semi-transparent-looking tints that
+    # colour-code role without dominating the diagram (same visual weight
+    # used for cross-AD pools in the comparison tool).
+    COMPARTMENT_TONE_FILLS = {
+        "primary":  "#FDECE9",   # very light Oracle red
+        "adg":      "#E6F0E0",   # light green (ADG coverage)
+        "adg_zone": "#E6F0E0",
+        "ro":       "#E6EEF6",   # light blue
+        "dr":       "#E6EEF6",   # light blue (DR)
+        "warning":  "#FDF4E1",   # light amber
+        "removed":  "#F2F0EC",   # light warm gray
+        "out":      "#F2F0EC",   # out-of-scope → muted gray
+    }
+    COMPARTMENT_TONE_STROKES = {
+        "primary":  "#C74634",
+        "adg":      "#00875A",
+        "adg_zone": "#00875A",
+        "ro":       "#3B5B82",
+        "dr":       "#6E89AD",
+        "warning":  "#E8A92F",
+        "removed":  "#9E9892",
+        "out":      "#9E9892",
+    }
+
     def add_compartment(
         self, cell_id: str, label: str, parent: str,
         x: int = 15, y: int = 30, w: int = 400, h: int = 300,
+        tone: Optional[str] = None,
     ) -> str:
-        """Add a Compartment / Fault Domain / Tier container (dashed gray)."""
-        self._create_object(cell_id, label, STYLES["compartment"], parent, x, y, w, h)
+        """Add a Compartment / Fault Domain / Tier container.
+
+        With ``tone`` set (primary/adg/dr/warning/removed/out), the
+        compartment is rendered with a light transparent-looking tint +
+        coloured border instead of the default dashed grey. This preserves
+        the diagram's visual calm while making role zones legible.
+        """
+        style = STYLES["compartment"]
+        if tone and tone in self.COMPARTMENT_TONE_FILLS:
+            fill = self.COMPARTMENT_TONE_FILLS[tone]
+            stroke = self.COMPARTMENT_TONE_STROKES[tone]
+            style = (
+                f"whiteSpace=wrap;html=1;strokeWidth=1;dashed=0;align=left;"
+                f"fontFamily=Oracle Sans;verticalAlign=top;fillColor={fill};"
+                f"fontColor={stroke};strokeColor={stroke};fontSize=12;"
+                f"fontStyle=1;spacingLeft=10;spacingTop=6;rounded=1;arcSize=4;"
+            )
+        self._create_object(cell_id, label, style, parent, x, y, w, h)
         self._container_count += 1
         return cell_id
 
@@ -969,25 +1239,98 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, service_type: str, parent: str,
         x: int = 20, y: int = 35, w: int = 150, h: int = 50,
         font_size: Optional[int] = None,
+        tone: Optional[str] = None,
+        badges: Optional[list] = None,
+        caption: Optional[str] = None,
+        exact_size: bool = False,
+        raw_icon_cells: Optional[list] = None,
+        raw_icon_w: Optional[int] = None,
+        raw_icon_h: Optional[int] = None,
     ) -> str:
-        """Add a service block with icon (if available) or colored rectangle fallback."""
-        icon_entry = self.ICON_CACHE.get(service_type) if self.ICON_CACHE else None
+        """Add a service block with icon (if available) or colored rectangle fallback.
+
+        ``tone`` applies a state-based color overlay (primary/standby/adg/
+        clone_warning/dr/removed). For iconified services, the tone renders as
+        a thin colored outline around the icon + tinted label, since OCI
+        stencils are always teal.  ``badges`` is an optional list of short
+        labels (e.g., ["R/W", "R/O"]) rendered as small pills beside the
+        service to annotate the service roles exposed.
+        """
+        icon_entry = None
+        if raw_icon_cells:
+            icon_entry = {
+                "w": max(int(raw_icon_w or w), 1),
+                "h": max(int(raw_icon_h or h), 1),
+                "cells": list(raw_icon_cells),
+            }
+        else:
+            icon_entry, _ = self._resolve_icon_entry(service_type)
         if icon_entry:
-            return self._add_service_with_icon(
+            ret = self._add_service_with_icon(
                 cell_id, label, service_type, parent, icon_entry,
-                x, y, w, h, font_size,
+                x, y, w, h, font_size, tone=tone, exact_size=exact_size,
             )
-        # Fallback: colored rectangle via drawpyo Object
-        style = self._get_svc_style(service_type, font_size)
-        self._create_object(cell_id, label, style, parent, x, y, w, h)
-        self._service_count += 1
-        return cell_id
+        else:
+            style = self._get_svc_style(service_type, font_size, tone=tone)
+            self._create_object(cell_id, label, style, parent, x, y, w, h)
+            self._service_count += 1
+            ret = cell_id
+        if badges:
+            self._add_service_badges(cell_id, badges, parent, x, y, w, h)
+        if caption:
+            # Small "sticky note" caption beneath the service to annotate
+            # intent / open question (e.g., "Use case: TBD — confirm with
+            # MELI"). Rendered as a compact amber-bordered block directly
+            # below the service block.
+            cap_style = (
+                "rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF4D6;"
+                "strokeColor=#E8A92F;strokeWidth=1;fontColor=#5A4A10;"
+                "fontSize=9;fontStyle=2;fontFamily=Oracle Sans;"
+                "align=center;verticalAlign=middle;arcSize=6;"
+                "spacingLeft=4;spacingRight=4;"
+            )
+            cap_id = f"{cell_id}__caption"
+            cap_y = y + h + 4
+            self._create_object(cap_id, caption, cap_style, parent,
+                                x, cap_y, w, 32)
+        return ret
+
+    def _add_service_badges(self, svc_id, badges, parent, x, y, w, h):
+        """Render small colored pills next to a service to label its exposed
+        endpoints (e.g., R/W, R/O). Placed to the right of the service block.
+        """
+        BADGE_STYLES = {
+            "rw":  ("#C74634", "#FCFBFA"),   # Oracle red — R/W
+            "r/w": ("#C74634", "#FCFBFA"),
+            "ro":  ("#00875A", "#FCFBFA"),   # Oracle green — R/O (ADG)
+            "r/o": ("#00875A", "#FCFBFA"),
+            "dr":  ("#6E89AD", "#FCFBFA"),   # slate blue — DR
+            "tp":  ("#C74634", "#FCFBFA"),   # TP = R/W service alias
+            "low": ("#00875A", "#FCFBFA"),   # LOW = R/O alias
+        }
+        bw, bh = 34, 16
+        bx = x + w + 4
+        by = y + 8
+        for i, b in enumerate(badges):
+            key = str(b).strip().lower()
+            fill, fc = BADGE_STYLES.get(key, ("#2D5967", "#FCFBFA"))
+            style = (
+                f"rounded=1;whiteSpace=wrap;html=1;fillColor={fill};"
+                f"strokeColor=none;fontColor={fc};fontSize=9;fontStyle=1;"
+                f"fontFamily=Oracle Sans;align=center;verticalAlign=middle;"
+                f"arcSize=30;"
+            )
+            bid = f"{svc_id}__badge{i}"
+            self._create_object(bid, str(b), style, parent,
+                                bx, by + i * (bh + 2), bw, bh)
 
     def _add_service_with_icon(
         self, cell_id: str, label: str, service_type: str, parent: str,
         icon_entry: dict,
         x: int, y: int, w: int, h: int,
         font_size: Optional[int] = None,
+        tone: Optional[str] = None,
+        exact_size: bool = False,
     ) -> str:
         """Embed official OCI icon cells inside a drawpyo group Object.
 
@@ -1029,32 +1372,44 @@ class OCIDiagramGenerator:
         else:
             icon_area_h = max(h - label_h, MIN_ICON_H)
 
-        # Scale icon to Oracle ref standard (calibrated from 37 Oracle .drawio files):
-        #   Oracle uses 63x63 square icon boxes. Our OCI Library stencils are
-        #   rectangular (tall), so we target 63px height and enforce minimum
-        #   45px width for legibility of detailed multi-cell stencils.
-        ICON_TARGET_H = 63   # Oracle ref: 63px icon box height
-        ICON_MIN_W = 45      # Minimum width for legible stencils
+        if exact_size:
+            # Honor the spec's bounding box exactly. Used by absolute_layout
+            # when the caller has already authored coordinates that match
+            # the canonical reference; auto-scaling would push icons off
+            # their position relative to neighbors.
+            scale = min(w / icon_w, h / icon_h)
+            scaled_w = icon_w * scale
+            scaled_h = icon_h * scale
+            icon_group_w = max(int(round(scaled_w)), 1)
+            icon_group_h = max(int(round(scaled_h)), 1)
+            icon_group_x = x
+            icon_offset_x = 0
+        else:
+            # Scale icon to Oracle ref standard (calibrated from 37 Oracle .drawio
+            # files): Oracle uses 63x63 square icon boxes. Our OCI Library stencils
+            # are rectangular (tall), so we target 63px height and enforce minimum
+            # 45px width for legibility of detailed multi-cell stencils.
+            ICON_TARGET_H = 63   # Oracle ref: 63px icon box height
+            ICON_MIN_W = 45      # Minimum width for legible stencils
 
-        # Scale to fit target height
-        scale = min(ICON_TARGET_H / icon_h, 1.0)
-        scaled_w = icon_w * scale
-        scaled_h = icon_h * scale
-
-        # If too narrow, scale up to meet minimum width
-        if scaled_w < ICON_MIN_W:
-            scale = ICON_MIN_W / icon_w
+            # Scale to fit target height
+            scale = min(ICON_TARGET_H / icon_h, 1.0)
             scaled_w = icon_w * scale
             scaled_h = icon_h * scale
 
-        # Icon group dimensions = scaled icon size (not spec width).
-        # This ensures edges connect TO the visible icon, not to an
-        # invisible wide group. The label (sibling) uses spec width.
-        icon_group_w = max(int(scaled_w) + 4, MIN_ICON_W)  # small padding
-        icon_group_h = max(int(scaled_h), MIN_ICON_H)
+            # If too narrow, scale up to meet minimum width
+            if scaled_w < ICON_MIN_W:
+                scale = ICON_MIN_W / icon_w
+                scaled_w = icon_w * scale
+                scaled_h = icon_h * scale
+            # Icon group dimensions = scaled icon size (not spec width).
+            # This ensures edges connect TO the visible icon, not to an
+            # invisible wide group. The label (sibling) uses spec width.
+            icon_group_w = max(int(scaled_w) + 4, MIN_ICON_W)  # small padding
+            icon_group_h = max(int(scaled_h), MIN_ICON_H)
 
-        # Center the icon group horizontally within the spec width
-        icon_group_x = x + (w - icon_group_w) // 2
+            # Center the icon group horizontally within the spec width
+            icon_group_x = x + (w - icon_group_w) // 2
 
         group_style = (
             "group;fillColor=none;strokeColor=none;pointerEvents=1;"
@@ -1062,19 +1417,26 @@ class OCIDiagramGenerator:
         )
         self._create_object(cell_id, "", group_style, parent, icon_group_x, y, icon_group_w, icon_group_h)
 
-        # Build ID mapping: original cell id -> unique cell id
+        # Build ID mapping: original cell id -> unique cell id. Some
+        # harvested stencils have cells without an explicit id, which
+        # would propagate as None and break sorting; filter those out.
         original_ids = set()
         for cell_xml in icon_cells:
             cell_elem = ET.fromstring(cell_xml)
-            original_ids.add(cell_elem.get("id"))
+            cid_orig = cell_elem.get("id")
+            if cid_orig:
+                original_ids.add(cid_orig)
 
         id_map = {}
-        for orig_id in sorted(original_ids,
-                              key=lambda x_: int(x_) if x_.isdigit() else 0):
+        for orig_id in sorted(
+            original_ids,
+            key=lambda x_: int(x_) if x_ and x_.isdigit() else 0,
+        ):
             id_map[orig_id] = f"{cell_id}_i{orig_id}"
 
-        # Center the icon horizontally within the (now tight) group
-        icon_offset_x = (icon_group_w - scaled_w) / 2
+        if not exact_size:
+            # Center the icon horizontally within the (now tight) group
+            icon_offset_x = (icon_group_w - scaled_w) / 2
 
         # Use a placeholder for the group's drawpyo ID — replaced in to_xml()
         group_placeholder = f"__DRAWPYO_{cell_id}__"
@@ -1090,6 +1452,12 @@ class OCIDiagramGenerator:
             if self._is_icon_label_cell(style):
                 continue
 
+            # Some harvested stencils have inner cells without an explicit
+            # id (e.g. Oracle exports with vsdxID-only metadata). Mint a
+            # synthetic id so the cell still renders inside the group.
+            if orig_id is None or orig_id not in id_map:
+                synth = f"{cell_id}_syn{len(id_map)}"
+                id_map[orig_id] = synth
             new_id = id_map[orig_id]
 
             # Remap parent
@@ -1106,20 +1474,37 @@ class OCIDiagramGenerator:
             # NOTE: Stencil icons are ALWAYS teal (#2D5967) per OCI visual style.
             # Copper (#AA643B) is only for fallback rectangles (no icon available).
 
-            # Scale and offset geometry
+            # Scale and offset geometry. Cells that were originally parented
+            # to "1" (the page root) carry whole-page absolute coordinates
+            # — when we re-parent them to the icon group, those absolute
+            # coords stop making sense (they would render at the harvested
+            # position on the new page, far from the spec-supplied x/y).
+            # Zero the root cell's geometry so the group's x/y is the
+            # single source of truth for icon placement; child cells keep
+            # their parent-relative offsets and just get scaled.
             geo = cell_elem.find("mxGeometry")
             if geo is not None:
-                for attr in ("x", "y", "width", "height"):
+                for attr in ("width", "height"):
                     val = geo.get(attr)
                     if val is not None:
                         try:
                             geo.set(attr, str(float(val) * scale))
                         except ValueError:
                             pass
-                # Offset x for centering (only top-level icon cells parented to group)
                 if orig_parent == "1":
-                    cur_x = float(geo.get("x", "0"))
-                    geo.set("x", str(cur_x + icon_offset_x))
+                    # Root anchor: its (x,y) in the harvested file was a
+                    # whole-page absolute. Drop it and center inside the
+                    # group instead.
+                    geo.set("x", str(icon_offset_x))
+                    geo.set("y", "0")
+                else:
+                    for attr in ("x", "y"):
+                        val = geo.get(attr)
+                        if val is not None:
+                            try:
+                                geo.set(attr, str(float(val) * scale))
+                            except ValueError:
+                                pass
 
             cell_str = ET.tostring(cell_elem, encoding="unicode")
             self._raw_cells.append(cell_str)
@@ -1127,19 +1512,42 @@ class OCIDiagramGenerator:
         # Label is a SIBLING of the icon group (child of `parent`, not of `cell_id`).
         # This keeps connection geometry clean: arrows connect to the icon group only.
         # Oracle ref arch style: 12pt, charcoal (#312D2A), centered below icon.
+        # When a tone is set, recolor the label so the state (primary / standby
+        # / clone_warning / ...) is visible even though the icon itself stays
+        # teal.
         fs = font_size or 12
-        label_style = (
-            f"text;html=1;whiteSpace=wrap;overflow=visible;align=center;verticalAlign=top;"
-            f"fontFamily=Oracle Sans;fontSize={fs};fontColor=#312D2A;"
-            f"strokeColor=none;fillColor=none;spacingTop=2;"
-        )
-        # Label width = icon width (centered); overflow=visible handles longer text.
-        label_w = w
-        label_id = f"{cell_id}_label"
-        self._create_object(
-            label_id, label, label_style, parent,
-            x, y + icon_group_h + 2, label_w, label_h,
-        )
+        label_color = "#312D2A"
+        if tone and tone in self.TONE_COLORS:
+            _, label_color, _ = self.TONE_COLORS[tone]
+        if label:
+            label_style = (
+                f"text;html=1;whiteSpace=wrap;overflow=visible;align=center;verticalAlign=top;"
+                f"fontFamily=Oracle Sans;fontSize={fs};fontColor={label_color};"
+                f"strokeColor=none;fillColor=none;spacingTop=2;"
+            )
+            # Label width = icon width (centered); overflow=visible handles longer text.
+            label_w = w
+            label_id = f"{cell_id}_label"
+            self._create_object(
+                label_id, label, label_style, parent,
+                x, y + icon_group_h + 2, label_w, label_h,
+            )
+
+        # When a tone is set, draw a thin colored outline around the icon
+        # area to tag state (primary / standby / clone / DR) visually.
+        if tone and tone in self.TONE_COLORS:
+            stroke, _, fill = self.TONE_COLORS[tone]
+            outline_style = (
+                f"rounded=1;whiteSpace=wrap;html=1;fillColor=none;"
+                f"strokeColor={stroke};strokeWidth=2;"
+                f"dashed={'1' if tone in ('clone_warning', 'warning', 'removed') else '0'};"
+                f"dashPattern=6 4;arcSize=6;"
+            )
+            outline_id = f"{cell_id}_outline"
+            self._create_object(
+                outline_id, "", outline_style, parent,
+                x - 2, y - 2, icon_group_w + 4, icon_group_h + label_h + 8,
+            )
 
         self._service_count += 1
         return cell_id
@@ -1165,11 +1573,26 @@ class OCIDiagramGenerator:
         source: str, target: str,
         waypoints: Optional[list] = None,
         flow_order: Optional[int] = None,
+        exit_x: Optional[float] = None,
+        exit_y: Optional[float] = None,
+        entry_x: Optional[float] = None,
+        entry_y: Optional[float] = None,
     ) -> str:
         """Add a connection arrow between two elements using drawpyo Edge.
 
         flow_order: if set (1-20), renders a teal circle badge with the number
         on the midpoint of the edge for visual storytelling.
+
+        exit_x/exit_y/entry_x/entry_y: floats in [0, 1] specifying the exact
+        port on the source / target shape where the edge attaches. Use these
+        to disambiguate parallel edges sharing a source: e.g. two arrows
+        leaving the same icon should have distinct exit_y values so drawio
+        doesn't stack them on top of each other.
+
+            exit_x=0   exit_y=0    → top-left corner of source
+            exit_x=0.5 exit_y=0    → top-middle
+            exit_x=1   exit_y=0.5  → right-middle
+            exit_x=0.5 exit_y=1    → bottom-middle
         """
         src_obj = self._objects.get(source)
         tgt_obj = self._objects.get(target)
@@ -1192,24 +1615,30 @@ class OCIDiagramGenerator:
         edge.rounded = True
         edge.endSize = 6
 
-        # Font styling via text_format (drawpyo's supported approach)
+        # Font styling for the rare edge label. NOTE: Oracle's shipped
+        # reference architectures (verified across 3 in kb/diagram/assets/archcenter-refs)
+        # have ZERO edges with values and ZERO labelBackgroundColor=#FFFFFF
+        # — they put connector text in standalone shapes positioned in
+        # whitespace. Slide 11 of the toolkit prescribes edge labels but
+        # the published architectures override it. We default to NO white
+        # background so the label is visually clean if a spec author
+        # opts to use one anyway.
         edge.text_format.fontFamily = "Oracle Sans"
-        edge.text_format.fontSize = 10
+        edge.text_format.fontSize = 9
         edge.text_format.fontColor = "#312D2A"
-        edge.text_format.labelBackgroundColor = "#FFFFFF"
 
         # Extra style attributes that drawpyo Edge doesn't support natively.
         # - edgeStyle=orthogonalEdgeStyle: right-angle routing (no diagonal lines)
         # - jumpStyle=arc: when edges cross, show a small arc instead of overlapping
-        # - labelBackgroundColor: white so labels are readable over the line
         # - NO elbow=vertical (it conflicts with orthogonal + port constraints)
+        # - NO labelBackgroundColor: Oracle reference archs do not use it
+        #   on edges; connector text lives in standalone shapes instead.
         extra_style = (
             "edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;"
             "jettySize=auto;"
             "jumpStyle=arc;jumpSize=8;"
             "endFill=0;startFill=0;"
-            "labelBackgroundColor=#FFFFFF;labelBorderColor=none;"
-            "fontFamily=Oracle Sans;fontSize=10;fontColor=#312D2A;"
+            "fontFamily=Oracle Sans;fontSize=9;fontColor=#312D2A;"
         )
 
         # Customize per connection type
@@ -1239,13 +1668,56 @@ class OCIDiagramGenerator:
             extra_style += "dashPattern=4 4;"
         # "standard", "data", and "db" use solid line defaults
 
+        # ── Explicit ports (caller override) ──
+        # If the caller passed exit_x/y or entry_x/y, honor them — this lets
+        # specs disambiguate parallel edges from the same source by giving
+        # each one a distinct exit_y on the source side.
+        #
+        # IMPORTANT (general rule, not per-case fix):
+        # When ports are explicit, we IGNORE waypoints. Mismatched
+        # waypoints (a waypoint behind the exit port, or off the edge's
+        # natural axis) make drawio render a curve loop / "tail" at the
+        # source. The clean default is: ports decide the route — drawio
+        # auto-routes orthogonally between them. Spec authors who want
+        # full manual control should drop the ports and use waypoints
+        # alone. Diego flagged this as "colita / semicírculo al inicio
+        # de la flecha" 2026-04-25.
+        explicit_ports = any(p is not None for p in (exit_x, exit_y, entry_x, entry_y))
+        if explicit_ports:
+            ex = 0.5 if exit_x is None else float(exit_x)
+            ey = 0.5 if exit_y is None else float(exit_y)
+            tx_p = 0.5 if entry_x is None else float(entry_x)
+            ty_p = 0.5 if entry_y is None else float(entry_y)
+            extra_style += (
+                f"exitX={ex};exitY={ey};exitDx=0;exitDy=0;"
+                f"entryX={tx_p};entryY={ty_p};entryDx=0;entryDy=0;"
+            )
+            if waypoints:
+                import sys as _sys
+                print(
+                    f"[connection {cell_id}] both exit/entry ports AND waypoints "
+                    f"specified — dropping waypoints to avoid curve-loop tail. "
+                    f"Use one or the other.",
+                    file=_sys.stderr,
+                )
+                waypoints = None
+
         # ── Auto-port detection ──
-        # Calculate exit/entry ports based on relative positions of source and
-        # target. This prevents draw.io's auto-router from creating crossing
-        # arrows — instead, edges exit/enter from the geometrically correct side.
+        # Calculate exit/entry ports based on relative positions of source
+        # and target. This prevents draw.io's auto-router from creating
+        # crossing arrows — instead, edges exit/enter from the
+        # geometrically correct side.
+        #
+        # IMPORTANT (general rule, 2026-04-25 — Diego flagged "siguen
+        # con la colita las que van desde App VM al DB y LBaaS a VMs"):
+        # if the spec already provided waypoints, DO NOT also add auto-
+        # ports. drawio reconciles "exit at right edge" + "first
+        # waypoint above-left" by drawing a small curl back through the
+        # source. Waypoints take priority — the spec author already
+        # decided the route.
         src_pos = self._abs_positions.get(source)
         tgt_pos = self._abs_positions.get(target)
-        if src_pos and tgt_pos:
+        if not explicit_ports and not waypoints and src_pos and tgt_pos:
             src_obj_w = getattr(src_obj, 'width', 100) or 100
             src_obj_h = getattr(src_obj, 'height', 60) or 60
             # Center points
@@ -1365,10 +1837,59 @@ class OCIDiagramGenerator:
     def add_title(
         self, text: str,
         x: int = 30, y: int = 10, w: int = 800, h: int = 30,
+        banner: Optional[str] = None,
     ) -> str:
-        """Add an italic title label."""
-        self._create_object("title", text, STYLES["title"], None, x, y, w, h)
+        """Add a title label. When ``banner`` is set to a color key
+        (red/green/amber/blue), a thin colored strip is drawn behind the
+        title so it reads as a coloured banner.
+        """
+        if banner:
+            banner_colors = {
+                "red":   ("#C74634", "#FCFBFA"),
+                "green": ("#00875A", "#FCFBFA"),
+                "amber": ("#E8A92F", "#312D2A"),
+                "blue":  ("#2D5967", "#FCFBFA"),
+                "gray":  ("#70665E", "#FCFBFA"),
+            }
+            fill, fc = banner_colors.get(banner, ("#C74634", "#FCFBFA"))
+            banner_style = (
+                f"rounded=1;whiteSpace=wrap;html=1;fillColor={fill};"
+                f"strokeColor=none;fontColor={fc};fontSize=16;fontStyle=1;"
+                f"fontFamily=Oracle Sans;align=center;verticalAlign=middle;"
+                f"arcSize=4;"
+            )
+            self._create_object("title", text, banner_style, None, x, y, w, h + 6)
+        else:
+            self._create_object("title", text, STYLES["title"], None, x, y, w, h)
         return "title"
+
+    def add_callout(
+        self, cell_id: str, text: str, color: str = "red",
+        x: int = 30, y: int = 820, w: int = 1500, h: int = 70,
+    ) -> str:
+        """Add a coloured rectangular callout box with centered text.
+
+        Used for "key issue" banners, "REMOVED" strips, capacity advisories —
+        anything the architect wants to surface above/below the topology.
+        ``color`` picks from red / green / amber / blue / gray.
+        """
+        palette = {
+            "red":   ("#FBE5E2", "#C74634", "#7A1F12"),  # fill, stroke, font
+            "green": ("#DFF1E7", "#00875A", "#044C33"),
+            "amber": ("#FDF1D9", "#E8A92F", "#7A5510"),
+            "blue":  ("#E3ECF3", "#2D5967", "#1F3F48"),
+            "gray":  ("#F0EDE9", "#9E9892", "#312D2A"),
+        }
+        fill, stroke, fc = palette.get(color, palette["red"])
+        style = (
+            f"rounded=1;whiteSpace=wrap;html=1;fillColor={fill};"
+            f"strokeColor={stroke};strokeWidth=1;fontColor={fc};"
+            f"fontSize=11;fontFamily=Oracle Sans;align=left;"
+            f"verticalAlign=middle;spacingLeft=14;spacingTop=6;"
+            f"spacingRight=12;spacingBottom=6;arcSize=4;"
+        )
+        self._create_object(cell_id, text, style, None, x, y, w, h)
+        return cell_id
 
     # ================================================================
     # Output — merge drawpyo XML + injected raw icon cells
@@ -1380,9 +1901,10 @@ class OCIDiagramGenerator:
         1. Get drawpyo's XML via file.xml property
         2. Replace drawpyo's default mxfile/diagram attributes with OCI ones
         3. Inject extra style attributes into edge cells
-        4. Inject raw icon stencil cells before </root>
-        5. Replace group parent placeholders with actual drawpyo IDs
-        6. Sanitize: replace #ffffff with #FCFBFA (no pure white in OCI palette)
+        4. Inject raw underlay/context stencils behind drawpyo objects
+        5. Inject raw icon stencil cells before </root>
+        6. Replace group parent placeholders with actual drawpyo IDs
+        7. Sanitize: replace #ffffff with #FCFBFA (no pure white in OCI palette)
         """
         xml = self.file.xml
 
@@ -1401,13 +1923,18 @@ class OCIDiagramGenerator:
             xml,
         )
 
-        # Canvas: white background so region fill (#F0EDE9) is clearly visible
+        # Canvas: white background so region fill (#F0EDE9) is clearly visible.
+        # In absolute_layout mode we honor the spec's canvas so the page
+        # exports at the same dimensions as Oracle's reference (anything
+        # larger leaves empty whitespace that breaks visual fidelity diffs).
+        page_w = getattr(self, "_canvas_width", None) or 1900
+        page_h = getattr(self, "_canvas_height", None) or 1200
         xml = re.sub(
             r'<mxGraphModel[^>]*>',
-            '<mxGraphModel dx="1900" dy="1200" grid="1" gridSize="10" '
-            'guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
-            'page="1" pageScale="1" pageWidth="1900" pageHeight="1200" '
-            'background="#FFFFFF" math="0" shadow="0">',
+            f'<mxGraphModel dx="{page_w}" dy="{page_h}" grid="1" gridSize="10" '
+            f'guides="1" tooltips="1" connect="1" arrows="1" fold="1" '
+            f'page="1" pageScale="1" pageWidth="{page_w}" pageHeight="{page_h}" '
+            f'background="#FFFFFF" math="0" shadow="0">',
             xml,
         )
 
@@ -1472,10 +1999,30 @@ class OCIDiagramGenerator:
                             xml = xml[:geo_idx] + new_geo + xml[geo_idx + len(old_geo):]
                             break
 
+        # Inject raw underlay/context cells immediately after the root
+        # scaffold so they sit behind drawpyo-authored objects.
+        if self._raw_underlay_cells:
+            inject = "\n".join(f"        {c}" for c in self._raw_underlay_cells)
+            xml, replaced = re.subn(
+                r'(<mxCell id="1" parent="0"\s*/>)',
+                r"\1\n" + inject,
+                xml,
+                count=1,
+            )
+            if not replaced:
+                xml, replaced = re.subn(
+                    r'(<mxCell parent="0" id="1"\s*/>)',
+                    r"\1\n" + inject,
+                    xml,
+                    count=1,
+                )
+            if not replaced:
+                xml = xml.replace("</root>", inject + "\n      </root>", 1)
+
         # Inject raw icon stencil cells before </root>
         if self._raw_cells:
             inject = "\n".join(f"        {c}" for c in self._raw_cells)
-            xml = xml.replace("</root>", inject + "\n      </root>")
+            xml = xml.replace("</root>", inject + "\n      </root>", 1)
 
         # Replace placeholder parent references with actual drawpyo IDs
         for cell_id, obj in self._objects.items():
@@ -1507,13 +2054,118 @@ class OCIDiagramGenerator:
 
         return xml
 
-    def save(self, filepath: str):
-        """Save to a .drawio file."""
-        # Create flow badges before generating XML
-        # self._create_flow_badges()  # disabled — Oracle style uses dash patterns, not numbered badges
+    def save(self, filepath: str, validate: bool = True,
+             reference_png: Optional[str] = None,
+             reference_svg: Optional[str] = None,
+             fidelity_threshold: float = 0.90,
+             strict: bool = False) -> dict:
+        """Save to a .drawio file and run pre-delivery checks.
+
+        ``validate`` (default True): runs ``drawio_visual_validator`` —
+        catches fontSize unit confusion, off-canvas geometry, dangling
+        edges, duplicate ids, compressed payloads. Errors are surfaced;
+        with ``strict=True`` they raise instead of warning.
+
+        ``reference_png`` / ``reference_svg`` (optional): when provided
+        (typically from a fidelity-mode spec referencing an Oracle
+        Architecture Center asset), runs ``drawio_fidelity_eval`` to
+        pixel-diff the rebuilt drawio against the canonical PNG and
+        prints PASS/FAIL at ``fidelity_threshold``.
+
+        Returns a dict with the validation + fidelity payloads so callers
+        can inspect them programmatically.
+        """
+        if self._flow_badges:
+            self._create_flow_badges()
         xml = self.to_xml()
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(xml)
+
+        report: dict = {"path": filepath}
+        if validate:
+            report["validation"] = self._run_visual_validator(filepath, strict=strict)
+        if reference_png:
+            report["fidelity"] = self._run_fidelity_eval(
+                filepath, reference_png, reference_svg, fidelity_threshold,
+            )
+        return report
+
+    @staticmethod
+    def _run_visual_validator(filepath: str, strict: bool = False) -> dict:
+        """Run drawio_visual_validator; print warnings/errors to stderr.
+
+        Returns the validator's report dict. Always non-fatal unless
+        ``strict=True``.
+        """
+        try:
+            try:
+                from drawio_visual_validator import validate_drawio
+            except ModuleNotFoundError:
+                from tools.drawio_visual_validator import validate_drawio
+            from pathlib import Path as _P
+            report = validate_drawio(_P(filepath))
+        except Exception as exc:
+            print(f"[validator] WARN: could not run validator: {exc}", file=sys.stderr)
+            return {"status": "error", "error": str(exc)}
+        if report.get("status") == "fail":
+            errors = [i for i in report.get("issues", []) if i.get("severity") == "error"]
+            print(f"[validator] FAIL on {filepath}: {len(errors)} error(s)", file=sys.stderr)
+            for issue in errors[:8]:
+                print(f"  - {issue.get('code')}: {issue.get('message')}", file=sys.stderr)
+            if strict:
+                raise SystemExit(2)
+        else:
+            warnings = [i for i in report.get("issues", []) if i.get("severity") == "warn"]
+            if warnings:
+                print(f"[validator] OK on {filepath} ({len(warnings)} warning(s))", file=sys.stderr)
+            else:
+                print(f"[validator] OK on {filepath}", file=sys.stderr)
+        return report
+
+    @staticmethod
+    def _run_fidelity_eval(filepath: str, reference_png: str,
+                           reference_svg: Optional[str],
+                           threshold: float) -> dict:
+        """Compare the rebuilt drawio against an official PNG.
+
+        Tries the official SVG companion path (cairosvg) first because it
+        works in any environment. The drawio.exe binary path is opt-in
+        via the DRAWIO_EXE env var so the skill doesn't depend on a
+        Windows-specific binary by default.
+        """
+        from pathlib import Path as _P
+        out_png = _P(filepath).with_suffix(".rendered.png")
+        diff_png = _P(filepath).with_suffix(".diff.png")
+        try:
+            try:
+                from drawio_fidelity_eval import compare as _compare, render_svg, render_drawio
+            except ModuleNotFoundError:
+                from tools.drawio_fidelity_eval import compare as _compare, render_svg, render_drawio
+            method = None
+            if os.environ.get("DRAWIO_EXE"):
+                # Power-user opt-in: render the rebuilt drawio with the
+                # actual draw.io binary. Stricter than the SVG path but
+                # requires the binary to be installed.
+                try:
+                    render_drawio(_P(filepath), out_png)
+                    method = "drawio-binary"
+                except Exception as exc:
+                    print(f"[fidelity] DRAWIO_EXE set but render failed ({exc}); falling back to SVG", file=sys.stderr)
+            if method is None and reference_svg and _P(reference_svg).exists():
+                render_svg(_P(reference_svg), out_png)
+                method = "svg-companion"
+            if method is None:
+                print("[fidelity] no rendering path available — set DRAWIO_EXE or pass reference_svg", file=sys.stderr)
+                return {"status": "skipped"}
+            metrics = _compare(_P(reference_png), out_png, diff_png)
+            sim = metrics["pixel_similarity"]
+            status = "pass" if sim >= threshold else "fail"
+            print(f"[fidelity] {status.upper()} sim={sim:.4f} (threshold {threshold}) method={method}", file=sys.stderr)
+            return {"status": status, "metrics": metrics, "method": method,
+                    "rendered_path": str(out_png), "diff_path": str(diff_png)}
+        except Exception as exc:
+            print(f"[fidelity] WARN: could not run fidelity eval: {exc}", file=sys.stderr)
+            return {"status": "error", "error": str(exc)}
 
     # ================================================================
     # High-level: build from YAML spec
@@ -1532,6 +2184,19 @@ class OCIDiagramGenerator:
         """
         spec = _normalize_diagram_spec(spec)
         gen = cls()
+
+        if spec.get("absolute_layout"):
+            # Spec-level geometry validation runs BEFORE rendering so the
+            # same regressions are caught for both the .drawio and .pptx
+            # paths (the post-render drawio validator only catches a
+            # subset). See tools/diagram_spec_validator.py.
+            try:
+                from diagram_spec_validator import validate_spec  # type: ignore
+            except ImportError:
+                from tools.diagram_spec_validator import validate_spec  # type: ignore
+            validate_spec(spec, source="absolute_layout (drawio)")
+            gen._render_absolute_layout(spec)
+            return gen
 
         # External actors (users, internet, third-party)
         for ext in spec.get("external", []):
@@ -1843,6 +2508,9 @@ class OCIDiagramGenerator:
                             svc_id, label, svc["type"],
                             subnet["id"], svc_x, svc_top, svc_w, svc_h,
                             font_size=svc.get("fontSize"),
+                            tone=svc.get("tone"),
+                            badges=svc.get("badges"),
+                            caption=svc.get("caption"),
                         )
                         svc_x += svc_w + SVC_SPACING
 
@@ -1877,6 +2545,7 @@ class OCIDiagramGenerator:
                     region["id"],
                     x=comp.get("x", 10), y=comp.get("y", rh - 80),
                     w=comp_w, h=comp_h,
+                    tone=comp.get("tone"),
                 )
                 # VCNs inside compartment
                 for vcn in comp.get("vcns", []):
@@ -1930,6 +2599,128 @@ class OCIDiagramGenerator:
                             vcn["id"], gw_x, gw_y, gw_w, gw_h,
                         )
                         gy = gw_y + actual_h + cls.GW_SPACING
+
+                # Services directly inside a compartment. This avoids forcing
+                # artificial VCN/subnet structures when the user only wants a
+                # logical database lineage view. Default layout stacks
+                # services vertically; `layout: horizontal` lays them out
+                # side-by-side instead (useful for workload "rows").
+                comp_services = comp.get("services", [])
+                if comp_services:
+                    comp_layout = comp.get("layout", "vertical")
+                    if comp_layout == "horizontal":
+                        n = len(comp_services)
+                        gap = 20
+                        total_gap = gap * max(0, n - 1)
+                        default_svc_w = max(150, (comp_w - 30 - total_gap) // n)
+                        svc_x = 15
+                        svc_top = 36
+                        for svc in comp_services:
+                            svc_id = svc.get("id", gen._next_id())
+                            svc_w = svc.get("w", default_svc_w)
+                            label = svc["label"].replace("\\n", "\n")
+                            svc_h = max(
+                                svc.get("h", 100),
+                                gen._calc_service_block_h(label, svc["type"]),
+                            )
+                            gen.add_service(
+                                svc_id, label, svc["type"],
+                                comp_id, svc_x, svc_top, svc_w, svc_h,
+                                font_size=svc.get("fontSize"),
+                                tone=svc.get("tone"),
+                                badges=svc.get("badges"),
+                                caption=svc.get("caption"),
+                            )
+                            svc_x += svc_w + gap
+                    else:
+                        svc_top = 28
+                        svc_width = max(140, comp_w - 20)
+                        svc_left = 10
+                        for svc in comp_services:
+                            svc_id = svc.get("id", gen._next_id())
+                            svc_h = max(svc.get("h", 80), gen._calc_service_block_h(
+                                svc.get("label", "").replace("\\n", "\n"),
+                                svc.get("type", "compute"),
+                            ))
+                            label = svc["label"].replace("\\n", "\n")
+                            gen.add_service(
+                                svc_id, label, svc["type"],
+                                comp_id, svc_left, svc_top, svc_width, svc_h,
+                                font_size=svc.get("fontSize"),
+                                tone=svc.get("tone"),
+                                badges=svc.get("badges"),
+                                caption=svc.get("caption"),
+                            )
+                            svc_top += svc_h + 20
+
+                # Nested compartments — used for AVMC → ACD → PDBs style
+                # hierarchies and any other case where a logical container
+                # needs to sit inside another. Coordinates are relative to
+                # the parent compartment.
+                def _render_nested_compartments(parent_id: str, parent_w: int,
+                                                 parent_h: int, nested_list: list):
+                    for nc in nested_list:
+                        nc_id = nc.get("id", gen._next_id())
+                        nc_w = nc.get("w", parent_w - 24)
+                        nc_h = nc.get("h", parent_h - 40)
+                        nc_x = nc.get("x", 12)
+                        nc_y = nc.get("y", 36)
+                        gen.add_compartment(
+                            nc_id, nc["label"], parent_id,
+                            x=nc_x, y=nc_y, w=nc_w, h=nc_h,
+                            tone=nc.get("tone"),
+                        )
+                        # Direct services inside the nested compartment.
+                        nc_services = nc.get("services", []) or []
+                        if nc_services:
+                            stop = 30
+                            svc_width = max(130, nc_w - 20)
+                            for svc in nc_services:
+                                svc_id = svc.get("id", gen._next_id())
+                                svc_lbl = svc.get("label", "").replace("\\n", "\n")
+                                svc_h = max(svc.get("h", 80),
+                                            gen._calc_service_block_h(svc_lbl, svc.get("type", "compute")))
+                                gen.add_service(
+                                    svc_id, svc_lbl, svc.get("type", "compute"),
+                                    nc_id, 10, stop, svc_width, svc_h,
+                                    font_size=svc.get("fontSize"),
+                                    tone=svc.get("tone"),
+                                    badges=svc.get("badges"),
+                                    caption=svc.get("caption"),
+                                )
+                                stop += svc_h + 18
+                        # Recurse for deeper nesting (ACD inside AVMC, etc.).
+                        _render_nested_compartments(
+                            nc_id, nc_w, nc_h, nc.get("compartments", []) or [],
+                        )
+
+                _render_nested_compartments(
+                    comp_id, comp_w, comp_h, comp.get("compartments", []) or [],
+                )
+
+            # Services directly inside the region when no VCN/compartment
+            # structure is needed and the diagram is purely logical.
+            region_services = region.get("services", [])
+            if region_services:
+                svc_top = 65
+                svc_left = 24
+                svc_width = max(160, rw - 48)
+                for svc in region_services:
+                    svc_id = svc.get("id", gen._next_id())
+                    svc_h = max(svc.get("h", 80), gen._calc_service_block_h(
+                        svc.get("label", "").replace("\\n", "\n"),
+                        svc.get("type", "compute"),
+                    ))
+                    label = svc["label"].replace("\\n", "\n")
+                    gen.add_service(
+                        svc_id, label, svc["type"],
+                        region["id"], svc_left, svc_top, svc_width, svc_h,
+                        font_size=svc.get("fontSize"),
+                        tone=svc.get("tone"),
+                        badges=svc.get("badges"),
+                        caption=svc.get("caption"),
+                    )
+                    svc_top += svc_h + 20
 
             # Observability row at bottom of region — uses icons (only if explicitly requested)
             if region.get("observability"):
@@ -2034,12 +2825,259 @@ class OCIDiagramGenerator:
                 flow_order=conn.get("flow_order"),
             )
 
-        # Title — centered across the full diagram width
+        # Title — centered across the full diagram width. An optional
+        # ``banner`` field at the spec level ("red", "green", ...) renders
+        # the title as a coloured strip (used for state headers like the
+        # Oracle-red AS IS banner).
         if spec.get("title"):
             total_w = tenancy_x + tenancy_w
-            gen.add_title(spec["title"], x=0, y=8, w=total_w, h=35)
+            gen.add_title(
+                spec["title"],
+                x=0, y=8, w=total_w, h=35,
+                banner=spec.get("banner"),
+            )
+
+        # Diagram-level callouts — rendered either above (before tenancy) or
+        # below (after tenancy) the main topology. Multiple callouts in the
+        # same position stack vertically so they don't overlap.
+        bottom_cursor_y = tenancy_y + tenancy_h + 18
+        top_cursor_y = tenancy_y
+        for i, callout in enumerate(spec.get("callouts") or []):
+            cid = callout.get("id", f"callout_{i}")
+            color = callout.get("color", "red")
+            position = callout.get("position", "bottom")
+            cw = callout.get("w", tenancy_w)
+            ch = callout.get("h", 60)
+            cx = callout.get("x", tenancy_x)
+            if position == "top":
+                cy = callout.get("y", max(55, top_cursor_y - ch - 12))
+                top_cursor_y = cy
+            else:
+                cy = callout.get("y", bottom_cursor_y)
+                bottom_cursor_y = cy + ch + 10
+            gen.add_callout(cid, callout.get("text", ""), color, cx, cy, cw, ch)
 
         return gen
+
+    def _render_absolute_layout(self, spec: dict) -> None:
+        """Render a coordinate-faithful Architecture Center benchmark layout.
+
+        This mode is intentionally explicit. Reference diagrams often place
+        regional services outside the VCN, use non-grid subnet positions, and
+        annotate process flows with numbered badges. Autolayout is useful for
+        proposals; benchmark reconstruction needs fixed coordinates.
+
+        ``fontSize`` is shared with the PPTX absolute_layout, which uses
+        hundredths of a point (e.g. 720 = 7.2pt). drawio expects raw
+        points, so we collapse anything ≥80 by /100 — there is no
+        legitimate drawio diagram with a 80pt+ label.
+        """
+        layout = spec.get("absolute_layout") or {}
+        canvas = layout.get("canvas") or {}
+        # Track canvas so save() can size the page to match the spec.
+        # Expand to include any item whose bounding box overflows the
+        # declared canvas — Oracle's caption boxes routinely sit a few
+        # pixels past the visible region, and a clipped page would
+        # rasterize to a different aspect than the canonical PNG.
+        cw = int(canvas.get("width", 0)) or None
+        ch = int(canvas.get("height", 0)) or None
+        for bucket in ("containers", "services", "labels", "external"):
+            for item in layout.get(bucket) or []:
+                try:
+                    x = int(item.get("x", 0)); y = int(item.get("y", 0))
+                    w = int(item.get("w", 0)); h = int(item.get("h", 0))
+                except (TypeError, ValueError):
+                    continue
+                if cw is not None: cw = max(cw, x + w)
+                if ch is not None: ch = max(ch, y + h)
+        self._canvas_width = cw
+        self._canvas_height = ch
+        self._raw_underlay_cells = list(layout.get("raw_underlay_cells") or [])
+
+        def _pt(value):
+            if value is None:
+                return None
+            try:
+                v = float(value)
+            except (TypeError, ValueError):
+                return value
+            if v >= 80:
+                v = v / 100.0
+            return max(6, int(round(v)))
+
+        for item in layout.get("containers") or []:
+            item_id = item.get("id", self._next_id())
+            label = str(item.get("label", "")).replace("\\n", "\n")
+            kind = item.get("type", "compartment")
+            cloud = (item.get("cloud") or "").lower()  # aws | gcp | azure | "" (OCI)
+            default_parent = {
+                "region": "tenancy",
+                "ad": "region",
+                "vcn": "region",
+                "subnet": "vcn",
+            }.get(kind, "region")
+            parent = item["parent"] if "parent" in item else default_parent
+            x, y = int(item.get("x", 0)), int(item.get("y", 0))
+            w, h = int(item.get("w", 100)), int(item.get("h", 80))
+            # Multi-cloud container styling: when the spec marks a
+            # container with `cloud: aws|gcp|azure`, use that cloud's
+            # native style (color, dash, font) so a multi-cloud diagram
+            # is instantly readable without reading every label. The
+            # mapping covers the common kinds (region, vpc/vnet, subnet,
+            # az). Falls through to OCI styles otherwise.
+            cloud_style_key = None
+            if cloud in {"aws", "gcp", "azure"}:
+                kind_map = {
+                    ("aws", "region"): "aws_region",
+                    ("aws", "vpc"):    "aws_vpc",
+                    ("aws", "subnet"): "aws_subnet_private",
+                    ("aws", "subnet_public"):  "aws_subnet_public",
+                    ("aws", "subnet_private"): "aws_subnet_private",
+                    ("aws", "az"):     "aws_az",
+                    ("aws", "ad"):     "aws_az",
+                    ("gcp", "project"): "gcp_project",
+                    ("gcp", "region"):  "gcp_region",
+                    ("gcp", "vpc"):     "gcp_vpc",
+                    ("gcp", "subnet"):  "gcp_subnet",
+                    ("azure", "subscription"): "azure_subscription",
+                    ("azure", "region"):       "azure_region",
+                    ("azure", "vnet"):         "azure_vnet",
+                    ("azure", "subnet"):       "azure_subnet",
+                }
+                cloud_style_key = kind_map.get((cloud, kind))
+            if cloud_style_key and cloud_style_key in CLOUD_CONTAINER_STYLES:
+                self._create_object(item_id, label,
+                                    CLOUD_CONTAINER_STYLES[cloud_style_key],
+                                    parent, x, y, w, h)
+                self._container_count += 1
+                continue
+            if kind == "tenancy":
+                self.add_tenancy(item_id, label, x, y, w, h)
+            elif kind == "region":
+                self.add_region(item_id, label, parent, x, y, w, h)
+            elif kind == "ad":
+                self.add_ad(item_id, label, parent, x, y, w, h)
+            elif kind == "vcn":
+                self.add_vcn(item_id, label, parent, x, y, w, h)
+            elif kind == "subnet":
+                self.add_subnet(item_id, label, parent, x, y, w, h)
+            else:
+                self.add_compartment(item_id, label, parent, x, y, w, h, tone=item.get("tone"))
+
+        for item in layout.get("external") or []:
+            self.add_external(
+                item.get("id", self._next_id()),
+                str(item.get("label", "")).replace("\\n", "\n"),
+                x=int(item.get("x", 0)), y=int(item.get("y", 0)),
+                w=int(item.get("w", 56)), h=int(item.get("h", 72)),
+                icon=item.get("icon", "users"),
+            )
+
+        for item in layout.get("services") or []:
+            cloud_icon = item.get("cloud_icon")
+            sid = item.get("id", self._next_id())
+            label = str(item.get("label", "")).replace("\\n", "\n")
+            sx_v, sy_v = int(item.get("x", 0)), int(item.get("y", 0))
+            sw, sh = int(item.get("w", 110)), int(item.get("h", 88))
+            if cloud_icon:
+                # AWS / GCP / Azure stencil — multi-cloud branding via
+                # the provider's official drawio shape library
+                # (mxgraph.aws4.*, mxgraph.gcp2.*, mxgraph.azure2.*).
+                # Falls back to OCI stencil if the key isn't recognized.
+                style = (_aws_icon_style(cloud_icon)
+                         or _gcp_icon_style(cloud_icon)
+                         or _azure_icon_style(cloud_icon))
+                if style:
+                    # AWS/GCP icons are filled-square stencils; OCI
+                    # icons are line-art with whitespace inside the
+                    # bbox. At identical w/h the filled square LOOKS
+                    # bigger. Scale to ~72% of the spec bbox so the
+                    # visual weight matches the OCI line-art.
+                    # Diego flagged 2026-04-25: "el tamaño del icono
+                    # queda muy grande resp al tamaño de oci".
+                    visual_scale = 0.72
+                    rw = int(sw * visual_scale)
+                    rh = int(sh * visual_scale)
+                    rx = sx_v + (sw - rw) // 2
+                    ry = sy_v + (sh - rh) // 2
+                    self._create_object(sid, label, style,
+                                        item.get("parent"),
+                                        rx, ry, rw, rh)
+                    self._service_count += 1
+                    continue
+            self.add_service(
+                sid,
+                label,
+                item.get("type", "compute"),
+                item["parent"] if "parent" in item else None,
+                x=sx_v, y=sy_v, w=sw, h=sh,
+                font_size=_pt(item.get("fontSize")),
+                tone=item.get("tone"),
+                badges=item.get("badges"),
+                caption=item.get("caption"),
+                raw_icon_cells=item.get("raw_icon_cells"),
+                raw_icon_w=sw,
+                raw_icon_h=sh,
+                exact_size=True,
+            )
+
+        # Label style: matches the Oracle Toolkit v24.2 reference
+        # diagrams — transparent background, charcoal text, Oracle Sans.
+        # The toolkit does NOT use a white labelBackgroundColor; correct
+        # technique is to position labels OFF the connector line
+        # (typically a few pixels above or below). Spec authors can
+        # opt-in to a white background per-label via ``opaque_bg: true``
+        # for the rare case where overlap is unavoidable.
+        label_style = (
+            "text;html=1;whiteSpace=wrap;align=center;verticalAlign=middle;"
+            "fontFamily=Oracle Sans;fontSize={font_size};fontColor={color};"
+            "strokeColor=none;fillColor=none;{bg}"
+        )
+        for item in layout.get("labels") or []:
+            bg = "labelBackgroundColor=#FFFFFF;" if item.get("opaque_bg") else ""
+            style = label_style.format(
+                font_size=_pt(item.get("fontSize", 11)) or 11,
+                color=item.get("color", "#312D2A"),
+                bg=bg,
+            )
+            if item.get("bold"):
+                style += "fontStyle=1;"
+            self._create_object(
+                item.get("id", self._next_id()),
+                str(item.get("text", "")).replace("\\n", "\n"),
+                style,
+                item["parent"] if "parent" in item else None,
+                int(item.get("x", 0)), int(item.get("y", 0)),
+                int(item.get("w", 100)), int(item.get("h", 24)),
+            )
+
+        for conn in layout.get("connections") or []:
+            # Spec accepts both `points` and `waypoints` (alias). Ports
+            # disambiguate parallel edges from the same source.
+            self.add_connection(
+                conn.get("id", self._next_id()),
+                conn.get("label"),
+                conn.get("type", "standard"),
+                conn["from"],
+                conn["to"],
+                waypoints=conn.get("waypoints") or conn.get("points"),
+                flow_order=conn.get("flow_order"),
+                exit_x=conn.get("exit_x"),
+                exit_y=conn.get("exit_y"),
+                entry_x=conn.get("entry_x"),
+                entry_y=conn.get("entry_y"),
+            )
+
+        # In absolute_layout mode the canvas dimensions and the region
+        # container come straight from Oracle's reference (which has no
+        # title above the diagram). Drawing a 28pt title at y=8 would
+        # overlap the OCI Region label at the top-left. Honor an explicit
+        # opt-in via spec["render_title_in_layout"]; otherwise keep the
+        # canvas faithful to the source.
+        if spec.get("title") and spec.get("render_title_in_layout"):
+            canvas = layout.get("canvas") or {}
+            width = int(canvas.get("width", 850))
+            self.add_title(spec["title"], x=0, y=8, w=width, h=28, banner=spec.get("banner"))
 
 
 # ============================================================
@@ -2058,13 +3096,47 @@ def main():
         "--output", default="architecture.drawio",
         help="Output .drawio file path (default: architecture.drawio)",
     )
+    parser.add_argument(
+        "--no-validate", action="store_true",
+        help="Skip the structural drawio_visual_validator pre-delivery check.",
+    )
+    parser.add_argument(
+        "--strict", action="store_true",
+        help="Fail (exit 2) on validator errors instead of warning.",
+    )
+    parser.add_argument(
+        "--reference-png",
+        help="Optional canonical Architecture Center PNG. When provided, "
+             "fidelity_eval pixel-diffs the rebuilt drawio against it.",
+    )
+    parser.add_argument(
+        "--reference-svg",
+        help="Optional companion SVG used by fidelity_eval (preferred path "
+             "since cairosvg works in any environment; the drawio binary "
+             "path is opt-in via the DRAWIO_EXE env var).",
+    )
+    parser.add_argument(
+        "--fidelity-threshold", type=float, default=0.90,
+    )
     args = parser.parse_args()
 
     with open(args.spec, 'r') as f:
         spec = yaml.safe_load(f)
 
     gen = OCIDiagramGenerator.from_spec(spec)
-    gen.save(args.output)
+    # The spec may itself reference Oracle assets (fidelity-mode specs
+    # have spec.source.diagram_asset). Honor those if no CLI override.
+    src = spec.get("source") or {}
+    ref_png = args.reference_png or src.get("diagram_asset") if isinstance(src.get("diagram_asset"), str) and src.get("diagram_asset","").endswith(".png") else args.reference_png
+    ref_svg = args.reference_svg or src.get("diagram_svg")
+    gen.save(
+        args.output,
+        validate=not args.no_validate,
+        reference_png=ref_png,
+        reference_svg=ref_svg,
+        fidelity_threshold=args.fidelity_threshold,
+        strict=args.strict,
+    )
 
     # Print summary
     print(f"Generated: {args.output}")
@@ -2072,6 +3144,7 @@ def main():
     print(f"  Service blocks: {gen._service_count}")
     print(f"  Connections: {gen._connection_count}")
     print(f"  Flow badges: {len(gen._flow_badges)}")
+    print(f"  Raw underlay cells: {len(gen._raw_underlay_cells)}")
     print(f"  Raw icon cells: {len(gen._raw_cells)}")
     print(f"  Registered objects: {len(gen._objects)}")
 

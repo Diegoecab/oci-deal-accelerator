@@ -1,0 +1,930 @@
+<!DOCTYPE html
+  SYSTEM "about:legacy-compat">
+<html xml:lang="en-us" lang="en-us" class="solution">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="DC.Type" content="concept">
+      <meta name="DC.Title" content="Implement disaster recovery with multi-region standby on Oracle Database@Azure">
+      <meta name="abstract" content="Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.">
+      <meta name="description" content="Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="primary">
+      <meta name="copyright" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Rights.Owner" content="(C) Copyrightfr 2025" type="secondary">
+      <meta name="DC.Date.Created" content="April 2025">
+      <meta name="DC.Format" content="XHTML">
+      <meta name="DC.Identifier" content="GUID-088952C7-F464-402D-A3EA-0567B8CF2594">
+      <meta name="DC.Language" content="en-US">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="abstract" content="Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.">
+      <meta name="description" content="Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.">
+      <title>Implement disaster recovery with multi-region standby on Oracle Database@Azure</title>
+      <meta property="og:site_name" content="Oracle Help Center">
+      <meta property="og:title" content="Implement disaster recovery with multi-region standby on Oracle Database@Azure">
+      <meta property="og:description" content="Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.">
+      <link rel="stylesheet" href="/sp_common/book-template/ohc-book-template/css/book.css">
+      <link rel="shortcut icon" href="/sp_common/book-template/ohc-common/img/favicon.ico">
+      <meta name="application-name" content="Implement disaster recovery with multi-region standby on Oracle Database@Azure">
+      <meta name="generator" content="DITA Open Toolkit version 1.8.5 (Mode = solution)">
+      <meta name="plugin" content="SP_docbuilder HTML plugin release 18.2.2">
+      <meta name="keywords" content="Azure, Maximum Availability Architecture (MAA), Multicloud">
+      <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+      <meta name="dcterms.created" content="2025-04-29T12:50:34-07:00">
+      <meta name="dcterms.title" content="Implement disaster recovery with multi-region standby on Oracle Database@Azure">
+      <meta name="dcterms.dateCopyrighted" content="2025">
+      <meta name="dcterms.category" content="solutions">
+      <meta name="dcterms.identifier" content="G30082-01">
+      
+      <meta name="dcterms.product" content="en/solutions;en/cloud/oracle-cloud-infrastructure/oracle-database-at-azure;en/cloud/oracle-cloud-infrastructure/oci;en/cloud/paas/autonomous-database/dedicated;en/engineered-systems/exadata-cloud-service">
+      <meta name="dcterms.release" content="Test Release">
+      <script>
+        document.write('<style type="text/css">');
+        document.write('body > .noscript, body > .noscript ~ * { visibility: hidden; }');
+        document.write('</style>');
+     </script>
+      <script data-main="/sp_common/book-template/ohc-book-template/js/book-config" src="/sp_common/book-template/requirejs/require.js"></script>
+      <script>
+            if (window.require === undefined) {
+                document.write('<script data-main="sp_common/book-template/ohc-book-template/js/book-config" src="sp_common/book-template/requirejs/require.js"><\/script>');
+                document.write('<link href="sp_common/book-template/ohc-book-template/css/book.css" rel="stylesheet"/>');
+            }
+        </script>
+      <script type="application/json" id="ssot-metadata">{"primary":{"category":{"short_name":"solutions","element_name":"Solutions","display_in_url":true},"suite":{"short_name":"reference-architectures","element_name":"Reference Architectures","display_in_url":false},"product_group":{"short_name":"oci","element_name":"OCI Architectures","display_in_url":false}}}</script>
+      
+    <meta name="dcterms.isVersionOf" content="MULTI-REGION-STANDBY-DR-DB-AT-AZURE">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Implement disaster recovery with multi-region standby on Oracle Database@Azure","description":"Ensuring uninterrupted business continuity is critical to success when designing applications. Achieving this requires a robust disaster recovery strategy designed to quickly restore functionality in case of disruptions.","datePublished":"2025-04-29 CST","dateModified":"2025-04-29 CST"}</script>
+    
+    <link rel="alternate" hreflang="en" href="https://docs.oracle.com/en/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="es" href="https://docs.oracle.com/es/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ja" href="https://docs.oracle.com/ja/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-CN" href="https://docs.oracle.com/zh-cn/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="ko" href="https://docs.oracle.com/ko/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr" href="https://docs.oracle.com/fr/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://docs.oracle.com/pt-br/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="it" href="https://docs.oracle.com/it/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="zh-TW" href="https://docs.oracle.com/zh-tw/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="de" href="https://docs.oracle.com/de/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="fr-CA" href="https://docs.oracle.com/fr-ca/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    <link rel="alternate" hreflang="x-default" href="https://docs.oracle.com/en/solutions/multi-region-standby-dr-db-at-azure/index.html">
+    
+    <script>window.ohcglobal || document.write('<script src="/en/dcommon/js/global.js">\x3C/script>')</script></head>
+   <body>
+      <div class="noscript alert alert-danger text-center" role="alert">
+         <a href="index.html" class="pull-left"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Previous</a>
+         <a href="#" class="pull-right">Next<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+         <span class="fa fa-exclamation-triangle" aria-hidden="true"></span> JavaScript must be enabled to correctly display this content
+        
+      </div>
+      <article class>
+         <a id="GUID-088952C7-F464-402D-A3EA-0567B8CF2594" name="GUID-088952C7-F464-402D-A3EA-0567B8CF2594"></a>
+         
+         <h2 id="EOWAX-GUID-088952C7-F464-402D-A3EA-0567B8CF2594" class="sect2">Implement disaster recovery with
+        multi-region standby on <span>Oracle Database@Azure</span></h2>
+         <div class="ind">
+            <div>
+               
+               <div>Ensuring uninterrupted business
+            continuity is critical to success when designing applications. Achieving this requires a
+            robust disaster recovery strategy designed to quickly restore functionality in case of
+            disruptions.</div>
+               
+               <p id="P_U15_XDY_X2C">For years, organizations have relied on <span>Oracle Exadata Database
+                        Service</span> which is Oracle's premier disaster recovery technologies to support mission-critical
+            applications, whether on-premises or within <span>Oracle Cloud
+                                Infrastructure</span> (OCI). <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@Azure</span> brings the same industry-leading performance, feature set, and price parity as
+            Exadata on OCI. It leverages Microsoft Azure's availability zones (AZs) and regions to
+            provide low latency to Azure's applications on top of unmatched high availability and
+            disaster recovery capabilities, ensuring seamless operations during maintenance and in
+            the event of disruption.
+               </p>
+               
+            </div>
+            <div class="sect2"><a id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E" name="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E"></a><h3 id="EOWAX-GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E" class="sect3">Architecture</h3>
+               <div>
+                  <p>This architecture shows <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@Azure</span> in a multi-region disaster recovery topology using two remote standby
+        databases.
+                  </p>
+                  <p>The following diagram illustrates this reference architecture.</p><br><div class="imageleft"><img class="imageleft" id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__IMAGE_KSM_L25_BFC" height="766" width="1619" src="img/multi-region-standby-dr-db-azure-arch.png" alt="Description of multi-region-standby-dr-db-azure-arch.png follows" title="Description of multi-region-standby-dr-db-azure-arch.png follows" longdesc="img_text/multi-region-standby-dr-db-azure-arch.html"><br><a href="img_text/multi-region-standby-dr-db-azure-arch.html">Description of the illustration multi-region-standby-dr-db-azure-arch.png</a></div><br><p><a href="img/multi-region-standby-dr-db-azure-arch-oracle.zip" class="de-download">multi-region-standby-dr-db-azure-arch-oracle.zip</a></p>
+                  <p>The <span>Oracle Database</span> runs in an Exadata virtual machine (VM) cluster in the Primary region. For data
+            protection and disaster recovery, Oracle <span>Active Data Guard</span> replicates the data to two standby databases running on Exadata VM clusters in two
+            different Standby regions. A remote standby database setup ensures data protection
+            against regional failures and can also be used to offload read-only query processing.
+            Replicate the application across regions to avoid higher latency after switching over to
+            a Standby database.
+                  </p>
+                  <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__P_JWN_BYY_1FC">You can route <span>Active Data Guard</span> traffic through the Azure network. However, this architecture focuses on <span>Active Data Guard</span> network traffic through the OCI network to optimize network throughput and
+            latency.
+                  </p>
+                  <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__P_EQB_QNY_CFC">The <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@Azure</span> network is connected to the Exadata client subnet using a Dynamic Routing Gateway
+            (DRG) managed by Oracle. A DRG is also required to create a peer connection between
+            Virtual Cloud Networks (VCNs) in different regions. Because only one DRG is allowed per
+            VCN in OCI, a second VCN acting as a Hub VCN with its own DRG is required to connect the
+            primary and standby VCNs in each region. In this architecture:
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__UL_Z11_S2Y_X2C">
+                     <li id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__LI_KYR_MJZ_1FC">The primary Exadata VM cluster is deployed in
+                    <code class="codeph">Region 1</code> in <code class="codeph">VCN1</code> with <code class="codeph">CIDR
+                    10.10.0.0/16</code>.
+                     </li>
+                     <li id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__LI_R1W_MJZ_1FC">The hub VCN in the primary <code class="codeph">Region 1</code>
+                is <code class="codeph">HubVCN1</code> with <code class="codeph">CIDR 10.11.0.0/16</code>.
+                     </li>
+                     <li id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__LI_Q2B_NJZ_1FC">The first standby Exadata VM cluster is deployed in
+                    <code class="codeph">Region 2</code> in <code class="codeph">VCN2</code> with <code class="codeph">CIDR
+                    10.20.0.0/16</code>.
+                     </li>
+                     <li>The hub VCN in the first standby region is <code class="codeph">HubVCN2</code> with
+                    <code class="codeph">CIDR 10.22.0.0/16</code>.
+                     </li>
+                     <li>The second standby Exadata VM cluster is deployed in <code class="codeph">Region
+                    3</code> in <code class="codeph">VCN3</code> with <code class="codeph">CIDR
+                10.30.0.0/16</code>.
+                     </li>
+                     <li>The hub VCN in the second standby region is <code class="codeph">HubVCN3</code>
+                with <code class="codeph">CIDR 10.33.0.0/16</code>.
+                     </li>
+                  </ul>
+                  <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__P_V1Z_4JZ_1FC">No subnet is required for the hub VCNs to enable transit
+            routing, therefore these VCNs can use very small IP CIDR ranges. The VCNs on the OCI
+            child site are created after the <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> VM clusters on <span>Oracle Database@Azure</span> are created for the Primary and Standby databases.
+                  </p>
+                  <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__P_KGJ_TJZ_1FC">Microsoft Azure provides the following components:</p>
+                  <ul style="list-style-type: disc;" id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__UL_WN1_DGY_X2C">
+                     <li><span class="bold">Azure region</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d5e188">An <span>Azure</span> region is a geographical area in which one or more physical <span>Azure</span> data centers, called availability zones, reside. Regions are independent of other regions, and vast distances can separate them (across countries or even continents).
+                        </p>
+                        <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d5e196"><span>Azure</span> and OCI regions are localized geographic areas. For <span>Oracle Database@Azure</span>, an <span>Azure</span> region is connected to an OCI region, with availability zones (AZs) in <span>Azure</span> connected to availability domains (ADs) in OCI. <span>Azure</span> and OCI region pairs are selected to minimize distance and latency.
+                        </p>
+                     </li>
+                     <li><span class="bold">Azure availability zone</span><p>Azure availability zones are physically separate locations within an Azure region, designed to ensure high availability and resiliency by providing independent power, cooling, and networking.</p>
+                     </li>
+                     <li><span class="bold">Azure Virtual Network (VNet)</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d5e242">Azure
+                                        Virtual Network (VNet) is the fundamental building block for
+                                        your private network in Azure. VNet enables many types of
+                                        Azure resources, such as Azure virtual machines (VMs), to
+                                        securely communicate with each other, the internet, and
+                                        on-premises networks.</p>
+                     </li>
+                     <li><span class="bold">Azure delegated subnet</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d5e158">A delegated subnet allows you to insert a managed service, specifically a platform-as-a-service (PaaS) service, directly into your virtual network as a resource. You have full integration management of external PaaS services within your virtual networks.</p>
+                     </li>
+                     <li><span class="bold">Azure Virtual Network Interface Card (VNIC)</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d5e249">The
+                                        services in Azure data centers have physical network
+                                        interface cards (NICs). Virtual machine instances
+                                        communicate using virtual NICs (VNICs) associated with the
+                                        physical NICs. Each instance has a primary VNIC that's
+                                        automatically created and attached during launch and is
+                                        available during the instance's
+                                lifetime.</p>
+                     </li>
+                  </ul>
+                  <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__P_NSL_VJZ_1FC">OCI provides the following components:</p>
+                  <ul style="list-style-type: disc;" id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__UL_QDH_4LM_CKB">
+                     <li><span class="bold">Region</span><p>An <span>Oracle Cloud
+                                Infrastructure</span> region is a localized geographic area that contains one or more data centers, hosting availability domains. Regions are independent of other regions, and vast distances can separate them (across countries or even continents).
+                        </p>
+                     </li>
+                     <li><span class="bold">Availability domains</span><p>Availability domains are standalone, independent data centers within a region. The physical resources in each availability domain are isolated from the resources in the other availability domains, which provides fault tolerance. Availability domains don’t share infrastructure such as power or cooling, or the internal availability domain network. So, a failure at one availability domain shouldn't affect the other availability domains in the region.</p>
+                     </li>
+                     <li><span class="bold">Virtual cloud network (VCN) and subnets</span><p>A VCN is a customizable, software-defined network that you set up in an <span>Oracle Cloud
+                                Infrastructure</span> region. Like traditional data center networks, VCNs give you control over your network environment. A VCN can have multiple non-overlapping CIDR blocks that you can change after you create the VCN. You can segment a VCN into subnets, which can be scoped to a region or to an availability domain. Each subnet consists of a contiguous range of addresses that don't overlap with the other subnets in the VCN. You can change the size of a subnet after creation. A subnet can be public or private. 
+                        </p>
+                     </li>
+                     <li><span class="bold">Route table</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e1190">Virtual route tables contain rules to route traffic from subnets to destinations outside a VCN, typically through gateways.</p>
+                     </li>
+                     <li><span class="bold">Local peering</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e795">Local peering enables you to peer one VCN with another VCN in the same region. Peering means the VCNs communicate using private IP addresses, without the traffic traversing the internet or routing through your on-premises network.</p>
+                     </li>
+                     <li><span class="bold">Dynamic routing gateway (DRG)</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e453">The DRG is a virtual router that provides a path for private network traffic between VCNs in the same region, between a VCN and a network outside the region, such as a VCN in another <span>Oracle Cloud
+                                Infrastructure</span> region, an on-premises network, or a network in another cloud provider.
+                        </p>
+                     </li>
+                     <li><span class="bold">Object storage</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e889">
+                           <span>OCI Object Storage</span> provides access to large amounts of structured
+                                                  and unstructured data of any content type,
+                                                  including database backups, analytic data, and
+                                                  rich content such as images and videos. You can
+                                                  safely and securely store data directly from the
+                                                  internet or from within the cloud platform. You
+                                                  can scale storage without experiencing any
+                                                  degradation in performance or service reliability.
+                                                  
+                        </p>
+                        <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e895">Use standard storage for
+                                                  "hot" storage that you need to access quickly,
+                                                  immediately, and frequently. Use archive storage
+                                                  for "cold" storage that you retain for long
+                                                  periods of time and seldom or rarely
+                                                  access.</p>
+                     </li>
+                     <li><span class="bold">Data Guard</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e284"><span>Oracle Data Guard</span> and Oracle Active Data Guard provide a comprehensive set of services that create, maintain, manage, and monitor one or more standby databases and that enable production Oracle databases to remain available without interruption. <span>Oracle Data Guard</span> maintains these standby databases as copies of the production database by using in-memory replication. If the production database becomes unavailable due to a planned or an unplanned outage, <span>Oracle Data Guard</span> can switch any standby database to the production role, minimizing the downtime associated with the outage. Oracle Active Data Guard provides the additional ability to offload read-mostly workloads to standby databases and also provides advanced data protection features.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Database Autonomous
+                                Recovery Service</span></span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e930"><span>Oracle Database Autonomous
+                                Recovery Service</span> is an Oracle Cloud service that protects Oracle databases. Backup automation and enhanced data protection capabilities for OCI databases allow you to offload all backup processing and storage requirements to <span>Oracle Database Autonomous
+                                Recovery Service</span>, which reduces backup infrastructure costs and manual administration overhead.
+                        </p>
+                     </li>
+                     <li><span class="bold">Exadata Database Service on Dedicated Infrastructure</span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e516"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> enables you to leverage the power of Exadata in
+                                                  the cloud. <span>Oracle Exadata Database
+                        Service</span> delivers proven <span>Oracle Database</span> capabilities on purpose-built, optimized Oracle
+                                                  Exadata infrastructure in the public cloud.
+                                                  Built-in cloud automation, elastic resource
+                                                  scaling, security, and fast performance for all
+                                                  <span>Oracle Database</span> workloads helps you simplify management and
+                                                  reduce costs.
+                        </p>
+                     </li>
+                     <li><span class="bold"><span>Oracle Database@Azure</span></span><p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e942"><span>Oracle Database@Azure</span> is the Oracle Database service (<span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> and <span>Oracle Autonomous Database Serverless</span>) running on <span>Oracle Cloud
+                                Infrastructure</span> (OCI), deployed in Microsoft Azure data centers. The service offers features and price parity with OCI. Purchase the service on Azure Marketplace.
+                        </p>
+                        <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e951"><span>Oracle Database@Azure</span> integrates <span>Oracle Exadata Database
+                        Service</span>, <span>Oracle Real Application Clusters (Oracle
+                        RAC)</span>, and <span>Oracle Data Guard</span> technologies into the Azure platform. Users manage the service on the Azure console and with Azure automation tools. The service is deployed in Azure Virtual Network (VNet) and integrated with the Azure identity and access management system. The OCI and <span>Oracle Database</span> generic metrics and audit logs are natively available in Azure. The service requires users to have an Azure subscription and an OCI tenancy. 
+                        </p>
+                        <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e962"><span>Autonomous Database</span> is built on Oracle Exadata infrastructure, is self-managing, self-securing, and self-repairing, helping eliminate manual database management and human errors. <span>Autonomous Database</span> enables development of scalable AI-powered apps with any data using built-in AI capabilities using your choice of large language model (LLM) and deployment location.
+                        </p>
+                        <p id="GUID-5B650E47-B6D9-4DA4-9038-AB9F4F19631E__d323e967">Both <span>Oracle Exadata Database
+                        Service</span> and <span>Oracle Autonomous Database Serverless</span> are easily provisioned through the native Azure Portal, enabling access to the broader Azure ecosystem.
+                        </p>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E" name="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E"></a><h3 id="EOWAX-GUID-AE958CED-310C-4574-BFD5-5A166B795D4E" class="sect3">Recommendations</h3>
+               <div>
+                  <div><span>Use the following recommendations as a starting point when performing disaster recovery
+            for <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@Azure</span>. </span>Your requirements might differ from the architecture described
+        here.
+                  </div>
+                  <ul style="list-style-type: disc;" id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__UL_EL4_K3Y_X2C">
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_FX1_CKZ_1FC">Use <span>Active Data Guard</span> for comprehensive data corruption prevention with automatic block repair, online
+                upgrades and migrations, and offload workload to standby with read-mostly
+                scale-out.
+                     </li>
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_CJ4_FKZ_1FC">Enable <span>Application Continuity</span> to mask database outages during planned and unplanned events from end-users and
+                ensure uninterrupted applications.
+                     </li>
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_AKH_FKZ_1FC">Set up automatic backup to <span>Oracle Database Autonomous
+                                Recovery Service</span> (in Azure or OCI) even though the data is protected by <span>Oracle Data Guard</span> to minimize the backup workload on the database by implementing the incremental
+                forever backup strategy that eliminates weekly full backups. Alternatively,
+                customers can use <span>OCI Object Storage</span> for automatic backups.
+                     </li>
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_S1S_FKZ_1FC">Enable backups from standby to achieve backup
+                replication across regions.</li>
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_VNV_FKZ_1FC">Use OCI <span>Full Stack DR</span> to orchestrate database switchover and failover operations.
+                     </li>
+                     <li id="GUID-AE958CED-310C-4574-BFD5-5A166B795D4E__LI_OKZ_FKZ_1FC">Use <span>OCI Vault</span> to store the database's <span>Transparent Data Encryption (TDE)</span> keys using customer-managed keys.
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B" name="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B"></a><h3 id="EOWAX-GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B" class="sect3">Considerations</h3>
+               <div>
+                  <p>When performing multi-regional disaster recovery for <span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span> on <span>Oracle Database@Azure</span>, consider the following.
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__UL_YKJ_2JY_X2C">
+                     <li id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__LI_WTX_MKZ_1FC">When Exadata VM clusters are created in the <span>Oracle Database@Azure</span> child site, each VM cluster is created within its own OCI VCN. <span>Oracle Data Guard</span> requires that the databases communicate with each other to ship
+                    <code class="codeph">redo</code> data. Peer the VCNs to enable this communication. Hence,
+                the Exadata VM cluster VCNs must not share overlapping IP CIDR ranges.
+                     </li>
+                     <li id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__LI_STQ_TDZ_CFC">Preparation for a disaster scenario requires a
+                comprehensive approach that considers different business requirements and
+                availability architectures and that encompasses those considerations in an
+                actionable, high availability, and disaster recovery plan. The scenario described
+                here provides guidelines to help select the approach that best fits your application
+                deployment by using a simple but effective failover for the disaster recovery
+                configuration in your OCI and <span>Microsoft Azure</span> environments.
+                     </li>
+                     <li id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__LI_NMN_TKZ_1FC">OCI is the preferred network for achieving better
+                performance, measured by latency and throughput, and for achieving reduced cost,
+                including the first 10 TB/month egress for free.</li>
+                     <li id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__LI_CYR_TKZ_1FC">You can create up to six standby databases for a
+                primary database via Cloud Tooling.</li>
+                     <li id="GUID-4A0B0C78-01E7-4D8A-AC5B-E54153A2A99B__LI_I3Y_TKZ_1FC">Creating a standby database associated with another
+                standby database (cascading standby) is not supported using Cloud Tooling.</li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8" name="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8"></a><h3 id="EOWAX-GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8" class="sect3">Deploy</h3>
+               <div>
+                  <div>
+                     <span>Follow these steps to configure the
+            network communication between regions shown in the architecture diagram:</span>
+                     
+                  </div>
+                  <p id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__P_CV2_XRZ_1FC">Follow these steps to configure the Primary region:</p>
+                  <ol id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_MNP_VTF_Y2C">
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_FFB_CSZ_1FC">Add the following ingress rules to the Security
+                List of the client subnet of <code class="codeph">VCN1</code> to allow incoming traffic from
+                    <code class="codeph">VCN2</code> and <code class="codeph">VCN3</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_RM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e500">Stateless</th>
+                                    <th align="left" valign="bottom" id="d272e502">Source</th>
+                                    <th align="left" valign="bottom" id="d272e504">IP Protocol</th>
+                                    <th align="left" valign="bottom" id="d272e506">Source Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e508">Destination Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e510">Allows</th>
+                                    <th align="left" valign="bottom" id="d272e512">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e516" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">No</td>
+                                    <td align="left" valign="top" id="d272e518" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e521" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e523" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">1521</td>
+                                    <td align="left" valign="top" id="d272e525" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">1521</td>
+                                    <td align="left" valign="top" id="d272e527" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e529" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">Allow ingress from <code class="codeph">VCN2</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e534" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">No</td>
+                                    <td align="left" valign="top" id="d272e536" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e539" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e541" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">1521</td>
+                                    <td align="left" valign="top" id="d272e543" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">1521</td>
+                                    <td align="left" valign="top" id="d272e545" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e547" headers="d272e500 d272e502 d272e504 d272e506 d272e508 d272e510 d272e512 ">Allow ingress from <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_A3F_3SZ_1FC">Create Virtual Cloud Network
+                    <code class="codeph">HubVCN1</code> with <code class="codeph">CIDR 10.11.0.0/16</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_JSD_JSZ_1FC">Create Local Peering Gateway
+                    <code class="codeph">HubLPG1</code> in Virtual Cloud Network <code class="codeph">HubVCN1</code>.
+                     </li>
+                     <li>Create Local Peering Gateway <code class="codeph">LPG1R</code> in Virtual Cloud Network
+                    <code class="codeph">VCN1</code>.
+                     </li>
+                     <li>Establish the local peering connection between <code class="codeph">LPG1R</code> and
+                    <code class="codeph">HubLPG1</code>.
+                     </li>
+                     <li>Add route rules to the route table of the client subnet of <code class="codeph">VCN1</code> to
+                forward traffic targeted for <code class="codeph">VCN2</code> and <code class="codeph">VCN3</code> to
+                    <code class="codeph">LPG1R</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_SM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e601">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e603">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e605">Target</th>
+                                    <th align="left" valign="bottom" id="d272e607">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e609">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e613" headers="d272e601 d272e603 d272e605 d272e607 d272e609 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e616" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e618" headers="d272e601 d272e603 d272e605 d272e607 d272e609 "><code class="codeph">LPG1R</code></td>
+                                    <td align="left" valign="top" id="d272e621" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Static</td>
+                                    <td align="left" valign="top" id="d272e623" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Traffic to <code class="codeph">VCN2</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e628" headers="d272e601 d272e603 d272e605 d272e607 d272e609 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e631" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e633" headers="d272e601 d272e603 d272e605 d272e607 d272e609 "><code class="codeph">LPG1R</code></td>
+                                    <td align="left" valign="top" id="d272e636" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Static</td>
+                                    <td align="left" valign="top" id="d272e638" headers="d272e601 d272e603 d272e605 d272e607 d272e609 ">Traffic to <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li>Create Route Table <code class="codeph">HubLPG1rt</code> in <code class="codeph">HubVCN1</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_WNT_4HZ_CFC">Associate Route Table <code class="codeph">HubLPG1rt</code> to
+                Local Peering Gateway <code class="codeph">HubLPG1</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_Z1F_4HZ_CFC">Create Dynamic Routing Gateway
+                    <code class="codeph">DRG1</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_Y2T_SHZ_CFC">Create Route Table <code class="codeph">DRG1rt</code> in
+                    <code class="codeph">HubVCN1</code>.
+                     </li>
+                     <li>Add a route rule to Route Table <code class="codeph">DRG1rt</code> to forward traffic targeted
+                for <code class="codeph">VCN1</code> to <code class="codeph">HubLPG1</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_TM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e686">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e688">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e690">Target</th>
+                                    <th align="left" valign="bottom" id="d272e692">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e694">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e698" headers="d272e686 d272e688 d272e690 d272e692 d272e694 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e701" headers="d272e686 d272e688 d272e690 d272e692 d272e694 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e703" headers="d272e686 d272e688 d272e690 d272e692 d272e694 "><code class="codeph">HubLPG1</code></td>
+                                    <td align="left" valign="top" id="d272e706" headers="d272e686 d272e688 d272e690 d272e692 d272e694 ">Static</td>
+                                    <td align="left" valign="top" id="d272e708" headers="d272e686 d272e688 d272e690 d272e692 d272e694 ">Traffic to <code class="codeph">VCN1</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_OWY_LTZ_1FC">To attach <code class="codeph">DRG1</code> to
+                    <code class="codeph">HubVCN1</code>:
+                        <ol type="a" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_KDL_CTZ_1FC">
+                           <li>Select <span class="uicontrol bold">Autogenerated Drg Route Table for VCN
+                            attachments</span>.
+                           </li>
+                           <li>Select the existing route table <code class="codeph">DRG1rt</code>.
+                           </li>
+                           <li>Select <span class="uicontrol bold">VCN CIDR blocks</span>.
+                           </li>
+                        </ol>
+                     </li>
+                     <li>Create two Remote Peering Connections in <code class="codeph">DRG1</code>, named
+                    <code class="codeph">RPC1a</code> and <code class="codeph">RPC1b</code>.
+                     </li>
+                     <li>Add two route rules to <code class="codeph">HubLPG1rt</code> to forward traffic targeted for
+                    <code class="codeph">VCN2</code> and <code class="codeph">VCN3</code> to <code class="codeph">DRG1</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_UM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e766">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e768">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e770">Target</th>
+                                    <th align="left" valign="bottom" id="d272e772">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e774">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e778" headers="d272e766 d272e768 d272e770 d272e772 d272e774 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e781" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e783" headers="d272e766 d272e768 d272e770 d272e772 d272e774 "><code class="codeph">DRG1</code></td>
+                                    <td align="left" valign="top" id="d272e786" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Static</td>
+                                    <td align="left" valign="top" id="d272e788" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Traffic to <code class="codeph">VCN2</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e793" headers="d272e766 d272e768 d272e770 d272e772 d272e774 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e796" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e798" headers="d272e766 d272e768 d272e770 d272e772 d272e774 "><code class="codeph">DRG1</code></td>
+                                    <td align="left" valign="top" id="d272e801" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Static</td>
+                                    <td align="left" valign="top" id="d272e803" headers="d272e766 d272e768 d272e770 d272e772 d272e774 ">Traffic to <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                  </ol>
+                  <p id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__P_M4B_PX1_2FC">Follow these steps to create the first Standby region
+            (Region 2):</p>
+                  <ol id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_QBX_F5F_Y2C">
+                     <li>Add the following ingress rules to the Security List of the client subnet of
+                    <code class="codeph">VCN2</code> to allow incoming traffic from <code class="codeph">VCN1</code> and
+                    <code class="codeph">VCN3</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_VM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e825">Stateless</th>
+                                    <th align="left" valign="bottom" id="d272e827">Source</th>
+                                    <th align="left" valign="bottom" id="d272e829">IP Protocol</th>
+                                    <th align="left" valign="bottom" id="d272e831">Source Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e833">Destination Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e835">Allows</th>
+                                    <th align="left" valign="bottom" id="d272e837">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e841" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">No</td>
+                                    <td align="left" valign="top" id="d272e843" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e846" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e848" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">1521</td>
+                                    <td align="left" valign="top" id="d272e850" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">1521</td>
+                                    <td align="left" valign="top" id="d272e852" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e854" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">Allow ingress from <code class="codeph">VCN1</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e859" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">No</td>
+                                    <td align="left" valign="top" id="d272e861" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e864" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e866" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">1521</td>
+                                    <td align="left" valign="top" id="d272e868" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">1521</td>
+                                    <td align="left" valign="top" id="d272e870" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e872" headers="d272e825 d272e827 d272e829 d272e831 d272e833 d272e835 d272e837 ">Allow ingress from <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li>Create Virtual Cloud Network <code class="codeph">HubVCN2</code> with CIDR
+                    <code class="codeph">10.22.0.0/16</code>.
+                     </li>
+                     <li>Create Local Peering Gateway <code class="codeph">HubLPG2</code> in Virtual Cloud Network
+                    <code class="codeph">HubVCN2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_CZK_Q5Z_1FC">Create Local Peering Gateway <code class="codeph">LPG2R</code>
+                in Virtual Cloud Network <code class="codeph">VCN2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_WDH_Q5Z_1FC">Establish the local peering connection between
+                    <code class="codeph">LPG2R</code> and <code class="codeph">HubLPG2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_NLD_Q5Z_1FC">Add route rules to the Route Table of the client
+                subnet of <code class="codeph">VCN2</code> to forward traffic targeted for
+                    <code class="codeph">VCN1</code> and <code class="codeph">VCN3</code> to <code class="codeph">LPG2R</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_WM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e926">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e928">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e930">Target</th>
+                                    <th align="left" valign="bottom" id="d272e932">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e934">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e938" headers="d272e926 d272e928 d272e930 d272e932 d272e934 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e941" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e943" headers="d272e926 d272e928 d272e930 d272e932 d272e934 "><code class="codeph">LPG2R</code></td>
+                                    <td align="left" valign="top" id="d272e946" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Static</td>
+                                    <td align="left" valign="top" id="d272e948" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Traffic to <code class="codeph">VCN1</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e953" headers="d272e926 d272e928 d272e930 d272e932 d272e934 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e956" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e958" headers="d272e926 d272e928 d272e930 d272e932 d272e934 "><code class="codeph">LPG2R</code></td>
+                                    <td align="left" valign="top" id="d272e961" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Static</td>
+                                    <td align="left" valign="top" id="d272e963" headers="d272e926 d272e928 d272e930 d272e932 d272e934 ">Traffic to <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_R14_P5Z_1FC">Create Route Table <code class="codeph">HubLPG2rt</code> in
+                    <code class="codeph">HubVCN2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_DFK_P5Z_1FC">Associate Route Table <code class="codeph">HubLPG2rt</code> to
+                Local Peering Gateway <code class="codeph">HubLPG2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_JBG_P5Z_1FC">Create Dynamic Routing Gateway
+                <code class="codeph">DRG2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_ZJC_P5Z_1FC">Create Route Table <code class="codeph">DRG2rt</code> in
+                    <code class="codeph">HubVCN2</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_Z3Y_45Z_1FC">Add a route rule to <code class="codeph">DRG2rt</code> to
+                forward traffic targeted for <code class="codeph">VCN2</code> to
+                    <code class="codeph">HubLPG2</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_XM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1011">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e1013">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e1015">Target</th>
+                                    <th align="left" valign="bottom" id="d272e1017">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e1019">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1023" headers="d272e1011 d272e1013 d272e1015 d272e1017 d272e1019 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1026" headers="d272e1011 d272e1013 d272e1015 d272e1017 d272e1019 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e1028" headers="d272e1011 d272e1013 d272e1015 d272e1017 d272e1019 "><code class="codeph">HubLPG2</code></td>
+                                    <td align="left" valign="top" id="d272e1031" headers="d272e1011 d272e1013 d272e1015 d272e1017 d272e1019 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1033" headers="d272e1011 d272e1013 d272e1015 d272e1017 d272e1019 ">Traffic to <code class="codeph">VCN2</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_SGP_R5Z_1FC">To attach <code class="codeph">DRG1</code> to
+                    <code class="codeph">HubVCN2</code>:
+                        <ol type="a" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_M1V_R5Z_1FC">
+                           <li>Select <span class="uicontrol bold">Autogenerated Drg Route Table for VCN
+                            attachments</span>.
+                           </li>
+                           <li>Select the existing route table <code class="codeph">DRG2rt</code>.
+                           </li>
+                           <li>Select <span class="uicontrol bold">VCN CIDR blocks</span>.
+                           </li>
+                        </ol>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_PTZ_N5Z_1FC">Create two Remote Peering Connections in
+                    <code class="codeph">DRG2</code>, named <code class="codeph">RPC2a</code> and
+                <code class="codeph">RPC2c</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_MWV_N5Z_1FC">Establish a remote peering connection between
+                    <code class="codeph">RPC1a</code> (region 1) and <code class="codeph">RPC2a</code> (region 2).
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_X2R_N5Z_1FC">Add two route rules to <code class="codeph">HubLPG2rt</code> to
+                forward traffic targeted for <code class="codeph">VCN1</code> and <code class="codeph">VCN3</code> to
+                    <code class="codeph">DRG2</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_YM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1099">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e1101">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e1103">Target</th>
+                                    <th align="left" valign="bottom" id="d272e1105">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e1107">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1111" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1114" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e1116" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 "><code class="codeph">DRG2</code></td>
+                                    <td align="left" valign="top" id="d272e1119" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1121" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Traffic to <code class="codeph">VCN1</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1126" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1129" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e1131" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 "><code class="codeph">DRG2</code></td>
+                                    <td align="left" valign="top" id="d272e1134" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1136" headers="d272e1099 d272e1101 d272e1103 d272e1105 d272e1107 ">Traffic to <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                  </ol>
+                  <p>Follow these steps to create the second Standby region (Region 3):</p>
+                  <ol id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_FHM_S5F_Y2C">
+                     <li>Add the following ingress rules to the Security List of the client subnet of
+                    <code class="codeph">VCN3</code> to allow incoming traffic from <code class="codeph">VCN1</code> and
+                    <code class="codeph">VCN2</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_ZM3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1158">Stateless</th>
+                                    <th align="left" valign="bottom" id="d272e1160">Source</th>
+                                    <th align="left" valign="bottom" id="d272e1162">IP Protocol</th>
+                                    <th align="left" valign="bottom" id="d272e1164">Source Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e1166">Destination Port Range</th>
+                                    <th align="left" valign="bottom" id="d272e1168">Allows</th>
+                                    <th align="left" valign="bottom" id="d272e1170">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1174" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">No</td>
+                                    <td align="left" valign="top" id="d272e1176" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">10.10.0.0/16</td>
+                                    <td align="left" valign="top" id="d272e1178" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e1180" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">1521</td>
+                                    <td align="left" valign="top" id="d272e1182" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">1521</td>
+                                    <td align="left" valign="top" id="d272e1184" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e1186" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">Allow ingress from VCN1</td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1189" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">No</td>
+                                    <td align="left" valign="top" id="d272e1191" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">10.20.0.0/16</td>
+                                    <td align="left" valign="top" id="d272e1193" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">TCP</td>
+                                    <td align="left" valign="top" id="d272e1195" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">1521</td>
+                                    <td align="left" valign="top" id="d272e1197" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">1521</td>
+                                    <td align="left" valign="top" id="d272e1199" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">TCP traffic for ports: 1521</td>
+                                    <td align="left" valign="top" id="d272e1201" headers="d272e1158 d272e1160 d272e1162 d272e1164 d272e1166 d272e1168 d272e1170 ">Allow ingress from VCN2</td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_WRQ_J1B_2FC">Create Virtual Cloud Network
+                    <code class="codeph">HubVCN3</code> with <code class="codeph">CIDR 10.33.0.0/16</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_BQM_J1B_2FC">Create Local Peering Gateway
+                    <code class="codeph">HubLPG3</code> in Virtual Cloud Network <code class="codeph">HubVCN3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_IYY_P1B_2FC">Create Local Peering Gateway <code class="codeph">LPG3R</code>
+                in Virtual Cloud Network <code class="codeph">VCN3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_EV3_J1B_2FC">Establish the local peering connection between
+                    <code class="codeph">LPG3R</code> and <code class="codeph">HubLPG3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_O5Y_WZ1_2FC">Add route rules to the Route Table of the client
+                subnet of <code class="codeph">VCN3</code> to forward traffic targeted for
+                    <code class="codeph">VCN1</code> and <code class="codeph">VCN2</code> to <code class="codeph">LPG3R</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_AN3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1253">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e1255">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e1257">Target</th>
+                                    <th align="left" valign="bottom" id="d272e1259">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e1261">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1265" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1268" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e1270" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 "><code class="codeph">LPG3R</code></td>
+                                    <td align="left" valign="top" id="d272e1273" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1275" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Traffic to <code class="codeph">VCN1</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1280" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1283" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e1285" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 "><code class="codeph">LPG3R</code></td>
+                                    <td align="left" valign="top" id="d272e1288" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1290" headers="d272e1253 d272e1255 d272e1257 d272e1259 d272e1261 ">Traffic to <code class="codeph">VCN2</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_PWW_VZ1_2FC">Create Route Table <code class="codeph">HubLPG3rt</code> in
+                    <code class="codeph">HubVCN3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_JWP_VZ1_2FC">Associate Route Table <code class="codeph">HubLPG3rt</code> to
+                Local Peering Gateway <code class="codeph">HubLPG3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_B3Z_5Z1_2FC">Create Dynamic Routing Gateway
+                <code class="codeph">DRG3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_QTR_5Z1_2FC">Create Route Table <code class="codeph">DRG3rt</code> in
+                    <code class="codeph">HubVCN3</code>.
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_XCF_5Z1_2FC">Add a route rule to <code class="codeph">DRG3rt</code> to
+                forward traffic targeted for <code class="codeph">VCN3</code> to
+                    <code class="codeph">HubLPG3</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_UPN_LCG_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1338">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e1340">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e1342">Target</th>
+                                    <th align="left" valign="bottom" id="d272e1344">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e1346">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1350" headers="d272e1338 d272e1340 d272e1342 d272e1344 d272e1346 "><code class="codeph">10.30.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1353" headers="d272e1338 d272e1340 d272e1342 d272e1344 d272e1346 ">Local Peering Gateway</td>
+                                    <td align="left" valign="top" id="d272e1355" headers="d272e1338 d272e1340 d272e1342 d272e1344 d272e1346 "><code class="codeph">HubLPG3</code></td>
+                                    <td align="left" valign="top" id="d272e1358" headers="d272e1338 d272e1340 d272e1342 d272e1344 d272e1346 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1360" headers="d272e1338 d272e1340 d272e1342 d272e1344 d272e1346 ">Traffic to <code class="codeph">VCN3</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_CHZ_4VZ_1FC">To attach <code class="codeph">DRG1</code> to
+                    <code class="codeph">HubVCN3</code>:
+                        <ol type="a" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__OL_YKF_PVZ_1FC">
+                           <li>Select <span class="uicontrol bold">Autogenerated Drg Route Table for VCN
+                            attachments</span>.
+                           </li>
+                           <li>Select the existing route table <code class="codeph">DRG3rt</code>.
+                           </li>
+                           <li>Select <span class="uicontrol bold">VCN CIDR blocks</span>.
+                           </li>
+                        </ol>
+                     </li>
+                     <li>Create two Remote Peering Connections in <code class="codeph">DRG3</code>, named
+                    <code class="codeph">RPC3b</code> and <code class="codeph">RPC3c</code>.
+                     </li>
+                     <li>Establish a remote peering connection between <code class="codeph">RPC1b</code>
+                (region 1) and <code class="codeph">RPC3b</code> (region 3).
+                     </li>
+                     <li>Establish a remote peering connection between <code class="codeph">RPC2c</code>
+                (region 2) and <code class="codeph">RPC3c</code> (region 3).
+                     </li>
+                     <li id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__LI_JGD_PZ1_2FC">Add two route rules to <code class="codeph">HubLPG3rt</code> to
+                forward traffic targeted for <code class="codeph">VCN1</code> and <code class="codeph">VCN2</code> to
+                    <code class="codeph">DRG3</code>.
+                        <div class="tblformal" id="GUID-9E3D7353-28E2-419D-A18D-F1AAA7D56EA8__TABLE_CN3_WSF_Y2C">
+                           <table cellpadding="4" cellspacing="0" class="Formal" frame="hsides" border="1" rules="rows">
+                              <thead>
+                                 <tr align="left" valign="top">
+                                    <th align="left" valign="bottom" id="d272e1434">Destination</th>
+                                    <th align="left" valign="bottom" id="d272e1436">Target Type</th>
+                                    <th align="left" valign="bottom" id="d272e1438">Target</th>
+                                    <th align="left" valign="bottom" id="d272e1440">Route Type</th>
+                                    <th align="left" valign="bottom" id="d272e1442">Description</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1446" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 "><code class="codeph">10.10.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1449" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e1451" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 "><code class="codeph">DRG3</code></td>
+                                    <td align="left" valign="top" id="d272e1454" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1456" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Traffic to <code class="codeph">VCN1</code></td>
+                                 </tr>
+                                 <tr align="left" valign="top">
+                                    <td align="left" valign="top" id="d272e1461" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 "><code class="codeph">10.20.0.0/16</code></td>
+                                    <td align="left" valign="top" id="d272e1464" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Dynamic Routing Gateway</td>
+                                    <td align="left" valign="top" id="d272e1466" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 "><code class="codeph">DRG3</code></td>
+                                    <td align="left" valign="top" id="d272e1469" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Static</td>
+                                    <td align="left" valign="top" id="d272e1471" headers="d272e1434 d272e1436 d272e1438 d272e1440 d272e1442 ">Traffic to <code class="codeph">VCN2</code></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </li>
+                  </ol>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-8EB7BF1E-9FB0-4243-ACCB-4C413A06260D" name="GUID-8EB7BF1E-9FB0-4243-ACCB-4C413A06260D"></a><h3 id="EOWAX-GUID-8EB7BF1E-9FB0-4243-ACCB-4C413A06260D" class="sect3">Explore More</h3>
+               <div>
+                  <p>Learn more about about <span>Oracle Database@Azure</span> and <span>Oracle Data Guard</span>.
+                  </p>
+                  <ul style="list-style-type: disc;" id="GUID-8EB7BF1E-9FB0-4243-ACCB-4C413A06260D__UL_F3V_TKD_CFC">
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=ODCTC" target="_blank"><span><cite>Learn about Oracle
+                              Maximum Availability Architecture for Oracle
+                        Database@Azure</cite></span></a></li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=high-availability-overview-best-practices" target="_blank"><span><cite>High
+                                Availability Overview and Best Practices</cite></span></a>
+                    documentation
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=ohc-odb-high-availability-best-practices" target="_blank">MAA best practices for <span>Oracle Data Guard</span></a> documentation
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=oracle-database-at-azure" target="_blank"><span>Oracle Database@Azure</span></a> site
+                        </p>
+                        
+                     </li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=blog-oracle-database-at-azure-first-principles" target="_blank">First Principles: Powering
+                        mission critical applications with <span>Oracle Database@Azure</span></a> site
+                        </p>
+                        
+                     </li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=exadata-oci-ovu" target="_blank"><span>Oracle Exadata Database Service on Dedicated
+                                Infrastructure</span></a></li>
+                     <li>
+                        
+                        <p><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=oracle-data-guard" target="_blank"><span>Oracle Data Guard</span></a> site
+                        </p>
+                        
+                     </li>
+                  </ul>
+                  <p>Review these additional resources: </p>
+                  <ul style="list-style-type: disc;">
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=TOTBM" target="_blank"><span><cite>Oracle Cloud Infrastructure
+                              for Microsoft Azure professionals</cite></span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=GVVGQ" target="_blank"><span><cite>Well-architected framework
+                              for Oracle Cloud Infrastructure</cite></span></a></li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=oci-doc" target="_blank"><span>Oracle Cloud
+                                Infrastructure</span></a> documentation
+                     </li>
+                     <li><a href="/pls/topic/lookup?ctx=en/solutions/multi-region-standby-dr-db-at-azure&amp;id=oci-calc" target="_blank">Oracle Cloud Cost Estimator</a></li>
+                  </ul>
+               </div>
+            </div>
+            <div class="sect2"><a id="GUID-70603BE0-5399-40F7-851E-DDF845B64F02" name="GUID-70603BE0-5399-40F7-851E-DDF845B64F02"></a><h3 id="EOWAX-GUID-70603BE0-5399-40F7-851E-DDF845B64F02" class="sect3">Acknowledgments</h3>
+               <div>
+                  <ul style="list-style-type: disc;">
+                     <li><span class="bold">Authors</span>: <span translate="no">Sinan Petrus Toma, Sebastian Solbach, Julien
+                    Silverston</span></li>
+                     <li><span class="bold">Contributor</span>: <span translate="no">Sreya Dutta</span></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </article>
+      <div id="disclaimers" class="legal">
+         <div><a href="#copyright-information" role="button" data-toggle="collapse" aria-expanded="false" class="collapsed" aria-controls="copyright-information" id="copyright-information-btn">Title and Copyright Information</a></div>
+         <div class="collapse" id="copyright-information" aria-expanded="false">
+            <p class="legal">Implement disaster recovery with multi-region standby on Oracle Database@Azure</p>
+            <p class="legal">G30082-01</p>
+            <p class="date legal">April 2025</p>
+            <div class="legal" style="display:inline"><a href="/pls/topic/lookup?ctx=en/legal&id=cpyr" target="_blank">Copyright ©</a>2025, </div><div class="legal" style="display:inline">Oracle and/or its affiliates.</div>
+         </div>
+      </div>
+   </body>
+</html>
