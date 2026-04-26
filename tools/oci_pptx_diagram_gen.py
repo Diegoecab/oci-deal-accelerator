@@ -129,10 +129,10 @@ TYPE_TO_ICON = {
     "logging": ["logging"],
     "logging_analytics": ["logging_analytics"],
     "tag_namespace": ["tag_namespace"],
-    "mysql": ["mysql", "database_mysql"],
-    "mysql_heatwave": ["mysql", "database_mysql"],
-    "heatwave": ["mysql", "database_mysql"],
-    "mysql_database_service": ["mysql", "database_mysql"],
+    "mysql": ["mysql_heatwave", "mysql_database_system", "mysql"],
+    "mysql_heatwave": ["mysql_heatwave", "mysql_database_system", "mysql"],
+    "heatwave": ["mysql_heatwave", "mysql_database_system", "mysql"],
+    "mysql_database_service": ["mysql_heatwave", "mysql_database_system", "mysql"],
 }
 
 ICON_KEYWORD_HINTS = {
@@ -187,9 +187,9 @@ ICON_KEYWORD_HINTS = {
     "oke": ["oci_container_engine_for_kubernetes", "container_engine_for_kubernetes_cluster"],
     "kubernetes": ["oci_container_engine_for_kubernetes", "container_engine_for_kubernetes_cluster"],
     "mysql": ["mysql", "database_mysql"],
-    "mysql heatwave": ["mysql", "database_mysql"],
-    "heatwave": ["mysql", "database_mysql"],
-    "mysql database service": ["mysql", "database_mysql"],
+    "mysql heatwave": ["mysql_heatwave", "mysql_database_system", "mysql"],
+    "heatwave": ["mysql_heatwave", "mysql_database_system", "mysql"],
+    "mysql database service": ["mysql_heatwave", "mysql_database_system", "mysql"],
 }
 
 
@@ -912,6 +912,22 @@ class NativePPTXDiagramRenderer:
         ]
         if not viable:
             return refs[0] if refs else None
+
+        # OCI_Icons.pptx ships both a full icon group (tag=grpSp, ~0.7"
+        # tall) and a tiny "label strip" (tag=sp, ~0.2" tall) under the
+        # same slug for many services. The strip renders as just a text
+        # label which makes the diagram look broken next to the drawio
+        # version. Prefer the icon group whenever one exists.
+        icon_shaped = [
+            ref for ref in viable
+            if ref.get("tag") in {"grpSp", "pic"}
+            or (
+                int((ref.get("bbox") or {}).get("cy", 0)) >= _emu(0.4)
+                and int((ref.get("bbox") or {}).get("cx", 0)) >= _emu(0.4)
+            )
+        ]
+        if icon_shaped:
+            viable = icon_shaped
 
         preferred_slide_order = {
             29: 0,
