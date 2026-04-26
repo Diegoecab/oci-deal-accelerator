@@ -120,7 +120,25 @@ Pick a number, or just describe what you need.
 ### Behavior Rules
 
 - If the user picks **1**, ask: "Paste your discovery notes (meeting notes, emails, whatever you have)."
-- If the user picks **2**, ask: "Describe the architecture you want to diagram, or paste a YAML spec if you have one. If you want an editable technical diagram I'll generate `.drawio`; if you want presentation-ready Oracle-style visuals I'll generate a native `.pptx` diagram/slide." Then **follow the standard diagram-generation procedure in `docs/skill/output-formats.md` § Standard diagram-generation procedure (MANDATORY)** — reference-architecture lookup → pre-generation review → spec authoring → automatic spec validator → render → visual verification. Do not skip the lookup step; deriving geometry from a similar Oracle ref arch prevents the subnet-collapse / label-overflow regressions the spec validator now blocks.
+- If the user picks **2**, ask **two explicit questions** in one message and wait for both answers before doing anything else:
+
+  ```
+  1. Describe the architecture you want to diagram (or paste a YAML spec if you have one).
+  2. Which output format(s) do you want? Pick one or more:
+       (a) .drawio — editable technical diagram
+       (b) .pptx — native Oracle-style PowerPoint diagram/slide
+       (c) both
+  ```
+
+  After the user answers, **follow these steps in order — do NOT skip step 1**:
+  1. **Reference-architecture lookup.** Run `python tools/archcenter_pattern_lookup.py "<topology keywords>"` against `kb/architecture-center/catalog.yaml` (123 Oracle-curated entries with cached `.drawio` / `_description.md` under `kb/diagram/assets/archcenter-refs/`). Pick the highest-scoring entry whose topology matches; copy its container nesting, padding, and AD/subnet placement. **Do NOT search `examples/` for references** — `examples/` are previous user outputs, not authoritative Oracle conventions.
+  2. **Pre-generation review.** Confirm the component list with the user (REQUESTED + TECHNICAL DEPENDENCIES per the whitelist).
+  3. **Author the `absolute_layout` spec** following the geometry rules.
+  4. **Spec validator runs automatically** before either renderer (`tools/diagram_spec_validator.py`). Fix any errors.
+  5. **Render.** `oci_diagram_gen.py` for drawio, `oci_deck_gen.py` for PPTX.
+  6. **Visually verify.** `tools/oci_pptx_render.py` to rasterize, then read the PNG.
+
+  Full reference: `docs/skill/output-formats.md` § "Standard diagram-generation procedure (MANDATORY)".
 - If the user picks **3**, ask: "Describe the architecture or paste the spec. I'll generate the deck with a native OCI PowerPoint diagram when the architecture is structured enough."
 - If the user picks **4**, ask: "What services and sizing? (e.g., 'ADB-S 8 OCPU + 2 VMs + FastConnect')"
 - If the user picks **5**, ask: "Describe your architecture or paste the spec. I'll run the 5-pillar review." Then follow the WA review flow:
