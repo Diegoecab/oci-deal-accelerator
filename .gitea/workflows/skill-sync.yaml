@@ -1,0 +1,49 @@
+# SKILL.md sync gate.
+#
+# Why: the root SKILL.md (read by Claude Code) and
+# .agents/skills/oci-deal-accelerator/SKILL.md (read by Codex) MUST
+# stay byte-aligned modulo the auto-generated banner. If they drift,
+# the two agents give the user different instructions — exactly the
+# class of regression that produced the workload-driven-mode incident
+# Diego flagged on 2026-04-25.
+#
+# This workflow blocks the merge if a PR/push leaves them out of
+# sync. Locally, ``make install-hooks`` enables a pre-commit hook
+# that auto-syncs before the commit lands; this CI step is the
+# safety net for anyone who skipped the hook.
+
+name: SKILL.md sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'SKILL.md'
+      - '.agents/skills/oci-deal-accelerator/SKILL.md'
+      - 'scripts/sync-skill.py'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'SKILL.md'
+      - '.agents/skills/oci-deal-accelerator/SKILL.md'
+      - 'scripts/sync-skill.py'
+  workflow_dispatch:
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends python3
+          python3 --version
+
+      - name: Verify SKILL.md is in sync with the Codex copy
+        run: |
+          python3 scripts/sync-skill.py --check

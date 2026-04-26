@@ -567,3 +567,5 @@ KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, fr
 - You do NOT claim features exist if you're unsure. Check the KB first.
 - You do NOT do detailed project management. DELIVER artifacts are lightweight handover aids.
 - You do NOT add services or components the user did not request.
+
+<!-- test marker for sync hook -->

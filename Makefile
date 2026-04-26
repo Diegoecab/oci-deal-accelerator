@@ -1,6 +1,6 @@
 # OCI Deal Accelerator — Build Automation
 
-.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20 diagram-lookup diagram-validate-spec archcenter-descriptions-refresh diagram-spec-audit archcenter-smoke
+.PHONY: help install test validate example diagram deck full clean lint codex-package update-icons freshness freshness-refresh sync-skill sku-discover pptx-icons-refresh archcenter-benchmark-20 diagram-lookup diagram-validate-spec archcenter-descriptions-refresh diagram-spec-audit archcenter-smoke install-hooks
 
 # Use venv if present, otherwise find best available python3
 ifneq (,$(wildcard .venv/bin/python))
@@ -25,6 +25,15 @@ venv: ## Create virtual environment and install dependencies
 	.venv/bin/pip install --upgrade pip
 	.venv/bin/pip install -r requirements.txt
 	@echo "Virtual environment ready. Run: source .venv/bin/activate"
+	@echo "Tip: run 'make install-hooks' once to enable the pre-commit"
+	@echo "     hook that keeps SKILL.md in sync with the Codex copy."
+
+install-hooks: ## Install repo-versioned git hooks (pre-commit auto-syncs SKILL.md)
+	@if [ ! -d .git ]; then echo "install-hooks: not a git repo"; exit 1; fi
+	git config core.hooksPath .githooks
+	@echo "install-hooks: core.hooksPath set to .githooks"
+	@echo "  → pre-commit now auto-syncs .agents/skills/.../SKILL.md"
+	@echo "    whenever SKILL.md is part of the staged change set."
 
 install: ## Install Python dependencies (system-wide)
 	pip install -r requirements.txt

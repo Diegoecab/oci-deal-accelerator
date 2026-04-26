@@ -452,6 +452,26 @@ For temporary overrides (e.g., focusing on a specific customer), create `AGENTS.
 
 Full setup details: [`codex/README.md`](codex/README.md)
 
+#### Keeping the Claude and Codex skills in sync
+
+The root `SKILL.md` (read by Claude Code) and `.agents/skills/oci-deal-accelerator/SKILL.md` (read by Codex) MUST stay byte-aligned modulo an auto-generated banner. If they drift, the two agents give the user different instructions.
+
+Three layers of defense, run from least to most enforcement:
+
+1. **Local pre-commit hook (recommended once per clone):**
+   ```bash
+   make install-hooks
+   ```
+   Sets `core.hooksPath = .githooks`. From then on, any commit that touches `SKILL.md` auto-runs `scripts/sync-skill.py` and stages the regenerated `.agents/` copy in the same commit. No manual step required.
+
+2. **Manual sync (anytime):**
+   ```bash
+   make sync-skill          # write the .agents/ copy from SKILL.md
+   make lint                # check (also runs sync --check)
+   ```
+
+3. **CI gate (`.gitea/workflows/skill-sync.yaml`):** every push/PR runs `python scripts/sync-skill.py --check` and fails the build if the two files have drifted. Catches anyone who skipped the hook.
+
 ## Roadmap
 
 ### ECAL Completeness (see `docs/ecal-gaps-backlog.md` for full list)
