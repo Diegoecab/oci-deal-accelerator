@@ -1516,6 +1516,17 @@ class OCIDeckGenerator(OraclePresBase):
         col_x = self.MARGIN
         col_width = Inches(4)
 
+        # Per-item height was Inches(0.4) — fits exactly one 11pt line.
+        # ECAL principle summaries routinely wrap to 2-3 lines (e.g.
+        # "D-03 Use-Case Fit — Map workloads into applicable use-cases.
+        # Architectural simplicity and operational success come from
+        # re-use") which then overflowed into the next bullet's slot.
+        # Diego flagged 2026-04-25: "D-03 esta superpuesto a D-02".
+        # Bumped to 0.95" per item — fits 2-3 wrapped lines with
+        # breathing room. With 3 items per category there's ample
+        # vertical room (3 * 0.95" = 2.85" out of ~5.5" working area).
+        ITEM_H = Inches(0.95)
+
         for category in ["design", "deployment", "service"]:
             items = principles.get(category, [])
             if not items:
@@ -1528,7 +1539,7 @@ class OCIDeckGenerator(OraclePresBase):
                 color=Colors.TEAL,
             )
 
-            item_y = y + Inches(0.4)
+            item_y = y + Inches(0.45)
             for item in items:
                 pid = item.get("id", "")
                 name = item.get("name", "")
@@ -1542,10 +1553,10 @@ class OCIDeckGenerator(OraclePresBase):
                     label += f" — {summary}"
                 self._add_textbox(
                     slide, col_x + Inches(0.1), item_y,
-                    col_width - Inches(0.1), Inches(0.4),
+                    col_width - Inches(0.1), ITEM_H,
                     text=f"• {label}", font_size=11,
                 )
-                item_y += Inches(0.4)
+                item_y += ITEM_H
 
             col_x += Inches(4.2)
 
@@ -2297,7 +2308,15 @@ class OCIDeckGenerator(OraclePresBase):
                 title=pick(s, "title", default="Engagement Summary"),
             )
 
-        render_standard_sections = spec.get("render_standard_sections", True)
+        # The flag is documented in two places (top-level OR under
+        # `output:`) — earlier specs put it under `output:` to live
+        # alongside the format selector. Honor both locations so a
+        # spec written either way works.
+        output_block = spec.get("output") or {}
+        render_standard_sections = spec.get(
+            "render_standard_sections",
+            output_block.get("render_standard_sections", True),
+        )
 
         def render_custom_slide(item: dict):
             slide_type = item.get("type")

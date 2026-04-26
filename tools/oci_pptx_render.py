@@ -539,11 +539,38 @@ class PPTXSlideRenderer:
         text_right = rect[2] - inset_r
         text_bottom = rect[3] - inset_b
         box_w = max(text_right - text_left, 1)
+        # Word-wrap to box_w. PowerPoint does this natively when
+        # text_frame.word_wrap=true (the default for added textboxes);
+        # without it the rasterizer preview shows long bullets running
+        # off the column and visually overlapping siblings — Diego
+        # flagged 2026-04-25 on the Architecture Principles slide.
+        def _wrap(text: str, font: ImageFont.ImageFont, max_w: int) -> str:
+            wrapped_lines: list[str] = []
+            for raw_line in text.split("\n"):
+                if not raw_line:
+                    wrapped_lines.append("")
+                    continue
+                words = raw_line.split(" ")
+                current = ""
+                for word in words:
+                    candidate = (current + " " + word).strip()
+                    cand_w = self.draw.textbbox((0, 0), candidate, font=font)[2]
+                    if cand_w <= max_w or not current:
+                        current = candidate
+                    else:
+                        wrapped_lines.append(current)
+                        current = word
+                if current:
+                    wrapped_lines.append(current)
+            return "\n".join(wrapped_lines) if wrapped_lines else text
+
         layouts = []
         total_h = 0
         for paragraph in paragraphs:
             font = _font(paragraph["size_px"], paragraph["bold"])
-            bbox = self.draw.multiline_textbbox((0, 0), paragraph["text"], font=font, spacing=2, align="left")
+            wrapped_text = _wrap(paragraph["text"], font, box_w)
+            paragraph["text"] = wrapped_text
+            bbox = self.draw.multiline_textbbox((0, 0), wrapped_text, font=font, spacing=2, align="left")
             width = bbox[2] - bbox[0]
             height = bbox[3] - bbox[1]
             layouts.append((paragraph, font, width, height))
