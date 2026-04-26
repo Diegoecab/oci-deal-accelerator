@@ -131,7 +131,10 @@ Pick a number, or just describe what you need.
   ```
 
   After the user answers, **follow these steps in order — do NOT skip step 1**:
-  1. **Reference-architecture lookup.** Run `python tools/archcenter_pattern_lookup.py "<topology keywords>"` against `kb/architecture-center/catalog.yaml` (123 Oracle-curated entries with cached `.drawio` / `_description.md` under `kb/diagram/assets/archcenter-refs/`). Pick the highest-scoring entry whose topology matches; copy its container nesting, padding, and AD/subnet placement. **Do NOT search `examples/` for references** — `examples/` are previous user outputs, not authoritative Oracle conventions.
+  1. **Reference-architecture lookup.** Run `python tools/archcenter_pattern_lookup.py "<topology keywords>"` against `kb/architecture-center/catalog.yaml` (123 Oracle-curated entries with cached `.drawio` / `_description.md` under `kb/diagram/assets/archcenter-refs/`). Pick the highest-scoring entry whose topology matches.
+     - **The cached `.drawio` is your GEOMETRY source** — it carries Oracle's canonical container nesting, padding, AD/subnet placement, and icon choices. Open it (drawio desktop, drawio.exe, or read the XML) to extract the layout you'll mirror.
+     - **`examples/` is allowed ONLY as a YAML scaffold reference** — i.e. as a starting `absolute_layout:` skeleton to copy the *spec shape* from (which fields exist, how connections are written, fontSize unit). Do NOT copy *geometry numbers* from `examples/`; those came from a different topology and will produce a worse layout than the canonical Oracle ref. Geometry must come from the cached `.drawio` (or be invented based on it).
+     - Rule of thumb: if you find yourself copying `(x, y, w, h)` numbers from `examples/`, stop — you should be copying them from (or fitting them to) the cached `.drawio`. `examples/` is a YAML schema reference, not a geometry source.
   2. **Pre-generation review.** Confirm the component list with the user (REQUESTED + TECHNICAL DEPENDENCIES per the whitelist).
   3. **Author the spec in `absolute_layout` shape** — this is REQUIRED. Do NOT use the legacy workload-driven shape (`tenancy → regions → compartments → services`); it does not resolve OCI icon stencils, does not run through the spec validator, and produces wireframe-looking output (rectangles with text instead of real OCI icons). Every container, service, label, and connection needs explicit `(x, y, w, h)`.
   4. **Spec validator runs automatically** before either renderer (`tools/diagram_spec_validator.py`). It runs ONLY on `absolute_layout` specs — that's another reason workload-driven is forbidden. Fix any errors before re-rendering.
@@ -565,3 +568,5 @@ KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, fr
 - You do NOT claim features exist if you're unsure. Check the KB first.
 - You do NOT do detailed project management. DELIVER artifacts are lightweight handover aids.
 - You do NOT add services or components the user did not request.
+
+<!-- test marker for sync hook -->
