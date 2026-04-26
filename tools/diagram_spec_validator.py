@@ -92,6 +92,35 @@ def _is_inside(child: tuple[float, float, float, float],
             and child[2] <= parent[2] + 0.5 and child[3] <= parent[3] + 0.5)
 
 
+def _segment_intersects_rect(x1: float, y1: float, x2: float, y2: float,
+                              rx1: float, ry1: float, rx2: float, ry2: float) -> bool:
+    """Liang–Barsky line-rect clipping. Returns True iff the segment
+    [(x1,y1)→(x2,y2)] intersects the axis-aligned rect [rx1..rx2,
+    ry1..ry2]. Used by the CONNECTOR_OVER_LABEL check."""
+    dx = x2 - x1
+    dy = y2 - y1
+    p = [-dx, dx, -dy, dy]
+    q = [x1 - rx1, rx2 - x1, y1 - ry1, ry2 - y1]
+    u1, u2 = 0.0, 1.0
+    for i in range(4):
+        if p[i] == 0:
+            if q[i] < 0:
+                return False
+        else:
+            t = q[i] / p[i]
+            if p[i] < 0:
+                if t > u2:
+                    return False
+                if t > u1:
+                    u1 = t
+            else:
+                if t < u1:
+                    return False
+                if t < u2:
+                    u2 = t
+    return u1 <= u2
+
+
 def validate_absolute_layout(layout: dict) -> dict:
     """Walk the parsed ``absolute_layout`` block. Return validation report."""
     issues: list[dict] = []
@@ -136,28 +165,37 @@ def validate_absolute_layout(layout: dict) -> dict:
                 ),
             })
 
-    # 2) CONTAINER_PADDING_VIOLATION — child container's bottom within
-    #    MIN_PARENT_PADDING_PX of its enclosing container. (Mirrors the
-    #    post-render check in drawio_visual_validator so the spec is
-    #    rejected earlier.)
+    # 2) CONTAINER_PADDING_VIOLATION — child container's edge within
+    #    MIN_PARENT_PADDING_PX of its enclosing container, on ANY side.
+    #    Diego flagged 2026-04-25: "db subnet toca los limites de linea
+    #    de los ADs" — that was an LR-edge violation; the original
+    #    bottom-only check missed it.
     for child in container_records:
         for parent in container_records:
             if child is parent:
                 continue
             if not _is_inside(child["box"], parent["box"]):
                 continue
-            gap = parent["box"][3] - child["box"][3]
-            if 0 <= gap < MIN_PARENT_PADDING_PX:
-                issues.append({
-                    "severity": "warn",
-                    "code": "CONTAINER_PADDING_VIOLATION",
-                    "id": child["id"],
-                    "message": (
-                        f"'{child['label']}' bottom is {gap:.0f}px from "
-                        f"parent '{parent['label']}' bottom — borders will "
-                        f"visually merge. Minimum: {MIN_PARENT_PADDING_PX}px."
-                    ),
-                })
+            cx1, cy1, cx2, cy2 = child["box"]
+            px1, py1, px2, py2 = parent["box"]
+            for side, gap in (
+                ("bottom", py2 - cy2),
+                ("top", cy1 - py1),
+                ("left", cx1 - px1),
+                ("right", px2 - cx2),
+            ):
+                if 0 <= gap < MIN_PARENT_PADDING_PX:
+                    issues.append({
+                        "severity": "warn",
+                        "code": "CONTAINER_PADDING_VIOLATION",
+                        "id": child["id"],
+                        "message": (
+                            f"'{child['label']}' {side} is {gap:.0f}px from "
+                            f"parent '{parent['label']}' {side} — borders "
+                            f"will visually merge. Minimum: "
+                            f"{MIN_PARENT_PADDING_PX}px."
+                        ),
+                    })
 
     # 3) LABEL_OVERFLOW_PARENT — any free-floating label whose bbox
     #    crosses the bottom edge of an enclosing container. Catches the
@@ -214,7 +252,47 @@ def validate_absolute_layout(layout: dict) -> dict:
                 })
                 break
 
-    # 4) SERVICE_OVERFLOW_PARENT — service icons must also stay inside
+    # 4) CONNECTOR_OVER_LABEL — straight-segment connectors must not
+    #    cross any free-floating label's bbox. Oracle ref-arch
+    #    convention: labels live in clear whitespace, never under a
+    #    line. Diego flagged 2026-04-25: "Network Load Balancer ese
+    #    nombre esta por debajo de las flechas entonces las flechas lo
+    #    cruzan". Catches the issue at spec time across BOTH renderer
+    #    paths (the prior CONNECTOR_OVER_LABEL was only in the drawio
+    #    post-render validator).
+    services_by_id = {s.get("id"): s for s in services if s.get("id")}
+    for conn in (layout.get("connections") or []):
+        pts = conn.get("points") or []
+        # Synthesize endpoints from from/to if no points provided.
+        if len(pts) < 2:
+            src = services_by_id.get(conn.get("from"))
+            dst = services_by_id.get(conn.get("to"))
+            if src and dst and _bbox(src) and _bbox(dst):
+                sb = _bbox(src); db = _bbox(dst)
+                pts = [
+                    ((sb[0] + sb[2]) / 2, (sb[1] + sb[3]) / 2),
+                    ((db[0] + db[2]) / 2, (db[1] + db[3]) / 2),
+                ]
+        for i in range(len(pts) - 1):
+            x1, y1 = pts[i]
+            x2, y2 = pts[i + 1]
+            for lbl in label_records:
+                lx1, ly1, lx2, ly2 = lbl["box"]
+                if _segment_intersects_rect(x1, y1, x2, y2, lx1, ly1, lx2, ly2):
+                    issues.append({
+                        "severity": "warn",
+                        "code": "CONNECTOR_OVER_LABEL",
+                        "id": conn.get("id", ""),
+                        "message": (
+                            f"Connector '{conn.get('id','?')}' segment "
+                            f"({x1:.0f},{y1:.0f})→({x2:.0f},{y2:.0f}) "
+                            f"crosses label '{lbl['text']}' bbox. Move the "
+                            f"label to clear whitespace or re-route."
+                        ),
+                    })
+                    break
+
+    # 5) SERVICE_OVERFLOW_PARENT — service icons must also stay inside
     #    their visually-enclosing container. (Catches "icon hanging off
     #    the subnet edge" — same root cause as #3 but for icons.)
     for svc in services:
