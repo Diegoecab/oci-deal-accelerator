@@ -19,11 +19,20 @@ help: ## Show this help
 
 VENV_PYTHON := $(shell command -v python3.12 2>/dev/null || command -v python3.11 2>/dev/null || command -v python3.10 2>/dev/null || echo python3)
 
-venv: ## Create virtual environment and install dependencies
-	@echo "Using $(VENV_PYTHON) to create venv..."
-	$(VENV_PYTHON) -m venv .venv
+venv: .venv/.deps-installed ## Create or update venv (idempotent — no-op if requirements.txt unchanged)
+
+# Marker file pattern: the venv only rebuilds when requirements.txt is
+# newer than the marker. A fresh `make venv` after a successful install
+# is an instant no-op (was 1m53s on Codex sandboxes — every turn).
+# To force a rebuild: `rm .venv/.deps-installed` (or `rm -rf .venv`).
+.venv/.deps-installed: requirements.txt
+	@if [ ! -x .venv/bin/python ]; then \
+	  echo "Using $(VENV_PYTHON) to create venv..."; \
+	  $(VENV_PYTHON) -m venv .venv; \
+	fi
 	.venv/bin/pip install --upgrade pip
 	.venv/bin/pip install -r requirements.txt
+	@touch .venv/.deps-installed
 	@echo "Virtual environment ready. Run: source .venv/bin/activate"
 	@echo "Tip: run 'make install-hooks' once to enable the pre-commit"
 	@echo "     hook that keeps SKILL.md in sync with the Codex copy."

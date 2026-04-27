@@ -18,6 +18,78 @@ last_verified: "2026-03-16"
 source: "https://docs.oracle.com/en/solutions/oracle-architecture-center/"
 entry_count: 123
 
+# =============================================================================
+# KNOWN GAPS — topologies the catalog does NOT cover well
+# =============================================================================
+#
+# Surfaced by tools/archcenter_pattern_lookup.py at the top of its output
+# whenever the user's query tokens match any one of the `triggers` token
+# sets below. Purpose: stop the lookup loop early when no canonical Oracle
+# ref-arch exists for what the user asked, and tell the agent how to
+# COMPOSE the topology from primitives instead of refining query phrasing.
+#
+# Schema per gap:
+#   id:        unique slug
+#   triggers:  list of token sets — fires when the expanded query contains
+#              EVERY token in at least ONE set (OR across sets, AND inside
+#              each set). Tokens are lowercased and synonym-expanded the
+#              same way as scoring tokens.
+#   notice:    multi-line string surfaced verbatim above the score-based
+#              top-K. Should explain WHY this is a gap and HOW to compose
+#              from existing primitives. Be concrete (slugs, alias names).
+#
+# Add a gap entry only after a real lookup loop wasted user time on a
+# topology with no canonical match. Speculation belongs elsewhere.
+
+known_gaps:
+
+  - id: gcp-to-oci-native-services
+    triggers:
+      - [gcp, postgresql]
+      - [gcp, redis]
+      - [gcp, mysql]
+      - [gcp, oke]
+      - [gcp, cache]
+      - [gcp, compute]
+      - [google, postgresql]
+      - [google, redis]
+      - [google, mysql]
+      - [google, oke]
+      - [google, cache]
+      - [google, compute]
+    notice: |
+      No canonical Oracle ref-arch covers OCI-native services (PostgreSQL,
+      OKE, Cache, etc.) accessed FROM Google Cloud via Cross-Cloud
+      Interconnect. The `Database@Google Cloud` entries below are the
+      OPPOSITE direction (Oracle DB running ON GCP, not GCP apps reaching
+      OCI-native services).
+
+      Recommended composition — STOP refining the lookup query, build from:
+        1. A simple VCN baseline (e.g. `start-with-an-oci-virtual-cloud-network`).
+        2. The OCI service in a private subnet behind DRG + FastConnect VC.
+        3. A `GCP <region>` container on the left with `cloud_icon: gcp_compute`
+           (or the relevant GCP service — the renderer maps to mxgraph.gcp2.*
+           the same way it does for AWS).
+
+  - id: newer-oci-services-without-icon
+    triggers:
+      - [redis]
+      - [valkey]
+      - [oci_cache]
+    notice: |
+      OCI Cache with Redis/Valkey is GA after the v24.2 toolkit shipped, so
+      no dedicated ref-arch exists in the catalog and no toolkit icon ships
+      either. Oracle's own multi-service ref archs that DO mention Redis
+      embed inline SVG over the generic database/cache stencil.
+
+      Recommended path — don't keep searching:
+        1. Pick the closest topology BY SHAPE (HA pair, primary+replica,
+           multi-AZ) from the catalog — geometry transfers, names don't.
+        2. Use `type: cache` (or `type: database`) with explicit
+           `label: "OCI Cache (Redis)"`. The renderer's alias table already
+           routes `type: redis` → generic stencil.
+        3. Reference: SKILL.md option 2 step 3 (newer-OCI-services convention).
+
 entries:
 
   # ===== DATABASE — MULTICLOUD (Database@Azure) =====

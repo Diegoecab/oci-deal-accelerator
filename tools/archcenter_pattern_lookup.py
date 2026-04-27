@@ -327,12 +327,42 @@ def _patterns_for(entry: dict) -> list[str]:
     return _build_patterns_index().get(entry.get("url", ""), [])
 
 
-def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> list[dict]:
+def _matched_gaps(query_tokens: set[str], gaps: list[dict]) -> list[dict]:
+    """Return every known gap whose triggers match the (expanded) query.
+
+    A gap fires when ANY one of its `triggers` token sets is a subset of
+    `query_tokens` — i.e. AND inside each set, OR across sets. This
+    matches the "stop searching, compose instead" intent: if even one
+    narrow trigger pair (e.g. `[gcp, postgresql]`) is in the query, the
+    catalog has nothing canonical to offer.
+    """
+    matched: list[dict] = []
+    for gap in gaps or []:
+        triggers = gap.get("triggers") or []
+        for trigger_set in triggers:
+            tokens_required = {t.lower() for t in trigger_set}
+            if tokens_required and tokens_required.issubset(query_tokens):
+                matched.append(gap)
+                break
+    return matched
+
+
+def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> dict:
+    """Score the catalog against `query` and return the top-K plus any
+    known-gap notices the query triggers.
+
+    Returns a dict shaped as:
+        {"matches": [<top-K entry dicts>], "gaps": [<matched gap dicts>]}
+
+    Callers that only care about matches can read `result["matches"]`.
+    """
     catalog = yaml.safe_load(CATALOG.read_text(encoding="utf-8"))
     entries = catalog.get("entries", [])
+    gaps_def = catalog.get("known_gaps", []) or []
     qt = _tokens(query)
     if expand_synonyms:
         qt = _expand_query_tokens(qt)
+    matched_gaps = _matched_gaps(qt, gaps_def)
     scored = []
     # Two-pass scoring: cheap fields first (title/tags/services/summary),
     # then enrich the top-K with expensive fields (description text from
@@ -372,10 +402,19 @@ def lookup(query: str, top: int = 5, expand_synonyms: bool = True) -> list[dict]
             "visual_patterns": _patterns_for(e),
             "has_description": bool(c.get("_description")),
         })
-    return scored
+    return {"matches": scored, "gaps": matched_gaps}
 
 
-def _print_results(query: str, results: list[dict]) -> None:
+def _print_results(query: str, payload: dict) -> None:
+    gaps = payload.get("gaps") or []
+    results = payload.get("matches") or []
+    for gap in gaps:
+        notice = (gap.get("notice") or "").rstrip()
+        gap_id = gap.get("id", "unknown")
+        print(f"⚠ KNOWN GAP — {gap_id}")
+        for line in notice.splitlines():
+            print(f"   {line}" if line else "")
+        print()
     if not results:
         print(f"No matches for: {query}")
         return
