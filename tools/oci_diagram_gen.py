@@ -35,6 +35,11 @@ from typing import Optional
 import drawpyo
 import drawpyo.diagram
 
+try:
+    from brand_icon_catalog import drawio_icon_entry
+except ImportError:
+    from tools.brand_icon_catalog import drawio_icon_entry
+
 # ============================================================
 # OCI OFFICIAL STYLES (from OCI Style Guide for Draw.io v24.2)
 # ============================================================
@@ -908,6 +913,10 @@ class OCIDiagramGenerator:
                 return icon_entry, candidate
         return None, None
 
+    @staticmethod
+    def _resolve_brand_icon_entry(brand_icon: str | None):
+        return drawio_icon_entry(brand_icon)
+
     def __init__(self):
         self._load_icon_cache()
         self.file = drawpyo.File()
@@ -1194,6 +1203,8 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str,
         x: int = 30, y: int = 30, w: int = 50, h: int = 80,
         icon: str = "user",
+        brand_icon: Optional[str] = None,
+        font_size: Optional[int] = None,
     ) -> str:
         """Add an external actor with icon.
 
@@ -1202,6 +1213,24 @@ class OCIDiagramGenerator:
               "internet" — cloud stencil
               "generic"  — colored rectangle
         """
+        brand_entry = self._resolve_brand_icon_entry(brand_icon)
+        if brand_entry:
+            return self.add_service(
+                cell_id,
+                label,
+                "external",
+                None,
+                x=x,
+                y=y,
+                w=w,
+                h=h,
+                font_size=font_size,
+                raw_icon_cells=brand_entry["cells"],
+                raw_icon_w=brand_entry["w"],
+                raw_icon_h=brand_entry["h"],
+                exact_size=True,
+            )
+
         if icon in ("user", "users"):
             # Create an invisible group for connectivity + label
             self._create_object(cell_id, "", STYLES["external_user"], None, x, y, w, h)
@@ -1294,6 +1323,7 @@ class OCIDiagramGenerator:
         self, cell_id: str, label: str, service_type: str, parent: str,
         x: int = 20, y: int = 35, w: int = 150, h: int = 50,
         font_size: Optional[int] = None,
+        brand_icon: Optional[str] = None,
         tone: Optional[str] = None,
         badges: Optional[list] = None,
         caption: Optional[str] = None,
@@ -1318,6 +1348,8 @@ class OCIDiagramGenerator:
                 "h": max(int(raw_icon_h or h), 1),
                 "cells": list(raw_icon_cells),
             }
+        elif brand_icon:
+            icon_entry = self._resolve_brand_icon_entry(brand_icon)
         else:
             icon_entry, _ = self._resolve_icon_entry(service_type)
         if icon_entry:
@@ -2286,6 +2318,7 @@ class OCIDiagramGenerator:
                 x=ext.get("x", 30), y=ext.get("y", 30),
                 w=ext.get("w", 50), h=ext.get("h", 60),
                 icon=ext.get("icon", "user"),
+                brand_icon=ext.get("brand_icon"),
             )
 
         # External cloud containers (AWS, Azure, GCP)
@@ -2322,10 +2355,12 @@ class OCIDiagramGenerator:
                         gen._service_count += 1
                     else:
                         gen.add_service(svc_id, label, svc.get("type", "compute"),
-                                        cloud_id, cx, cy, svc_w, svc_h)
+                                        cloud_id, cx, cy, svc_w, svc_h,
+                                        brand_icon=svc.get("brand_icon"))
                 else:
                     gen.add_service(svc_id, label, svc.get("type", "compute"),
-                                    cloud_id, cx, cy, svc_w, svc_h)
+                                    cloud_id, cx, cy, svc_w, svc_h,
+                                    brand_icon=svc.get("brand_icon"))
                 actual_h = gen._calc_service_block_h(label, svc.get("type", "compute"))
                 cy += max(svc_h, actual_h) + 20
 
@@ -3050,6 +3085,8 @@ class OCIDiagramGenerator:
                 x=int(item.get("x", 0)), y=int(item.get("y", 0)),
                 w=int(item.get("w", 56)), h=int(item.get("h", 72)),
                 icon=item.get("icon", "users"),
+                brand_icon=item.get("brand_icon"),
+                font_size=_pt(item.get("fontSize")),
             )
 
         for item in layout.get("services") or []:
@@ -3091,6 +3128,7 @@ class OCIDiagramGenerator:
                 item["parent"] if "parent" in item else None,
                 x=sx_v, y=sy_v, w=sw, h=sh,
                 font_size=_pt(item.get("fontSize")),
+                brand_icon=item.get("brand_icon"),
                 tone=item.get("tone"),
                 badges=item.get("badges"),
                 caption=item.get("caption"),

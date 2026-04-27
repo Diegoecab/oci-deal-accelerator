@@ -19,6 +19,19 @@ from pathlib import PurePosixPath
 
 from lxml import etree
 
+try:
+    from brand_icon_catalog import (
+        brand_icon_media_name,
+        brand_icon_png_bytes,
+        brand_icon_size,
+    )
+except ImportError:
+    from tools.brand_icon_catalog import (
+        brand_icon_media_name,
+        brand_icon_png_bytes,
+        brand_icon_size,
+    )
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INDEX_PATH = PROJECT_ROOT / "kb" / "diagram" / "oci-pptx-icons-index.json"
@@ -539,16 +552,39 @@ class NativePPTXDiagramRenderer:
                 ))
 
         for item in layout.get("external") or []:
+            item_id = item.get("id", _slug(item.get("label", "external")))
+            item_x = sx(item.get("x", 0))
+            item_y = sy(item.get("y", 0))
+            item_w = sl(item.get("w", 70))
+            item_h = sl(item.get("h", 52))
+            item_label = str(item.get("label", "Users")).replace("\\n", "\n")
+            brand_fragments = self._render_brand_icon(
+                brand_icon=item.get("brand_icon"),
+                x=item_x,
+                y=item_y,
+                w=item_w,
+                h=item_h,
+                allocate_id=allocate_id,
+                service_positions=service_positions,
+                service_id=item_id,
+                label=item_label,
+                font_size=item.get("fontSize"),
+            )
+            if brand_fragments:
+                fragments.extend(brand_fragments)
+                continue
             # Native PPTX currently has no user stencil in the OCI deck; use a
             # compact neutral card instead of importing non-OCI artwork.
             fragments.append(self._fallback_service_card(
-                allocate_id(), sx(item.get("x", 0)), sy(item.get("y", 0)),
-                sl(item.get("w", 70)), sl(item.get("h", 52)),
-                item.get("label", "Users"), color="2D5967",
+                allocate_id(), item_x, item_y,
+                item_w, item_h,
+                item_label, color="2D5967",
             ))
-            service_positions[item.get("id", _slug(item.get("label", "external")))] = {
-                "x": sx(item.get("x", 0)), "y": sy(item.get("y", 0)),
-                "cx": sl(item.get("w", 70)), "cy": sl(item.get("h", 52)),
+            service_positions[item_id] = {
+                "x": item_x,
+                "y": item_y,
+                "cx": item_w,
+                "cy": item_h,
             }
 
         for item in layout.get("services") or []:
@@ -828,6 +864,22 @@ class NativePPTXDiagramRenderer:
 
     def _render_service(self, service: dict, x: int, y: int, w: int, h: int, allocate_id, service_positions: dict) -> list:
         fragments = []
+        service_id = service.get("id") or _slug(service.get("name", service.get("type", "service")))
+        label = service.get("name") or service.get("label") or service.get("type", "Service")
+        brand_fragments = self._render_brand_icon(
+            brand_icon=service.get("brand_icon"),
+            x=x,
+            y=y,
+            w=w,
+            h=h,
+            allocate_id=allocate_id,
+            service_positions=service_positions,
+            service_id=service_id,
+            label=label,
+            font_size=service.get("fontSize"),
+        )
+        if brand_fragments:
+            return brand_fragments
         # Multi-cloud support: spec may carry `cloud_icon: ec2` etc. for
         # AWS/GCP components. Render as a provider-branded card scaled
         # to 72% of the bbox so it visually matches the OCI line-art
@@ -845,11 +897,9 @@ class NativePPTXDiagramRenderer:
             fragments.append(self._fallback_service_card(
                 allocate_id(), rx, ry, rw, rh, text, color=color,
             ))
-            sid = service.get("id") or _slug(text)
-            service_positions[sid] = {"x": rx, "y": ry, "cx": rw, "cy": rh}
+            service_positions[service_id] = {"x": rx, "y": ry, "cx": rw, "cy": rh}
             return fragments
         icon_ref = self._resolve_icon_ref(service)
-        service_id = service.get("id") or _slug(service.get("name", service.get("type", "service")))
         if icon_ref:
             # Icon fills the spec's full (w, h) bbox. The earlier
             # aspect-ratio-preserving logic ("fit within w/h") left
@@ -891,7 +941,6 @@ class NativePPTXDiagramRenderer:
                 ))
             return fragments
 
-        label = service.get("name") or service.get("label") or service.get("type", "Service")
         color = SERVICE_COLORS.get(service.get("category"), SERVICE_COLORS.get(service.get("type"), SERVICE_COLORS["default"]))
         fragments.append(self._fallback_service_card(allocate_id(), x + _emu(0.04), y + _emu(0.04), w - _emu(0.08), h - _emu(0.08), label, color=color))
         service_positions[service_id] = {
@@ -1259,6 +1308,27 @@ class NativePPTXDiagramRenderer:
         rels_tree.write(str(rels_path), encoding="UTF-8", xml_declaration=True)
         return new_rid
 
+    def _write_media_blob(self, file_name: str, data: bytes) -> str:
+        if self._current_work_dir is None:
+            raise RuntimeError("Cannot write media without an active PPTX work dir")
+        media_dir = self._current_work_dir / "ppt" / "media"
+        media_dir.mkdir(parents=True, exist_ok=True)
+        dest_path = media_dir / Path(file_name).name
+        if dest_path.exists() and dest_path.read_bytes() != data:
+            stem = dest_path.stem
+            suffix = dest_path.suffix
+            counter = 1
+            while True:
+                candidate = media_dir / f"{stem}_{counter}{suffix}"
+                if not candidate.exists() or candidate.read_bytes() == data:
+                    dest_path = candidate
+                    break
+                counter += 1
+        if not dest_path.exists():
+            dest_path.write_bytes(data)
+        self._ensure_content_type_default(dest_path.suffix.lstrip(".").lower())
+        return f"../media/{dest_path.name}"
+
     def _target_slide_rels_path(self) -> Path:
         slide_name = self._current_slide_path.name
         rels_dir = self._current_slide_path.parent / "_rels"
@@ -1268,6 +1338,97 @@ class NativePPTXDiagramRenderer:
     def _assign_ids(self, element, allocate_id):
         for node in element.findall(".//p:cNvPr", namespaces=NS):
             node.set("id", str(allocate_id()))
+
+    def _picture_shape(self, shape_id: int, rel_id: str, x: int, y: int, cx: int, cy: int,
+                       name: str = "Brand Icon"):
+        xml = f"""
+        <p:pic xmlns:p="{P_NS}" xmlns:a="{A_NS}" xmlns:r="{R_NS}">
+          <p:nvPicPr>
+            <p:cNvPr id="{shape_id}" name="{name}"/>
+            <p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>
+            <p:nvPr/>
+          </p:nvPicPr>
+          <p:blipFill>
+            <a:blip r:embed="{rel_id}">
+              <a:extLst>
+                <a:ext uri="{{28A0092B-C50C-407E-A947-70E740481C1C}}">
+                  <a14:useLocalDpi xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" val="0"/>
+                </a:ext>
+              </a:extLst>
+            </a:blip>
+            <a:stretch><a:fillRect/></a:stretch>
+          </p:blipFill>
+          <p:spPr>
+            <a:xfrm><a:off x="{x}" y="{y}"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm>
+            <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
+          </p:spPr>
+        </p:pic>
+        """
+        return etree.fromstring(xml.encode("utf-8"))
+
+    def _render_brand_icon(self, brand_icon: str | None, x: int, y: int, w: int, h: int,
+                           allocate_id, service_positions: dict, service_id: str,
+                           label: str | None = None, font_size: int | None = None) -> list:
+        if not brand_icon:
+            return []
+        png_bytes = brand_icon_png_bytes(brand_icon)
+        size = brand_icon_size(brand_icon)
+        if not png_bytes or not size:
+            return []
+
+        label_text = str(label or "").replace("\\n", "\n")
+        label_font_size = int(font_size) if font_size is not None else 820
+        n_lines = label_text.count("\n") + 1 if label_text else 0
+        label_gap = _emu(0.03) if label_text else 0
+        label_cy = 0
+        if n_lines:
+            line_height_pt = max(label_font_size / 100.0, 8.2) * 1.2
+            label_cy = max(
+                _emu(0.18),
+                int(round((line_height_pt * n_lines / 72.0) * EMU_PER_INCH + _emu(0.03))),
+            )
+        icon_box_h = max(h - label_cy - label_gap, 1)
+        natural_w, natural_h = size
+        scale = min(w / max(natural_w, 1), icon_box_h / max(natural_h, 1))
+        icon_cx = max(int(round(natural_w * scale)), 1)
+        icon_cy = max(int(round(natural_h * scale)), 1)
+        icon_x = x + max(int((w - icon_cx) / 2), 0)
+        icon_y = y + max(int((icon_box_h - icon_cy) / 2), 0)
+
+        media_target = self._write_media_blob(
+            brand_icon_media_name(brand_icon, extension="png"),
+            png_bytes,
+        )
+        picture = self._picture_shape(
+            allocate_id(),
+            self._add_target_slide_relationship(media_target),
+            icon_x,
+            icon_y,
+            icon_cx,
+            icon_cy,
+        )
+        service_positions[service_id] = {
+            "x": icon_x,
+            "y": icon_y,
+            "cx": icon_cx,
+            "cy": icon_cy,
+        }
+        fragments = [picture]
+        if label_text:
+            label_y = y + h - label_cy
+            fragments.append(self._label_shape(
+                allocate_id(),
+                x,
+                label_y,
+                w,
+                label_cy,
+                label_text,
+                font_size=label_font_size,
+                color=self.bark,
+                bold=True,
+                align="ctr",
+            ))
+        return fragments
 
     def _fallback_service_card(self, shape_id: int, x: int, y: int, cx: int, cy: int, label: str, color: str):
         xml = f"""

@@ -1,0 +1,45 @@
+version: 1
+
+# Resolution policy:
+# 1. Prefer officially downloaded vendor assets committed under
+#    kb/diagram/brand-icons/official/
+# 2. Fall back to vetted local assets under
+#    kb/diagram/brand-icons/fallback/
+#
+# The renderers resolve by alias first, then walk `resolution_order`
+# until they find an existing file.
+resolution_order:
+  - official_svg
+  - official_png
+  - fallback_svg
+  - fallback_png
+
+icons:
+  slack:
+    label: Slack
+    aliases:
+      - slack_app
+      - slack_bot
+    official_png: kb/diagram/brand-icons/official/slack/slack_hash_256.png
+
+  jira:
+    label: Jira
+    aliases:
+      - atlassian_jira
+    official_svg: kb/diagram/brand-icons/official/jira/Jira_icon.svg
+
+  jira_service_management:
+    label: Jira Service Management
+    aliases:
+      - jsm
+      - jira-service-management
+      - jira service management
+    official_svg: kb/diagram/brand-icons/official/jira-service-management/Jira-Service-Management_icon.svg
+
+  jirasoftware:
+    label: Jira Software
+    aliases:
+      - jira_software
+      - jira-software
+      - jira software
+    fallback_svg: kb/diagram/brand-icons/fallback/jirasoftware.svg
