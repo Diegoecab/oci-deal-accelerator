@@ -21,6 +21,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+import tempfile
+import xml.etree.ElementTree as ET
+import zipfile
 
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -848,10 +851,80 @@ class OCIDeckGenerator(OraclePresBase):
             renderer = NativePPTXDiagramRenderer()
             renderer.apply_jobs(filepath, self._native_pptx_jobs)
 
+        # Some Oracle template assets are SVG-backed. When python-pptx or the
+        # native renderer repacks the deck, [Content_Types].xml can lose the
+        # Default entry for "svg", which makes PowerPoint prompt to repair.
+        self._repair_pptx_media_content_types(filepath)
+
         report: dict = {"path": filepath}
         if validate:
             report["pptx"] = self._validate_pptx(filepath)
         return report
+
+    @staticmethod
+    def _repair_pptx_media_content_types(filepath: str) -> dict:
+        """Ensure [Content_Types].xml declares every extension used in ppt/media."""
+        content_type_by_ext = {
+            "svg": "image/svg+xml",
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "gif": "image/gif",
+            "bmp": "image/bmp",
+            "tiff": "image/tiff",
+            "tif": "image/tiff",
+            "emf": "image/x-emf",
+            "wmf": "image/x-wmf",
+            "ico": "image/x-icon",
+            "webp": "image/webp",
+        }
+
+        deck_path = Path(filepath)
+        with tempfile.TemporaryDirectory(prefix="oci-deck-ct-") as tmp_dir:
+            work_dir = Path(tmp_dir) / "deck"
+            with zipfile.ZipFile(deck_path) as archive:
+                archive.extractall(work_dir)
+
+            ct_path = work_dir / "[Content_Types].xml"
+            media_dir = work_dir / "ppt" / "media"
+            if not ct_path.exists() or not media_dir.exists():
+                return {"status": "skipped", "added": []}
+
+            tree = ET.parse(ct_path)
+            root = tree.getroot()
+            ns = "http://schemas.openxmlformats.org/package/2006/content-types"
+            existing = {
+                (node.get("Extension") or "").lower()
+                for node in root.findall(f"{{{ns}}}Default")
+            }
+
+            added: list[str] = []
+            for media_path in sorted(media_dir.iterdir()):
+                if not media_path.is_file():
+                    continue
+                ext = media_path.suffix.lstrip(".").lower()
+                content_type = content_type_by_ext.get(ext)
+                if not content_type or ext in existing:
+                    continue
+                default = ET.SubElement(root, f"{{{ns}}}Default")
+                default.set("Extension", ext)
+                default.set("ContentType", content_type)
+                existing.add(ext)
+                added.append(ext)
+
+            if not added:
+                return {"status": "pass", "added": []}
+
+            tree.write(ct_path, encoding="UTF-8", xml_declaration=True)
+            temp_output = deck_path.with_suffix(".tmp.pptx")
+            if temp_output.exists():
+                temp_output.unlink()
+            with zipfile.ZipFile(temp_output, "w", zipfile.ZIP_DEFLATED) as archive:
+                for path in sorted(work_dir.rglob("*")):
+                    if path.is_file():
+                        archive.write(path, path.relative_to(work_dir))
+            temp_output.replace(deck_path)
+            return {"status": "fixed", "added": sorted(added)}
 
     @staticmethod
     def _validate_pptx(filepath: str) -> dict:
