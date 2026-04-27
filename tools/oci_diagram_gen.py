@@ -855,7 +855,13 @@ class OCIDiagramGenerator:
         "iac": ["resource_manager"],
         "terraform": ["resource_manager"],
         "oac": ["analytics"],
-        "oic": ["integration"],
+        # OIC / Integration Cloud — the draw.io toolkit key is
+        # ``developer_services_integrations``. ``integration`` exists on
+        # the PPTX side, but not in ``kb/diagram/oci-icons.json``.
+        "integration": ["developer_services_integrations"],
+        "oic": ["developer_services_integrations"],
+        "integration_cloud": ["developer_services_integrations"],
+        "oracle_integration_cloud": ["developer_services_integrations"],
         # Newer OCI services not yet in OCI Toolkit v24.2 — fall back to
         # the generic ``database`` stencil. Oracle's own ref archs do
         # the same (custom inline SVG over the generic icon) until the
