@@ -966,24 +966,41 @@ class NativePPTXDiagramRenderer:
         return candidates
 
     def _lookup_icon_ref(self, key: str) -> dict | None:
+        # Stencil buckets sometimes ship a degraded entry — e.g.
+        # database_icons['database'] is tag=sp with bbox=None, which
+        # would clone as a zero-size shape (the "OCI PostgreSQL bbox
+        # but no icon" symptom Diego hit on the GCP↔OCI deck). Skip
+        # any ref that fails the viability check and fall through to
+        # the next source (sample_icon_refs, then shape_library, where
+        # a usable grpSp ref usually exists).
         database_icons = (self.index.get("stencils") or {}).get("database_icons") or {}
-        if key in database_icons:
-            return database_icons[key]
-        if key in self.sample_icon_refs:
-            return self.sample_icon_refs[key]
+        candidate = database_icons.get(key)
+        if candidate and self._is_viable_ref(candidate):
+            return candidate
+        sample = self.sample_icon_refs.get(key)
+        if sample and self._is_viable_ref(sample):
+            return sample
         refs = self.shape_library_entries.get(key) or []
         if refs:
             return self._select_preferred_ref(refs)
         return None
 
+    @staticmethod
+    def _is_viable_ref(ref: dict) -> bool:
+        """A ref must point at a real cloneable shape (slide path,
+        index/path-into-shape-tree, non-empty bbox, supported tag) for
+        ``_clone_translated_block`` to emit visible geometry."""
+        if not ref or not ref.get("slide_path"):
+            return False
+        if ref.get("child_index") is None and not ref.get("node_path"):
+            return False
+        bbox = ref.get("bbox") or {}
+        if not bbox.get("cx") or not bbox.get("cy"):
+            return False
+        return ref.get("tag") in {"grpSp", "pic", "sp"}
+
     def _select_preferred_ref(self, refs: list[dict]) -> dict | None:
-        viable = [
-            ref for ref in refs
-            if (ref.get("child_index") is not None or ref.get("node_path"))
-            and ref.get("slide_path")
-            and (ref.get("bbox") or {}).get("cx")
-            and ref.get("tag") in {"grpSp", "pic", "sp"}
-        ]
+        viable = [ref for ref in refs if self._is_viable_ref(ref)]
         if not viable:
             return refs[0] if refs else None
 
