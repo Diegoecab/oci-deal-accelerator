@@ -157,6 +157,32 @@ If a task generates YAML without the corresponding readable output, the task is 
 - **Readable outputs** — YAML is backing data, never the deliverable
 - **No hallucinated architecture** — NEVER add services/components/regions the user didn't mention. When remediating WA gaps, apply minimum targeted fixes to the existing architecture; don't replace it with a generic "ideal" one. ASK before adding new services.
 
+## Git Remotes (Gitea = source of truth, GitHub = mirror)
+
+`origin` is configured with **one fetch URL (Gitea) and two push URLs (Gitea + GitHub)**, so a single `git push origin main` updates both. Gitea is authoritative; GitHub is a public mirror.
+
+```
+fetch  → git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+push   → git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+push   → github.com/Diegoecab/oci-deal-accelerator.git
+```
+
+**Recreating this on a new clone** (the dual-push lives in `.git/config`, not tracked):
+
+```bash
+git remote set-url --add --push origin https://github.com/Diegoecab/oci-deal-accelerator.git
+git remote set-url --add --push origin https://git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+git remote -v   # confirm one fetch + two push URLs
+```
+
+The first command substitutes the implicit Gitea push URL with GitHub's; the second re-adds Gitea so origin pushes to BOTH. Counter-intuitive but necessary.
+
+**Agent guidance**:
+- After creating a commit on `main`, **always propose `git push origin main`** (not separate pushes per remote) — it covers both. Confirm with the user before pushing (pushing is shared-state).
+- If a push fails on GitHub but succeeds on Gitea (or vice versa), the dual-push is partial. Re-run after fixing the failing one — Gitea's second push will be a no-op fast-forward.
+- Never force-push Gitea unless explicitly asked; force-pushing GitHub is acceptable when needed because GitHub is downstream.
+- If history diverges between Gitea and GitHub (e.g. after a rebase), the recovery pattern is: temporarily strip the GitHub URL (`git remote set-url --delete --push origin <github-url>`), push Gitea fast-forward, add `github` as a standalone remote, force-push, then restore the dual-push.
+
 ## Welcome Flow
 
 When the user starts a conversation without providing discovery notes or a specific request (e.g., a greeting or empty context), present the welcome message and capability menu defined in the skill's SKILL.md § Welcome Flow. Specifically:

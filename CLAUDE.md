@@ -159,6 +159,32 @@ python tools/refresh_arch_catalog.py --validate        # validate catalog
 - **KB is the moat** — field experience, not documentation regurgitation
 - **ECAL-aligned** — Define → Design → Deliver with iterative checkpoints
 
+## Git Remotes (Gitea = source of truth, GitHub = mirror)
+
+`origin` is configured with **one fetch URL (Gitea) and two push URLs (Gitea + GitHub)**, so a single `git push origin main` updates both. Gitea is authoritative; GitHub is a public mirror.
+
+```
+fetch  → git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+push   → git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+push   → github.com/Diegoecab/oci-deal-accelerator.git
+```
+
+**Recreating this on a new clone** (the dual-push lives in `.git/config`, not tracked):
+
+```bash
+git remote set-url --add --push origin https://github.com/Diegoecab/oci-deal-accelerator.git
+git remote set-url --add --push origin https://git.tech-lad.com.br/diegoecab/oci-deal-accelerator.git
+git remote -v   # confirm one fetch + two push URLs
+```
+
+The first command substitutes the implicit Gitea push URL with GitHub's; the second re-adds Gitea so origin pushes to BOTH. Counter-intuitive but necessary.
+
+**Agent guidance**:
+- After creating a commit on `main`, **always propose `git push origin main`** (not separate pushes per remote) — it covers both. Confirm with the user before pushing (pushing is shared-state).
+- If a push fails on GitHub but succeeds on Gitea (or vice versa), the dual-push is partial. Re-run after fixing the failing one — Gitea's second push will be a no-op fast-forward.
+- Never force-push Gitea unless explicitly asked; force-pushing GitHub is acceptable when needed because GitHub is downstream.
+- If history diverges between Gitea and GitHub (e.g. after a rebase), the recovery pattern is: temporarily strip the GitHub URL (`git remote set-url --delete --push origin <github-url>`), push Gitea fast-forward, add `github` as a standalone remote, force-push, then restore the dual-push.
+
 ## Coding Guidelines
 
 ### 1. Think Before Coding
