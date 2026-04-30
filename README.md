@@ -11,14 +11,17 @@ What normally takes an SA days of work (structuring notes, designing architectur
 - **ECAL 3.1 native** — engagement RACI, artefact catalog, readiness scoring, and lessons learned per step baked into the workflow
 - **Field knowledge, beyond the docs** — built-in KB with real gotchas, workarounds, and sizing lessons from production OCI deployments
 - **Honest about trade-offs** — flags OCI limitations and competitive gaps instead of overselling
-- **Multi-cloud aware** — supports hybrid/multi-cloud diagrams (AWS, Azure, GCP icons) and considers options like ADB Multicloud before recommending full migration
+- **Multi-cloud aware** — supports hybrid/multi-cloud diagrams (AWS, Azure, GCP, plus external brand icons such as Slack and Jira) and considers options like ADB Multicloud before recommending full migration
+- **MCP-tolerant inputs** — deck, diagram, BOM, and business-case generators accept flat MCP payloads and common field aliases instead of requiring one rigid schema
 - **End-to-end coverage** — from discovery notes to go-live checklist, not just the architecture slide
 
 ## New user? Start here
 
 The skill runs as a hosted MCP server. Connect once from your LLM client, sign in with Oracle SSO, and the tools are ready.
 
-**1. Add the MCP server to your client:**
+Fastest path: open AI Factory Hub at `https://ai-lad.com/`, search for `OCI Deal Accelerator`, and install it from there. If you prefer manual setup, use the MCP client instructions below.
+
+**1. Add the MCP server to your client (manual setup):**
 
 | Client | How |
 |---|---|
@@ -45,6 +48,7 @@ The skill runs as a hosted MCP server. Connect once from your LLM client, sign i
 
 ### Connection URLs
 
+- **AI Factory Hub:** `https://ai-lad.com/`
 - **MCP (HTTP streamable):** `https://mcp.tech-lad.com/deal-accelerator/mcp/`
 - **SSE (Windsurf only):** `https://mcp.tech-lad.com/deal-accelerator/sse/`
 
@@ -61,10 +65,12 @@ From unstructured input (meeting notes, emails, Slack threads), the skill genera
 | **Business Case** — TCO, ROI, value drivers, risk assessment | .pptx | Define | Ideate |
 | **Joint Engagement Plan** — scope, resources, timeline | YAML | Define | Plan |
 | **Discovery Questionnaire** — structured IT landscape collection | YAML | Design | Current |
-| **Architecture Diagram** — official Oracle visual style, multi-cloud support | .drawio | Design | Future |
+| **Architecture Diagram** — Oracle reference-architecture geometry, multi-cloud + external brand support | .drawio / .pptx | Design | Future |
 | **Slide Deck** — 6-15 slides scaled to engagement complexity | .pptx | Design | Confirm |
 | **Customer PDF** — branded, no internal KB references | .pdf | Design | Confirm |
 | **Cost Estimate** — BYOL vs PAYG breakdown with assumptions | YAML | Design | Future |
+| **Bill of Materials (BOM)** — requested SKUs only, formula-driven totals, discount-aware workbook | .xlsx | Design | Future |
+| **AppCA-ready BOM** — AppCA import sheet plus full BOM workbook detail | .xlsx | Design | Future |
 | **Well-Architected Scorecard** — 5-pillar automated validation | YAML | Design | Future |
 | **Operations Model** — day-2 monitoring, patching, incident response | YAML | Design | Future |
 | **ECAL Readiness Scorecard** — 60-artefact gap analysis per phase | Text | All | All |
@@ -100,7 +106,38 @@ deck + pdf        ← + customer-facing PDF (branded, no internal refs)
 pdf               ← customer PDF only
 bizcase           ← business case deck for customer approval
 full              ← everything (pptx + drawio + docx + xlsx + pdf)
+bom               ← bill of materials (.xlsx)
 deliver           ← handover + go-live checklist + success criteria
+```
+
+Standalone architecture diagrams can be generated as editable `.drawio` files or as native Oracle-style `.pptx` diagrams/slides, depending on the workflow you trigger.
+
+## Example Prompts
+
+These copy/paste prompts are good demo asks for the newest user-visible features, especially when using Codex or another MCP client.
+
+### Native PowerPoint diagram (.pptx)
+
+```text
+Generame un diagrama nativo en .pptx, simple y prolijo, de esta arquitectura: usuarios externos -> load balancer público -> 2 VMs de aplicación en subnet privada -> Autonomous Database Serverless. Quiero que quede presentable para mostrar directo en PowerPoint. No me pidas YAML ni setup adicional.
+```
+
+### Brand icons + OIC + dual output
+
+```text
+Generate a simple high-level integration diagram for this flow: Slack -> Oracle Integration Cloud (OIC) -> Jira Service Management -> My Oracle Support. Add clear Client, Oracle, and External layers. Use brand icons for Slack and Jira Service Management, and deliver both .drawio and .pptx.
+```
+
+### Real multicloud topology
+
+```text
+Generate a high-level architecture diagram for this scenario: 1 PostgreSQL in OCI Ashburn, accessed from GCP Virginia through interconnect. PostgreSQL connects internally to 1 Autonomous Database Serverless, which also has 1 refreshable clone in the same region but in a different AD. Deliver both .drawio and .pptx. Keep it simple, executive-friendly, and technically correct.
+```
+
+### Discount-aware BOM
+
+```text
+Gere um BOM em USD para este cenário: PostgreSQL no OCI com 4 OCPU e 500 GB, ADB-S com 200 ECPU e 1 TB BYOL, 1 refreshable clone com o mesmo sizing e FastConnect de 1 Gbps. Aplique 11% de desconto, 12 meses, 24 horas por dia. Quero o arquivo .xlsx e um resumo claro do custo mensal e anual.
 ```
 
 ## Knowledge Base
@@ -159,6 +196,7 @@ kb/services/dbexpert-api-reference.yaml  # API endpoints and refresh procedure
 Cached locally under `kb/diagram/assets/archcenter-refs/<slug>/`:
 - `_description.md` — Oracle's architecture rationale (used by both the lookup tool and SKILL.md option 10 "Reference architecture lookup")
 - `*.drawio` — official editable source for ~110 references (where Oracle ships a zip)
+- `_template.yaml` — extracted `absolute_layout` scaffold so new diagrams can start from Oracle geometry instead of from scratch
 - `*.svg` / `*.png` — raster fallback for the rest
 
 During **Phase 2 (DESIGN)**, the skill automatically matches the proposed architecture against the catalog:
@@ -183,7 +221,7 @@ python tools/archcenter_description_fetcher.py --limit 200
 python tools/archcenter_zip_downloader.py    # idempotent; skips slugs whose folder already has a .drawio
 ```
 
-The cached assets under `kb/diagram/assets/archcenter-refs/` (~83MB) are committed so the skill works offline. Refresh quarterly or when `refresh_arch_catalog.py --whats-new` adds entries — both downloader and description fetcher are idempotent and only fetch what's missing.
+The cached assets under `kb/diagram/assets/archcenter-refs/` (~83MB) are committed so the skill works offline. Lookup uses a local index for near-instant matches, and can be rebuilt manually when needed. Refresh quarterly or when `refresh_arch_catalog.py --whats-new` adds entries — both downloader and description fetcher are idempotent and only fetch what's missing.
 
 ### KB Health & Freshness
 
@@ -362,6 +400,8 @@ If you paste discovery notes directly, the skill skips the menu and goes straigh
 
 ## Tools
 
+All major generators accept either the canonical nested YAML specs or the flatter MCP payload aliases used by hosted clients.
+
 ```bash
 # Slide deck generation (technical proposal)
 python tools/oci_deck_gen.py --spec examples/proposal-spec.yaml --output proposal.pptx
@@ -377,6 +417,9 @@ python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case
 # § "Standard diagram-generation procedure (MANDATORY)" for the full
 # workflow: ref-arch lookup → pre-generation review → spec authoring
 # → automatic spec validator → render → visual verification.
+# Supports OCI fallback aliases for services whose official toolkit icons
+# are still missing (for example PostgreSQL/Redis) plus `brand_icon` for
+# third-party systems such as Slack and Jira in both drawio and PPTX.
 python tools/archcenter_pattern_lookup.py "<topology keywords>"   # 1. find canonical Oracle reference
 python tools/oci_diagram_gen.py --spec examples/diagram-spec.yaml --output arch.drawio  # 2. render (validators run automatically)
 python tools/oci_pptx_render.py --pptx arch.pptx --output arch.png --width 1600         # 3. rasterize PPTX for visual review
@@ -389,11 +432,17 @@ python tools/drawio_visual_validator.py arch.drawio
 
 # Output orchestrator (multiple formats at once)
 python tools/oci_output.py --spec examples/proposal-spec.yaml --format full --output-dir output/
+python tools/oci_output.py --spec examples/exacs-bom-spec.yaml --format bom --output-dir output/
+
+# BOM / AppCA workbook
+python tools/oci_bom_gen.py --spec examples/exacs-bom-spec.yaml --output customer-bom.xlsx
+python tools/oci_bom_gen.py --spec examples/exacs-bom-spec.yaml --output customer-appca.xlsx --appca
 
 # Architecture Center catalog
 python tools/refresh_arch_catalog.py --validate
 python tools/refresh_arch_catalog.py --whats-new
 python tools/refresh_arch_catalog.py --check-links
+python tools/archcenter_pattern_lookup.py "adb gcp fastconnect" --rebuild-index
 
 # Feature compatibility
 python tools/feature_matrix_cli.py check "Auto Scaling" adb_s 23ai

@@ -195,7 +195,21 @@
       "Bash(DRAWIO_EXE=\"/mnt/c/Program Files/draw.io/draw.io.exe\" .venv/bin/python tools/drawio_to_png.py --drawio examples/asis-tobe-adb-modernization/out/tobe-adb-d-active-dataguard.drawio --out tmp/drawio-renders/tobe-final.png)",
       "Bash(DRAWIO_EXE=\"/mnt/c/Program Files/draw.io/draw.io.exe\" .venv/bin/python tools/drawio_to_png.py --drawio examples/asis-tobe-adb-modernization/out/asis-adb-s-local-dr.drawio --out tmp/drawio-renders/asis-final2.png)",
       "Bash(DRAWIO_EXE=\"/mnt/c/Program Files/draw.io/draw.io.exe\" .venv/bin/python tools/drawio_to_png.py --drawio examples/asis-tobe-adb-modernization/out/tobe-adb-d-active-dataguard.drawio --out tmp/drawio-renders/tobe-final2.png)",
-      "Bash(.githooks/pre-commit)"
+      "Bash(.githooks/pre-commit)",
+      "Bash(unzip -l awr_Transactional.zip)",
+      "Bash(mkdir -p /tmp/awr_meli)",
+      "Bash(unzip -o \"/mnt/c/Users/Diego/Documents/Meli/ABD-M/April 2026 - Fraude ADB-S to ADB-D/awr_Transactional.zip\")",
+      "Bash(cp \"/mnt/c/Users/Diego/Documents/Meli/ABD-M/April 2026 - Fraude ADB-S to ADB-D/meli-fraud-adbd-arch.pptx\" /tmp/meli-fraud-adbd-arch.pptx)",
+      "Bash(unzip -o meli-fraud-adbd-arch.pptx -d meli-pptx-extracted/)",
+      "Bash(cp -f \"/mnt/c/Users/Diego/Documents/Meli/ABD-M/April 2026 - Fraude ADB-S to ADB-D/meli-fraud-adbd-arch.pptx\" /tmp/meli-fraud-adbd-arch.pptx)",
+      "Bash(rm -rf /tmp/meli-pptx-extracted)",
+      "Bash(unzip -oq /tmp/meli-fraud-adbd-arch.pptx -d /tmp/meli-pptx-extracted/)",
+      "Bash(cp -f \"/mnt/c/Users/Diego/Documents/Meli/ABD-M/April 2026 - Fraude ADB-S to ADB-D/meli-fraud-adbd-arch.pptx\" meli-fraud-adbd-arch.pptx)",
+      "Bash(rm -rf meli-pptx-extracted)",
+      "Bash(unzip -oq meli-fraud-adbd-arch.pptx -d meli-pptx-extracted/)",
+      "Bash(yes)",
+      "WebFetch(domain:blog.shadabmohammad.com)",
+      "Bash(\"/mnt/c/Program Files/draw.io/draw.io.exe\" -x -f png --scale 1 -o \"$\\(pwd\\)/examples/output-aws-mysql-to-oci-heatwave-fsdr/aws-mysql-to-heatwave-fsdr.png\" \"$\\(pwd\\)/examples/output-aws-mysql-to-oci-heatwave-fsdr/aws-mysql-to-heatwave-fsdr.drawio\")"
     ]
   }
 }

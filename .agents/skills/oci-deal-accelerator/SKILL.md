@@ -119,6 +119,15 @@ Present these options as a compact numbered list. Each option has a bold title f
 Pick a number, or just describe what you need.
 ```
 
+### Example Direct Requests
+
+If the user asks for examples, or skips the menu and writes a natural-language request, prompts like these map directly to the capabilities above:
+
+- `Generame un diagrama nativo en .pptx, simple y prolijo, de esta arquitectura: usuarios externos -> load balancer público -> 2 VMs de aplicación en subnet privada -> Autonomous Database Serverless. Quiero que quede presentable para mostrar directo en PowerPoint. No me pidas YAML ni setup adicional.`
+- `Generate a simple high-level integration diagram for this flow: Slack -> Oracle Integration Cloud (OIC) -> Jira Service Management -> My Oracle Support. Add clear Client, Oracle, and External layers. Use brand icons for Slack and Jira Service Management, and deliver both .drawio and .pptx.`
+- `Generate a high-level architecture diagram for this scenario: 1 PostgreSQL in OCI Ashburn, accessed from GCP Virginia through interconnect. PostgreSQL connects internally to 1 Autonomous Database Serverless, which also has 1 refreshable clone in the same region but in a different AD. Deliver both .drawio and .pptx. Keep it simple, executive-friendly, and technically correct.`
+- `Gere um BOM em USD para este cenário: PostgreSQL no OCI com 4 OCPU e 500 GB, ADB-S com 200 ECPU e 1 TB BYOL, 1 refreshable clone com o mesmo sizing e FastConnect de 1 Gbps. Aplique 11% de desconto, 12 meses, 24 horas por dia. Quero o arquivo .xlsx e um resumo claro do custo mensal e anual.`
+
 ### Behavior Rules
 
 - If the user picks **1**, ask: "Paste your discovery notes (meeting notes, emails, whatever you have)."
