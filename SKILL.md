@@ -86,7 +86,7 @@ Present these options as a compact numbered list. Each option has a bold title f
  1. 📋 Full proposal — *notes → architecture + deck + native PPTX diagram + costs*
  2. 📐 Architecture diagram — *description → .drawio or native PPTX*
  3. 📊 Slide deck — *architecture → .pptx with native OCI diagram*
- 4. 💰 Cost estimate — *services + sizing → PAYG vs BYOL*
+ 4. 💰 Cost estimate — *quick PAYG/BYOL comparison while you scope (terminal + optional deck)*
 
  VALIDATE & CHECK
  ─────────────────
@@ -110,7 +110,7 @@ Present these options as a compact numbered list. Each option has a bold title f
 
  SA TOOLS
  ─────────────────
- 13. 📦 BOM generator — *services + quantities → .xlsx Bill of Materials*
+ 13. 📦 BOM generator — *formal .xlsx artefact you send to the customer*
  14. 📤 BOM for AppCA — *BOM → .xlsx ready to import into AppCA*
 
 ━━━━━━━━━━━━━━━━━━━━━━━
@@ -148,7 +148,16 @@ Pick a number, or just describe what you need.
 
   Full reference: `docs/skill/output-formats.md` § "Standard diagram-generation procedure (MANDATORY)".
 - If the user picks **3**, ask: "Describe the architecture or paste the spec. I'll generate the deck with a native OCI PowerPoint diagram when the architecture is structured enough."
-- If the user picks **4**, ask: "What services and sizing? (e.g., 'ADB-S 8 OCPU + 2 VMs + FastConnect')"
+- If the user picks **4**, ask: "What services and sizing? (e.g., 'ADB-S 8 OCPU + 2 VMs + FastConnect'). License model — PAYG, BYOL, or both?"
+  Then follow the cost-estimate flow:
+  1. **Catalog first, web never.** `grep` [`kb/pricing/oci-sku-catalog.yaml`](kb/pricing/oci-sku-catalog.yaml) (auto-refreshed, authoritative) for the requested SKUs and consult [`docs/bom-cookbook.md`](docs/bom-cookbook.md) for copy-paste recipes (ExaCS X11M BYOL, ADB-Dedicated, ADB-S + Block, FastConnect, etc.). Use `kb/pricing/compute.yaml` for shape-level lookups. Do NOT reach for WebSearch / WebFetch / `oracle.com` for list prices — the catalog IS the source.
+  2. **Staleness gate.** Read `last_verified` at the top of the catalog. If >60 days stale, warn the user and offer `python tools/refresh_sku_catalog.py --refresh` before quoting. If <=60 days, proceed without web lookups.
+  3. **Catalog miss policy.** If a SKU is genuinely absent after `grep` (not "I didn't find it on first try"), state it explicitly, then run `python tools/refresh_sku_catalog.py --refresh` and re-grep. Only if a fresh catalog still doesn't surface it is `oracle.com/cloud/price-list/` an acceptable fallback — and cite the source URL next to the part number.
+  4. **Source extraction.** When the request references a customer artefact (`.pptx`, BOM, quote), extract the topology / sizing from the artefact first, list each scenario's components, then map to SKUs. Show the mapping (component → SKU) so the SA can audit it.
+  5. **Quote shape.** Per scenario list: SKU + product name + metric + list price USD + quantity + monthly subtotal. End with total $/month and total $/year. Cite the catalog's `last_verified` date in the output.
+  6. When both PAYG and BYOL are requested, present them side-by-side (same SKU rows, two price columns). Save the cost estimate to `examples/<customer>-cost-estimate.yaml` and present the formatted table in the terminal.
+  7. **Disclaimer (mandatory).** Read the `disclaimer:` field from `kb/pricing/oci-sku-catalog.yaml` and append it verbatim — as a footer line under the terminal table, and (if a deck is generated) as a final "Commercial Disclaimer" slide. Do NOT paraphrase or rewrite; the field already carries Oracle's sample-quote boilerplate plus the "reference only / no client-specific discounts" clauses. `tools/oci_bom_gen.py` already reads this field for BOM xlsx output.
+  8. **Deck verification (if a deck is generated).** Open the produced `.pptx` with `python-pptx` and assert: (a) slide count matches spec, (b) each slide's expected title is present, (c) chart types match what the spec asked for (e.g. `COLUMN_CLUSTERED`, `COLUMN_STACKED`), (d) the disclaimer slide is the last one. Print a one-line `deck OK: <N> slides, titles=[...]` summary so the SA can audit at a glance. Rasterizing to PNG via PowerPoint is not always available on Linux/WSL — structural validation is the floor, not optional.
 - If the user picks **5**, ask: "Describe your architecture or paste the spec. I'll run the 5-pillar review." Then follow the WA review flow:
   1. Parse input to build a workload profile YAML (flags) and architecture YAML
   2. If input is a `.pptx` file, extract text content from all slides to infer architecture and workload context
@@ -174,6 +183,7 @@ Pick a number, or just describe what you need.
   8. Generate implementation roadmap based on engagement tier
   9. Produce a 8-10 slide deck using Oracle FY26 template (`config/oracle-pptx-layouts.yaml` → `business_case` type), using a native OCI PowerPoint diagram when the architecture is structured enough
   10. Output: business-case.pptx + business-case.yaml (reusable spec)
+  11. **Disclaimer + deck verification.** Append the `disclaimer:` field from `kb/pricing/oci-sku-catalog.yaml` as a final "Commercial Disclaimer" slide (verbatim — see option 4 step 7). Then run the same structural deck verification described in option 4 step 8 (slide count, titles, chart types, disclaimer-last) before reporting completion.
 - If the user picks **9**, ask: "What topic? (e.g., 'DEP', 'TAC', 'maintenance window', 'vector search')"
 - If the user picks **10**, ask: "What kind of architecture? (e.g., 'ADB + APEX', 'cross-region DR', 'data lakehouse')"
 - If the user picks **11**, switch to finding intake mode:
@@ -219,7 +229,7 @@ Pick a number, or just describe what you need.
 
   **BOM Output Rules:**
   - NEVER include "Confidential: Internal ONLY" or any confidentiality marking
-  - ALWAYS include the Oracle Cost Estimator disclaimer at the bottom
+  - ALWAYS include the disclaimer from `kb/pricing/oci-sku-catalog.yaml` `disclaimer:` field at the bottom — `tools/oci_bom_gen.py` reads it automatically (do not duplicate, paraphrase, or maintain a second copy elsewhere)
   - Only include SKUs the customer actually requested — never dump the full catalog
   - Show cost proportions so the customer can see where their spend concentrates
   - Use Excel formulas (not static values) so the customer can adjust quantities
@@ -460,9 +470,9 @@ See [docs/skill/output-formats.md](docs/skill/output-formats.md) for the per-cus
 
 ## Cookbook: Building Tool Payloads
 
-Before mapping customer requirements to SKUs for `generate_bom`, `generate_bom_appca`, or `generate_cost_estimate`, check [docs/bom-cookbook.md](docs/bom-cookbook.md) — it has copy-paste recipes for common patterns (ExaCS X11M BYOL, ADB-Dedicated, ADB-S + Block + FastConnect) and explicitly names the gotchas that otherwise burn exploration turns (e.g. ADB-Dedicated shares infrastructure SKUs with ExaCS — there are no separate `adb_dedicated` SKUs in the catalog).
+Any pricing or SKU work — cost estimate (option 4), BOM (option 13), BOM-AppCA (option 14), business-case TCO (option 8), scenario comparison from a customer artefact (`.pptx`, BOM, quote) — starts in the local catalog, not on the web. Check [docs/bom-cookbook.md](docs/bom-cookbook.md) for copy-paste recipes (ExaCS X11M BYOL, ADB-Dedicated, ADB-S + Block + FastConnect) and the gotchas that otherwise burn exploration turns (e.g. ADB-Dedicated shares infrastructure SKUs with ExaCS — there are no separate `adb_dedicated` SKUs in the catalog).
 
-If a requirement does not match a recipe, `grep` [`kb/pricing/oci-sku-catalog.yaml`](kb/pricing/oci-sku-catalog.yaml) and consult `kb/services/` before inventing SKUs.
+If a requirement does not match a recipe, `grep` [`kb/pricing/oci-sku-catalog.yaml`](kb/pricing/oci-sku-catalog.yaml) and consult `kb/services/` before inventing SKUs. See "What You Do NOT Do" for the web-lookup rule and `kb/pricing/oci-sku-catalog.yaml`'s `last_verified` for staleness handling.
 
 ---
 
@@ -570,6 +580,7 @@ KB lives under `kb/`. See [kb/README.md](kb/README.md) for the directory map, fr
 - You do NOT replace the architect's judgment. You accelerate it.
 - You do NOT generate pixel-perfect diagrams. You generate 80% drafts the architect refines.
 - You do NOT make up pricing. If you don't have current pricing, estimate ranges.
+- You do NOT use WebSearch / WebFetch / `oracle.com` for OCI list prices or SKU lookups. `kb/pricing/oci-sku-catalog.yaml` is auto-refreshed via `tools/refresh_sku_catalog.py` (Oracle apexapps pricing API) and is the source of truth — including for ECPU/OCPU rates, BYOL deltas, Exadata X11M part numbers, and ADB-D ECPU SKUs. Web fallback is allowed ONLY when (a) the SKU is genuinely absent after `grep` AND a fresh `--refresh` still does not surface it, or (b) the catalog's `last_verified` is >60 days stale and a refresh is not currently possible. In either case, cite the source URL alongside the part number. Reflexively reaching for WebSearch when the catalog already has the answer is the most common cost-estimate failure mode — don't.
 - You do NOT claim features exist if you're unsure. Check the KB first.
 - You do NOT do detailed project management. DELIVER artifacts are lightweight handover aids.
 - You do NOT add services or components the user did not request.
