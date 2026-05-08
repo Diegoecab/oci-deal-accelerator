@@ -84,7 +84,7 @@ Present these options as a compact numbered list. Each option has a bold title f
  DESIGN & PROPOSE
  ─────────────────
  1. 📋 Full proposal — *notes → architecture + deck + native PPTX diagram + costs*
- 2. 📐 Architecture diagram — *description → .drawio or native PPTX*
+ 2. 📐 Architecture diagram — *description/sketch → .excalidraw → .drawio or native PPTX*
  3. 📊 Slide deck — *architecture → .pptx with native OCI diagram*
  4. 💰 Cost estimate — *quick PAYG/BYOL comparison while you scope (terminal + optional deck)*
 
@@ -122,6 +122,7 @@ Pick a number, or just describe what you need.
 If the user asks for examples, or skips the menu and writes a natural-language request, prompts like these map directly to the capabilities above:
 
 - `Generame un diagrama nativo en .pptx, simple y prolijo, de esta arquitectura: usuarios externos -> load balancer público -> 2 VMs de aplicación en subnet privada -> Autonomous Database Serverless. Quiero que quede presentable para mostrar directo en PowerPoint. No me pidas YAML ni setup adicional.`
+- `Sketch this architecture first for Excalidraw: external users -> public load balancer -> private app VMs -> Autonomous Database. Give me a native .excalidraw file so I can review and collaborate before making the formal diagram.`
 - `Generate a simple high-level integration diagram for this flow: Slack -> Oracle Integration Cloud (OIC) -> Jira Service Management -> My Oracle Support. Add clear Client, Oracle, and External layers. Use brand icons for Slack and Jira Service Management, and deliver both .drawio and .pptx.`
 - `Generate a high-level architecture diagram for this scenario: 1 PostgreSQL in OCI Ashburn, accessed from GCP Virginia through interconnect. PostgreSQL connects internally to 1 Autonomous Database Serverless, which also has 1 refreshable clone in the same region but in a different AD. Deliver both .drawio and .pptx. Keep it simple, executive-friendly, and technically correct.`
 - `Gere um BOM em USD para este cenário: PostgreSQL no OCI com 4 OCPU e 500 GB, ADB-S com 200 ECPU e 1 TB BYOL, 1 refreshable clone com o mesmo sizing e FastConnect de 1 Gbps. Aplique 11% de desconto, 12 meses, 24 horas por dia. Quero o arquivo .xlsx e um resumo claro do custo mensal e anual.`
@@ -134,15 +135,29 @@ If the user asks for examples, or skips the menu and writes a natural-language r
   ```
   1. Describe the architecture you want to diagram (or paste a YAML spec if you have one).
   2. Which output format(s) do you want? Pick one or more:
-       (a) .drawio — editable technical diagram
-       (b) .pptx — native Oracle-style PowerPoint diagram/slide
-       (c) both
+       (a) sketch — native .excalidraw whiteboard draft for brainstorming
+       (b) .drawio — editable technical diagram
+       (c) .pptx — native Oracle-style PowerPoint diagram/slide
+       (d) sketch + .drawio
+       (e) sketch + .pptx
+       (f) all
   ```
 
-  After the user answers, **follow these steps in order — do NOT skip step 1**:
+  If the user chooses **sketch only**, create a concise sketch spec and run `python tools/oci_excalidraw_gen.py --spec <sketch-spec.yaml> --output <output-dir>/architecture-sketch.excalidraw`. Save the generated `.excalidraw` file and companion `.md` instructions in the engagement output folder. Present the file list and the simple import/share workflow from the companion `.md` as the primary deliverable. Optionally save `architecture-sketch.mmd` as a secondary source when Mermaid is useful, but the native `.excalidraw` file is the draft artifact. Do not run the formal `absolute_layout` renderer unless the user asks to promote the sketch to `.drawio` or `.pptx`.
+
+  If the user chooses **sketch plus formal output**, produce the `.excalidraw` draft first and ask the user to confirm or adjust the intent before formal rendering. If the user explicitly says to generate all outputs without another checkpoint, generate the sketch and continue. If the user later uploads or references an edited `.excalidraw` from Excalidraw.com, treat it as visual discovery/reference input for the formal `.drawio` / `.pptx` flow; do not blindly convert its rough geometry into the final source of truth.
+
+  If the user provides an existing `.excalidraw` file and asks to convert it to `.drawio`, default to **Formal OCI diagram** unless they explicitly ask for a literal/whiteboard copy:
+  - **Hard rule:** do **not** hand-roll draw.io XML with inline Python for this path. Use the repo tools below. If `python` is not available, use `.venv/bin/python` or `python3`; do not fall back to a custom converter.
+  - **Formal OCI diagram (default)** — run `.venv/bin/python tools/excalidraw_to_oci_diagram.py --input <file.excalidraw> --output <output-dir>/<name>-oci.drawio --spec-output <output-dir>/<name>-oci.yaml`. This extracts the approved sketch intent, writes `*-analysis.yaml` and `*-review.md`, generates an `absolute_layout` YAML, then renders a new Oracle-style `.drawio` through `oci_diagram_gen.py` with OCI containers, icons, connector styles, and validators. For complex sketches (multicloud, hub-spoke, migration/cutover, cross-region DR, multiple regions/VCNs), run the same command with `--mode review` first, inspect/refine the generated analysis/spec, then render.
+  - **Literal sketch conversion (secondary)** — run `.venv/bin/python tools/excalidraw_to_drawio.py --input <file.excalidraw> --output <output-dir>/<name>-literal.drawio` only when the user asks to preserve the exact whiteboard look. This is an editable bridge artifact and does **not** infer OCI icons/services.
+  - **Both** — produce the formal OCI `.drawio` first, then the literal bridge if useful for comparison.
+
+  For any `.drawio` or `.pptx` output, **follow these steps in order — do NOT skip step 1**:
   1. **Reference-architecture lookup.** Run `python tools/archcenter_pattern_lookup.py "<topology keywords>"` against `kb/architecture-center/catalog.yaml` (123 Oracle-curated entries with cached `.drawio` / `_description.md` / `_template.yaml` under `kb/diagram/assets/archcenter-refs/`). Pick the highest-scoring entry whose topology matches.
      - **The cached `_template.yaml` is your YAML SCAFFOLD** — auto-extracted from the canonical `.drawio` by `tools/archcenter_drawio_to_template.py`. It carries Oracle's container geometry (region/vcn/ad/subnet bboxes), service positions, and edge waypoints in the `absolute_layout:` shape your spec uses. Copy it as the starting point, rename ids, fill in `type:` for services (the extractor leaves `type: TODO_identify` because the canonical icon TYPE is encoded in stencil bytes — pick the right alias from the renderer's TYPE_TO_ICON), and adapt to the customer's components. Lookup result surfaces it as `cached: yaml=<path>`.
      - **The cached `.drawio` is the visual source of truth** if the template extractor missed something — open it (drawio.exe, the SVG companion, or the XML) for the canonical look.
+     - **Migration/cutover + multicloud templates.** Also check `kb/diagram/templates/catalog.yaml`. Use `renderable_templates` when the user asks for an operational cutover/runbook view (for example ADB-S → ADB-D with OGG forward/reverse replication) instead of a canonical steady-state Architecture Center topology.
      - **Do NOT use `examples/` as a geometry source.** `examples/` is previous user output, not authoritative. The `_template.yaml` covers everything `examples/` was being abused for.
      - **Lookup budget: max 2 queries — never loop.** If query 1 returns nothing convincing, run ONE refinement (broader phrasing or different keyword angle), then STOP. Re-querying the catalog 3+ times to find a "better" match is the dominant time-sink in this phase — the catalog has 123 entries indexed once; if two passes can't surface a topology match, none exists. Output of the lookup tool also surfaces a **`⚠ KNOWN GAP`** banner at the top whenever the query touches a documented gap (e.g. OCI-native services accessed FROM GCP via Cross-Cloud Interconnect, or OCI Cache/Redis/PostgreSQL as primary subject). When that banner appears, follow its **Recommended composition** verbatim instead of running more queries — it lists the primitives to combine. When NO gap banner appears AND no top-3 entry matches the topology, present the closest 3 to the user with: *"No exact ref-arch matches. Closest hits are X / Y / Z. I can either base the diagram on the closest of these (geometry transfers, service names don't), or compose from `<list specific slugs / patterns>`. Which?"* — let the user pick the chassis instead of guessing.
   2. **Pre-generation review.** Confirm the component list with the user (REQUESTED + TECHNICAL DEPENDENCIES per the whitelist).
@@ -185,14 +200,22 @@ If the user asks for examples, or skips the menu and writes a natural-language r
   1. Parse input into `templates/business-case.yaml` structure
   2. Identify business drivers and urgency from discovery notes
   3. Estimate TCO comparison using `kb/pricing/oci-sku-catalog.yaml` (live SKU prices), `kb/pricing/compute.yaml` (shape-level), `kb/field-knowledge/pricing-knowledge.yaml` (billing models, BYOL rules, free tiers), and `kb/sizing/*`
-  4. Calculate ROI and payback period
-  5. Map value drivers (cost, risk, agility, innovation) with quantified evidence
-  6. Assess migration risks from `kb/field-knowledge/gotchas.yaml` and do-nothing risks
-  7. Compare with alternatives using `kb/competitive/*`
-  8. Generate implementation roadmap based on engagement tier
-  9. Produce a 8-10 slide deck using Oracle FY26 template (`config/oracle-pptx-layouts.yaml` → `business_case` type), using a native OCI PowerPoint diagram when the architecture is structured enough
-  10. Output: business-case.pptx + business-case.yaml (reusable spec)
-  11. **Disclaimer + deck verification.** Append the `disclaimer:` field from `kb/pricing/oci-sku-catalog.yaml` as a final "Commercial Disclaimer" slide (verbatim — see option 4 step 7). Then run the same structural deck verification described in option 4 step 8 (slide count, titles, chart types, disclaimer-last) before reporting completion.
+  4. For ADB-S to ADB-D cases, use the reusable `adbs_to_adbd` model:
+     - keep workload/billable ECPU demand separate from dedicated physical capacity (`DB nodes × ECPU per DB node`)
+     - do not assume ADB-D uses 100% physical capacity; show utilization explicitly
+     - keep workload demand comparable between ADB-S and ADB-D unless customer data says otherwise
+     - model ADB-D fixed DB server + storage server infrastructure separately from workload ECPU
+     - keep ADB-S as-is components explicit: primaries, local ADG, cross-region standby, refreshable/read clones, read clones, GoldenGate
+  5. Separate financial views: current/as-is run-rate, target/to-be run-rate, forecasted TCO by horizon, and scenario comparison when applicable. Avoid ambiguous labels such as `OCI Annual`; use scenario labels like `ADB-S As-Is`, `ADB-D Dedicated`, `Incremental Investment`, and `TCO Crossover`.
+  6. Generate companion BOMs for current as-is, to-be steady state, and 24M/36M projected as-is/to-be annual run-rate snapshots. Projected BOMs are not cumulative multi-year totals.
+  7. Model read architecture explicitly: ADB-S may require refreshable/read clones because standby is not the application read path; ADB-D may use Local ADG read-only standby and retire steady-state clones. Reflect this in BOM notes, value drivers, and risk/value slides.
+  8. Add storage economics: ADB-S per-GB storage, ADB-D fixed footprint, customer-provided base break-even when available, recalculated break-even for the proposed footprint, and visible storage offset.
+  9. Treat GoldenGate as `steady_state`, `migration_bridge_only`, or `migration_plus_fallback_months`. Bridge-only GoldenGate is Year-1 / one-time and is excluded from future steady-state BOMs.
+  10. Add a TCO crossover chart when multi-year forecast exists, defaulting to native PowerPoint grouped bars with executive labels (`Near-term`, `Year 1`, `Year 2`, `Year 3`) and delta bullets.
+  11. For risk-reduction cases, generate a Business Value Model instead of generic ROI percentages. Do not invent revenue impact; convert stability to USD only when the customer provides revenue-at-risk, transaction margin, fraud loss impact, or cost per degraded/outage hour.
+  12. Assess migration and inaction risks against the selected scenario only. Remove obsolete risks such as `if 4x3 is selected` after the customer has chosen `5x3`.
+  13. Produce an executive deck using Oracle FY26 template (`config/oracle-pptx-layouts.yaml` → `business_case` type), plus business-case YAML and generated BOM artefacts where applicable.
+  14. **Disclaimer + deck verification.** Append the `disclaimer:` field from `kb/pricing/oci-sku-catalog.yaml` as a final "Commercial Disclaimer" slide (verbatim — see option 4 step 7). Then run structural PPTX validation that reads text boxes, table cells, and grouped shapes; check slide count/titles, disclaimer-last, required assumptions, and forbidden obsolete phrases before reporting completion.
 - If the user picks **9**, ask: "What topic? (e.g., 'DEP', 'TAC', 'maintenance window', 'vector search')"
 - If the user picks **10**, ask: "What kind of architecture? (e.g., 'ADB + APEX', 'cross-region DR', 'data lakehouse')"
 - If the user picks **11**, switch to finding intake mode:
@@ -261,7 +284,7 @@ After delivering an output, show elapsed time and offer the natural next step.
 ```
 ✅ Done — [task description] completed in [Xm Ys]
 
-  → [A] Generate additional outputs (drawio / doc / xlsx)
+  → [A] Generate additional outputs (sketch / drawio / doc / xlsx)
   → [B] Modify the architecture (add/remove/change services)
   → [C] Run Well-Architected review on this architecture
   → [D] Build a business case from this architecture
@@ -464,7 +487,7 @@ Full DELIVER guide: [docs/deliver-phase.md](docs/deliver-phase.md)
 
 Every skill option that produces output MUST generate **readable, human-consumable output** as the primary deliverable. YAML files are structured backing data — they are never the final output shown to the user. Specifically:
 
-- **Options 1-4, 8:** Primary output is `.pptx` (slide deck) and/or `.drawio` (diagram). YAML specs are saved alongside but never presented as the deliverable.
+- **Options 1-4, 8:** Primary output is `.pptx` (slide deck), `.drawio` (diagram), and/or native `.excalidraw` sketch when the user requests draft mode. YAML/Mermaid specs are saved alongside when useful but never presented as the final deliverable.
 - **Option 5 (WA Review):** Primary output is the **formatted terminal scorecard** (banner + pillar bars + gap tables + recommendations). YAML scorecard saved to `examples/` as backing data.
 - **Option 12 (ECAL Readiness):** Primary output is the **formatted terminal scorecard** (phase scores + artefact checklist + gap analysis). YAML scorecard saved to `examples/` as backing data.
 - **After any review/score:** When the user picks [C] "Export as slide", generate a 1-2 slide `.pptx` with the scorecard visualization using `tools/oci_deck_gen.py`.

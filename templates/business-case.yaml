@@ -7,6 +7,8 @@ business_case:
   # --- Header ---
   customer_name: ""
   prepared_by: ""
+  prepared_by_role: ""  # e.g., "Solutions Architect"
+  cover_subtitle: ""    # e.g., "ADB-S to ADB-D Migration Business Case"
   date: ""
   version: "1.0"
   status: draft  # draft | review | approved
@@ -35,6 +37,66 @@ business_case:
     pain_points: []      # ["Manual patching takes 2 weekends/quarter", "No DR tested in 18 months"]
     annual_spend: 0      # Current total annual IT spend for in-scope workloads
     team_size: 0         # FTEs dedicated to operations
+
+  # --- Reusable ADB-S to ADB-D model (optional) ---
+  # Use this for dedicated migration business cases. The model keeps workload
+  # demand comparable while showing dedicated physical capacity separately.
+  adbs_to_adbd:
+    license_model: BYOL          # BYOL | PAYG
+    discount_pct: 0              # 0.11 or 11 are both accepted
+    ecpu_per_db_node: 760
+    current:
+      label: "ADB-S As-Is"
+      workload_ecpu: 0           # billable/planning ECPU demand
+      storage_tb: 0
+      read_architecture: "refreshable/read clones for application reads"
+      components: []             # optional extra BOM lines with sku/qty/label/note
+    target:
+      label: "ADB-D Dedicated"
+      workload_ecpu: 0           # keep equal to current for fair comparison unless customer states otherwise
+      storage_tb: 0
+      db_nodes: 0                # physical footprint
+      storage_servers: 0         # fixed infra/storage footprint
+      read_architecture: "Local ADG read-only standby for application reads"
+    forecasts:
+      - period: "24M"
+        display_label: "Year 2"
+        as_is:
+          workload_ecpu: 0
+          storage_tb: 0
+        to_be:
+          workload_ecpu: 0
+          storage_tb: 0
+          db_nodes: 0
+          storage_servers: 0
+      - period: "36M"
+        display_label: "Year 3"
+        as_is:
+          workload_ecpu: 0
+          storage_tb: 0
+        to_be:
+          workload_ecpu: 0
+          storage_tb: 0
+          db_nodes: 0
+          storage_servers: 0
+    goldengate:
+      mode: migration_bridge_only  # steady_state | migration_bridge_only | migration_plus_fallback_months
+      ocpus: 0
+      bridge_months: 0
+    storage_economics:
+      adbs_storage_usd_per_gb_month: 0  # optional override; otherwise SKU catalog B95706
+      base_break_even_tb: ""            # optional customer-provided baseline
+    business_impact:
+      # Stability is converted to USD only when customer provides one of these.
+      business_impact_per_hour: 0
+      revenue_at_risk_per_hour: 0
+      transaction_margin_per_hour: 0
+      fraud_loss_impact_per_hour: 0
+      cost_per_outage_hour: 0
+    crossover_chart:
+      y_axis_min: null
+      y_axis_max: null
+      y_axis_major_unit: 0.5
 
   # --- TCO Comparison ---
   tco:

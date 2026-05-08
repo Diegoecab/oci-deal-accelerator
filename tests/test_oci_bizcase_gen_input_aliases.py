@@ -100,3 +100,43 @@ def test_from_spec_enriches_sparse_business_case_from_executive_summary():
     assert "Implementation Roadmap" in text
     assert "Our Recommendation" in text
     assert "12 weeks" in text
+
+
+def test_from_spec_enriches_adbs_to_adbd_business_case_without_meli_hardcoding():
+    spec = {
+        "customer_name": "Synthetic Retail",
+        "cover_subtitle": "ADB-S to ADB-D Migration Business Case",
+        "prepared_by": "Diego Cabrera",
+        "prepared_by_role": "Solutions Architect",
+        "executive_summary": "Move a fraud analytics workload from ADB-S to ADB-D for stability.",
+        "adbs_to_adbd": {
+            "license_model": "BYOL",
+            "discount_pct": 0.11,
+            "ecpu_per_db_node": 760,
+            "current": {"label": "ADB-S As-Is", "workload_ecpu": 1000, "storage_tb": 80},
+            "target": {"label": "ADB-D Dedicated", "workload_ecpu": 1000, "storage_tb": 80, "db_nodes": 2, "storage_servers": 3},
+            "forecasts": [
+                {
+                    "period": "24M",
+                    "display_label": "Year 2",
+                    "as_is": {"workload_ecpu": 1300, "storage_tb": 120},
+                    "to_be": {"workload_ecpu": 1300, "storage_tb": 120, "db_nodes": 3, "storage_servers": 3},
+                }
+            ],
+            "goldengate": {"mode": "migration_bridge_only", "ocpus": 2, "bridge_months": 3},
+        },
+    }
+
+    gen = BusinessCaseDeckGenerator.from_spec(spec)
+    text = _collect_slide_text(gen)
+
+    assert "Prepared by: Diego Cabrera, Solutions Architect" in text
+    assert "ADB-S As-Is" in text
+    assert "ADB-D Dedicated" in text
+    assert "BOM + Operations Cost Breakdown" in text
+    assert "TCO Crossover" in text
+    assert "Business Value Model" in text
+    assert "Workload ECPU demand" in text
+    assert "ECPU capacity" in text
+    assert "No invented revenue" in text
+    assert "MELI" not in text

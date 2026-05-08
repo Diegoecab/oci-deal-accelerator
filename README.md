@@ -339,14 +339,23 @@ Option 8 in the menu generates a business case deck for customer internal approv
 | Cover | Dark - Title_Pillar | Customer name + subtitle |
 | Executive Summary | Impact Statement | Bold 1-sentence opportunity |
 | Business Drivers | Multi Statement | 3 key drivers: Why now |
-| TCO Comparison | Blank + Table | Current vs OCI (3-5 year) |
-| ROI Headline | Blank + Metric | Big number (e.g., "2080% ROI") |
+| TCO Comparison | Blank + Table | Current/as-is run-rate vs target/to-be run-rate |
+| BOM + Operations Breakdown | Blank + Tables | Cloud services, storage/infra, GoldenGate, operations, one-time bridge |
+| Forecasted TCO | Blank + Table | 24M/36M annual run-rate snapshots, not cumulative totals |
+| TCO Crossover | Native shapes | ADB-S vs ADB-D annual TCO and first cheaper period |
+| Business Value Model | Blank + Table | Financial baseline, architecture benefit, risk-adjusted value, KPIs |
 | Value Drivers | Blank + Cards | 4 categories: Cost, Risk, Agility, Innovation |
 | Risk Assessment | Blank + 2-Column | Migration risks vs Do-nothing risks |
 | Roadmap | Blank + Timeline | Implementation phases |
 | Recommendation | Dark Impact | Clear ask with next steps |
 
 Uses the **Oracle FY26 official PowerPoint template** with Redwood design system.
+
+For ADB-S to ADB-D cases, the generator keeps workload ECPU demand separate
+from ADB-D physical capacity. Dedicated footprint is modeled as fixed DB server
+and storage server infrastructure; projected BOMs are annual run-rate snapshots
+at the horizon. Risk-reduction value is converted to USD only when the customer
+provides business impact per degraded/outage hour.
 
 ```bash
 python tools/oci_bizcase_gen.py --spec business-case.yaml --output business-case.pptx

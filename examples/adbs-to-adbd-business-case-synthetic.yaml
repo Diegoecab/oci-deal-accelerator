@@ -1,0 +1,89 @@
+business_case:
+  customer_name: "Synthetic Commerce Co."
+  cover_subtitle: "ADB-S to ADB-D Migration Business Case"
+  prepared_by: "Diego Cabrera"
+  prepared_by_role: "Solutions Architect"
+  date: "2026-05-08"
+  executive_summary: >
+    Synthetic Commerce Co. is evaluating a move from ADB-S to ADB-D for a
+    fraud analytics workload where predictable performance, read-path cleanup,
+    and storage economics are more important than a pure near-term cost takeout.
+  drivers:
+    primary: "Stabilize fraud analytics performance while keeping the business case auditable."
+    urgency: "Validate capacity, TCO crossover, and migration bridge assumptions before procurement."
+  adbs_to_adbd:
+    license_model: BYOL
+    discount_pct: 0.11
+    ecpu_per_db_node: 760
+    current:
+      label: "ADB-S As-Is"
+      workload_ecpu: 2400
+      storage_tb: 96
+      read_architecture: "Refreshable/read clones serve application reads; standby is not the application read path."
+    target:
+      label: "ADB-D Dedicated"
+      workload_ecpu: 2400
+      storage_tb: 96
+      db_nodes: 5
+      storage_servers: 3
+      read_architecture: "Local ADG read-only standby serves application reads; steady-state clones retired."
+    forecasts:
+      - period: "24M"
+        display_label: "Year 2"
+        as_is:
+          workload_ecpu: 3150
+          storage_tb: 128
+        to_be:
+          workload_ecpu: 3150
+          storage_tb: 128
+          db_nodes: 6
+          storage_servers: 3
+      - period: "36M"
+        display_label: "Year 3"
+        as_is:
+          workload_ecpu: 3900
+          storage_tb: 166
+        to_be:
+          workload_ecpu: 3900
+          storage_tb: 166
+          db_nodes: 8
+          storage_servers: 3
+    goldengate:
+      mode: migration_bridge_only
+      ocpus: 4
+      bridge_months: 3
+      bridge_one_time_cost: 0
+    storage_economics:
+      base_break_even_tb: 91
+    business_impact:
+      business_impact_per_hour: 0
+    crossover_chart:
+      y_axis_min: 1.5
+      y_axis_max: 3.5
+      y_axis_major_unit: 0.5
+  roadmap:
+    total_duration: "12 weeks"
+    phases:
+      - name: "Define"
+        duration: "2 weeks"
+        deliverables: ["Baseline current BOM", "Confirm success metrics"]
+      - name: "Design"
+        duration: "4 weeks"
+        deliverables: ["Dedicated capacity plan", "Read-path validation"]
+      - name: "Deliver"
+        duration: "6 weeks"
+        deliverables: ["Migration bridge", "Cutover rehearsal"]
+  recommendation:
+    summary: "Proceed with detailed design for the ADB-D Dedicated target, validating the utilization, storage break-even, and GoldenGate bridge assumptions before final commercial approval."
+    next_steps:
+      - action: "Confirm workload ECPU demand and storage forecast"
+        owner: "Customer"
+        deadline: "Before design sign-off"
+      - action: "Validate ADB-D DB node and storage server reservation"
+        owner: "Oracle"
+        deadline: "Before procurement"
+  deck_validation:
+    forbidden_phrases:
+      - "OCI Annual"
+      - "FTE-year"
+      - "if 4x3 is selected"

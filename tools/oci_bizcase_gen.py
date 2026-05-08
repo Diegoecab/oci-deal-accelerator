@@ -24,12 +24,24 @@ from typing import Optional, List, Dict
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
+from pptx.chart.data import ChartData
+from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
 try:
     from oci_pptx_base import Colors, Layouts, OraclePresBase
+    from oci_business_case_model import (
+        enrich_adbs_to_adbd_business_case,
+        write_bom_outputs,
+    )
+    from pptx_validator import validate_pptx
 except ModuleNotFoundError:
     from tools.oci_pptx_base import Colors, Layouts, OraclePresBase
+    from tools.oci_business_case_model import (
+        enrich_adbs_to_adbd_business_case,
+        write_bom_outputs,
+    )
+    from tools.pptx_validator import validate_pptx
 
 
 # ============================================================
@@ -256,7 +268,8 @@ class BusinessCaseDeckGenerator(OraclePresBase):
     # ================================================================
 
     def add_cover_slide(self, customer: str, subtitle: str = "",
-                        prepared_by: str = "", date: str = ""):
+                        prepared_by: str = "", date: str = "",
+                        prepared_by_role: str = ""):
         """Slide 1: Cover using Dark Title_Pillar layout."""
         slide = self._add_layout_slide(Layouts.COVER_DARK)
         self._set_placeholder(slide, 0, customer)  # Title
@@ -264,7 +277,8 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         date_str = date or datetime.now().strftime("%B %Y")
         self._set_placeholder(slide, 35, date_str)
         if prepared_by:
-            self._set_placeholder(slide, 34, f"Prepared by: {prepared_by}")
+            byline = f"{prepared_by}, {prepared_by_role}" if prepared_by_role else prepared_by
+            self._set_placeholder(slide, 34, f"Prepared by: {byline}")
 
     def add_executive_summary_slide(self, statement: str):
         """Slide 2: Executive Summary — controlled typography on blank slide."""
@@ -346,7 +360,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         horizon = tco.get("horizon_years", 3)
         self._add_textbox(
             slide, Inches(0.8), Inches(1.1), Inches(11), Inches(0.4),
-            text=f"{horizon}-Year Comparison  |  Current State vs Oracle Cloud Infrastructure",
+            text=tco.get("comparison_label", f"{horizon}-Year Comparison  |  Current State vs Oracle Cloud Infrastructure"),
             font_size=13, color=Colors.TEAL, bold=True,
         )
 
@@ -354,8 +368,34 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         proposed = tco.get("proposed_oci", {})
         savings = tco.get("savings", {})
 
+        ann_current = current.get("total_annual", 0)
+        ann_oci = proposed.get("total_annual", 0)
+        ann_savings = savings.get("annual", 0) or (ann_current - ann_oci)
+        monthly_current = ann_current / 12 if ann_current else 0
+        monthly_oci = ann_oci / 12 if ann_oci else 0
+
+        kpi_labels = tco.get("kpi_labels", {}) if isinstance(tco.get("kpi_labels", {}), dict) else {}
+        kpis = [
+            (f"${monthly_current:,.0f}/mo", kpi_labels.get("current", "Current state")),
+            (f"${monthly_oci:,.0f}/mo", kpi_labels.get("proposed", "Proposed OCI")),
+            (f"${abs(ann_savings) / 12:,.0f}/mo", kpi_labels.get("delta", "Monthly delta")),
+        ]
+        for idx, (value, label) in enumerate(kpis):
+            x = Inches(0.8 + idx * 4.0)
+            box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, Inches(1.55), Inches(3.65), Inches(1.0))
+            box.fill.solid()
+            box.fill.fore_color.rgb = Colors.TABLE_ALT_ROW
+            box.line.color.rgb = Colors.MUTED_TEAL
+            self._add_textbox(slide, x + Inches(0.15), Inches(1.68), Inches(3.35), Inches(0.4),
+                              text=value, font_size=20, bold=True, color=Colors.TEAL,
+                              alignment=PP_ALIGN.CENTER)
+            self._add_textbox(slide, x + Inches(0.15), Inches(2.08), Inches(3.35), Inches(0.28),
+                              text=label, font_size=10, color=Colors.SECONDARY_TEXT,
+                              alignment=PP_ALIGN.CENTER)
+
+        row_labels = tco.get("row_labels", {}) if isinstance(tco.get("row_labels", {}), dict) else {}
         rows_data = [
-            ("Infrastructure", current.get("annual_infrastructure", 0), proposed.get("annual_cloud_consumption", 0)),
+            (row_labels.get("infrastructure", "Infrastructure"), current.get("annual_infrastructure", 0), proposed.get("annual_cloud_consumption", 0)),
             ("Licensing / Support", current.get("annual_licensing", 0), proposed.get("annual_licensing", 0)),
             ("Operations (People)", current.get("annual_operations", 0), proposed.get("annual_operations", 0)),
             ("Downtime Cost", current.get("annual_downtime_cost", 0), proposed.get("annual_downtime_cost", 0)),
@@ -368,9 +408,10 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         migration = proposed.get("migration_one_time", 0)
 
         num_rows = len(rows_data) + 3  # header + rows + annual total + horizon total
+        table_top = Inches(3.0)
         table = self._add_table(
             slide, num_rows, 4,
-            Inches(0.8), Inches(1.6),
+            Inches(0.8), table_top,
             Inches(11.7), Inches(0.42 * num_rows),
         )
         table.columns[0].width = Inches(3.5)
@@ -379,7 +420,14 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         table.columns[3].width = Inches(2.8)
 
         # Header
-        for j, h in enumerate(["Cost Category", "Current (Annual)", "OCI (Annual)", "Savings"]):
+        column_labels = tco.get("column_labels", {}) if isinstance(tco.get("column_labels", {}), dict) else {}
+        headers = [
+            "Cost Category",
+            column_labels.get("current", "Current (Annual)"),
+            column_labels.get("proposed", "OCI (Annual)"),
+            column_labels.get("delta", "Savings"),
+        ]
+        for j, h in enumerate(headers):
             self._style_table_cell(
                 table.cell(0, j), h, font_size=11, bold=True,
                 color=Colors.WHITE, bg_color=Colors.TEAL,
@@ -401,9 +449,9 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Annual total row
         total_row = len(rows_data) + 1
-        ann_current = current.get("total_annual", 0) or sum(r[1] for r in rows_data if isinstance(r[1], (int, float)))
-        ann_oci = proposed.get("total_annual", 0) or sum(r[2] for r in rows_data if isinstance(r[2], (int, float)))
-        ann_savings = savings.get("annual", 0) or (ann_current - ann_oci)
+        ann_current = ann_current or sum(r[1] for r in rows_data if isinstance(r[1], (int, float)))
+        ann_oci = ann_oci or sum(r[2] for r in rows_data if isinstance(r[2], (int, float)))
+        ann_savings = ann_savings or (ann_current - ann_oci)
         self._style_table_cell(table.cell(total_row, 0), "TOTAL ANNUAL", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL)
         self._style_table_cell(table.cell(total_row, 1), f"${ann_current:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
         self._style_table_cell(table.cell(total_row, 2), f"${ann_oci:,.0f}", font_size=11, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL, alignment=PP_ALIGN.RIGHT)
@@ -422,7 +470,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Migration note
         if migration:
-            note_y = Inches(1.6) + Inches(0.42 * num_rows) + Inches(0.15)
+            note_y = table_top + Inches(0.42 * num_rows) + Inches(0.15)
             self._add_textbox(
                 slide, Inches(0.8), note_y, Inches(11), Inches(0.3),
                 text=f"* Includes one-time migration investment of ${migration:,.0f} in Year 1",
@@ -432,16 +480,16 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         # Assumptions
         assumptions = tco.get("assumptions", [])
         if assumptions:
-            a_y = Inches(1.6) + Inches(0.42 * num_rows) + Inches(0.45)
+            a_y = table_top + Inches(0.42 * num_rows) + Inches(0.45)
             self._add_textbox(
                 slide, Inches(0.8), a_y, Inches(11), Inches(0.25),
                 text="Assumptions:", font_size=9, bold=True, color=Colors.SECONDARY_TEXT,
             )
-            for idx, a in enumerate(assumptions[:4]):
+            for idx, a in enumerate(assumptions[:7]):
                 self._add_textbox(
                     slide, Inches(1.0), a_y + Inches(0.25 + idx * 0.22),
                     Inches(11), Inches(0.22),
-                    text=f"• {a}", font_size=8, italic=True, color=Colors.SECONDARY_TEXT,
+                    text=f"• {a}", font_size=7, italic=True, color=Colors.SECONDARY_TEXT,
                 )
 
     def add_roi_slide(self, roi: dict, headline: str = ""):
@@ -449,6 +497,56 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         slide = self._add_blank_slide()
 
         self._add_title_bar(slide, "Return on Investment")
+
+        cards = roi.get("cards", [])
+        if cards:
+            metric_text = headline or pick(roi, "headline", default="ROI logic")
+            self._add_textbox(
+                slide, Inches(0.8), Inches(1.15), Inches(11.7), Inches(0.62),
+                text=metric_text, font_size=34, bold=True, color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER,
+            )
+            summary = pick(roi, "label", "summary")
+            if summary:
+                self._add_textbox(
+                    slide, Inches(1.0), Inches(1.82), Inches(11.3), Inches(0.5),
+                    text=summary, font_size=13, color=Colors.SECONDARY_TEXT,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
+            card_w = Inches(3.65)
+            card_h = Inches(2.25)
+            gap = Inches(0.35)
+            x0 = Inches(0.9)
+            y0 = Inches(2.75)
+            colors = [Colors.TEAL, Colors.BURNT_ORANGE, Colors.FOREST]
+            for idx, card in enumerate(cards[:3]):
+                x = x0 + idx * (card_w + gap)
+                bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y0, card_w, card_h)
+                bg.fill.solid()
+                bg.fill.fore_color.rgb = Colors.TABLE_ALT_ROW
+                bg.line.color.rgb = colors[idx % len(colors)]
+                self._add_textbox(
+                    slide, x + Inches(0.18), y0 + Inches(0.18), card_w - Inches(0.36), Inches(0.28),
+                    text=card.get("title", ""), font_size=11, bold=True, color=colors[idx % len(colors)],
+                )
+                self._add_textbox(
+                    slide, x + Inches(0.18), y0 + Inches(0.58), card_w - Inches(0.36), Inches(0.48),
+                    text=card.get("metric", ""), font_size=18, bold=True, color=Colors.PRIMARY_TEXT,
+                )
+                self._add_textbox(
+                    slide, x + Inches(0.18), y0 + Inches(1.14), card_w - Inches(0.36), Inches(0.88),
+                    text=card.get("detail", ""), font_size=8, color=Colors.SECONDARY_TEXT,
+                )
+
+            note = pick(roi, "note")
+            if note:
+                self._add_textbox(
+                    slide, Inches(0.9), Inches(5.45), Inches(11.5), Inches(0.65),
+                    text=note, font_size=10, italic=True, color=Colors.SECONDARY_TEXT,
+                    alignment=PP_ALIGN.CENTER,
+                )
+            return
 
         # Big centered ROI number
         pct = roi.get("three_year_roi_pct", 0)
@@ -466,7 +564,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         # Label under big number
         self._add_textbox(
             slide, Inches(0.8), Inches(3.75), Inches(11.7), Inches(0.4),
-            text="3-Year Return on Investment", font_size=16,
+            text=roi.get("label", "3-Year Return on Investment"), font_size=16,
             color=Colors.SECONDARY_TEXT, alignment=PP_ALIGN.CENTER,
         )
 
@@ -509,11 +607,349 @@ class BusinessCaseDeckGenerator(OraclePresBase):
                 alignment=PP_ALIGN.CENTER,
             )
 
+    def add_tco_projection_slide(
+        self,
+        projection: list,
+        title: str = "3-Year TCO Projection",
+        storage_economics: dict | None = None,
+    ):
+        """Slide: multi-year TCO forecast with CPU and storage assumptions."""
+        if not projection:
+            return
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, title)
+
+        headers = ["Period", "CPU Demand", "Storage", "ADB-S As-Is", "ADB-D To-Be", "Delta", "Note"]
+        rows = projection[:4]
+        table = self._add_table(
+            slide, len(rows) + 1, len(headers),
+            Inches(0.55), Inches(1.35),
+            Inches(12.25), Inches(0.55 * (len(rows) + 1)),
+        )
+        widths = [1.05, 1.65, 1.8, 1.65, 1.65, 1.35, 3.1]
+        for idx, width in enumerate(widths):
+            table.columns[idx].width = Inches(width)
+
+        for j, header in enumerate(headers):
+            self._style_table_cell(
+                table.cell(0, j), header, font_size=9, bold=True,
+                color=Colors.WHITE, bg_color=Colors.TEAL,
+                alignment=PP_ALIGN.CENTER if j else PP_ALIGN.LEFT,
+            )
+
+        for i, row in enumerate(rows, start=1):
+            bg = Colors.TABLE_ALT_ROW if i % 2 == 0 else None
+            values = [
+                row.get("period", ""),
+                row.get("cpu", ""),
+                row.get("storage", ""),
+                row.get("as_is", ""),
+                row.get("to_be", ""),
+                row.get("delta", ""),
+                row.get("note", ""),
+            ]
+            for j, value in enumerate(values):
+                self._style_table_cell(
+                    table.cell(i, j), value, font_size=8, bg_color=bg,
+                    alignment=PP_ALIGN.RIGHT if j in (3, 4, 5) else PP_ALIGN.LEFT,
+                    color=Colors.ERROR if j == 5 and str(value).startswith("+") else Colors.PRIMARY_TEXT,
+                )
+
+        footnote = rows[0].get("footnote", "") if isinstance(rows[0], dict) else ""
+        if footnote:
+            self._add_textbox(
+                slide, Inches(0.65), Inches(6.25), Inches(12.0), Inches(0.45),
+                text=footnote, font_size=8, italic=True, color=Colors.SECONDARY_TEXT,
+            )
+
+        if isinstance(storage_economics, dict) and storage_economics:
+            y = Inches(4.35)
+            box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.75), y, Inches(11.85), Inches(1.55))
+            box.fill.solid()
+            box.fill.fore_color.rgb = Colors.TABLE_ALT_ROW
+            box.line.color.rgb = Colors.MUTED_TEAL
+
+            self._add_textbox(
+                slide, Inches(0.95), y + Inches(0.12), Inches(11.45), Inches(0.26),
+                text=pick(storage_economics, "headline", default="Storage economics"),
+                font_size=10, bold=True, color=Colors.TEAL,
+            )
+
+            cards = storage_economics.get("cards", [])
+            if cards:
+                card_w = Inches(3.55)
+                for idx, card in enumerate(cards[:3]):
+                    x = Inches(0.95) + idx * Inches(3.8)
+                    self._add_textbox(
+                        slide, x, y + Inches(0.45), card_w, Inches(0.35),
+                        text=card.get("value", ""), font_size=15, bold=True, color=Colors.PRIMARY_TEXT,
+                    )
+                    self._add_textbox(
+                        slide, x, y + Inches(0.82), card_w, Inches(0.34),
+                        text=card.get("label", ""), font_size=8, color=Colors.SECONDARY_TEXT,
+                    )
+                    detail = card.get("detail", "")
+                    if detail:
+                        self._add_textbox(
+                            slide, x, y + Inches(1.13), card_w, Inches(0.28),
+                            text=detail, font_size=7, color=Colors.SECONDARY_TEXT,
+                        )
+
+    def add_tco_crossover_slide(self, chart_spec: dict):
+        """Slide: show when ADB-D becomes cheaper than ADB-S."""
+        if not isinstance(chart_spec, dict):
+            return
+
+        categories = chart_spec.get("categories", [])
+        as_is = chart_spec.get("as_is", [])
+        to_be = chart_spec.get("to_be", [])
+        if not categories or not as_is or not to_be:
+            return
+
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, pick(chart_spec, "title", default="TCO Crossover"))
+
+        subtitle = pick(chart_spec, "subtitle")
+        if subtitle:
+            self._add_textbox(
+                slide, Inches(0.75), Inches(1.05), Inches(12.0), Inches(0.35),
+                text=subtitle, font_size=13, color=Colors.SECONDARY_TEXT,
+            )
+
+        # Draw the chart with native shapes so it remains visible in lightweight
+        # renderers that do not paint embedded Office chart objects.
+        y_min = float(chart_spec.get("y_axis_min", min(as_is + to_be) * 0.9))
+        y_max = float(chart_spec.get("y_axis_max", max(as_is + to_be) * 1.1))
+        y_step = float(chart_spec.get("y_axis_major_unit", 0.5))
+        plot_x, plot_y = Inches(0.95), Inches(1.8)
+        plot_w, plot_h = Inches(7.75), Inches(4.2)
+        axis_color = Colors.SECONDARY_TEXT
+        grid_color = RGBColor(220, 218, 214)
+        series_colors = [Colors.BURNT_ORANGE, Colors.TEAL]
+
+        def x_pos(idx: int) -> int:
+            if len(categories) == 1:
+                return int(plot_x + plot_w / 2)
+            return int(plot_x + idx * (plot_w / (len(categories) - 1)))
+
+        def y_pos(value: float) -> int:
+            ratio = (float(value) - y_min) / (y_max - y_min)
+            return int(plot_y + plot_h - ratio * plot_h)
+
+        # Grid and y labels.
+        tick = y_min
+        while tick <= y_max + 0.001:
+            y = y_pos(tick)
+            grid = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, plot_x, y, plot_x + plot_w, y)
+            grid.line.color.rgb = grid_color
+            grid.line.width = Pt(0.6)
+            self._add_textbox(
+                slide, Inches(0.52), y - Inches(0.1), Inches(0.35), Inches(0.2),
+                text=f"${tick:.1f}M", font_size=7, color=Colors.SECONDARY_TEXT,
+                alignment=PP_ALIGN.RIGHT,
+            )
+            tick += y_step
+
+        # Axes.
+        x_axis = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, plot_x, plot_y + plot_h, plot_x + plot_w, plot_y + plot_h)
+        x_axis.line.color.rgb = axis_color
+        y_axis = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, plot_x, plot_y, plot_x, plot_y + plot_h)
+        y_axis.line.color.rgb = axis_color
+
+        baseline_y = y_pos(y_min)
+        group_w = plot_w / len(categories)
+        bar_w = min(Inches(0.28), group_w * 0.28)
+        gap_w = Inches(0.06)
+
+        for idx, category in enumerate(categories):
+            center = int(plot_x + group_w * (idx + 0.5))
+            values = [as_is[idx], to_be[idx]]
+            for s_idx, value in enumerate(values):
+                color = series_colors[s_idx]
+                x = center - bar_w - gap_w / 2 if s_idx == 0 else center + gap_w / 2
+                y = y_pos(value)
+                h = baseline_y - y
+                bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, int(x), int(y), int(bar_w), int(h))
+                bar.fill.solid()
+                bar.fill.fore_color.rgb = color
+                bar.line.fill.background()
+                self._add_textbox(
+                    slide, int(x) - Inches(0.16), y - Inches(0.26), bar_w + Inches(0.32), Inches(0.2),
+                    text=f"${value:.2f}M", font_size=7, color=color,
+                    alignment=PP_ALIGN.CENTER,
+                )
+
+        for idx, category in enumerate(categories):
+            center = int(plot_x + group_w * (idx + 0.5))
+            self._add_textbox(
+                slide, center - Inches(0.45), plot_y + plot_h + Inches(0.1),
+                Inches(0.9), Inches(0.25), text=str(category), font_size=8,
+                color=Colors.SECONDARY_TEXT, alignment=PP_ALIGN.CENTER,
+            )
+
+        # Legend.
+        legend_y = plot_y + plot_h + Inches(0.55)
+        for idx, (label, color) in enumerate([
+            (pick(chart_spec, "as_is_label", default="ADB-S"), series_colors[0]),
+            (pick(chart_spec, "to_be_label", default="ADB-D"), series_colors[1]),
+        ]):
+            x = plot_x + Inches(idx * 2.2)
+            swatch = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, legend_y, Inches(0.18), Inches(0.08))
+            swatch.fill.solid()
+            swatch.fill.fore_color.rgb = color
+            swatch.line.fill.background()
+            self._add_textbox(slide, x + Inches(0.25), legend_y - Inches(0.06), Inches(1.6), Inches(0.22), text=label, font_size=8, color=Colors.SECONDARY_TEXT)
+
+        callout = pick(chart_spec, "callout", default="")
+        if callout:
+            box = slide.shapes.add_shape(
+                MSO_SHAPE.ROUNDED_RECTANGLE,
+                Inches(9.15), Inches(1.7), Inches(3.35), Inches(1.25),
+            )
+            box.fill.solid()
+            box.fill.fore_color.rgb = Colors.TEAL
+            box.line.fill.background()
+            self._add_textbox(
+                slide, Inches(9.35), Inches(1.92), Inches(2.95), Inches(0.78),
+                text=callout, font_size=17, bold=True, color=Colors.WHITE,
+                alignment=PP_ALIGN.CENTER,
+            )
+
+        bullets = chart_spec.get("bullets", [])
+        y = Inches(3.25)
+        for idx, bullet in enumerate(bullets[:4]):
+            self._add_textbox(
+                slide, Inches(9.2), y + idx * Inches(0.55), Inches(3.25), Inches(0.42),
+                text=f"- {bullet}", font_size=9, color=Colors.SECONDARY_TEXT,
+            )
+
+        note = pick(chart_spec, "note")
+        if note:
+            self._add_textbox(
+                slide, Inches(0.85), Inches(6.35), Inches(11.8), Inches(0.35),
+                text=note, font_size=8, italic=True, color=Colors.SECONDARY_TEXT,
+            )
+
+    def add_cost_breakdown_slide(self, breakdown: dict):
+        """Slide: explain how cloud services and operations costs are built."""
+        if not isinstance(breakdown, dict):
+            return
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, pick(breakdown, "title", default="BOM + Operations Cost Breakdown"))
+
+        scenarios = breakdown.get("scenarios", [])
+        if not scenarios:
+            return
+
+        col_w = Inches(5.8)
+        gap = Inches(0.55)
+        x_positions = [Inches(0.75), Inches(0.75) + col_w + gap]
+        colors = [Colors.TEAL, Colors.BURNT_ORANGE]
+
+        for idx, scenario in enumerate(scenarios[:2]):
+            x = x_positions[idx]
+            y = Inches(1.3)
+            color = colors[idx % len(colors)]
+            header = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, col_w, Inches(0.45))
+            header.fill.solid()
+            header.fill.fore_color.rgb = color
+            header.line.fill.background()
+            self._add_textbox(
+                slide, x + Inches(0.15), y + Inches(0.06), col_w - Inches(0.3), Inches(0.32),
+                text=pick(scenario, "name", default=f"Scenario {idx+1}"),
+                font_size=12, bold=True, color=Colors.WHITE,
+            )
+
+            rows = scenario.get("lines", [])
+            table = self._add_table(
+                slide, len(rows) + 2, 3,
+                x, y + Inches(0.6),
+                col_w, Inches(0.32 * (len(rows) + 2)),
+            )
+            table.columns[0].width = Inches(3.0)
+            table.columns[1].width = Inches(1.35)
+            table.columns[2].width = Inches(1.45)
+            for j, h in enumerate(["Cost Item", "Monthly", "Annual"]):
+                self._style_table_cell(
+                    table.cell(0, j), h, font_size=8, bold=True,
+                    color=Colors.WHITE, bg_color=color,
+                    alignment=PP_ALIGN.RIGHT if j else PP_ALIGN.LEFT,
+                )
+            for r_idx, row in enumerate(rows, start=1):
+                bg = Colors.TABLE_ALT_ROW if r_idx % 2 == 0 else None
+                self._style_table_cell(table.cell(r_idx, 0), row.get("item", ""), font_size=7, bg_color=bg)
+                self._style_table_cell(table.cell(r_idx, 1), row.get("monthly", ""), font_size=7, bg_color=bg, alignment=PP_ALIGN.RIGHT)
+                self._style_table_cell(table.cell(r_idx, 2), row.get("annual", ""), font_size=7, bg_color=bg, alignment=PP_ALIGN.RIGHT)
+            total = scenario.get("total", {})
+            last = len(rows) + 1
+            self._style_table_cell(table.cell(last, 0), "TOTAL", font_size=8, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG)
+            self._style_table_cell(table.cell(last, 1), total.get("monthly", ""), font_size=8, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
+            self._style_table_cell(table.cell(last, 2), total.get("annual", ""), font_size=8, bold=True, color=Colors.WHITE, bg_color=Colors.DARK_BG, alignment=PP_ALIGN.RIGHT)
+
+        notes = breakdown.get("notes", [])
+        if notes:
+            y = Inches(6.0)
+            self._add_textbox(slide, Inches(0.8), y, Inches(11.8), Inches(0.25), text="Assumptions:", font_size=8, bold=True, color=Colors.SECONDARY_TEXT)
+            for idx, note in enumerate(notes[:4]):
+                self._add_textbox(
+                    slide, Inches(1.0), y + Inches(0.23 + idx * 0.2), Inches(11.6), Inches(0.2),
+                    text=f"- {note}", font_size=7, color=Colors.SECONDARY_TEXT,
+                )
+
+    def add_business_value_slide(self, value_case: dict):
+        """Slide: risk-adjusted value / avoided downtime model."""
+        if not isinstance(value_case, dict):
+            return
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, pick(value_case, "title", default="Risk-Adjusted Business Value"))
+
+        headline = pick(value_case, "headline")
+        if headline:
+            self._add_textbox(
+                slide, Inches(0.8), Inches(1.15), Inches(11.8), Inches(0.5),
+                text=headline, font_size=16, bold=True, color=Colors.TEAL,
+            )
+
+        rows = value_case.get("rows", [])
+        if rows:
+            headers = ["Value Area", "How to Measure", "Business Case Treatment"]
+            table = self._add_table(slide, len(rows) + 1, 3, Inches(0.75), Inches(1.85), Inches(12.0), Inches(0.75 * (len(rows) + 1)))
+            table.columns[0].width = Inches(2.6)
+            table.columns[1].width = Inches(4.3)
+            table.columns[2].width = Inches(5.1)
+            for j, h in enumerate(headers):
+                self._style_table_cell(table.cell(0, j), h, font_size=9, bold=True, color=Colors.WHITE, bg_color=Colors.TEAL)
+            for i, row in enumerate(rows, start=1):
+                bg = Colors.TABLE_ALT_ROW if i % 2 == 0 else None
+                self._style_table_cell(table.cell(i, 0), row.get("area", ""), font_size=8, bg_color=bg)
+                self._style_table_cell(table.cell(i, 1), row.get("measure", ""), font_size=8, bg_color=bg)
+                self._style_table_cell(table.cell(i, 2), row.get("treatment", ""), font_size=8, bg_color=bg)
+
+        break_even = value_case.get("break_even", [])
+        if break_even:
+            self._add_textbox(
+                slide, Inches(0.8), Inches(5.25), Inches(11.8), Inches(0.3),
+                text="Break-even avoided outage impact", font_size=10, bold=True, color=Colors.SECONDARY_TEXT,
+            )
+            headers = ["Horizon", "Incremental TCO", "If avoiding 4h/year", "If avoiding 8h/year"]
+            table = self._add_table(slide, len(break_even) + 1, 4, Inches(0.8), Inches(5.6), Inches(11.7), Inches(0.38 * (len(break_even) + 1)))
+            for j, h in enumerate(headers):
+                self._style_table_cell(table.cell(0, j), h, font_size=8, bold=True, color=Colors.WHITE, bg_color=Colors.BURNT_ORANGE)
+            for i, row in enumerate(break_even, start=1):
+                bg = Colors.TABLE_ALT_ROW if i % 2 == 0 else None
+                values = [row.get("horizon", ""), row.get("investment", ""), row.get("four_hours", ""), row.get("eight_hours", "")]
+                for j, value in enumerate(values):
+                    self._style_table_cell(table.cell(i, j), value, font_size=8, bg_color=bg, alignment=PP_ALIGN.RIGHT if j else PP_ALIGN.LEFT)
+
     def add_value_drivers_slide(self, drivers: list):
         """Slide 6: Value Drivers — 4 categories on blank slide.
 
         drivers: list of {"category": str, "title": str, "description": str, "quantified": str}
         """
+        drivers = [
+            {"title": driver, "description": ""} if isinstance(driver, str) else driver
+            for driver in drivers
+        ]
         slide = self._add_blank_slide()
 
         self._add_title_bar(slide, "Value Drivers")
@@ -587,8 +1023,8 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
         # Column header backgrounds
         for x, color, label in [
-            (left_x,  Colors.TEAL,  "✓  Migration Risks (Mitigated)"),
-            (right_x, Colors.ERROR, "⚠  Risks of Inaction"),
+            (left_x,  Colors.TEAL,  "Migration Risks (Mitigated)"),
+            (right_x, Colors.ERROR, "Risks of Inaction"),
         ]:
             bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, header_y, col_w, Inches(0.45))
             bg.fill.solid()
@@ -614,7 +1050,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
             self._add_textbox(
                 slide, left_x + Inches(0.15), y + Inches(0.07), col_w - Inches(0.25), Inches(0.4),
-                text=f"• {r_text}", font_size=12, bold=True, color=Colors.PRIMARY_TEXT,
+                text=f"- {r_text}", font_size=12, bold=True, color=Colors.PRIMARY_TEXT,
             )
             if mitigation:
                 self._add_textbox(
@@ -638,7 +1074,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
 
             self._add_textbox(
                 slide, right_x + Inches(0.15), y + Inches(0.07), col_w - Inches(0.25), Inches(0.4),
-                text=f"• {r_text}", font_size=12, bold=True, color=Colors.ERROR,
+                text=f"- {r_text}", font_size=12, bold=True, color=Colors.ERROR,
             )
             detail_parts = []
             if impact:
@@ -794,6 +1230,21 @@ class BusinessCaseDeckGenerator(OraclePresBase):
                 )
                 y += Inches(0.6)
 
+    def add_disclaimer_slide(self, disclaimer: str):
+        """Final slide: commercial disclaimer for price-bearing business cases."""
+        if not disclaimer:
+            return
+        slide = self._add_blank_slide()
+        self._add_title_bar(slide, "Commercial Disclaimer")
+        body = slide.shapes.add_textbox(Inches(0.8), Inches(1.25), Inches(11.7), Inches(4.9))
+        tf = body.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = disclaimer
+        p.font.size = Pt(12)
+        p.font.name = self.FONT
+        p.font.color.rgb = Colors.PRIMARY_TEXT
+
     # ================================================================
     # Build from YAML spec
     # ================================================================
@@ -801,6 +1252,7 @@ class BusinessCaseDeckGenerator(OraclePresBase):
     @classmethod
     def from_spec(cls, spec: dict, template: Optional[str] = None) -> "BusinessCaseDeckGenerator":
         """Build a complete business case deck from a YAML specification."""
+        spec = enrich_adbs_to_adbd_business_case(spec)
         spec = _enrich_sparse_business_case(spec)
         bc = spec.get("business_case", spec)  # Support both wrapped and unwrapped
         gen = cls(template=template)
@@ -808,8 +1260,14 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         # Slide 1: Cover
         gen.add_cover_slide(
             customer=pick(bc, "customer_name", "customer"),
-            subtitle="Business Case for Oracle Cloud Infrastructure",
+            subtitle=pick(
+                bc,
+                "cover_subtitle",
+                "subtitle",
+                default="ADB-S to ADB-D Migration Business Case",
+            ),
             prepared_by=pick(bc, "prepared_by", "author"),
+            prepared_by_role=pick(bc, "prepared_by_role", "role", "title"),
             date=pick(bc, "date", "generated_on"),
         )
 
@@ -879,10 +1337,30 @@ class BusinessCaseDeckGenerator(OraclePresBase):
         if tco and (tco.get("current_state") or tco.get("proposed_oci")):
             gen.add_tco_slide(tco)
 
+        breakdown = tco.get("breakdown", {})
+        if breakdown:
+            gen.add_cost_breakdown_slide(breakdown)
+
+        projection = pick_list(tco, "projection", "forecast")
+        if projection:
+            gen.add_tco_projection_slide(
+                projection,
+                title=pick(tco, "projection_title", default="3-Year TCO Projection"),
+                storage_economics=tco.get("storage_economics"),
+            )
+
+        crossover_chart = tco.get("crossover_chart", {})
+        if crossover_chart:
+            gen.add_tco_crossover_slide(crossover_chart)
+
+        value_case = tco.get("business_value", {})
+        if value_case:
+            gen.add_business_value_slide(value_case)
+
         # Slide 5: ROI
         roi = bc.get("roi", {})
-        if roi and any(roi.get(k) for k in ["three_year_roi_pct", "payback_months", "total_investment"]):
-            gen.add_roi_slide(roi)
+        if roi and (roi.get("cards") or any(roi.get(k) for k in ["three_year_roi_pct", "payback_months", "total_investment"])):
+            gen.add_roi_slide(roi, headline=pick(roi, "headline"))
 
         # Slide 6: Value Drivers
         value_drivers = bc.get("value_drivers", [])
@@ -916,6 +1394,10 @@ class BusinessCaseDeckGenerator(OraclePresBase):
                     next_steps=pick_list(rec, "next_steps"),
                 )
 
+        disclaimer = pick(bc, "commercial_disclaimer", "disclaimer")
+        if disclaimer:
+            gen.add_disclaimer_slide(disclaimer)
+
         return gen
 
 
@@ -939,10 +1421,29 @@ def main():
         "--template",
         help="Path to Oracle FY26 .pptx template (default: templates/Oracle_PPT-template_FY26.pptx)",
     )
+    parser.add_argument(
+        "--no-boms",
+        action="store_true",
+        help="Do not generate companion BOM YAML/XLSX files for ADB-S to ADB-D cases.",
+    )
+    parser.add_argument(
+        "--no-validate",
+        action="store_true",
+        help="Skip structural PPTX validation.",
+    )
     args = parser.parse_args()
 
     with open(args.spec, 'r') as f:
         spec = yaml.safe_load(f)
+
+    bc = spec.get("business_case", spec)
+    if not pick(bc, "commercial_disclaimer", "disclaimer"):
+        catalog_path = Path(__file__).resolve().parent.parent / "kb" / "pricing" / "oci-sku-catalog.yaml"
+        if catalog_path.exists():
+            catalog = yaml.safe_load(catalog_path.read_text(encoding="utf-8")) or {}
+            disclaimer = catalog.get("disclaimer", "")
+            if disclaimer:
+                bc["commercial_disclaimer"] = disclaimer
 
     gen = BusinessCaseDeckGenerator.from_spec(spec, template=args.template)
     gen.save(args.output)
@@ -953,6 +1454,53 @@ def main():
     customer = spec.get("business_case", spec).get("customer_name", "")
     if customer:
         print(f"  Customer: {customer}")
+
+    adbd_config = bc.get("adbs_to_adbd") or bc.get("adb_s_to_adb_d")
+    if isinstance(adbd_config, dict) and not args.no_boms:
+        bom_dir = Path(args.output).with_suffix("").parent / f"{Path(args.output).stem}-boms"
+        adbd_config = {**adbd_config, "customer_name": pick(bc, "customer_name", "customer"), "prepared_by": pick(bc, "prepared_by", "author")}
+        saved = write_bom_outputs(adbd_config, bom_dir)
+        print(f"  BOM outputs: {len(saved)} files in {bom_dir}")
+
+    if not args.no_validate:
+        validation_cfg = bc.get("deck_validation", {}) if isinstance(bc.get("deck_validation"), dict) else {}
+        required = validation_cfg.get("required_phrases")
+        forbidden = validation_cfg.get("forbidden_phrases")
+        expected_titles = validation_cfg.get("expected_titles")
+        if required is None and isinstance(adbd_config, dict):
+            required = [
+                "BYOL/PAYG model",
+                "Discount",
+                "GoldenGate bridge duration",
+                "Workload ECPU demand",
+                "ECPU capacity",
+                "Storage break-even",
+                "Crossover",
+            ]
+        if forbidden is None:
+            forbidden = ["OCI Annual", "FTE-year"]
+        if expected_titles is None and isinstance(adbd_config, dict):
+            crossover_title = pick(adbd_config.get("crossover_chart") or {}, "title", default="TCO Crossover")
+            expected_titles = [
+                "Total Cost of Ownership",
+                "BOM + Operations Cost Breakdown",
+                crossover_title,
+                "Business Value Model",
+                "Commercial Disclaimer",
+            ]
+        report = validate_pptx(
+            args.output,
+            expected_titles=expected_titles or [],
+            required_phrases=required or [],
+            forbidden_phrases=forbidden or [],
+            min_slides=validation_cfg.get("min_slides"),
+            max_slides=validation_cfg.get("max_slides"),
+            exact_slides=validation_cfg.get("exact_slides"),
+            disclaimer_last=bool(bc.get("commercial_disclaimer")),
+        )
+        print(f"  Deck validation: {report['status']} ({report['slide_count']} slides)")
+        for issue in report["issues"]:
+            print(f"    - {issue['code']}: {issue['message']}")
 
 
 if __name__ == "__main__":
